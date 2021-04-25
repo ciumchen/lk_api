@@ -64,6 +64,7 @@ class OrderController extends Controller
                 'profit_ratio' => $request->ratio,
                 'price' => $request->price,
                 'profit_price' => bcmul($request->price, bcdiv($request->ratio, 100, 4), 2),
+                'pay_status' => 'await',
             ])->toArray();
         }catch (PDOException $e) {
             report($e);

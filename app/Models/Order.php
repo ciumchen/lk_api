@@ -56,7 +56,7 @@ class Order extends Model
     {
         $tradeOrderInfo = DB::table('trade_order')->where('order_no', $orderNo)->first();
         $orders = get_object_vars($tradeOrderInfo);
-        DB::table($this->table)->where('id', $orders['oid'])->update(['status' => 2, 'updated_at' => date("Y-m-d H:i:s")]);
+        DB::table($this->table)->where('id', $orders['oid'])->update(['pay_status' => 'succeeded', 'updated_at' => date("Y-m-d H:i:s")]);
     }
 
     /**获取商家信息
