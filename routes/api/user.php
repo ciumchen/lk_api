@@ -29,5 +29,9 @@ Route::any("consumerCount","User\CountUserController@consumerCount");
 Route::any("merchantCount","User\CountUserController@merchantCount");
 
 
+//获取用户信息
+Route::get('get-user', 'User\UserController@getUser');
+
+
 
 

@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\AssetsType;
 use App\Models\Order;
 use App\Models\User;
+use App\Models\TradeOrder;
 use App\Services\AssetsService;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,9 +20,26 @@ class UserResources extends JsonResource
     public function toArray($request)
     {
         //我的消费
-        $mySpent = Order::where("status", Order::STATUS_SUCCEED)
-            ->where("uid",$this->id)
-            ->sum("price");
+        $myOrder = $myTrade = 0;
+        //录入订单表
+        $ores = Order::where("status", Order::STATUS_SUCCEED)->where("uid",$this->id)->exists();
+        if ($ores)
+        {
+            $myOrder = Order::where("status", Order::STATUS_SUCCEED)
+                ->where("uid",$this->id)
+                ->sum("price");
+        }
+
+        //消费订单表
+        $tres = TradeOrder::where("status", Order::STATUS_SUCCEED)->where("user_id",$this->id)->exists();
+        if ($tres)
+        {
+            $myTrade = TradeOrder::where("status", 'succeeded')
+                ->where("uid",$this->id)
+                ->sum("price");
+        }
+
+        $mySpent = $myOrder + $myTrade;
 
         //iets余额
         $user = User::find($this->id);
