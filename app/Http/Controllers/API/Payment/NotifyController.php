@@ -78,7 +78,17 @@ class NotifyController extends Controller
                 $userIntegral = $json_data['pay_amt'] * 0.5;
             } elseif (in_array($json_data['description'], ['LR']))
             {
-                $userIntegral = $json_data['pay_amt'];
+                $orders = $order->getShop($json_data['order_no']);
+                if ($orders['profit_ratio'] == 20)
+                {
+                    $userIntegral = $orders['price'];
+                } elseif($orders['profit_ratio'] == 10)
+                {
+                    $userIntegral = $orders['price'] * 0.5;
+                } else
+                {
+                    $userIntegral = $orders['price'] * 0.25;
+                }
             }
 
             //计算商家积分
@@ -91,7 +101,7 @@ class NotifyController extends Controller
             }elseif (in_array($json_data['description'], ['LR']))
             {
                 $orders = $order->getShop($json_data['order_no']);
-                $shopIntegral = $json_data['pay_amt'] * ($orders['profit_ratio'] / 100);
+                $shopIntegral = $orders['price'] * ($orders['profit_ratio'] / 100);
             }
 
             $orderData = [
@@ -117,7 +127,6 @@ class NotifyController extends Controller
                 //更新用户积分
                 if ($orderData)
                 {
-                    Log::info($orderData);
                     $order->upUsers($orderData);
                 }
 

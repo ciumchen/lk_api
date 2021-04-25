@@ -53,13 +53,29 @@ class MyShareController extends Controller
         ])->toArray();
 
 var_dump($re['id']);
-
-
-
-
-
         echo 'test1112021年4月22日 13:39:29';
     }
+
+    //获取消费者和商户的lk
+    public function getLkCount(Request $request){
+        $uid = $request->input('uid');
+        $userInfo = DB::table('users')->where('id',$uid)->first();
+
+        $lkNum['lkNum']=0;
+        //消费者lk
+        if ($userInfo->role==1){
+            $data = DB::table('settings')->where('key','lk_per')->first();
+            $lkNum['lkNum'] = round($userInfo->integral/($data->value),2);
+        }
+        //商家lk
+        if ($userInfo->role==2){
+            $data = DB::table('settings')->where('key','business_Lk_per')->first();
+            $lkNum['lkNum'] = round(($userInfo->business_integral)/($data->value),2);
+        }
+        return $lkNum;
+    }
+
+
 
     //分享消费者分享 Consumer
     //累计消费者奖励

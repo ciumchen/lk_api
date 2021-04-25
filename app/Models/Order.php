@@ -113,12 +113,10 @@ class Order extends Model
         {
             //录入订单
             $orderInfo = DB::table($this->table)->where('id', $tradeOrderData['oid'])->first();
-
             if (!$orderInfo)
                 throw new LogicException('订单不存在');
 
             $ordersData = get_object_vars($orderInfo);
-
             //查询用户积分
             $userInfo = DB::table('users')->where('id', $ordersData['uid'])->first();
 
@@ -136,10 +134,10 @@ class Order extends Model
             $sintegral = $shopsData['business_integral'] + $data['shopIntegral'];
 
             //更新用户积分
-            DB::table('users')->where('id', $ordersData['uid'])->update(['return_integral' => $uintegral]);
+            DB::table('users')->where('id', $ordersData['uid'])->update(['integral' => $uintegral]);
 
             //更新来客自营积分
-            DB::table('users')->where('id', $ordersData['business_uid'])->update(['return_business_integral' => $sintegral]);
+            DB::table('users')->where('id', $ordersData['business_uid'])->update(['business_integral' => $sintegral]);
 
             //插入用户积分流水记录
             $integral = $usersData['role'] == 1 ?  $uintegral : $sintegral;

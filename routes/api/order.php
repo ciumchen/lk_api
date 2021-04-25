@@ -19,6 +19,10 @@ Route::any("merchant","Order\MyShareController@Merchant");
 Route::any("team","Order\MyShareController@Team");
 Route::any("mytest","Order\MyShareController@test");
 
+//当前登录用户的lk
+Route::any("getLkCount","Order\MyShareController@getLkCount");
+
+
 
 
 

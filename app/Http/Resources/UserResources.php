@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\TradeOrder;
 use App\Services\AssetsService;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 class UserResources extends JsonResource
 {
@@ -31,11 +32,11 @@ class UserResources extends JsonResource
         }
 
         //消费订单表
-        $tres = TradeOrder::where("status", Order::STATUS_SUCCEED)->where("user_id",$this->id)->exists();
+        $tres = TradeOrder::where("status", 'succeeded')->where("user_id",$this->id)->exists();
         if ($tres)
         {
             $myTrade = TradeOrder::where("status", 'succeeded')
-                ->where("uid",$this->id)
+                ->where("user_id",$this->id)
                 ->sum("price");
         }
 
