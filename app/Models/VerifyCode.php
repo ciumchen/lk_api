@@ -1,0 +1,148 @@
+<?php
+
+namespace App\Models;
+
+use App\Exceptions\LogicException;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Overtrue\EasySms\EasySms;
+use Overtrue\EasySms\Exceptions\NoGatewayAvailableException;
+
+class VerifyCode extends Model
+{
+    //验证码类型
+    const TYPE_REGISTER = 1;//注册
+    const TYPE_LOGIN = 2;//登录
+    const TYPE_FORGET_PASSWORD = 3;//找回密码
+    const TYPE_WITHDRAW_TO_WALLET = 4;//提现到钱包
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'phone',
+        'code',
+        'type',
+        'used',
+        'expires_at',
+    ];
+
+    public static $typeLabels = [
+        self::TYPE_LOGIN => 'login',
+        self::TYPE_REGISTER => 'register',
+        self::TYPE_FORGET_PASSWORD => 'forget_password',
+        self::TYPE_WITHDRAW_TO_WALLET => 'withdraw_to_wallet',
+
+    ];
+
+    public static $typeTexts = [
+        self::TYPE_LOGIN => '登录',
+        self::TYPE_REGISTER => '注册',
+        self::TYPE_FORGET_PASSWORD => '找回密码',
+        self::TYPE_WITHDRAW_TO_WALLET => '提现到钱包',
+
+    ];
+
+    public static $typeTemplates = [
+        self::TYPE_LOGIN => 'SMS_196170272',
+        self::TYPE_REGISTER => 'SMS_196170270',
+        self::TYPE_FORGET_PASSWORD => 'SMS_196170269',
+        self::TYPE_WITHDRAW_TO_WALLET => 'SMS_196170273',
+    ];
+
+    /**
+     * 将验证码标记为已使用.
+     *
+     * @return void
+     */
+    public function markAsUsed()
+    {
+        $this->update([
+            'used' => 1,
+        ]);
+    }
+
+    /**发送验证码
+     * @param string $phone
+     * @param string $code
+     * @param int $type
+     * @return mixed
+     * @throws LogicException
+     */
+    public static function send(string $phone, string $code, int $type)
+    {
+        if (!in_array($type, array_keys(self::$typeLabels))) {
+            throw new LogicException('无效的验证码类型');
+        }
+
+        if (in_array($type, [self::TYPE_REGISTER])) {
+            if (User::hasPhone($phone)) {
+                throw new LogicException('手机号已被使用');
+            }
+        } else {
+            if (!User::hasPhone($phone)) {
+                throw new LogicException('手机号未注册');
+            }
+        }
+
+        if (!Cache::add('verify_code_'.$phone.'_'.$type.'_locked', 1, 60)) {
+            throw new LogicException('验证码发送过快，请稍后再试');
+        }
+
+        if (app()->environment('prod', 'production')) {
+            try {
+                $easySms = new EasySms(config('easysms'));
+
+                $easySms->send($phone, [
+                    'template' => self::$typeTemplates[$type],
+                    'data' => [
+                        'code' => $code,
+                    ],
+                ]);
+            } catch (NoGatewayAvailableException $e) {
+                foreach ($e->getExceptions() as $exception) {
+                    report($exception);
+                }
+            } catch (\Exception $e) {
+                report($e);
+            }
+        }
+
+        $verifyCode = static::create([
+            'phone' => $phone,
+            'code' => $code,
+            'type' => $type,
+            'expires_at' => now()->addMinutes(3),
+        ]);
+
+        return $verifyCode;
+    }
+
+    /**
+     * 确认验证码是否正确.
+     *
+     * @param string $phone
+     * @param string $code
+     * @param int    $type
+     *
+     * @return bool
+     */
+    public static function check(string $phone, string $code, int $type): bool
+    {
+        $latest = static::where('phone', $phone)->where('type', $type)->latest()->first();
+
+        if (null === $latest ||
+            $latest->used ||
+            now()->gt($latest->expires_at) ||
+            $latest->code !== $code) {
+            return false;
+        }
+
+        $latest->markAsUsed();
+
+        Cache::forget('verify_code_'.$phone.'_'.$type.'_locked');
+
+        return true;
+    }
+}

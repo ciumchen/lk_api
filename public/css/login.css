@@ -1,0 +1,21 @@
+.login-box{
+	padding:5%;
+}
+.logo{
+	width: 70%;
+	margin-top:2rem;
+	margin-bottom:1rem;
+}
+
+.login-a{
+	margin-top:1rem;
+}
+
+.login-box a{
+	font-size:0.8rem;
+	font-weight: bold;
+}
+
+
+
+
