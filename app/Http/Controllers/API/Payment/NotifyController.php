@@ -117,6 +117,7 @@ class NotifyController extends Controller
                 //更新用户积分
                 if ($orderData)
                 {
+                    Log::info($orderData);
                     $order->upUsers($orderData);
                 }
 
