@@ -109,7 +109,9 @@ class StatisticsController extends Controller
 
     //获取今日消费金额和昨日消费金额统计
     public function getNewStatistics(){
-//        DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id");
+        //获取平台所有用户总数
+        $Data['userCount'] = DB::table('users')->count();
+
         //今日消费5%-10%-20%的消费金额的统计
         $Data['todayPriceTotal']['rl5'] = DB::table('order')->where('profit_ratio',5)->where('pay_status','succeeded')->where('created_at','>',date('Y-m-d',time()))->sum('price');
         $Data['todayPriceTotal']['rl10'] = DB::table('order')->where('profit_ratio',10)->where('pay_status','succeeded')->where('created_at','>',date('Y-m-d',time()))->sum('price');
@@ -126,6 +128,22 @@ class StatisticsController extends Controller
         return $Data;
     }
 
+    //商户让利累计
+    public function shRlCount(Request $request){
+        //5%-10%-20%的消费金额的统计
+        $uid = $request->input('uid');
+        var_dump($request->all);
+//        $Data['rl5'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',5)->where('pay_status','succeeded')->sum('profit_price');
+//        $Data['rl10'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',10)->where('pay_status','succeeded')->sum('profit_price');
+//        $Data['rl20'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',20)->where('pay_status','succeeded')->sum('profit_price');
+//
+
+//        $userId = $request->input('userId');//获取当前用户的id
+        var_dump($request->$uid);
+        var_dump($request->uid);
+//        return $Data;
+
+    }
 
 
 }
