@@ -131,18 +131,12 @@ class StatisticsController extends Controller
     //商户让利累计
     public function shRlCount(Request $request){
         //5%-10%-20%的消费金额的统计
-        $uid = $request->input('uid');
-        var_dump($request->all);
-//        $Data['rl5'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',5)->where('pay_status','succeeded')->sum('profit_price');
-//        $Data['rl10'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',10)->where('pay_status','succeeded')->sum('profit_price');
-//        $Data['rl20'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',20)->where('pay_status','succeeded')->sum('profit_price');
-//
+        $uid = $request->input('uid');//获取当前用户的id
+        $Data['rl5'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',5)->where('pay_status','succeeded')->sum('profit_price');
+        $Data['rl10'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',10)->where('pay_status','succeeded')->sum('profit_price');
+        $Data['rl20'] = DB::table('order')->where('business_uid',$uid)->where('profit_ratio',20)->where('pay_status','succeeded')->sum('profit_price');
 
-//        $userId = $request->input('userId');//获取当前用户的id
-        var_dump($request->$uid);
-        var_dump($request->uid);
-//        return $Data;
-
+        return $Data;
     }
 
 
