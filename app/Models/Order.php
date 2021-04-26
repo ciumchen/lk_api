@@ -170,6 +170,15 @@ class Order extends Model
         DB::table('integral_log')->insert($integralData);
     }
 
+    /**插入美团、油卡、话费记录
+     * @param array $data
+     * @throws LogicException
+     */
+    public function setOrder(array $data)
+    {
+        DB::table($this->table)->insert($data);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

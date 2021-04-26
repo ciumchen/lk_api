@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use App\Exceptions\LogicException;
 use Exception;
 use App\Models\TradeOrder;
+use App\Models\Order;
 use App\Http\Controllers\API\Order\TradeOrderController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /*
@@ -86,6 +88,41 @@ class AdaPayController extends Controller
             'created_at' => date("Y-m-d H:i:s")
         ];
 
+        //组装 order 表订单数据
+        $date = date("Y-m-d H:i:s");
+        $name = '';
+        switch ($paymentData['description'])
+        {
+            case "MT":
+                $name = '美团';
+                break;
+            case "HF":
+                $name = '话费';
+                break;
+            case "YK":
+                $name = '油卡';
+                break;
+        }
+        if (in_array($paymentData['description'], ['HF', 'YK']))
+        {
+            $profit_ratio = 5;
+        } else
+        {
+            $profit_ratio = 10;
+        }
+        $profit_price = $paymentData['money'] * ($profit_ratio / 100);
+        $orderParam = [
+            'uid' => $uid,
+            'business_uid' => 2,
+            'name' => $name,
+            'profit_ratio' => $profit_ratio,
+            'price' => $paymentData['money'],
+            'profit_price' => sprintf("%.2f", $profit_price),
+            'pay_status' => 'await',
+            'created_at' => $date,
+            'updated_at' => $date,
+        ];
+
         if ($paymentData['description'] == 'LR')
         {
             $orderData['oid'] = $paymentData['orderId'];
@@ -94,7 +131,12 @@ class AdaPayController extends Controller
         try {
             //创建订单
             $tradeOrder = new TradeOrderController();
+            $Order = new Order();
             $tradeOrder->setOrder($orderData, $uid);
+
+            //创建订单
+            $Order->setOrder($orderParam);
+
             if ($status['code'] == 1)
             {
                 //发起支付

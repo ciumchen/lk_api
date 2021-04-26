@@ -5,7 +5,7 @@ define("ADAPAY_CORE", SDK_BASE."/../AdapayCore");
 define("SDK_VERSION", "v1.3.1");
 define("GATE_WAY_URL", "https://%s.adapay.tech");
 define("DEBUG", true);
-define("LOG", dirname(SDK_BASE)."/log/prod");
+define("LOG", dirname(SDK_BASE)."/logs/prod");
 define("ENV", "prod");
 
 include_once ADAPAY_CORE."/AdaPay.php";
