@@ -106,4 +106,26 @@ class StatisticsController extends Controller
         ]]);
 
     }
+
+    //获取今日消费金额和昨日消费金额统计
+    public function getNewStatistics(){
+//        DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id");
+        //今日消费5%-10%-20%的消费金额的统计
+        $Data['todayPriceTotal']['rl5'] = DB::table('order')->where('profit_ratio',5)->where('pay_status','succeeded')->where('created_at','>',date('Y-m-d',time()))->sum('price');
+        $Data['todayPriceTotal']['rl10'] = DB::table('order')->where('profit_ratio',10)->where('pay_status','succeeded')->where('created_at','>',date('Y-m-d',time()))->sum('price');
+        $Data['todayPriceTotal']['rl20'] = DB::table('order')->where('profit_ratio',20)->where('pay_status','succeeded')->where('created_at','>',date('Y-m-d',time()))->sum('price');
+
+        //昨日消费5%-10%-20%的消费金额的统计
+        $Data['yesterdayPriceTotal']['rl5'] = DB::table('order')->where('profit_ratio',5)->where('pay_status','succeeded')
+            ->where('created_at','>',date('Y-m-d',strtotime("-2 day")))->where('created_at','<',date('Y-m-d',time()))->sum('price');
+        $Data['yesterdayPriceTotal']['rl10'] = DB::table('order')->where('profit_ratio',10)->where('pay_status','succeeded')
+            ->where('created_at','>',date('Y-m-d',strtotime("-2 day")))->where('created_at','<',date('Y-m-d',time()))->sum('price');
+        $Data['yesterdayPriceTotal']['rl20'] = DB::table('order')->where('profit_ratio',20)->where('pay_status','succeeded')
+            ->where('created_at','>',date('Y-m-d',strtotime("-2 day")))->where('created_at','<',date('Y-m-d',time()))->sum('price');
+
+        return $Data;
+    }
+
+
+
 }
