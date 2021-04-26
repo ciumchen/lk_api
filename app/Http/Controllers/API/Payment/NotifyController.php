@@ -118,11 +118,8 @@ class NotifyController extends Controller
                 //更新订单状态
                 $tradeOrder->upTradeOrder($tradeOrderData);
 
-                //更新审核录入状态
-                if ($json_data['description'] == 'LR')
-                {
-                    $order->upOrder($json_data['order_no']);
-                }
+                //更新 order 表审核状态
+                $order->upOrder($json_data['order_no']);
 
                 //更新用户积分
                 if ($orderData)
