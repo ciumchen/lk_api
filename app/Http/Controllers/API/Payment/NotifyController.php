@@ -129,7 +129,7 @@ class NotifyController extends Controller
                 {
                     $order->upUsers($orderData);
                 }
-
+                Log::info('+++++++++++++', ['code' => 111]);
                 $res = DB::table('order')->where('uid', $userData['user_id'])->first()->toArray();
                 Log::info('=============', $res);
                 $this->getPast($res['status'], $userData['user_id']);
