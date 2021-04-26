@@ -60,7 +60,6 @@ class Order extends Model
 
         $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
         $res = get_object_vars($resOrder);
-        Log::info('================', $res);
         $this->getPast($res['status'], $res['uid']);
     }
 

@@ -21,26 +21,9 @@ class UserResources extends JsonResource
     public function toArray($request)
     {
         //我的消费
-        $myOrder = $myTrade = 0;
-        //录入订单表
-        $ores = Order::where("status", Order::STATUS_SUCCEED)->where("uid",$this->id)->exists();
-        if ($ores)
-        {
-            $myOrder = Order::where("status", Order::STATUS_SUCCEED)
-                ->where("uid",$this->id)
-                ->sum("price");
-        }
-
-        //消费订单表
-        $tres = TradeOrder::where("status", 'succeeded')->where("user_id",$this->id)->exists();
-        if ($tres)
-        {
-            $myTrade = TradeOrder::where("status", 'succeeded')
-                ->where("user_id",$this->id)
-                ->sum("price");
-        }
-
-        $mySpent = $myOrder + $myTrade;
+        $mySpent = Order::where("status", Order::STATUS_SUCCEED)
+            ->where("uid",$this->id)
+            ->sum("price");
 
         //iets余额
         $user = User::find($this->id);
