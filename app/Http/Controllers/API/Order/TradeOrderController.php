@@ -77,7 +77,6 @@ class TradeOrderController extends Controller
      */
     public function getOrderList(Request $request)
     {
-        Log::info('=======', ['code' => 1111]);
         $this->validate($request, [
             'page' => ['bail', 'nullable', 'int', 'min:1'],
             'per_page' => ['bail', 'nullable', 'int', 'min:1', 'max:50'],
@@ -85,7 +84,6 @@ class TradeOrderController extends Controller
 
         $user = $request->user();
         $bOrder = $request->input('bOrder', false);
-        Log::info('+++++++++', $user);
         //录入订单表
         $orderData = (new Order())
             ->when(!$bOrder,function($query) use ($user) {

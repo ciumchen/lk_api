@@ -56,11 +56,27 @@ class Order extends Model
     {
         $tradeOrderInfo = DB::table('trade_order')->where('order_no', $orderNo)->first();
         $orders = get_object_vars($tradeOrderInfo);
-        DB::table($this->table)->where('id', $orders['oid'])->update(['status' => 2, 'pay_status' => 'succeeded', 'updated_at' => date("Y-m-d H:i:s")]);
+        $data = [
+            'pay_status' => 'succeeded',
+            'updated_at' => date("Y-m-d H:i:s")
+        ];
 
-        $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
-        $res = get_object_vars($resOrder);
-        $this->getPast($res['status'], $res['uid']);
+        if ($orders['description'] == 'LR')
+        {
+            $data['status'] = 2;
+        }
+        //更新 order 订单表
+        DB::table($this->table)->where('id', $orders['oid'])->update($data);
+
+        if ($orders['description'] == 'LR')
+        {
+            $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
+            if (!$resOrder)
+                throw new LogicException('订单不存在');
+
+            $res = get_object_vars($resOrder);
+            $this->getPast($res['status'], $res['uid']);
+        }
     }
 
     /**获取商家信息
