@@ -172,11 +172,12 @@ class Order extends Model
 
     /**插入美团、油卡、话费记录
      * @param array $data
-     * @throws LogicException
+     * @return int
+     * @throws
      */
     public function setOrder(array $data)
     {
-        DB::table($this->table)->insert($data);
+        return DB::table($this->table)->insertGetId($data);
     }
 
     /**

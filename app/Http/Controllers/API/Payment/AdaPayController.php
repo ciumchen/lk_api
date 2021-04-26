@@ -129,13 +129,17 @@ class AdaPayController extends Controller
         }
 
         try {
-            //创建订单
             $tradeOrder = new TradeOrderController();
             $Order = new Order();
-            $tradeOrder->setOrder($orderData, $uid);
 
             //创建订单
-            $Order->setOrder($orderParam);
+            $oid = $Order->setOrder($orderParam);
+            Log::info('================', ['code' => $oid]);
+            $orderData['oid'] = $oid;
+            //创建订单
+            $tradeOrder->setOrder($orderData, $uid);
+
+
 
             if ($status['code'] == 1)
             {
