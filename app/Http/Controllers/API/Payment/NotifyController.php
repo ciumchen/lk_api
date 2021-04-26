@@ -10,8 +10,6 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Setting;
-use App\Models\IntegralLog;
 
 /*
  * 支付异步回调通知
