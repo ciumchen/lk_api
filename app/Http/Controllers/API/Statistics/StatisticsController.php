@@ -77,7 +77,7 @@ class StatisticsController extends Controller
 
             $data = [];
             foreach($ratio as $v){
-                $data[] = Order::where('profit_ratio', $v)->sum('price')??0;
+                $data[] = Order::where('profit_ratio', $v)->where('pay_status','succeeded')->sum('price')??0;
 
             }
             return $data;
