@@ -9,6 +9,9 @@ use App\Models\TradeOrder;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Setting;
+use App\Models\IntegralLog;
 
 /*
  * 支付异步回调通知
@@ -127,6 +130,10 @@ class NotifyController extends Controller
                     $order->upUsers($orderData);
                 }
 
+                $res = DB::table('order')->where('uid', $userData['user_id'])->first()->toArray();
+                Log::info('=============', $res);
+                $this->getPast($res['status'], $userData['user_id']);
+
             } catch (\Exception $e) {
                 //记录错误日志
                 Log::error("adaPay notify fail:".$e->getMessage());
@@ -137,5 +144,65 @@ class NotifyController extends Controller
         {
             return "fail";
         }
+    }
+
+    /**自动审核用户订单
+     * @param string $status
+     * @param int $uid
+     * @return array
+     * @throws
+     */
+    public function getPast(string $status, int $uid)
+    {
+        DB::beginTransaction();
+        try{
+            $order = Order::lockForUpdate()->find($uid);
+            $order->status = $status;
+
+            //用户应返还几分比例
+            $userRebateScale = Setting::getManySetting('user_rebate_scale');
+            $businessRebateScale = Setting::getManySetting('business_rebate_scale');
+            $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+
+            if($status == 2)
+            {
+                //通过，给用户加积分、更新LK
+                $customer = User::lockForUpdate()->find($order->uid);
+                //按比例计算实际获得积分
+                $customerIntegral = bcmul($order->price, bcdiv($rebateScale[(int)$order->profit_ratio],100, 4), 2);
+                $amountBeforeChange =  $customer->integral;
+                $customer->integral = bcadd($customer->integral, $customerIntegral,2);
+
+                $lkPer = Setting::getSetting('lk_per')??300;
+                //更新LK
+                $customer->lk = bcdiv($customer->integral, $lkPer,0);
+                $customer->save();
+                IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
+                //给商家加积分，更新LK
+                $business = User::lockForUpdate()->find($order->business_uid);
+                $amountBeforeChange = $business->business_integral;
+                $business->business_integral = bcadd($business->business_integral, $order->profit_price,2);
+
+                $businessLkPer = Setting::getSetting('business_Lk_per')??60;
+                //更新LK
+                $business->business_lk = bcdiv($business->business_integral, $businessLkPer,0);
+                $business->save();
+
+                IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+                //返佣
+                $this->encourage($order, $customer, $business);
+            } else
+            {
+                return ['code' => 0, 'msg' => '非已支付成功订单，不能通过审核'];
+            }
+            $order->save();
+
+            DB::commit();
+        }catch (\Exception $exception)
+        {
+            DB::rollBack();
+            return $this->error($exception->getMessage());
+        }
+        return ['code' => 1, 'msg' => '审核通过'];
     }
 }

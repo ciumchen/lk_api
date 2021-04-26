@@ -84,7 +84,6 @@ class AdaPayController extends Controller
             'status' => 'await',
             'order_from' => $orderFrom,
             'need_fee' => sprintf("%.2f", $totalFee),
-            'oid' => 0,
             'created_at' => date("Y-m-d H:i:s")
         ];
 
