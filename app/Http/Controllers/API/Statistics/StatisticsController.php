@@ -88,7 +88,7 @@ class StatisticsController extends Controller
 
             $data = [];
             foreach($ratio as $v){
-                $data[] = Order::where('profit_ratio', $v)->whereBetween('created_at', [now()->yesterday()->startOfDay(), now()->yesterday()->endOfDay()])->sum('profit_price')??0;
+                $data[] = Order::where('profit_ratio', $v)->where('pay_status','succeeded')->whereBetween('created_at', [now()->yesterday()->startOfDay(), now()->yesterday()->endOfDay()])->sum('profit_price')??0;
 
             }
             return $data;
