@@ -175,7 +175,7 @@ class Order extends Model
         DB::beginTransaction();
         try{
             $order = Order::lockForUpdate()->where('uid', $uid)->get();
-            Log::info('+++++++', get_object_vars($order));
+            Log::info('+++++++', $order);
             $order->status = $status;
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
