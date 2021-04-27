@@ -191,6 +191,7 @@ class Order extends Model
                 $customer->integral = bcadd($customer->integral, $customerIntegral,2);
 
                 //积分记录流水
+                Log::info('++++++++++', ['code' => $order->uid]);
                 $userInfo = DB::table('users')->where('id', $order->uid)->get();
                 $userData = get_object_vars($userInfo);
                 Log::info('==========', $userData);
