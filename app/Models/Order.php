@@ -185,7 +185,7 @@ class Order extends Model
             {
                 //通过，给用户加积分、更新LK
                 $customer = User::lockForUpdate()->find($order->uid);
-                Log::info('====', $customer);
+                Log::info('====', get_object_vars($customer));
                 //按比例计算实际获得积分
                 $customerIntegral = bcmul($order->price, bcdiv($rebateScale[(int)$order->profit_ratio],100, 4), 2);
                 $amountBeforeChange =  $customer->integral;
