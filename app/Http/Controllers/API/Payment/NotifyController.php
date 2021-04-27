@@ -67,11 +67,11 @@ class NotifyController extends Controller
                 'modified_time' => date("Y-m-d H:i:s"),
             ];
 
-            //$userIntegral = 0;
-            //$shopIntegral = 0;
+            $userIntegral = 0;
+            $shopIntegral = 0;
 
             //计算用户积分
-            /*if (in_array($json_data['description'], ['HF', 'YK']))
+            if (in_array($json_data['description'], ['HF', 'YK']))
             {
                 $userIntegral = $json_data['pay_amt'] * 0.25;
             } elseif (in_array($json_data['description'], ['MT']))
@@ -90,10 +90,10 @@ class NotifyController extends Controller
                 {
                     $userIntegral = $orders['price'] * 0.25;
                 }
-            }*/
+            }
 
             //计算商家积分
-            /*if (in_array($json_data['description'], ['HF', 'YK']))
+            if (in_array($json_data['description'], ['HF', 'YK']))
             {
                 $shopIntegral = 5;
             } elseif (in_array($json_data['description'], ['MT']))
@@ -103,13 +103,13 @@ class NotifyController extends Controller
             {
                 $orders = $order->getShop($json_data['order_no']);
                 $shopIntegral = $orders['price'] * ($orders['profit_ratio'] / 100);
-            }*/
+            }
 
-            /*$orderData = [
+            $orderData = [
                 'userIntegral' => $userIntegral,
                 'shopIntegral' => $shopIntegral,
                 'order_no' => $json_data['order_no'],
-            ];*/
+            ];
 
             try {
                 //插入支付记录
@@ -120,7 +120,7 @@ class NotifyController extends Controller
                 $tradeOrder->upTradeOrder($tradeOrderData);
 
                 //更新 order 表审核状态
-                $order->upOrder($json_data['order_no']);
+                $order->upOrder($json_data['order_no'], $orderData);
 
                 //更新用户积分
                 /*if ($orderData)

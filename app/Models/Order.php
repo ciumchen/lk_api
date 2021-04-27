@@ -51,9 +51,10 @@ class Order extends Model
 
     /**更新状态
      * @param string $orderNo
+     * @param array $orderData
      * @throws
      */
-    public function upOrder(string $orderNo)
+    public function upOrder(string $orderNo, array $orderData)
     {
         $tradeOrderInfo = DB::table('trade_order')->where('order_no', $orderNo)->first();
         $orders = get_object_vars($tradeOrderInfo);
@@ -70,11 +71,7 @@ class Order extends Model
         DB::table($this->table)->where('id', $orders['oid'])->update($data);
         if ($orders['description'] == 'LR')
         {
-            $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
-            if (!$resOrder)
-                throw new LogicException('订单不存在');
-            $res = get_object_vars($resOrder);
-            $this->getPast($res['status'], $orders['oid']);
+            $this->upUsers($orderData);
         }
     }
 
@@ -152,11 +149,14 @@ class Order extends Model
             $uintegral = $usersData['integral'] + $data['userIntegral'];
             $sintegral = $shopsData['business_integral'] + $data['shopIntegral'];
 
+            $ulk = intval($uintegral / 300);
+            $slk = intval($sintegral / 300);
+
             //更新用户积分
-            DB::table('users')->where('id', $ordersData['uid'])->update(['integral' => $uintegral]);
+            DB::table('users')->where('id', $ordersData['uid'])->update(['integral' => $uintegral, 'lk' => $ulk]);
 
             //更新来客自营积分
-            DB::table('users')->where('id', $ordersData['business_uid'])->update(['business_integral' => $sintegral]);
+            DB::table('users')->where('id', $ordersData['business_uid'])->update(['business_integral' => $sintegral, 'lk' => $slk]);
 
             //插入用户积分流水记录
             $integral = $usersData['role'] == 1 ?  $uintegral : $sintegral;
