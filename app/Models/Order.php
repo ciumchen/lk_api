@@ -208,7 +208,9 @@ class Order extends Model
 
                 $businessLkPer = Setting::getSetting('business_Lk_per')??60;
                 //更新LK
-                $business->business_lk = bcdiv($business->business_integral, $businessLkPer,0);
+                $business->business_lk = bcdiv($business->business_integral, $businessLkPer,8);
+
+                Log::info('============', ['business' => $business]);
                 $business->save();
 
                 IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
