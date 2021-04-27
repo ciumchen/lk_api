@@ -175,12 +175,12 @@ class Order extends Model
         DB::beginTransaction();
         try{
             $order = order::lockForUpdate()->find($oid);
-            Log::info('+++++++', get_object_vars($order));
             $order->status = $status;
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+            Log::info('=====', $rebateScale);
 
             if($status == 2)
             {
