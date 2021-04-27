@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class IntegralLog extends Model
 {
-    use HasDateTimeFormatter;
+    //use HasDateTimeFormatter;
     protected $table = 'integral_log';
 
     const TYPE_SPEND = 'spend';

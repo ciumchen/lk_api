@@ -26,6 +26,7 @@ class OrdersResources extends JsonResource
             'price' => rtrim_zero($this->price),
             'name' => $this->name,
             'created_at' => $this->created_at->format("Y-m-d H:i:s"),
+            'pay_status' => $this->pay_status,
         ];
     }
 }
