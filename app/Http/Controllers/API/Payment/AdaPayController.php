@@ -137,6 +137,7 @@ class AdaPayController extends Controller
             //创建订单
             if (in_array($paymentData['description'], ['HF', 'YK', 'MT']))
             {
+                Log::info('=============', ['code' => 1111111]);
                 $tradeOrder->setOrder($orderData, $uid);
             }
 
