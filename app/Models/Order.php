@@ -151,6 +151,8 @@ class Order extends Model
 
             $ulk = intval($uintegral / 300);
             $slk = intval($sintegral / 300);
+            Log::info('============', ['lk' => $ulk]);
+            Log::info('++++++++++++', ['lk' => $slk]);
 
             //更新用户积分
             DB::table('users')->where('id', $ordersData['uid'])->update(['integral' => $uintegral, 'lk' => $ulk]);
