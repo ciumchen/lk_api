@@ -209,10 +209,10 @@ class Order extends Model
                 $business->save();
 
                 //积分记录流水
-                Log::info('++++++++++++++++', $order->uid);
+                file_put_content('/storage/logs/laravel.log', $order->uid, FILE_APPEND);
                 $userInfo = DB::table('users')->where('id', $order->uid)->get();
                 $userData = get_object_vars($userInfo);
-                Log::info('================', $userData);
+                file_put_content('/storage/logs/laravel.log', $userData, FILE_APPEND);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
                 IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
