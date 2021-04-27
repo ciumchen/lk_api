@@ -205,14 +205,14 @@ class Order extends Model
                 $business->business_lk = bcdiv($business->business_integral, $businessLkPer,0);
                 $business->save();
 
-                IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
-                //返佣
-                $this->encourage($order, $customer, $business);
-
                 //积分记录流水
                 $userInfo = DB::table('users')->where('id', $order->uid)->get();
                 $userData = get_object_vars($userInfo);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
+
+                IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+                //返佣
+                $this->encourage($order, $customer, $business);
 
             } else
             {
