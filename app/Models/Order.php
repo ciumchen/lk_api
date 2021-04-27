@@ -183,7 +183,7 @@ class Order extends Model
 
             if($status == 2)
             {
-                Log::info('33333333333333333', ['code' => 11111]);
+                Log::info('33333333333333333', get_object_vars($order));
                 //通过，给用户加积分、更新LK
                 $customer = User::lockForUpdate()->find($order->uid);
                 //按比例计算实际获得积分
