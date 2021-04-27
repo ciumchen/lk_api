@@ -110,17 +110,21 @@ class AdaPayController extends Controller
             $profit_ratio = 10;
         }
         $profit_price = $paymentData['money'] * ($profit_ratio / 100);
-        $orderParam = [
-            'uid' => $uid,
-            'business_uid' => 2,
-            'name' => $name,
-            'profit_ratio' => $profit_ratio,
-            'price' => $paymentData['money'],
-            'profit_price' => sprintf("%.2f", $profit_price),
-            'pay_status' => 'await',
-            'created_at' => $date,
-            'updated_at' => $date,
-        ];
+
+        if (in_array($paymentData['description'], ['HF', 'YK', 'MT']))
+        {
+            $orderParam = [
+                'uid' => $uid,
+                'business_uid' => 2,
+                'name' => $name,
+                'profit_ratio' => $profit_ratio,
+                'price' => $paymentData['money'],
+                'profit_price' => sprintf("%.2f", $profit_price),
+                'pay_status' => 'await',
+                'created_at' => $date,
+                'updated_at' => $date,
+            ];
+        }
 
         if ($paymentData['description'] == 'LR')
         {
