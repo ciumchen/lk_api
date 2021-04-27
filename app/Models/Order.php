@@ -67,13 +67,13 @@ class Order extends Model
         }
         //更新 order 订单表
         DB::table($this->table)->where('id', $orders['oid'])->update($data);
-
+        Log::info('++++++++++++++', ['code' => $orders['description']]);
         if ($orders['description'] == 'LR')
         {
             $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
             if (!$resOrder)
                 throw new LogicException('订单不存在');
-
+            Log::info('==============', ['code' => 12121]);
             $res = get_object_vars($resOrder);
             $this->getPast($res['status'], $res['uid']);
         }
@@ -208,16 +208,14 @@ class Order extends Model
                 $business->business_lk = bcdiv($business->business_integral, $businessLkPer,0);
                 $business->save();
 
-                //积分记录流水
-                file_put_content('/storage/logs/laravel.log', $order->uid, FILE_APPEND);
-                $userInfo = DB::table('users')->where('id', $order->uid)->get();
-                $userData = get_object_vars($userInfo);
-                file_put_content('/storage/logs/laravel.log', $userData, FILE_APPEND);
-                $this->setIntegral($userData, $userData['integral'], $customer->integral);
-
                 IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
                 //返佣
                 $this->encourage($order, $customer, $business);
+
+                //积分记录流水
+                $userInfo = DB::table('users')->where('id', $order->uid)->get();
+                $userData = get_object_vars($userInfo);
+                $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
             } else
             {
