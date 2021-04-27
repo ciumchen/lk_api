@@ -197,19 +197,19 @@ class Order extends Model
 
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
-                $customer->lk = bcdiv($customer->integral, $lkPer,5);
-                Log::info('============', ['code' => $customer->lk]);
+                $customer->lk = bcdiv($customer->integral, $lkPer,0);
                 $customer->save();
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
                 //给商家加积分，更新LK
                 $business = User::lockForUpdate()->find($order->business_uid);
+                Log::info('============', get_object_vars($business));
                 $amountBeforeChange = $business->business_integral;
-                $business->business_integral = bcadd($business->business_integral, $order->profit_price,2);
+                $business->business_integral = bcadd($business->business_integral, $order->profit_price,5);
                 Log::info('+++++++++++++', ['code' => $business->business_integral]);
 
                 $businessLkPer = Setting::getSetting('business_Lk_per')??60;
                 //更新LK
-                $business->business_lk = bcdiv($business->business_integral, $businessLkPer,0);
+                $business->business_lk = bcdiv($business->business_integral, $businessLkPer,5);
                 Log::info('*************', ['code' => $business->business_lk]);
                 $business->save();
 
