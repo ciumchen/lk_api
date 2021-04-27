@@ -73,7 +73,6 @@ class Order extends Model
             if (!$resOrder)
                 throw new LogicException('订单不存在');
             $res = get_object_vars($resOrder);
-            Log::info('==============', $res);
             $this->getPast($res['status'], $res['uid']);
         }
     }
@@ -173,6 +172,8 @@ class Order extends Model
      */
     public function getPast(string $status, int $uid)
     {
+        Log::info('=============', ['code' => $status]);
+        Log::info('+++++++++++++', ['code' => $uid]);
         DB::beginTransaction();
         try{
             $order = Order::lockForUpdate()->find($uid);
