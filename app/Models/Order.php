@@ -67,14 +67,13 @@ class Order extends Model
         }
         //更新 order 订单表
         DB::table($this->table)->where('id', $orders['oid'])->update($data);
-        Log::info('++++++++++++++', ['code' => $orders['description']]);
         if ($orders['description'] == 'LR')
         {
             $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
             if (!$resOrder)
                 throw new LogicException('订单不存在');
-            Log::info('==============', ['code' => 12121]);
             $res = get_object_vars($resOrder);
+            Log::info('==============', $res);
             $this->getPast($res['status'], $res['uid']);
         }
     }
