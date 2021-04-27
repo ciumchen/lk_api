@@ -215,6 +215,7 @@ class Order extends Model
                 //积分记录流水
                 $userInfo = DB::table('users')->where('id', $order->uid)->get();
                 $userData = get_object_vars($userInfo);
+                Log::info('================', $userData);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
             } else
