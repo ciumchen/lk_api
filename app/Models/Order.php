@@ -183,7 +183,6 @@ class Order extends Model
 
             if($status == 2)
             {
-                Log::info('33333333333333333', get_object_vars($order));
                 //通过，给用户加积分、更新LK
                 $customer = User::lockForUpdate()->find($order->uid);
                 //按比例计算实际获得积分
@@ -196,14 +195,15 @@ class Order extends Model
                 $userData = get_object_vars($userInfo);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
+                Log::info('$$$$$$$$$%%%', ['code' => $order->uid]);
+                Log::info('$$$$$$$$$%%%', ['code' => $order->business_uid]);
+
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer,0);
                 $customer->save();
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
                 //给商家加积分，更新LK
-                Log::info('$$$$$$$$$%%%', ['code' => $order->uid]);
-                Log::info('$$$$$$$$$%%%', ['code' => $order->business_uid]);
                 $business = User::lockForUpdate()->find($order->business_uid);
                 Log::info('============', get_object_vars($business));
                 $amountBeforeChange = $business->business_integral;
