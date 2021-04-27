@@ -190,12 +190,6 @@ class Order extends Model
                 $amountBeforeChange =  $customer->integral;
                 $customer->integral = bcadd($customer->integral, $customerIntegral,2);
 
-                //积分记录流水
-                Log::info('=============', ['code' => $order->uid]);
-                $userInfo = DB::table('users')->where('id', $order->uid)->get();
-                $userData = get_object_vars($userInfo);
-                $this->setIntegral($userData, $userData['integral'], $customer->integral);
-
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer,0);
@@ -214,6 +208,11 @@ class Order extends Model
                 IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
                 //返佣
                 $this->encourage($order, $customer, $business);
+
+                //积分记录流水
+                $userInfo = DB::table('users')->where('id', $order->uid)->get();
+                $userData = get_object_vars($userInfo);
+                $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
             } else
             {
