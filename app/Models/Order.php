@@ -199,6 +199,7 @@ class Order extends Model
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
                 Log::info('1111111111111', ['integral' => $customer->integral]);
+                Log::info('2222222222222', ['lkPer' => $lkPer]);
                 $customer->lk = bcdiv($customer->integral, $lkPer,8);
                 Log::info('++++++++++++++', ['business' => $customer->lk]);
                 $customer->save();
