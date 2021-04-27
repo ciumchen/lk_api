@@ -190,6 +190,7 @@ class Order extends Model
                 $customerIntegral = bcmul($order->price, bcdiv($rebateScale[(int)$order->profit_ratio],100, 4), 2);
                 $amountBeforeChange =  $customer->integral;
                 $customer->integral = bcadd($customer->integral, $customerIntegral,8);
+                Log::info('1111111111111', ['customerIntegral' => $customerIntegral]);
                 Log::info('1111111111111', ['integral' => $customer->integral]);
 
                 //积分记录流水
