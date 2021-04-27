@@ -111,20 +111,17 @@ class AdaPayController extends Controller
         }
         $profit_price = $paymentData['money'] * ($profit_ratio / 100);
 
-        if (in_array($paymentData['description'], ['HF', 'YK', 'MT']))
-        {
-            $orderParam = [
-                'uid' => $uid,
-                'business_uid' => 2,
-                'name' => $name,
-                'profit_ratio' => $profit_ratio,
-                'price' => $paymentData['money'],
-                'profit_price' => sprintf("%.2f", $profit_price),
-                'pay_status' => 'await',
-                'created_at' => $date,
-                'updated_at' => $date,
-            ];
-        }
+        $orderParam = [
+            'uid' => $uid,
+            'business_uid' => 2,
+            'name' => $name,
+            'profit_ratio' => $profit_ratio,
+            'price' => $paymentData['money'],
+            'profit_price' => sprintf("%.2f", $profit_price),
+            'pay_status' => 'await',
+            'created_at' => $date,
+            'updated_at' => $date,
+        ];
 
         if ($paymentData['description'] == 'LR')
         {
@@ -136,14 +133,14 @@ class AdaPayController extends Controller
             $Order = new Order();
 
             //创建订单
-            $oid = $Order->setOrder($orderParam);
-            $orderData['oid'] = $oid;
-            //创建订单
             if (in_array($paymentData['description'], ['HF', 'YK', 'MT']))
             {
-                Log::info('=============', ['code' => 1111111]);
-                $tradeOrder->setOrder($orderData, $uid);
+                $oid = $Order->setOrder($orderParam);
+                $orderData['oid'] = $oid;
             }
+
+            //创建订单
+            $tradeOrder->setOrder($orderData, $uid);
 
             if ($status['code'] == 1)
             {
