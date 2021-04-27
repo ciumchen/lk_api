@@ -195,8 +195,8 @@ class Order extends Model
                 $userData = get_object_vars($userInfo);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
-                Log::info('$$$$$$$$$%%%', ['code' => $order->uid]);
-                Log::info('$$$$$$$$$%%%', ['code' => $order->business_uid]);
+                Log::info('2222222222', ['code' => $order->uid]);
+                Log::info('2222222222', ['code' => $order->business_uid]);
 
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
@@ -204,6 +204,8 @@ class Order extends Model
                 $customer->save();
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
                 //给商家加积分，更新LK
+                Log::info('1111111111111', ['code' => $order->uid]);
+                Log::info('1111111111111', ['code' => $order->business_uid]);
                 $business = User::lockForUpdate()->find($order->business_uid);
                 Log::info('============', get_object_vars($business));
                 $amountBeforeChange = $business->business_integral;
