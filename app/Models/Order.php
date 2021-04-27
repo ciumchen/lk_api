@@ -176,7 +176,7 @@ class Order extends Model
         try{
             $order = Order::lockForUpdate()->find($uid);
             $order->status = $status;
-
+            Log::info('+++++++', $order);
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
