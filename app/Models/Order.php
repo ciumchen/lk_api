@@ -194,14 +194,11 @@ class Order extends Model
                 $userInfo = DB::table('users')->find($order->uid);
                 $userData = get_object_vars($userInfo);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
-                Log::info('5555555555555', ['code' => $order->uid]);
-                Log::info('5555555555555', ['code' => $order->business_uid]);
 
                 $lkPer = Setting::getSetting('lk_per')??300;
-                Log::info('1111111111111', ['code' => $order->uid]);
-                Log::info('1111111111111', ['code' => $order->business_uid]);
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer,0);
+                Log::info('11111111111', ['code' => $customer->lk]);
                 $customer->save();
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
                 //给商家加积分，更新LK
