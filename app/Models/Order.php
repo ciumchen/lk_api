@@ -175,8 +175,8 @@ class Order extends Model
         DB::beginTransaction();
         try{
             $order = Order::lockForUpdate()->where('uid', $uid)->get();
-            $order->status = $status;
             Log::info('+++++++', get_object_vars($order));
+            $order->status = $status;
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
@@ -193,10 +193,8 @@ class Order extends Model
                 $customer->integral = bcadd($customer->integral, $customerIntegral,2);
 
                 //积分记录流水
-                Log::info('========', ['code' => $order->uid]);
                 $userInfo = DB::table('users')->where('id', $order->uid)->get();
                 $userData = get_object_vars($userInfo);
-                Log::info('========', $userData);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
                 $lkPer = Setting::getSetting('lk_per')??300;
