@@ -61,20 +61,20 @@ class Order extends Model
             'updated_at' => date("Y-m-d H:i:s")
         ];
 
-        if ($orders['description'] == 'LR')
+        /*if ($orders['description'] == 'LR')
         {
             $data['status'] = 2;
-        }
+        }*/
         //更新 order 订单表
         DB::table($this->table)->where('id', $orders['oid'])->update($data);
-        if ($orders['description'] == 'LR')
+        /*if ($orders['description'] == 'LR')
         {
             $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
             if (!$resOrder)
                 throw new LogicException('订单不存在');
             $res = get_object_vars($resOrder);
             $this->getPast($res['status'], $orders['oid']);
-        }
+        }*/
     }
 
     /**获取商家信息
@@ -180,13 +180,12 @@ class Order extends Model
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
-            Log::info('=====', $rebateScale);
 
             if($status == 2)
             {
                 //通过，给用户加积分、更新LK
                 $customer = User::lockForUpdate()->find($order->uid);
-
+                Log::info('====', $customer);
                 //按比例计算实际获得积分
                 $customerIntegral = bcmul($order->price, bcdiv($rebateScale[(int)$order->profit_ratio],100, 4), 2);
                 $amountBeforeChange =  $customer->integral;
