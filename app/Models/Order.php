@@ -184,7 +184,7 @@ class Order extends Model
 
             if($status == 2)
             {
-                Log::info('=============', ['code' => $status]);
+                Log::info('=============', ['code' => $order->uid]);
 
                 //通过，给用户加积分、更新LK
                 $customer = User::lockForUpdate()->find($order->uid);
