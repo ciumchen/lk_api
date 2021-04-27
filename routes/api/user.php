@@ -3,7 +3,7 @@
 
 Route::middleware(['auth:sanctum'])->group(function () {
     //申请商家
-    Route::post('apply-business', 'User\UserController@applyBusiness');
+//    Route::post('apply-business', 'User\UserController@applyBusiness');
     //获取商家申请状态
     Route::get('get-apply-business', 'Business\BusinessController@getApplyBusiness');
 
@@ -29,6 +29,6 @@ Route::any("consumerCount","User\CountUserController@consumerCount");
 Route::any("merchantCount","User\CountUserController@merchantCount");
 
 
-
+Route::post('apply-business', 'User\UserController@applyBusiness');
 
 
