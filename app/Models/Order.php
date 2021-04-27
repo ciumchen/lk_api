@@ -191,7 +191,12 @@ class Order extends Model
                 $customerIntegral = bcmul($order->price, bcdiv($rebateScale[(int)$order->profit_ratio],100, 4), 2);
                 $amountBeforeChange =  $customer->integral;
                 $customer->integral = bcadd($customer->integral, $customerIntegral,2);
-                Log::info('===========', ['code' => $customer->integral]);
+
+                //积分记录流水
+                $userInfo = DB::table('users')->where('id', $order->uid)->get();
+                $userData = get_object_vars($userInfo);
+                Log::info('=============', $userData);
+                $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
@@ -211,11 +216,6 @@ class Order extends Model
                 IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
                 //返佣
                 $this->encourage($order, $customer, $business);
-
-                //积分记录流水
-                $userInfo = DB::table('users')->where('id', $order->uid)->get();
-                $userData = get_object_vars($userInfo);
-                $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
             } else
             {
