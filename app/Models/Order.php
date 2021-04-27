@@ -61,20 +61,20 @@ class Order extends Model
             'updated_at' => date("Y-m-d H:i:s")
         ];
 
-        /*if ($orders['description'] == 'LR')
+        if ($orders['description'] == 'LR')
         {
             $data['status'] = 2;
-        }*/
+        }
         //更新 order 订单表
         DB::table($this->table)->where('id', $orders['oid'])->update($data);
-        /*if ($orders['description'] == 'LR')
+        if ($orders['description'] == 'LR')
         {
             $resOrder = DB::table($this->table)->where('id', $orders['oid'])->first();
             if (!$resOrder)
                 throw new LogicException('订单不存在');
             $res = get_object_vars($resOrder);
             $this->getPast($res['status'], $orders['oid']);
-        }*/
+        }
     }
 
     /**获取商家信息
