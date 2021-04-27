@@ -176,7 +176,6 @@ class Order extends Model
         try{
             $order = order::lockForUpdate()->find($oid);
             $order->status = $status;
-            Log::info('666666666666', get_object_vars($order));
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
@@ -202,6 +201,7 @@ class Order extends Model
                 $customer->save();
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
                 //给商家加积分，更新LK
+                Log::info('$$$$$$$$$%%%', ['code' => $order->uid]);
                 Log::info('$$$$$$$$$%%%', ['code' => $order->business_uid]);
                 $business = User::lockForUpdate()->find($order->business_uid);
                 Log::info('============', get_object_vars($business));
