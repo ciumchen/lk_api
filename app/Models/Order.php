@@ -198,7 +198,7 @@ class Order extends Model
 
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
-                $customer->lk = bcdiv($customer->integral, $lkPer,0);
+                $customer->lk = bcdiv($customer->integral, $lkPer,8);
                 Log::info('++++++++++++++', ['business' => $customer->lk]);
                 $customer->save();
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
