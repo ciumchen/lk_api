@@ -213,6 +213,7 @@ class Order extends Model
                 $this->encourage($order, $customer, $business);
 
                 //积分记录流水
+                Log::info('++++++++++++++++', $order->uid);
                 $userInfo = DB::table('users')->where('id', $order->uid)->get();
                 $userData = get_object_vars($userInfo);
                 Log::info('================', $userData);
