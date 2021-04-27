@@ -174,7 +174,7 @@ class Order extends Model
     {
         DB::beginTransaction();
         try{
-            $order = Order::lockForUpdate()->find($uid);
+            $order = Order::lockForUpdate()->where('uid', $uid)->get();
             $order->status = $status;
             Log::info('+++++++', get_object_vars($order));
             //用户应返还几分比例
