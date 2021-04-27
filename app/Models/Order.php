@@ -191,25 +191,26 @@ class Order extends Model
                 $customer->integral = bcadd($customer->integral, $customerIntegral,2);
 
                 //积分记录流水
-                Log::info('++++++++++', ['code' => $order->uid]);
                 $userInfo = DB::table('users')->find($order->uid);
                 $userData = get_object_vars($userInfo);
-                Log::info('==========', $userData);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
 
                 $lkPer = Setting::getSetting('lk_per')??300;
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer,0);
+                Log::info('============', ['code' => $customer->lk]);
                 $customer->save();
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
                 //给商家加积分，更新LK
                 $business = User::lockForUpdate()->find($order->business_uid);
                 $amountBeforeChange = $business->business_integral;
                 $business->business_integral = bcadd($business->business_integral, $order->profit_price,2);
+                Log::info('+++++++++++++', ['code' => $business->business_integral]);
 
                 $businessLkPer = Setting::getSetting('business_Lk_per')??60;
                 //更新LK
                 $business->business_lk = bcdiv($business->business_integral, $businessLkPer,0);
+                Log::info('*************', ['code' => $business->business_lk]);
                 $business->save();
 
                 IntegralLog::addLog($business->id, $order->profit_price, IntegralLog::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
