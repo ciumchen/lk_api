@@ -27,6 +27,7 @@ class UserController extends Controller
      * @throws LogicException
      */
     public function applyBusiness(ApplyBusinessRequest $request){
+        return $request->all();
 
         $user = $request->user();
         //检测用户状态

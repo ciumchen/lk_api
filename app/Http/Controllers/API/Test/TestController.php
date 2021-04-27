@@ -49,10 +49,10 @@ class TestController
     //图片上传oss测试
     public function test2(Request $request){
 //        echo 'test22222';
-        var_dump($request->img);
+//        var_dump($request->img);
 //        var_dump($request->file('img'));
-//        $imgUrl = OssService::base64Upload($request->img);
-//        var_dump($imgUrl);
+        $imgUrl = OssService::base64Upload($request->img);
+        var_dump($imgUrl);
 
 //        $path = $request->file('img')->store('avatars');
 //
