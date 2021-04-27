@@ -73,7 +73,7 @@ class Order extends Model
             if (!$resOrder)
                 throw new LogicException('订单不存在');
             $res = get_object_vars($resOrder);
-            $this->getPast($res['status'], $res['uid']);
+            $this->getPast($res['status'], $orders['oid']);
         }
     }
 
@@ -166,16 +166,16 @@ class Order extends Model
 
     /**自动审核用户订单
      * @param string $status
-     * @param int $uid
+     * @param int $oid
      * @return array
      * @throws
      */
-    public function getPast(string $status, int $uid)
+    public function getPast(string $status, int $oid)
     {
         DB::beginTransaction();
         try{
-            $order = Order::lockForUpdate()->where('uid', $uid)->first();
-            Log::info('+++++++', get_object_vars($order));
+            $order = order::lockForUpdate()->find($oid);
+            Log::info('+++++++', get_object_vars($order));s
             $order->status = $status;
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
