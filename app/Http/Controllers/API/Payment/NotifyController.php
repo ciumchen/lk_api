@@ -9,7 +9,6 @@ use App\Models\TradeOrder;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /*
  * 支付异步回调通知
@@ -67,50 +66,6 @@ class NotifyController extends Controller
                 'modified_time' => date("Y-m-d H:i:s"),
             ];
 
-            $userIntegral = 0;
-            $shopIntegral = 0;
-
-            //计算用户积分
-            if (in_array($json_data['description'], ['HF', 'YK']))
-            {
-                $userIntegral = $json_data['pay_amt'] * 0.25;
-            } elseif (in_array($json_data['description'], ['MT']))
-            {
-                $userIntegral = $json_data['pay_amt'] * 0.5;
-            } elseif (in_array($json_data['description'], ['LR']))
-            {
-                $orders = $order->getShop($json_data['order_no']);
-                if ($orders['profit_ratio'] == 20)
-                {
-                    $userIntegral = $orders['price'];
-                } elseif($orders['profit_ratio'] == 10)
-                {
-                    $userIntegral = $orders['price'] * 0.5;
-                } else
-                {
-                    $userIntegral = $orders['price'] * 0.25;
-                }
-            }
-
-            //计算商家积分
-            if (in_array($json_data['description'], ['HF', 'YK']))
-            {
-                $shopIntegral = 5;
-            } elseif (in_array($json_data['description'], ['MT']))
-            {
-                $shopIntegral = 10;
-            }elseif (in_array($json_data['description'], ['LR']))
-            {
-                $orders = $order->getShop($json_data['order_no']);
-                $shopIntegral = $orders['price'] * ($orders['profit_ratio'] / 100);
-            }
-
-            $orderData = [
-                'userIntegral' => $userIntegral,
-                'shopIntegral' => $shopIntegral,
-                'order_no' => $json_data['order_no'],
-            ];
-
             try {
                 //插入支付记录
                 $payLogs = new PayLogs();
@@ -120,13 +75,7 @@ class NotifyController extends Controller
                 $tradeOrder->upTradeOrder($tradeOrderData);
 
                 //更新 order 表审核状态
-                $order->upOrder($json_data['order_no'], $orderData);
-
-                //更新用户积分
-                /*if ($orderData)
-                {
-                    $order->upUsers($orderData);
-                }*/
+                $order->upOrder($json_data['order_no']);
 
             } catch (\Exception $e) {
                 //记录错误日志
