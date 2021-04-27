@@ -172,8 +172,6 @@ class Order extends Model
      */
     public function getPast(string $status, int $uid)
     {
-        Log::info('=============', ['code' => $status]);
-        Log::info('+++++++++++++', ['code' => $uid]);
         DB::beginTransaction();
         try{
             $order = Order::lockForUpdate()->find($uid);
@@ -186,6 +184,8 @@ class Order extends Model
 
             if($status == 2)
             {
+                Log::info('=============', ['code' => $status]);
+
                 //通过，给用户加积分、更新LK
                 $customer = User::lockForUpdate()->find($order->uid);
                 //按比例计算实际获得积分
