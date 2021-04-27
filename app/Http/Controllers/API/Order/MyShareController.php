@@ -162,6 +162,37 @@ class MyShareController extends Controller
 
     }
 
+    //获取当前用户今日录单金额总数和账号限额
+    public function getTodayLkCount(Request $request){
+        $uid = $request->input('uid');
+        //查询当前商户今日限额总数
+        $hfData = DB::table('business_data')->where('uid',$uid)->first();
+        if ($hfData->state==1){
+            //单独设置商户每日限额
+            $data['todayHfQuota'] = $hfData->limit_price;
+
+        }else{
+            //没有单独设置商户每日限额
+            $setData = DB::table('settings')->where('key','limit_price')->first();
+            $data['todayHfQuota'] = $setData->value;
+
+        }
+
+        //统计当前商户今日所有录单金额
+        $today = date('Y-m-d',time());
+        $data['priceCount'] = DB::table('order')->where('business_uid',$uid)->where('created_at','>=',$today)->where('pay_status','succeeded')->sum('price');
+        //判断今日剩余录单额度
+        if($data['todayHfQuota']>$data['priceCount']){
+            //没有超出限额
+            $data['todaySyHfQuota'] = $data['todayHfQuota']-$data['priceCount'];//今日剩余录单限额
+        }else{
+            //超出限额
+            $data['todaySyHfQuota'] = 0;
+        }
+
+        return $data;
+
+    }
 
 
 }
