@@ -43,12 +43,12 @@ class ApplyBusinessRequest extends FormRequest
     {
 
         return [
-            'phone' => '联系电话',
             'img' => '营业执照',
-            'img2' => '门店图片',
+            'phone' => '联系电话',
             'name' => '联系人',
             'address' => '商家地址',
             'work' => '主营业务',
+            'img2' => '门店图片',
         ];
     }
 }
