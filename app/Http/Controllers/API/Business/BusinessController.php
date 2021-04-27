@@ -133,15 +133,6 @@ class BusinessController extends Controller
 
         });
 
-        //各比例让利总计
-        /*$data['totalRatioData'] = Cache::remember("total_ratio_data_uid_" . $user->id,1800, function () use ($ratio, $user){
-            $data = [];
-            foreach($ratio as $v) {
-                $data[] = $user->businessOrder()->select(DB::raw('sum(price) AS totalPrice'))->where('profit_ratio', $v)->where('status', Order::STATUS_SUCCEED) ?? 0;
-            }
-            return $data;
-        });*/
-
         return response()->json(['code'=>0, 'data'=>$data]);
     }
 
