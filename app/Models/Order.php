@@ -192,7 +192,7 @@ class Order extends Model
 
                 //积分记录流水
                 Log::info('++++++++++', ['code' => $order->uid]);
-                $userInfo = DB::table('users')->where('id', $order->uid)->get();
+                $userInfo = DB::table('users')->find($order->uid);
                 $userData = get_object_vars($userInfo);
                 Log::info('==========', $userData);
                 $this->setIntegral($userData, $userData['integral'], $customer->integral);
