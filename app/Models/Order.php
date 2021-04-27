@@ -195,7 +195,8 @@ class Order extends Model
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer,8);
                 Log::info('88888888888888', get_object_vars($customer));
-                $customer->save();
+                //$customer->save();
+                DB::table('user')->where('id', $order->uid)->update(['integral' => $customer->integral, 'lk' => $customer->lk]);
                 IntegralLog::addLog($customer->id, $customerIntegral, IntegralLog::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
                 //给商家加积分，更新LK
                 $business = User::lockForUpdate()->find($order->business_uid);
