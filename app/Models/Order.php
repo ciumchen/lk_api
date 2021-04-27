@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\LogicException;
 use Illuminate\Support\Facades\Log;
+use App\Models\IntegralLog;
 
 class Order extends Model
 {
