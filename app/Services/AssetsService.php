@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Exceptions\LogicException;
 
 
-use App\Models\Asset;
 use App\Models\Assets;
 use App\Models\AssetsLogs;
 use App\Models\AssetsType;
@@ -43,14 +42,15 @@ class AssetsService
     }
 
     /**
-     * @param User $user
+     * @param int $uid
      * @param AssetsType $assetType
      * @param $amount
      * @return array
      * @throws LogicException
      */
-    public static function changeWithoutLog(User $user, AssetsType $assetType, $amount)
+    public static function changeWithoutLog(int $uid, AssetsType $assetType, $amount)
     {
+        $user = User::find($uid);
         //当前余额
         $assets = self::getBalanceData($user, $assetType, true);
         $beforeAmount = $assets->getRawOriginal('amount');
@@ -66,35 +66,34 @@ class AssetsService
         return ['amount_before_change' => $beforeAmount, 'amount_after_change' => $afterAmount];
     }
 
-    /**资产变动
-     * @param User $user
+    /**
+     * @param int $uid
      * @param AssetsType $assetType
+     * @param string $assets_name
      * @param $amount
-     * @param string $operateType
-     * @param array $options
+     * @param string $operate_type
+     * @param null $remark
+     * @param null $tx_hash
      * @return mixed
      * @throws LogicException
      */
-    public static function balancesChange(User $user, AssetsType $assetType, $amount, string $operateType, array $options)
+    public static function BalancesChange(int $uid, AssetsType $assetType, string $assets_name,$amount, string $operate_type, $remark = null,$tx_hash = null)
     {
-        $info = self::changeWithoutLog($user, $assetType, $amount);
-
+        $info = self::changeWithoutLog($uid, $assetType, $amount);
         //写入日志
-        $assetsLogs = new AssetsLogs();
-        $assetsLogs->uid = $user->id;
-        $assetsLogs->assets_type_id = $assetType->id;
-        $assetsLogs->assets_name = $assetType->assets_name;
-        $assetsLogs->amount = $amount;
-        $assetsLogs->operate_type = $operateType;
-        $assetsLogs->amount_before_change = $info['amount_before_change'];
-        $assetsLogs->tx_id = $options['transaction_id'] ?? 0;
-        $assetsLogs->tx_hash = $options['tx_hash'] ?? null;
-        $assetsLogs->ip = $options['ip'] ?? '';
-        $assetsLogs->user_agent = $options['user_agent'] ?? '';
-        $assetsLogs->remark = $options['remark'] ?? '';
-        $assetsLogs->save();
-
-        return $assetsLogs->id;
+        $balancesLogs = new AssetsLogs();
+        $balancesLogs->assets_type_id = $assetType->id;
+        $balancesLogs->assets_name = $assets_name;
+        $balancesLogs->uid = $uid;
+        $balancesLogs->operate_type = $operate_type;
+        $balancesLogs->amount = $amount;
+        $balancesLogs->amount_before_change = $info['amount_before_change'];
+        $balancesLogs->tx_hash = $tx_hash;
+        $balancesLogs->ip = request()->server('HTTP_ALI_CDN_REAL_IP', request()->ip());
+        $balancesLogs->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'],0,255,'utf-8') : '';
+        $balancesLogs->remark = $remark;
+        $balancesLogs->save();
+        return $balancesLogs->id;
     }
 
 

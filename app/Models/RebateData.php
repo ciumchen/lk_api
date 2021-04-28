@@ -12,5 +12,7 @@ class RebateData extends Model
      * @var string
      */
     protected $table = 'rebate_data';
-
+    protected $fillable = [
+        'day'
+    ];
 }

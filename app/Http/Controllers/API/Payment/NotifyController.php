@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Services\OrderService;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PayLogs;
 use App\Models\TradeOrder;
@@ -75,7 +76,7 @@ class NotifyController extends Controller
                 $tradeOrder->upTradeOrder($tradeOrderData);
 
                 //更新 order 表审核状态
-                $order->upOrder($json_data['order_no']);
+                (new OrderService())->completeOrder($json_data['order_no']);
 
             } catch (\Exception $e) {
                 //记录错误日志
