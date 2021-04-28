@@ -31,7 +31,7 @@ class ApplyBusinessRequest extends FormRequest
             'name' => ['bail', 'required'],
             'address' => ['bail', 'required'],
             'work' => ['bail', 'required'],
-            'img2' => ['bail', 'required'],
+//            'img2' => ['bail', 'required'],
         ];
     }
     /**
@@ -48,7 +48,7 @@ class ApplyBusinessRequest extends FormRequest
             'name' => '联系人',
             'address' => '商家地址',
             'work' => '主营业务',
-            'img2' => '门店图片',
+//            'img2' => '门店图片',
         ];
     }
 }
