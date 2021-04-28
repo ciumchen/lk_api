@@ -64,20 +64,20 @@ class TradeOrder extends Model
 
         $orderIntegral = 0;
         //计算订单用户积分
-        if($orderData['profit_ratio'] == 0.05)
+        /*if($orderData['profit_ratio'] == 0.05)
         {
             $orderIntegral = $orderData['need_fee'] * 0.25;
         } elseif ($orderData['profit_ratio'] == 0.1)
         {
             $orderIntegral = $orderData['need_fee'] * 0.5;
-        }
+        }*/
 
         //计算让利金额
         $profitPrice = $orderData['need_fee'] * $orderData['profit_ratio'];
 
         //计算用户积分
-        $userIntegral = DB::table('users')->where('id', $data['uid'])->value('integral');
-        $userIntegral += $orderIntegral;
+        //$userIntegral = DB::table('users')->where('id', $data['uid'])->value('integral');
+        //$userIntegral += $orderIntegral;
         try {
             if ($data['status'] == 'succeeded' && !in_array($orderData['status'], ['pending', 'succeeded']))
             {
@@ -92,7 +92,7 @@ class TradeOrder extends Model
                 DB::table('trade_order')->where('order_no', $data['order_no'])->update($upData);
 
                 //更新用户状态
-                DB::table('users')->where('id', $data['uid'])->update(['integral' => $userIntegral]);
+                //DB::table('users')->where('id', $data['uid'])->update(['integral' => $userIntegral]);
             }
         } catch (Exception $e) {
             throw $e;
@@ -107,5 +107,27 @@ class TradeOrder extends Model
     public function userInfo(string $orderNo)
     {
         return DB::table($this->table)->where('order_no', $orderNo)->get()->toArray();
+    }
+
+    /**获取用户信息
+     * @param array $data
+     * @return array
+     * @throws
+     */
+    public function checkOrder(array $data)
+    {
+        $res = DB::table($this->table)->where('order_no', $data['order_no'])->first();
+        $resData = get_object_vars($res);
+        if (!$resData)
+        {
+            throw new LogicException('订单不存在');
+        }
+
+        if (!in_array($resData['status'], ['failed', 'await']))
+        {
+            throw new LogicException('订单不属于待支付或支付失败状态');
+        }
+
+        return $resData;
     }
 }
