@@ -94,29 +94,4 @@ class TradeOrder extends Model
     {
         return DB::table($this->table)->where('order_no', $orderNo)->get()->toArray();
     }
-
-    /**获取用户信息
-     * @param array $data
-     * @return array
-     * @throws
-     */
-    public function checkOrder(array $data)
-    {
-        DB::table('pay_logs')->where('order_no', $data['order_no'])->delete();
-
-        $res = DB::table($this->table)->where('order_no', $data['order_no'])->first();
-        $resData = get_object_vars($res);
-        var_dump($resData);
-        if (!$resData)
-        {
-            throw new LogicException('订单不存在');
-        }
-
-        if (!in_array($resData['status'], ['failed', 'await']))
-        {
-            throw new LogicException('订单不属于待支付或支付失败状态');
-        }
-
-        return $resData;
-    }
 }

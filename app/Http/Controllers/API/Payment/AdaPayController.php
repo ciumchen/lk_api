@@ -24,7 +24,7 @@ include_once "../app/Http/Controllers/API/Payment/config.php";
 class AdaPayController extends Controller
 {
     const appId = "app_c91b40ca-af1c-4eaa-a7dc-99bc39febe18";
-    const notify = "http://112.124.9.185:8081/api/notify";
+    const notify = "https://lk.catspawvideo.com/api/notify";
 
     /**
      * 调用支付
@@ -109,6 +109,7 @@ class AdaPayController extends Controller
         {
             $profit_ratio = 10;
         }
+
         $profit_price = $paymentData['money'] * ($profit_ratio / 100);
 
         $orderParam = [
@@ -154,40 +155,5 @@ class AdaPayController extends Controller
         } catch (Exception $e) {
             throw $e;
         }
-    }
-
-    /** 支付失败再次支付
-     * @param Request $request
-     * @return array
-     * @throws
-     */
-    public function againPay(Request $request)
-    {
-        //初始化支付类
-        $paymentInit = new \AdaPaySdk\Payment();
-
-        $data = $request->all();
-        $tradeOrder = new TradeOrder();
-        $tradeData = $tradeOrder->checkOrder($data);
-
-        //组装支付数据
-        $payment = [
-            'app_id' => self::appId,
-            'order_no' => $data['order_no'],
-            'pay_channel' => $data['payChannel'],
-            'pay_amt' => $tradeData['price'],
-            'goods_title' => $tradeData['title'],
-            'goods_desc' => $data['goodsDesc'],
-            'description' => $tradeData['description'],
-            'device_info' => $data['deviceInfo'],
-            'notify_url' => self::notify,
-        ];
-
-        //发起支付
-        $paymentInit->create($payment);
-        $resPay = json_decode($paymentInit->result[1], 1);
-        $payData = json_decode($resPay['data'], 1);
-        var_dump($payData);die;
-        return ['url' => $payData['expend']['pay_info']];
     }
 }
