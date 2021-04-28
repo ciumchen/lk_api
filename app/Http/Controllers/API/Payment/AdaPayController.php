@@ -155,4 +155,37 @@ class AdaPayController extends Controller
             throw $e;
         }
     }
+
+    /** 支付失败再次支付
+     * @param Request $request
+     * @return array
+     * @throws
+     */
+    public function againPay(Request $request)
+    {
+        //初始化支付类
+        $paymentInit = new \AdaPaySdk\Payment();
+
+        $data = $request->all();
+        $tradeOrder = new TradeOrder();
+        $tradeData = $tradeOrder->checkOrder($data);
+        //组装支付数据
+        $payment = [
+            'app_id' => self::appId,
+            'order_no' => $data['order_no'],
+            'pay_channel' => $tradeData['payChannel'],
+            'pay_amt' => $tradeData['pay_amt'],
+            'goods_title' => $tradeData['goodsTitle'],
+            'goods_desc' => $data['goodsDesc'],
+            'description' => $tradeData['description'],
+            'device_info' => $data['deviceInfo'],
+            'notify_url' => self::notify,
+        ];
+
+        //发起支付
+        $paymentInit->create($payment);
+        $resPay = json_decode($paymentInit->result[1], 1);
+        $payData = json_decode($resPay['data'], 1);
+        return ['url' => $payData['expend']['pay_info']];
+    }
 }
