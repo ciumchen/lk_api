@@ -340,7 +340,7 @@ class OrderService
         foreach ($users as $v)
         {
             //获取记录表总和
-            $logSum = IntegralLogs::where("uid", $v->id)->sum("amount");
+            $logSum = IntegralLogs::where("uid", $v->id)->where("role", User::ROLE_NORMAL)->sum("amount");
             if(bccomp($v->integral, $logSum, 8) !== 0)
             {
                 echo "用户UID：".$v->id." 手机号：". $v->phone." 积分：". $v->integral." 积分记录总和： ". $logSum . " 不相等 \n";
@@ -349,7 +349,7 @@ class OrderService
                 //更新LK
                 $v->lk = bcdiv($v->integral, $lkPer, 0);
 //                $v->save();
-                echo "用户UID：".$v->id." 手机号：". $v->phone." 修复成功 \n";
+                echo "用户UID：".$v->id." 手机号：". $v->phone." 修复成功,更新后积分：" . $v->integral . " 更新后LK：" . $v->lk . "\n";
                 echo "==========分割线========== \n";
             }
         }
