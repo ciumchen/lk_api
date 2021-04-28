@@ -17,5 +17,5 @@ _ide_helper.php
 _ide_helper_models.php
 .htaccess
 nginx.htaccess
-/common/log
-/common/logs
+/common/log/prod
+/common/logs/prod
