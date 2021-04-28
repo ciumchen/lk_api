@@ -63,21 +63,10 @@ class TradeOrder extends Model
             throw new LogicException('订单已支付');
 
         $orderIntegral = 0;
-        //计算订单用户积分
-        /*if($orderData['profit_ratio'] == 0.05)
-        {
-            $orderIntegral = $orderData['need_fee'] * 0.25;
-        } elseif ($orderData['profit_ratio'] == 0.1)
-        {
-            $orderIntegral = $orderData['need_fee'] * 0.5;
-        }*/
 
         //计算让利金额
         $profitPrice = $orderData['need_fee'] * $orderData['profit_ratio'];
 
-        //计算用户积分
-        //$userIntegral = DB::table('users')->where('id', $data['uid'])->value('integral');
-        //$userIntegral += $orderIntegral;
         try {
             if ($data['status'] == 'succeeded' && !in_array($orderData['status'], ['pending', 'succeeded']))
             {
@@ -90,9 +79,6 @@ class TradeOrder extends Model
                     'end_time' => $data['end_time'],
                 ];
                 DB::table('trade_order')->where('order_no', $data['order_no'])->update($upData);
-
-                //更新用户状态
-                //DB::table('users')->where('id', $data['uid'])->update(['integral' => $userIntegral]);
             }
         } catch (Exception $e) {
             throw $e;
