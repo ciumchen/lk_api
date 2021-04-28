@@ -348,7 +348,7 @@ class OrderService
                 $v->integral = $logSum;
                 //更新LK
                 $v->lk = bcdiv($v->integral, $lkPer, 0);
-//                $v->save();
+                $v->save();
                 echo "用户UID：".$v->id." 手机号：". $v->phone." 修复成功,更新后积分：" . $v->integral . " 更新后LK：" . $v->lk . "\n";
                 echo "==========分割线========== \n";
             }
