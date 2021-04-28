@@ -9,8 +9,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //删除订单
     Route::post("del-order","Order\OrderController@delOrder");
 
-    //获取用户订单列表
-    Route::get('order-list', 'Order\TradeOrderController@getOrderList');
 });
 
 //我的分享
