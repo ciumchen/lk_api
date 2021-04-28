@@ -20,7 +20,4 @@ Route::get('/', function () {
 
 Route::get('register', 'User\RegisterController');
 Route::get('download-app', 'User\RegisterController@downloadApp');
-Route::get('fix-integral', function (){
-   (new \App\Services\OrderService())->fixIntegral();
-});
 
