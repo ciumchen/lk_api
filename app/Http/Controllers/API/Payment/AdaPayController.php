@@ -169,13 +169,14 @@ class AdaPayController extends Controller
         $data = $request->all();
         $tradeOrder = new TradeOrder();
         $tradeData = $tradeOrder->checkOrder($data);
+
         //组装支付数据
         $payment = [
             'app_id' => self::appId,
             'order_no' => $data['order_no'],
-            'pay_channel' => $tradeData['payChannel'],
-            'pay_amt' => $tradeData['pay_amt'],
-            'goods_title' => $tradeData['goodsTitle'],
+            'pay_channel' => $data['payChannel'],
+            'pay_amt' => $tradeData['price'],
+            'goods_title' => $tradeData['title'],
             'goods_desc' => $data['goodsDesc'],
             'description' => $tradeData['description'],
             'device_info' => $data['deviceInfo'],
@@ -186,6 +187,7 @@ class AdaPayController extends Controller
         $paymentInit->create($payment);
         $resPay = json_decode($paymentInit->result[1], 1);
         $payData = json_decode($resPay['data'], 1);
+        var_dump($payData);die;
         return ['url' => $payData['expend']['pay_info']];
     }
 }
