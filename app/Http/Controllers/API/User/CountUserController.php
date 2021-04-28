@@ -35,7 +35,7 @@ class CountUserController extends Controller
     //今日新增商户
     public function addMerchant(){
         $today = date('Y-m-d',time());
-        $data['number'] = DB::table('users')->where('created_at','>=',$today)->where('member_head',2)->count();
+        $data['number'] = DB::table('business_apply')->where('updated_at','>=',$today)->where('status',2)->count();
         return $data;
     }
 
