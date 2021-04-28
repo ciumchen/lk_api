@@ -76,7 +76,7 @@ class NotifyController extends Controller
                 $tradeOrder->upTradeOrder($tradeOrderData);
 
                 //更新 order 表审核状态
-                (new OrderService())->completeOrder($json_data['order_no']);
+                //(new OrderService())->completeOrder($json_data['order_no']);
 
             } catch (\Exception $e) {
                 //记录错误日志
