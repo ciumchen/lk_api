@@ -24,7 +24,7 @@ include_once "../app/Http/Controllers/API/Payment/config.php";
 class AdaPayController extends Controller
 {
     const appId = "app_c91b40ca-af1c-4eaa-a7dc-99bc39febe18";
-    const notify = "https://lk.catspawvideo.com/api/notify";
+    const notify = "http://112.124.9.185:8081/api/notify";
 
     /**
      * 调用支付
@@ -151,6 +151,82 @@ class AdaPayController extends Controller
                 $payData = json_decode($resPay['data'], 1);
                 return ['url' => $payData['expend']['pay_info']];
             }
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /** 支付失败再次支付
+     * @param Request $request
+     * @return array
+     * @throws
+     */
+    public function againPay(Request $request)
+    {
+        $orderNo = "PY_". date("YmdHis").rand(100000, 999999);
+        $data = $request->all();
+
+        $tradeOrder = new TradeOrder();
+        $trade = new TradeOrderController();
+        //初始化支付类
+        $paymentInit = new \AdaPaySdk\Payment();
+
+        $tradeData = $tradeOrder->getOrderInfo($data['oid']);
+        if (in_array($tradeData->status, ['pending', 'succeeded']))
+            throw new LogicException('订单不属于未支付或支付失败状态');
+
+        //组装支付数据
+        $payment = [
+            'app_id' => self::appId,
+            'order_no' => $orderNo,
+            'pay_channel' => $data['payChannel'],
+            'pay_amt' => $tradeData->price,
+            'goods_title' => $tradeData->title,
+            'goods_desc' => $data['goodsDesc'],
+            'description' => $tradeData->description,
+            'device_info' => $data['deviceInfo'],
+            'notify_url' => self::notify,
+        ];
+
+        $orderFrom = '';
+        if ($data['payChannel'] == 'alipay')
+        {
+            $orderFrom = 'alipay';
+        } elseif ($data['payChannel'] == 'wx')
+        {
+            $orderFrom = 'wx';
+        }
+
+        //订单数据组装
+        $orderData = [
+            'order_no' => $orderNo,
+            'user_id' => $tradeData->user_id,
+            'numeric' => $tradeData->numeric,
+            'telecom' => $tradeData->telecom,
+            'title' => $tradeData->title,
+            'price' => $tradeData->price,
+            'num' => $tradeData->num,
+            'description' => $tradeData->description,
+            'pay_time' => time(),
+            'end_time' => time(),
+            'modified_time' => date("Y-m-d H:i:s"),
+            'status' => 'await',
+            'order_from' => $orderFrom,
+            'need_fee' => $tradeData->need_fee,
+            'oid' => $data['oid'],
+            'created_at' => date("Y-m-d H:i:s")
+        ];
+
+        //创建订单
+        $trade->setOrder($orderData, $tradeData->user_id);
+
+        try {
+            //发起支付
+            $paymentInit->create($payment);
+            $resPay = json_decode($paymentInit->result[1], 1);
+            $payData = json_decode($resPay['data'], 1);
+            return ['url' => $payData['expend']['pay_info']];
 
         } catch (Exception $e) {
             throw $e;

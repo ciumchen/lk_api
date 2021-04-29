@@ -94,4 +94,24 @@ class TradeOrder extends Model
     {
         return DB::table($this->table)->where('order_no', $orderNo)->get()->toArray();
     }
+
+    /**获取订单信息
+     * @param string $orderNo
+     * @return mixed
+     * @throws
+     */
+    public function tradeOrderInfo(string $orderNo)
+    {
+        return DB::table($this->table)->where('order_no', $orderNo)->first();
+    }
+
+    /** 支付失败再次支付
+     * @param string $oid
+     * @return mixed
+     * @throws
+     */
+    public function getOrderInfo(string $oid)
+    {
+        return DB::table($this->table)->where('oid', $oid)->first();
+    }
 }

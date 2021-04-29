@@ -10,6 +10,7 @@ use App\Models\TradeOrder;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use App\Exceptions\LogicException;
 
 /*
  * 支付异步回调通知
@@ -33,6 +34,12 @@ class NotifyController extends Controller
 
         $tradeOrder = new TradeOrder();
         $order = new Order();
+
+        //检查支付金额与订单金额是否一致
+        $tOrderData = $tradeOrder->tradeOrderInfo($json_data['order_no']);
+        if ($tOrderData->price != $json_data['pay_amt'])
+            throw new LogicException('支付金额与订单金额不一致');
+
         if($json_data['status'] == 'succeeded')
         {
             $userInfo = $tradeOrder->userInfo($json_data['order_no']);
@@ -79,7 +86,7 @@ class NotifyController extends Controller
                 $order->upOrder($json_data['order_no']);
 
                 //更新 order 表审核状态
-                //(new OrderService())->completeOrder($json_data['order_no']);
+                (new OrderService())->completeOrder($json_data['order_no']);
 
             } catch (\Exception $e) {
                 //记录错误日志
