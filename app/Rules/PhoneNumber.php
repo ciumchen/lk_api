@@ -28,7 +28,7 @@ class PhoneNumber implements Rule
     {
 //        return preg_match('/^1[3-9]\d{9}$/', $value);
         $tel1 = preg_match('/^1[3-9]\d{9}$/', $value);
-        $tel2 = preg_match('/^(0[0-9]{2,3}(\-)?)?([2-9][0-9]{6,7})+((\-)?[0-9]{1,4})?$/', $value);
+        $tel2 = preg_match('/^([0-9]{3,4}-)?[0-9]{7,8}$/', $value);
         if ($tel1){
             return $tel1;
         }elseif ($tel2){
