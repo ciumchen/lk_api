@@ -29,7 +29,7 @@ class OrderService
         try{
             Log::info('11111111111', ['code' => $id]);
             $order = Order::lockForUpdate()->find($id);
-            Log::info('22222222222', $order);
+            Log::info('22222222222', get_object_vars($order));
             if($order->status != Order::STATUS_DEFAULT)
                 return false;
 
