@@ -24,13 +24,10 @@ class OrderService
      */
     public function completeOrder(string $orderNo){
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
-        Log::info('////////////////', ['code' => dd($tradeOrderInfo)]);
         $id = $tradeOrderInfo->oid;
         DB::beginTransaction();
         try{
-            Log::info('11111111111', ['code' => $id]);
             $order = Order::lockForUpdate()->find($id);
-            Log::info('22222222222', $order);
             if($order->status != Order::STATUS_DEFAULT)
                 return false;
 
@@ -42,10 +39,8 @@ class OrderService
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
 
-            Log::info('************', get_object_vars($order));
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
-            Log::info('++++++++++++', get_object_vars($customer));
 
             //按比例计算实际获得积分
             $customerIntegral = bcmul($order->price, bcdiv($rebateScale[(int)$order->profit_ratio],100, 4), 2);
@@ -55,7 +50,6 @@ class OrderService
             $lkPer = Setting::getSetting('lk_per')??300;
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer,0);
-            Log::info('============', get_object_vars($customer));
             $customer->save();
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
             //给商家加积分，更新LK
@@ -79,8 +73,6 @@ class OrderService
         }catch (\Exception $exception)
         {
             DB::rollBack();
-            Log::info('8888888888', ['code' => DB::rollBack()]);
-            Log::info('6666666666', ['code' => $exception]);
             var_dump($exception->getMessage());
         }
     }

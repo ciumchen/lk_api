@@ -8,6 +8,3 @@ Route::any('notify', 'Payment\NotifyController@callBack');
 
 //支付失败再次支付
 Route::post('again-pay', 'Payment\AdaPayController@againPay');
-
-//支付失败再次支付
-Route::post('complete', 'Payment\AdaPayController@againPay');
