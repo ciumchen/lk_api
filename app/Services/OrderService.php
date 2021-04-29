@@ -24,7 +24,7 @@ class OrderService
      */
     public function completeOrder(string $orderNo){
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
-        Log::info('////////////////', $tradeOrderInfo);
+        Log::info('////////////////', ['code' => dd($tradeOrderInfo)]);
         $id = $tradeOrderInfo->oid;
         DB::beginTransaction();
         try{
