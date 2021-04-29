@@ -28,18 +28,20 @@ class PhoneNumber implements Rule
     {
 //        return preg_match('/^1[3-9]\d{9}$/', $value);
 //        /0\d{2,3}-\d{7,8}/
-        $boole1 = preg_match('/^1[3-9]\d{9}$/', $value);//手机号
-        $boole2 = preg_match('/^([0-9]{3,4}-)?[0-9]{7,8}$/', $value);//座机号
-        if ($boole1||$boole2){
-            if ($boole1){
-                return $boole1;
-            }elseif ($boole2){
-                return $boole2;
-            }
+//        $boole1 = preg_match('/^1[3-9]\d{9}$/', $value);//手机号
+//        $boole2 = preg_match('/^([0-9]{3,4}-)?[0-9]{7,8}$/', $value);//座机号
+//        if ($boole1||$boole2){
+//            if ($boole1){
+//                return $boole1;
+//            }elseif ($boole2){
+//                return $boole2;
+//            }
+//
+//        }else{
+//            return false;
+//        }
 
-        }else{
-            return false;
-        }
+        return preg_match('/^([0-9]{3,4}-)?[0-9]{7,8}$/', $value);//座机号
 
     }
 
