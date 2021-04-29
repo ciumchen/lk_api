@@ -31,7 +31,7 @@ class OrderService
             if($order->status != Order::STATUS_DEFAULT)
                 return false;
 
-
+            Log::info('++++++++++++', get_object_vars($order));
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';
 
