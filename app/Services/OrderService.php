@@ -24,7 +24,6 @@ class OrderService
      */
     public function completeOrder(string $orderNo){
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
-        Log::info('===========', $tradeOrderInfo);
         $id = $tradeOrderInfo->oid;
         DB::beginTransaction();
         try{
@@ -53,6 +52,7 @@ class OrderService
             $lkPer = Setting::getSetting('lk_per')??300;
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer,0);
+            Log::info('============', get_object_vars($customer));
             $customer->save();
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
             //给商家加积分，更新LK
