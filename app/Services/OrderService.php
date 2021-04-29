@@ -39,7 +39,7 @@ class OrderService
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
 
-
+            Log::info('************', get_object_vars($order));
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
             Log::info('++++++++++++', get_object_vars($customer));
