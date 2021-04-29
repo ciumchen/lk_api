@@ -24,13 +24,13 @@ class OrderService
      */
     public function completeOrder(string $orderNo){
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
-        Log::info('////////////////', get_object_vars($tradeOrderInfo));
+        Log::info('////////////////', $tradeOrderInfo);
         $id = $tradeOrderInfo->oid;
         DB::beginTransaction();
         try{
             Log::info('11111111111', ['code' => $id]);
             $order = Order::lockForUpdate()->find($id);
-            Log::info('22222222222', get_object_vars($order));
+            Log::info('22222222222', $order);
             if($order->status != Order::STATUS_DEFAULT)
                 return false;
 
