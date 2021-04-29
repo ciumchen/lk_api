@@ -26,7 +26,16 @@ class PhoneNumber implements Rule
      */
     public function passes($attribute, $value)
     {
-        return preg_match('/^1[3-9]\d{9}$/', $value);
+//        return preg_match('/^1[3-9]\d{9}$/', $value);
+        $tel1 = preg_match('/^1[3-9]\d{9}$/', $value);
+        $tel2 = preg_match('/^(0[0-9]{2,3}(\-)?)?([2-9][0-9]{6,7})+((\-)?[0-9]{1,4})?$/', $value);
+        if ($tel1){
+            return $tel1;
+        }elseif ($tel2){
+            return $tel2;
+        }else{
+            return false;
+        }
     }
 
     /**
