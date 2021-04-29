@@ -78,7 +78,8 @@ class OrderService
         }catch (\Exception $exception)
         {
             DB::rollBack();
-            Log::info(DB::rollBack());
+            Log::info('8888888888', ['code' => DB::rollBack()]);
+            Log::info('6666666666', ['code' => $exception]);
             var_dump($exception->getMessage());
         }
     }
