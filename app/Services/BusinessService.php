@@ -22,7 +22,7 @@ class BusinessService
 
         try{
             $imgUrl = OssService::base64Upload($request->img);
-            $imgUrl2 = OssService::base64Upload($request->img2);
+//            $imgUrl2 = OssService::base64Upload($request->img2);
             BusinessApply::create([
                 'phone' => $request->phone,
                 'uid' => $user->id,
@@ -30,7 +30,7 @@ class BusinessService
                 'address' => $request->address,
                 'work' => $request->work,
                 'img' => $imgUrl,
-                'img2' => $imgUrl2,
+//                'img2' => $imgUrl2,
             ]);
             return true;
         }catch (PDOException $e) {
