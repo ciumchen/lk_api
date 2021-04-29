@@ -14,6 +14,7 @@ use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
@@ -23,6 +24,7 @@ class OrderService
      */
     public function completeOrder(string $orderNo){
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
+        Log::info('===========', $tradeOrderInfo);
         $id = $tradeOrderInfo->oid;
         DB::beginTransaction();
         try{
