@@ -22,7 +22,7 @@ class BusinessService
 
         try{
             $imgUrl = OssService::base64Upload($request->img);
-//            $imgUrl2 = OssService::base64Upload($request->img2);
+            $imgUrl2 = OssService::base64Upload($request->img2);
             BusinessApply::create([
                 'phone' => $request->phone,
                 'uid' => $user->id,
@@ -30,15 +30,15 @@ class BusinessService
                 'address' => $request->address,
                 'work' => $request->work,
                 'img' => $imgUrl,
-//                'img2' => $imgUrl2,
+                'img2' => $imgUrl2,
             ]);
             return true;
         }catch (PDOException $e) {
-            Storage::disk('oss')->delete($imgUrl);
+            Storage::disk('oss')->delete($imgUrl,$imgUrl2);
             report($e);
             throw new LogicException('申请失败，请重试');
         } catch (Exception $e) {
-            Storage::disk('oss')->delete($imgUrl);
+            Storage::disk('oss')->delete($imgUrl,$imgUrl2);
             throw $e;
         }
     }
