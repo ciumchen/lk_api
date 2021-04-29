@@ -28,7 +28,7 @@ class PhoneNumber implements Rule
     {
 //        /0\d{2,3}-\d{7,8}/
         $boole1 = preg_match('/^1[3-9]\d{9}$/', $value);//手机号
-        $boole2 = preg_match('/0\d{2,3}-\d{7,8}/', $value);//座机号
+        $boole2 = preg_match('^[0][1-9]{2,3}-[0-9]{5,10}$', $value);//座机号
         if ($boole1||$boole2){
             if ($boole1){
                 return $boole1;
