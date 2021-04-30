@@ -49,8 +49,11 @@ class CountUserController extends Controller
        $data['consumerLk'] = DB::table('users')->sum('lk');
 
     //消费者-今日分配
-        $re = DB::table('rebate_data')->where('day',date('Y-m-d'),time())->first();
-        $data['consumerTodayFfNum'] = round($re->consumer/DB::table('users')->sum('lk'),2);
+//        $re = DB::table('rebate_data')->where('day',date('Y-m-d'),time())->first();
+//        $data['consumerTodayFfNum'] = round($re->consumer/DB::table('users')->sum('lk'),2);
+
+        $countProfitPrice = DB::table('order')->where('status',2)->where('created_at','>=',date('Y-m-d',time()))->sum('profit_price');
+        $data['consumerTodayFfNum'] = round($countProfitPrice*0.675/DB::table('users')->sum('lk'),2);
 
     //消费者-昨日lk总数
         $re = DB::table('rebate_data')->where('day',date("Y-m-d",strtotime("-1 day")))->first();
@@ -83,8 +86,11 @@ class CountUserController extends Controller
         $data['merchantLk'] = DB::table('users')->sum('business_lk');
 
     //商户-今日分配
-        $re = DB::table('rebate_data')->where('day',date('Y-m-d'),time())->first();
-        $data['merchantTodayFfNum'] = round($re->business/DB::table('users')->sum('business_lk'),2);
+//        $re = DB::table('rebate_data')->where('day',date('Y-m-d'),time())->first();
+//        $data['merchantTodayFfNum'] = round($re->business/DB::table('users')->sum('business_lk'),2);
+
+        $countProfitPrice = DB::table('order')->where('status',2)->where('created_at','>=',date('Y-m-d',time()))->sum('profit_price');
+        $data['merchantTodayFfNum'] = round($countProfitPrice*0.15/DB::table('users')->sum('lk'),2);
 
     //商户-昨日lk总数
         $re = DB::table('rebate_data')->where('day',date("Y-m-d",strtotime("-1 day")))->first();
