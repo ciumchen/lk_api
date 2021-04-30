@@ -39,7 +39,7 @@ class AdaPayController extends Controller
         //组装支付对象参数
         $paymentData = $request->all();
         $uid = $paymentData['uid'] ?: 0;
-
+        Log::info('**********', ['code' => $uid]);
         if ($uid == 0)
             throw new LogicException('请先登录');
         $totalFee = $paymentData['money'] * $paymentData['number'];
