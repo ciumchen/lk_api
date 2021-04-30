@@ -222,7 +222,7 @@ class AdaPayController extends Controller
             'order_from' => $orderFrom,
             'need_fee' => $tradeData->need_fee,
             'oid' => $data['oid'],
-            'remarks' => '',
+            'remarks' => $tradeData->remarks,
             'created_at' => date("Y-m-d H:i:s")
         ];
 
