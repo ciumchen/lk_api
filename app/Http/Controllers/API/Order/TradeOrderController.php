@@ -56,6 +56,7 @@ class TradeOrderController extends Controller
             'integral' => 0,
             'description' => $data['description'],
             'oid' => $data['oid'],
+            'remarks' => $data['remarks'],
             'created_at' => date("Y-m-d H:i:s"),
             'modified_time' => date("Y-m-d H:i:s")
         ];
