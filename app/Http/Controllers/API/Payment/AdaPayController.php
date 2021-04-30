@@ -124,7 +124,6 @@ class AdaPayController extends Controller
             'updated_at' => $date,
         ];
 
-        Log::info('111111111111', $orderData);
         //美团卡备注姓名
         if ($paymentData['description'] == 'MT')
         {
@@ -136,6 +135,7 @@ class AdaPayController extends Controller
             $orderData['oid'] = $paymentData['orderId'];
         }
 
+        Log::info('111111111111', $orderData);
         try {
             $tradeOrder = new TradeOrderController();
             $Order = new Order();
