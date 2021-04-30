@@ -25,7 +25,7 @@ class AddFieldOrderTable extends Migration
      */
     public function down()
     {
-        Schema::table('business_apply', function (Blueprint $table) {
+        Schema::table('order', function (Blueprint $table) {
             $table->dropColumn(['pay_status']);
         });
     }
