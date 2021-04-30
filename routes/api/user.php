@@ -28,7 +28,6 @@ Route::any("consumerCount","User\CountUserController@consumerCount");
 //商户-待激励统计//商户-今日分配//商户-昨日lk总数//商户-昨日分配
 Route::any("merchantCount","User\CountUserController@merchantCount");
 
-//Route::post('apply-business', 'User\UserController@applyBusiness');
 
 
 
