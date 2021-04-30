@@ -82,6 +82,7 @@ class AdaPayController extends Controller
             'end_time' => time(),
             'modified_time' => date("Y-m-d H:i:s"),
             'status' => 'await',
+            'remarks' => '',
             'order_from' => $orderFrom,
             'need_fee' => sprintf("%.2f", $totalFee),
             'created_at' => date("Y-m-d H:i:s")
@@ -135,7 +136,6 @@ class AdaPayController extends Controller
             $orderData['oid'] = $paymentData['orderId'];
         }
 
-        Log::info('111111111111', $orderData);
         try {
             $tradeOrder = new TradeOrderController();
             $Order = new Order();
