@@ -10,6 +10,7 @@ use Exception;
 use App\Models\TradeOrder;
 use App\Models\Order;
 use App\Http\Controllers\API\Order\TradeOrderController;
+use Illuminate\Support\Facades\Log;
 
 /*
  * 调用Adapay 第三方支付接口
@@ -123,6 +124,7 @@ class AdaPayController extends Controller
             'updated_at' => $date,
         ];
 
+        Log::info('111111111111', $orderData);
         //美团卡备注姓名
         if ($paymentData['description'] == 'MT')
         {
