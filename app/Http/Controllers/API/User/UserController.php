@@ -31,10 +31,8 @@ class UserController extends Controller
         $phone = $request->input('phone');
         $tel1 = preg_match('/^1[3-9]\d{9}$/', $phone);
         $tel2 = preg_match('/^([0-9]{3,4}-)?[0-9]{7,8}$/', $phone);
-        if ($tel1==1||$tel2==1){
-            return response()->json(['code'=>1, 'msg'=>'验证成功', 'data' => '手机号或座机号ok']);
-        }else{
-            return response()->json(['code'=>0, 'msg'=>'验证失败', 'data' => '手机号或座机号error']);
+        if ($tel1==0 && $tel2==0){
+            return response()->json(['code'=>0, 'msg'=>'验证失败', 'data' => '手机号或座机号不符合规范']);
         }
         var_dump($phone);exit;
 
