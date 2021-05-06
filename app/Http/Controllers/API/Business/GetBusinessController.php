@@ -13,13 +13,8 @@ class GetBusinessController extends Controller
     public function getStarBusinessList(){
 
         $re = Redis::set('key1','1231231');
-
         var_dump($re);
         var_dump(Redis::get('key1'));
-//
-//        $user = Redis::get('user:profile:asdfasdfasdf');
-//
-//        var_dump($user);
 
     }
 
