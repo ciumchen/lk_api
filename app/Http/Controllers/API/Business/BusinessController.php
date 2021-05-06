@@ -171,6 +171,7 @@ class BusinessController extends Controller
         $city = $request->input('city');
         $district = $request->input('district');
 
+        var_dump($request->all());exit;
         $data = (new BusinessData())
             ->when($category,function($query) use ($category) {
                 return $query->where('category_id', $category);
