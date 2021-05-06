@@ -23,5 +23,8 @@ Route::any("getLkCount","Order\MyShareController@getLkCount");
 //获取当前用户今日录单金额总数
 Route::any("getTodayLkCount","Order\MyShareController@getTodayLkCount");
 
+//获取话费数据
+Route::get("get-recharge","Order\OrderController@getRecharge");
+
 
 
