@@ -12,7 +12,7 @@ Route::get("get-business-category","Business\BusinessController@getBusinessCateg
 //获取广告
 Route::get("get-ad","Business\BusinessController@getAd");
 //获取商家列表
-Route::get("get-business-list","Business\BusinessController@getBusinessList");
+Route::any("get-business-list","Business\BusinessController@getBusinessList");
 //获取商家详情
 Route::get("get-business-info","Business\BusinessController@getBusinessInfo");
 
