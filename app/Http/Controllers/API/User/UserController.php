@@ -28,6 +28,10 @@ class UserController extends Controller
      */
     public function applyBusiness(ApplyBusinessRequest $request){
 
+        $phone = $request->input('phone');
+
+        var_dump($phone);exit;
+
         $user = $request->user();
         //检测用户状态
         $user->checkStatus();

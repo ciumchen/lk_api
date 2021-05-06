@@ -27,7 +27,7 @@ class ApplyBusinessRequest extends FormRequest
     {
         return [
             'img' => ['bail', 'required'],
-            'phone' => ['required', new PhoneNumber()],
+            //'phone' => ['required', new PhoneNumber()],
             'name' => ['bail', 'required'],
             'address' => ['bail', 'required'],
             'work' => ['bail', 'required'],
