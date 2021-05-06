@@ -73,7 +73,7 @@ class TransferService
         if (0 !== bccomp($userBalance->amount, AssetsLogs::where('assets_type_id', $asset->id)->where('uid', $user->id)->sum('amount'), 8)) {
             $banlist = BanList::updateOrCreate([
                 'uid' => $user->id,
-                'reason' => 'IETS记录异常',
+                'reason' => '余额记录异常',
                 'ip' => $options['ip'] ?? '',
             ]);
 
@@ -160,8 +160,6 @@ class TransferService
                 if ($e instanceof LogicException) {
                     throw $e;
                 }
-                dd($e->getMessage().$e->getFile().$e->getLine());
-
                 throw new LogicException('划转失败，请联系客服');
             }
         }
