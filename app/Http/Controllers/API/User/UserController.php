@@ -29,7 +29,13 @@ class UserController extends Controller
     public function applyBusiness(ApplyBusinessRequest $request){
 
         $phone = $request->input('phone');
-
+        $tel1 = preg_match('/^1[3-9]\d{9}$/', $phone);
+        $tel2 = preg_match('/^([0-9]{3,4}-)?[0-9]{7,8}$/', $phone);
+        if ($tel1==1||$tel2==1){
+            return response()->json(['code'=>1, 'msg'=>'验证成功', 'data' => '手机号或座机号ok']);
+        }else{
+            return response()->json(['code'=>0, 'msg'=>'验证失败', 'data' => '手机号或座机号error']);
+        }
         var_dump($phone);exit;
 
         $user = $request->user();
