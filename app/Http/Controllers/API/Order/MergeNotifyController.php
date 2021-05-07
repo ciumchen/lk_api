@@ -98,6 +98,7 @@ class MergeNotifyController extends Controller
             $recharge->type = 'YK';
             $recharge->status = $status;
             $recharge->created_at = date("Y-m-d H:i:s");
+            $recharge->updated_at = date("Y-m-d H:i:s");
             $recharge->save();
         } elseif ($status == 9)
         {
