@@ -54,7 +54,7 @@ class MyShareController extends Controller
         $userData = array();
         $totalXfMoney = 0;//总消费累积金额
         foreach ($userList as $k=>$v){
-            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id");
+            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2 and pay_status='succeeded'");
             if(!$re[0]->nums){
                 $re[0]->nums = 0;
             }
@@ -145,7 +145,7 @@ class MyShareController extends Controller
         $userData = array();
         $totalXfMoney = 0;//总消费累积金额
         foreach ($userList as $k=>$v){
-            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id");
+            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2 and pay_status='succeeded'");
             if(!$re[0]->nums){
                 $re[0]->nums = 0;
             }
