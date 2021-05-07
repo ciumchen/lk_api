@@ -30,7 +30,6 @@ class RechargeController extends Controller
         //$key = 'fec07bb1ba282d74d85f094e7f54e1c6';
 
         //组装请求数据
-        //$data = $request->all();
         $phoneno = $data['numeric'];
         $cardnum = $data['price'];
         $orderid = $data['order_no'];
