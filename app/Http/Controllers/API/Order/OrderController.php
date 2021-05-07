@@ -139,14 +139,4 @@ class OrderController extends Controller
     public function getRatio(){
         return response()->json(['code'=>0, 'data'=>Setting::getManySetting('business_rebate_scale')]);
     }
-
-    /** 话费自动充值
-     * @return array
-     * @throws LogicException
-     */
-    public function getRecharge()
-    {
-        $order = new Order();
-        return $order->getRecharge();
-    }
 }

@@ -121,26 +121,6 @@ class Order extends Model
         return DB::table($this->table)->insertGetId($data);
     }
 
-    /** 话费自动充值
-     * @return array
-     * @throws LogicException
-     */
-    public function getRecharge()
-    {
-        $res = DB::table('trade_order')->where(['description' => 'HF', 'status' => 'succeeded'])
-            ->whereNotIn('oid', [0])
-            ->get(['oid', 'price', 'numeric'])->toArray();
-        /*$res = DB::table($this->table)->join('trade_order', function ($join) {
-        $join->on('order.id', '=', 'trade_order.oid')
-            ->where(['order.name' => '话费', 'order.pay_status' => 'succeeded']);
-        })->get(['order.id', 'order.price', 'trade_order.numeric'])->toArray();*/
-        if (!$res)
-        {
-            return [];
-        }
-        return $res;
-    }
-
     /**
      * The attributes that are mass assignable.
      *

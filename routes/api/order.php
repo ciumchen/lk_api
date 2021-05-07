@@ -26,5 +26,11 @@ Route::any("getTodayLkCount","Order\MyShareController@getTodayLkCount");
 //获取话费数据
 Route::get("get-recharge","Order\OrderController@getRecharge");
 
+//返回话费数据
+Route::any("get-call","Order\MergeNotifyController@getCall");
+
+//返回油卡数据
+Route::any("get-gas","Order\MergeNotifyController@getGas");
+
 
 
