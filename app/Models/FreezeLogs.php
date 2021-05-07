@@ -26,6 +26,7 @@ class FreezeLogs extends Model
      * 类型.
      */
     const OPERATE_TYPE_EXCHANGE_IETS = 'exchagne_iets';//兑换iets
+    const OPERATE_TYPE_IETS_TO_USDT = 'IETS兑换为USDT';//兑换iets
     /**
      * 类型文本.
      *
@@ -33,6 +34,7 @@ class FreezeLogs extends Model
      */
     public static $operateTypeTexts = [
         self::OPERATE_TYPE_EXCHANGE_IETS => '兑换',
+        self::OPERATE_TYPE_IETS_TO_USDT => '转换为USDT',
     ];
 
 }
