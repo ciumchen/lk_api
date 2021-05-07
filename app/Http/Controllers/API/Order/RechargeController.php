@@ -23,10 +23,10 @@ class RechargeController extends Controller
      */
     public function setCall(array $data)
     {
-        //$url = 'http://op.tianjurenhe.com/ofpay/mobile/onlineorder';
-        $url = 'http://test-v.tianjurenhe.com/ofpay/mobile/onlineorder';
-        //$key = '2420d8fb789d6ceb1244ac827761dfb0'; //正式环境
-        $key = 'fec07bb1ba282d74d85f094e7f54e1c6';
+        $url = 'http://op.tianjurenhe.com/ofpay/mobile/onlineorder';
+        //$url = 'http://test-v.tianjurenhe.com/ofpay/mobile/onlineorder';
+        $key = '2420d8fb789d6ceb1244ac827761dfb0'; //正式环境
+        //$key = 'fec07bb1ba282d74d85f094e7f54e1c6';
 
         //组装请求数据
         //$data = $request->all();
@@ -65,10 +65,10 @@ class RechargeController extends Controller
      */
     public function setGas(array $data)
     {
-        //$url = 'http://op.tianjurenhe.com/ofpay/sinopec/onlineorder';
-        $url = 'http://test-v.tianjurenhe.com/ofpay/sinopec/onlineorder';
-        //$key = '512a6c9492050f4d0f8f951cec9be05c'; //正式环境
-        $key = '512a6c9492050f4d0f8f951cec9be05c';
+        $url = 'http://op.tianjurenhe.com/ofpay/sinopec/onlineorder';
+        //$url = 'http://test-v.tianjurenhe.com/ofpay/sinopec/onlineorder';
+        $key = '512a6c9492050f4d0f8f951cec9be05c'; //正式环境
+        //$key = '512a6c9492050f4d0f8f951cec9be05c';
 
         //组装请求数据
         //$data = $request->all();
