@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Exceptions\LogicException;
 use Illuminate\Support\Facades\Log;
+use App\Models\RechargeLogs;
 
 /*话费、油卡自动充值回调*/
 
