@@ -20,7 +20,6 @@ class MergeNotifyController extends Controller
         $key = '2420d8fb789d6ceb1244ac827761dfb0';
 
         $data = $request->all();
-        Log::info('**********', $data);
         if (!empty($data))
         {
             Log::debug("call notify info:\r\n" . json_encode($data));
@@ -52,6 +51,7 @@ class MergeNotifyController extends Controller
             $recharge->status = $status;
             $recharge->created_at = date("Y-m-d H:i:s");
             $recharge->save();
+            Log::info('+++++++++', $recharge);
         } elseif ($status == 9)
         {
             throw new LogicException('充值失败');
