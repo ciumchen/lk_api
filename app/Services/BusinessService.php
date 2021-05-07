@@ -19,7 +19,7 @@ class BusinessService
      */
     public static function submitApply($request, $user){
 
-        return response()->json(['code'=>0, 'msg'=>$request->all(), 'data' => $user]);
+//        return response()->json(['code'=>0, 'msg'=>$request->all(), 'data' => $user]);
 
         try{
             $imgUrl = OssService::base64Upload($request->img);
@@ -36,10 +36,12 @@ class BusinessService
             return true;
         }catch (PDOException $e) {
             Storage::disk('oss')->delete($imgUrl);
+            Storage::disk('oss')->delete($imgUrl2);
             report($e);
             throw new LogicException('申请失败，请重试');
         } catch (Exception $e) {
             Storage::disk('oss')->delete($imgUrl);
+            Storage::disk('oss')->delete($imgUrl2);
             throw $e;
         }
     }
