@@ -105,6 +105,19 @@ class TradeOrder extends Model
         return DB::table($this->table)->where('order_no', $orderNo)->first();
     }
 
+    /**获取用户信息
+     * @param string $orderNo
+     * @return array
+     * @throws
+     */
+    public function getUser(string $orderNo)
+    {
+        return DB::table($this->table)->join('users', function ($join) use($orderNo) {
+            $join->on('trade_order.user_id', '=', 'users.id')
+                ->where(['trade_order.order_no' => $orderNo, 'users.status' => 1]);
+        })->get()->first();
+    }
+
     /** 支付失败再次支付
      * @param string $oid
      * @return mixed

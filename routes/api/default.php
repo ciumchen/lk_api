@@ -15,3 +15,11 @@ Route::get("get-ad","Business\BusinessController@getAd");
 Route::get("get-business-list","Business\BusinessController@getBusinessList");
 //获取商家详情
 Route::get("get-business-info","Business\BusinessController@getBusinessInfo");
+
+
+//获取星级商户列表
+Route::get("getStarBusinessList","Business\GetBusinessController@getStarBusinessList");
+
+
+
+
