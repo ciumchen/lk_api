@@ -260,7 +260,7 @@ class TransactionsService
             $tx->uid = $address->uid;
 
         //接收地址为托管地址，才保存交易
-        if($tx->payee == env('CHARGE_ADDRESS') || $tx->to == env('CHARGE_ADDRESS'))
+        if($tx->payee == env('WITHDRAW_ADDRESS') || $tx->to == env('WITHDRAW_ADDRESS'))
         {
             return $tx->save();
         }
