@@ -11,6 +11,7 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Exceptions\LogicException;
+use App\Http\Controllers\API\Order\RechargeController;
 
 /*
  * 支付异步回调通知
@@ -74,6 +75,22 @@ class NotifyController extends Controller
                 'modified_time' => date("Y-m-d H:i:s"),
             ];
 
+            $tradeData = (new TradeOrder())->tradeOrderInfo($json_data['order_no']);
+
+            //组装话费数据
+            $callData = [
+                'numeric' => $tradeData['numeric'],
+                'price' => $tradeData['price'],
+                'order_no' => $json_data['order_no'],
+            ];
+
+            //组装加油卡数据
+            $gasData = [
+                'order_no' => $json_data['order_no'],
+                'price' => $tradeData['price'],
+                'gasCardTel' => $tradeData['numeric'],
+            ];
+
             try {
                 //插入支付记录
                 $payLogs = new PayLogs();
@@ -84,6 +101,15 @@ class NotifyController extends Controller
 
                 //更新order 表状态
                 $order->upOrder($json_data['order_no']);
+
+                //自动充值
+                if ($json_data['description'] == "HF")
+                {
+                    (new RechargeController())->setCall($callData);
+                } elseif ($json_data['description'] == "YK")
+                {
+                    (new RechargeController())->setGas($gasData);
+                }
 
                 //更新 order 表审核状态
                 //(new OrderService())->completeOrder($json_data['order_no']);
