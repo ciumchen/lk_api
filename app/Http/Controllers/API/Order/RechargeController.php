@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\TradeOrder;
 use Illuminate\Http\Request;
 use GuzzleHttp;
+use Illuminate\Support\Facades\Log;
 
 /*
  * 话费、油卡自动充值接口
@@ -99,6 +100,7 @@ class RechargeController extends Controller
 
         //返回数据
         $res = json_decode( $response->getBody(), 1);
+        Log::info('8888888888', $res);
         if ($res['error_code'] == 0)
         {
             return json_encode(['code' => 0, 'msg' => '充值成功']);
