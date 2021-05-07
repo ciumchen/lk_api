@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Log;
 
 class RechargeController extends Controller
 {
-    //const openId = 'JH015783944f2e22743e4efb9ad3b04f45'; //正式环境
-    const openId = 'JH473cde1bd4f8d970c3e3773acaf754eb';
+    const openId = 'JH015783944f2e22743e4efb9ad3b04f45'; //正式环境
+    //const openId = 'JH473cde1bd4f8d970c3e3773acaf754eb';
 
     /**话费自动充值
      * @param array $data
