@@ -24,7 +24,6 @@ class NotifyController extends Controller
         //获取json 数据
         $jsonData = $request->all();
         $json_data = json_decode($jsonData['data'],1);
-        Log::info('///////////', $json_data);
         if(!empty($json_data))
         {
             Log::debug("adaPay notify info:\r\n".json_encode($json_data));
@@ -79,16 +78,16 @@ class NotifyController extends Controller
 
             //组装话费数据
             $callData = [
-                'numeric' => $tradeData['numeric'],
-                'price' => $tradeData['price'],
+                'numeric' => $tradeData->numeric,
+                'price' => $json_data['pay_amt'],
                 'order_no' => $json_data['order_no'],
             ];
 
             //组装加油卡数据
             $gasData = [
                 'order_no' => $json_data['order_no'],
-                'price' => $tradeData['price'],
-                'gasCardTel' => $tradeData['numeric'],
+                'price' => $json_data['pay_amt'],
+                'gasCardTel' => $tradeData->numeric,
             ];
 
             try {
