@@ -95,8 +95,8 @@ class MyShareController extends Controller
             //查询当前用户的邀请人是团员的所有订单并统计实际让利金额求和，审核通过、支付成功
 //            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=1 and status=2 and pay_status='succeeded'");//判断了非盟主
 
-            //不判断是否是非盟主，查询当前id商家的所有录单
-            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2 and pay_status='succeeded'");
+            //不判断是否是非盟主，查询当前id商家的所有录单,business_uid
+            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE business_uid=$v->id and status=2 and pay_status='succeeded'");
             if(!$tuanYuanOrder[0]->nums){//团员累计奖励为空时等于0
                 $tuanYuanOrder[0]->nums = 0;
             }
