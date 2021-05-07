@@ -102,7 +102,7 @@ class MyShareController extends Controller
             $userData["$v->phone"]['tuanyuan'] = round($tuanYuanOrder[0]->nums*0.02,2);
 
             //查询当前用户的邀请人是盟主的所有订单并统计实际让利金额求和
-            $mengZhuOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=2");
+            $mengZhuOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=2 and status=2 and pay_status='succeeded'");
             if(!$mengZhuOrder[0]->nums){//盟主累计奖励为空时等于0
                 $mengZhuOrder[0]->nums = 0;
             }
