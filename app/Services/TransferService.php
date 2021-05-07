@@ -37,9 +37,9 @@ class TransferService
         }
 
         //检测托管地址余额
-//        if (false === (new AssetsService())->checkPayerBalance($amount)) {
-//            throw new LogicException('暂停提现，请等待');
-//        }
+        if (false === (new AssetsService())->checkPayerBalance($amount)) {
+            throw new LogicException('暂停提现，请等待');
+        }
 
         if (bccomp($amount, 0, 8) <= 0) {
             throw new LogicException('提现数量异常');
@@ -127,7 +127,7 @@ class TransferService
             $withdrawLog->remark = '提现到钱包';
             $withdrawLog->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 255, 'utf-8') : '';
 
-            if (bccomp($amount, 10, 8) >= 0) {
+            if (bccomp($asset->large_withdraw_amount, 0, 8) && bccomp($amount, $asset->large_withdraw_amount, 8) >= 0) {
                 $withdrawLog->status = 3; //3为待审核
             }
 
