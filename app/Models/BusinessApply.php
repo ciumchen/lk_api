@@ -37,6 +37,7 @@ class BusinessApply extends Model
         'work',
         'address',
         'remark',
+        'img2',
     ];
 
     /**类别
