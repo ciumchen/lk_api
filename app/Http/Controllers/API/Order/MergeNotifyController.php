@@ -44,7 +44,6 @@ class MergeNotifyController extends Controller
 
         if ($status == 1)
         {
-            Log::info('&&&&&&&&&&', $data);
             //充值成功插入数据到数据库
             $recharge = new RechargeLogs();
             $recharge->reorder_id = $sporderId;
