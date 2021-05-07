@@ -32,7 +32,7 @@ class FreezeLogs extends Model
      * @var array
      */
     public static $operateTypeTexts = [
-        self::OPERATE_TYPE_EXCHANGE_IETS => '兑换IETS',
+        self::OPERATE_TYPE_EXCHANGE_IETS => '兑换',
     ];
 
 }
