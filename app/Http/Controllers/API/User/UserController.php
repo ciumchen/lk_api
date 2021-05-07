@@ -34,6 +34,7 @@ class UserController extends Controller
         if ($tel1==1||$tel2==1){
             return response()->json(['code'=>1, 'msg'=>'验证成功ok', 'data' => '手机号或座机号ok']);
         }else{
+            return response()->json(['code'=>0, 'msg'=>$phone, 'data' => '手机号或座机号error']);
             return response()->json(['code'=>0, 'msg'=>'验证失败1123', 'data' => '手机号或座机号error']);
         }
         var_dump($phone);exit;
