@@ -54,7 +54,7 @@ class MyShareController extends Controller
         $userData = array();
         $totalXfMoney = 0;//总消费累积金额
         foreach ($userList as $k=>$v){
-            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id");
+            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2 and pay_status='succeeded'");
             if(!$re[0]->nums){
                 $re[0]->nums = 0;
             }
@@ -78,6 +78,7 @@ class MyShareController extends Controller
     }
 
     //Merchant
+    //分享商家
     //累计商家让利奖励
     //接口返回当前用户下每个商户的所有累积实际让利金额*2%
     public function Merchant(Request $request){
@@ -91,24 +92,30 @@ class MyShareController extends Controller
         $userData = array();
         $totalXfMoney = 0;//总消费累积金额
         foreach ($userList as $k=>$v){
-            //查询当前用户的邀请人是团员的所有订单并统计实际让利金额求和
-            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=1");
+            //查询当前用户的邀请人是团员的所有订单并统计实际让利金额求和，审核通过、支付成功
+//            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=1 and status=2 and pay_status='succeeded'");//判断了非盟主
+
+            //不判断是否是非盟主，查询当前id商家的所有录单
+            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2 and pay_status='succeeded'");
             if(!$tuanYuanOrder[0]->nums){//团员累计奖励为空时等于0
                 $tuanYuanOrder[0]->nums = 0;
             }
             //每个用户的所有团员订单让利额都乘2%
             $userData["$v->phone"]['tuanyuan'] = round($tuanYuanOrder[0]->nums*0.02,2);
 
-            //查询当前用户的邀请人是盟主的所有订单并统计实际让利金额求和
-            $mengZhuOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=2");
-            if(!$mengZhuOrder[0]->nums){//盟主累计奖励为空时等于0
-                $mengZhuOrder[0]->nums = 0;
-            }
+//            //查询当前用户的邀请人是盟主的所有订单并统计实际让利金额求和
+//            $mengZhuOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=2 and status=2 and pay_status='succeeded'");
+//            if(!$mengZhuOrder[0]->nums){//盟主累计奖励为空时等于0
+//                $mengZhuOrder[0]->nums = 0;
+//            }
             //每个用户的所有盟主订单让利额都乘3.5%
-            $userData["$v->phone"]['mengzhu'] = round($mengZhuOrder[0]->nums*0.035,2);
+//            $userData["$v->phone"]['mengzhu'] = round($mengZhuOrder[0]->nums*0.035,2);
 
             //所有盟主订单让利额+所有团员订单让利额=总让利额
-            $totalXfMoney+=$userData["$v->phone"]['tuanyuan']+$userData["$v->phone"]['mengzhu'];
+//            $totalXfMoney+=$userData["$v->phone"]['tuanyuan']+$userData["$v->phone"]['mengzhu'];
+
+            //统计每个分享商家录单的让利金额总数，不区分商家是否是盟主还是团员
+            $totalXfMoney+=$userData["$v->phone"]['tuanyuan'];
 
         }
         arsort($userData);
@@ -120,7 +127,7 @@ class MyShareController extends Controller
         foreach ($userData as $k=>$v){
             $fxData['oneUser'][$i]['phone']=$k;
             $fxData['oneUser'][$i]['tuanyuan']=$v['tuanyuan'];
-            $fxData['oneUser'][$i]['mengzhu']=$v['mengzhu'];
+//            $fxData['oneUser'][$i]['mengzhu']=$v['mengzhu'];
             $i++;
         }
 
@@ -145,7 +152,7 @@ class MyShareController extends Controller
         $userData = array();
         $totalXfMoney = 0;//总消费累积金额
         foreach ($userList as $k=>$v){
-            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id");
+            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2 and pay_status='succeeded'");
             if(!$re[0]->nums){
                 $re[0]->nums = 0;
             }

@@ -44,7 +44,7 @@ class ApplyBusinessRequest extends FormRequest
 
         return [
             'img' => '营业执照',
-            'phone' => '联系电话',
+//            'phone' => '联系电话',
             'name' => '联系人',
             'address' => '商家地址',
             'work' => '主营业务',
