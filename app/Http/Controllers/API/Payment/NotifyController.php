@@ -24,7 +24,7 @@ class NotifyController extends Controller
         //获取json 数据
         $jsonData = $request->all();
         $json_data = json_decode($jsonData['data'],1);
-
+        Log::info('///////////', $json_data);
         if(!empty($json_data))
         {
             Log::debug("adaPay notify info:\r\n".json_encode($json_data));
