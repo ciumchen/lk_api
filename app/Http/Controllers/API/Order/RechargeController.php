@@ -71,6 +71,9 @@ class RechargeController extends Controller
         if ($data['price'] == 1000)
         {
             $proid = 10004;
+        } else
+        {
+            $proid = -1;
         }
 
         $sign = md5(self::openId . $key . $proid . $cardnum . $game_userid . $orderid);
@@ -80,7 +83,7 @@ class RechargeController extends Controller
         $response = $http->get($url, [
             'query' => [
                 'proid'       => $proid,
-                'cardnum'     => 1,
+                'cardnum'     => $cardnum,
                 'orderid'     => $orderid,
                 'game_userid' => $game_userid,
                 'gasCardTel'  => $userInfoData->phone,
