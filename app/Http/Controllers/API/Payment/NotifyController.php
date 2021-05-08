@@ -102,13 +102,13 @@ class NotifyController extends Controller
                 $order->upOrder($json_data['order_no']);
 
                 //自动充值
-                /*if ($json_data['description'] == "HF")
+                if ($json_data['description'] == "HF")
                 {
                     (new RechargeController())->setCall($callData);
                 } elseif ($json_data['description'] == "YK")
                 {
                     (new RechargeController())->setGas($gasData);
-                }*/
+                }
 
                 //更新 order 表审核状态
                 //(new OrderService())->completeOrder($json_data['order_no']);
