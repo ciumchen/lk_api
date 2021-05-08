@@ -44,10 +44,17 @@ class MergeNotifyController extends Controller
 
         if ($status == 1)
         {
-            Log::info('**********', ['code' => $sporderId]);
-            Log::info('++++++++++', ['code' => $orderId]);
             //充值成功插入数据到数据库
             $recharge = new RechargeLogs();
+
+            $res = (new RechargeLogs())->exRecharges($sporderId);
+            if ($res)
+            {
+                $recharge->created_at = date("Y-m-d H:i:s");
+                $recharge->updated_at = date("Y-m-d H:i:s");
+                $recharge->save();
+            }
+
             $recharge->reorder_id = $sporderId;
             $recharge->order_no = $orderId;
             $recharge->type = 'HF';
@@ -55,7 +62,6 @@ class MergeNotifyController extends Controller
             $recharge->created_at = date("Y-m-d H:i:s");
             $recharge->updated_at = date("Y-m-d H:i:s");
             $recharge->save();
-            Log::info('&&&&&&&&&&', ['code' => $recharge]);
         } elseif ($status == 9)
         {
             throw new LogicException('充值失败');
