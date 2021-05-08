@@ -18,6 +18,8 @@ class BusinessService
      * @throws LogicException
      */
     public static function submitApply($request, $user){
+        $imgUrl ='';
+        $imgUrl2 ='';
         try{
             $imgUrl = OssService::base64Upload($request->img);
             $imgUrl2 = OssService::base64Upload($request->img2);
