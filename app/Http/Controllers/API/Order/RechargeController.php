@@ -73,7 +73,11 @@ class RechargeController extends Controller
         if ($data['price'] == 1000)
         {
             $proid = 10004;
+        } elseif ($data['price'] == 100)
+        {
+            $proid = 10001;
         }
+
         $sign = md5(self::openId . $key . $proid . $cardnum . $game_userid . $orderid);
 
         $http = new GuzzleHttp\Client;
