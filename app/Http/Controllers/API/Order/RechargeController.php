@@ -4,9 +4,7 @@ namespace App\Http\Controllers\API\Order;
 
 use App\Http\Controllers\Controller;
 use App\Models\TradeOrder;
-use Illuminate\Http\Request;
 use GuzzleHttp;
-use Illuminate\Support\Facades\Log;
 
 /*
  * 话费、油卡自动充值接口
