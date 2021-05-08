@@ -97,6 +97,7 @@ class RechargeController extends Controller
 
         //返回数据
         $res = json_decode( $response->getBody(), 1);
+        Log::info('***********', $res);
         if ($res['error_code'] == 0)
         {
             return json_encode(['code' => 0, 'msg' => '充值成功']);
