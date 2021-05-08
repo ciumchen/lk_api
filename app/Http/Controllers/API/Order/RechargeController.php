@@ -68,7 +68,7 @@ class RechargeController extends Controller
         //组装请求数据
         $userInfoData = (new TradeOrder())->getUser($data['order_no']);
         $cardnum = 1;
-        $game_userid = $userInfoData->phone;
+        $game_userid = $data['game_userid'];
         $orderid = $data['order_no'];
         if ($data['price'] == 1000)
         {

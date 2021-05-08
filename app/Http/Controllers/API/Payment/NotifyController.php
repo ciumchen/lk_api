@@ -87,7 +87,7 @@ class NotifyController extends Controller
             $gasData = [
                 'order_no' => $json_data['order_no'],
                 'price' => $json_data['pay_amt'],
-                'gasCardTel' => $tradeData->numeric,
+                'game_userid' => $tradeData->numeric,
             ];
 
             try {
