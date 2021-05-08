@@ -54,7 +54,7 @@ class MyShareController extends Controller
         $userData = array();
         $totalXfMoney = 0;//总消费累积金额
         foreach ($userList as $k=>$v){
-            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2 and pay_status='succeeded'");
+            $re = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and status=2");
             if(!$re[0]->nums){
                 $re[0]->nums = 0;
             }
@@ -96,7 +96,7 @@ class MyShareController extends Controller
 //            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=1 and status=2 and pay_status='succeeded'");//判断了非盟主
 
             //不判断是否是非盟主，查询当前id商家的所有录单,business_uid
-            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE business_uid=$v->id and status=2 and pay_status='succeeded'");
+            $tuanYuanOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE business_uid=$v->id and status=2");
             if(!$tuanYuanOrder[0]->nums){//团员累计奖励为空时等于0
                 $tuanYuanOrder[0]->nums = 0;
             }
