@@ -27,11 +27,11 @@ class ApplyBusinessRequest extends FormRequest
     {
         return [
             'img' => ['bail', 'required'],
-            'phone' => ['required', new PhoneNumber()],
+            'phone' => ['bail','required', new PhoneNumber()],
             'name' => ['bail', 'required'],
             'address' => ['bail', 'required'],
             'work' => ['bail', 'required'],
-//            'img2' => ['bail', 'required'],
+            'img2' => ['bail', 'required'],
         ];
     }
     /**
@@ -44,11 +44,11 @@ class ApplyBusinessRequest extends FormRequest
 
         return [
             'img' => '营业执照',
-//            'phone' => '联系电话',
+            'phone' => '联系电话',
             'name' => '联系人',
             'address' => '商家地址',
             'work' => '主营业务',
-//            'img2' => '门店图片',
+            'img2' => '门头照',
         ];
     }
 }
