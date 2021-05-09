@@ -21,8 +21,9 @@ class BusinessService
         $imgUrl ='';
         $imgUrl2 ='';
 
+        $imgUrl = OssService::base64Upload($request->img);
 
-        return response()->json(['code'=>0, 'msg'=>$request->img]);
+        return response()->json(['code'=>0, 'msg'=>$imgUrl]);
         return response()->json(['code'=>0, 'msg'=>$request->img2]);
 
         try{
