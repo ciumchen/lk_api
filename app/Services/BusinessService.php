@@ -20,6 +20,11 @@ class BusinessService
     public static function submitApply($request, $user){
         $imgUrl ='';
         $imgUrl2 ='';
+
+
+        return response()->json(['code'=>0, 'msg'=>$request->img]);
+        return response()->json(['code'=>0, 'msg'=>$request->img2]);
+
         try{
             $imgUrl = OssService::base64Upload($request->img);
             $imgUrl2 = OssService::base64Upload($request->img2);
