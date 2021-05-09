@@ -42,7 +42,7 @@ class UserController extends Controller
         if(BusinessApply::where('uid', $user->id)->whereIn('status', [BusinessApply::DEFAULT_STATUS, BusinessApply::BY_STATUS])->exists())
             throw new LogicException('已申请成为商家，请等待审核结果');
 
-        $imgUrl = OssService::base64Upload($request->img);
+        $imgUrl = OssService::base64Upload($request->img2);
         return response()->json(['code'=>0, 'msg'=>$imgUrl]);
         try{
           //写入申请商家数据
