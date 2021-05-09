@@ -23,8 +23,22 @@ class BusinessService
 
         $imgUrl = OssService::base64Upload($request->img);
 
-        return response()->json(['code'=>0, 'msg'=>$imgUrl]);
-        return response()->json(['code'=>0, 'msg'=>$request->img2]);
+//        return response()->json(['code'=>0, 'msg'=>$imgUrl]);
+//        return response()->json(['code'=>0, 'msg'=>$request->img2]);
+        $imgUrl = OssService::base64Upload($request->img);
+        $imgUrl2 = OssService::base64Upload($request->img2);
+        $re = BusinessApply::create([
+            'phone' => $request->phone,
+            'uid' => $user->id,
+            'name' => $request->name,
+            'address' => $request->address,
+            'work' => $request->work,
+            'img' => $imgUrl,
+            'img2' => $imgUrl2
+        ]);
+
+        return response()->json(['code'=>0, 'msg'=>$re]);
+
 
         try{
             $imgUrl = OssService::base64Upload($request->img);
