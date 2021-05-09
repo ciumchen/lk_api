@@ -15,7 +15,6 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\BusinessService;
-use App\Services\OssService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -28,9 +27,6 @@ class UserController extends Controller
      * @throws LogicException
      */
     public function applyBusiness(ApplyBusinessRequest $request){
-
-        //return response()->json(['code'=>0, 'msg'=>$request->all()]);
-
         $user = $request->user();
         //检测用户状态
         $user->checkStatus();
@@ -42,8 +38,6 @@ class UserController extends Controller
         if(BusinessApply::where('uid', $user->id)->whereIn('status', [BusinessApply::DEFAULT_STATUS, BusinessApply::BY_STATUS])->exists())
             throw new LogicException('已申请成为商家，请等待审核结果');
 
-//        $imgUrl = OssService::base64Upload($request->img2);
-//        return response()->json(['code'=>0, 'msg'=>$imgUrl]);
         try{
           //写入申请商家数据
             BusinessService::submitApply($request, $user);
