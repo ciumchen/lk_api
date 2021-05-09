@@ -30,7 +30,7 @@ class BusinessService
                 'address' => $request->address,
                 'work' => $request->work,
                 'img' => $imgUrl,
-                'img2' => $imgUrl2,
+                'img2' => $imgUrl2
             ]);
             return true;
         }catch (PDOException $e) {
