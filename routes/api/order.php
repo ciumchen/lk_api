@@ -4,8 +4,13 @@
 Route::middleware(['auth:sanctum'])->group(function () {
     //录订单
     Route::post('order', 'Order\OrderController');
+
     //获取我的订单
     Route::get("get-my-orders","Order\OrderController@getMyOrders");
+
+    //获取我的所有订单
+    Route::get("get-order-list","Order\OrderController@getOrdersList");
+
     //删除订单
     Route::post("del-order","Order\OrderController@delOrder");
 
