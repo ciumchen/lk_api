@@ -228,10 +228,19 @@ class BusinessController extends Controller
      */
     public function getBusinessData(Request $request){
         $user = $request->user();
+//        $user->id;//用户ID
+//        print_r($user->id);exit;
         if($user->role != User::ROLE_BUSINESS)
             throw new LogicException('非法访问');
 
         $data['business'] = $user->businessData()->first();
+
+        //查询商户的营业执照和头图
+        $business_apply_data = DB::table('business_apply')->where('id',$data['business']->business_apply_id)->first();
+
+        $data['business']['img'] = $business_apply_data->img;
+        $data['business']['img2'] = $business_apply_data->img2;
+
         $data['business_category'] = BusinessCategory::select(DB::raw('name as text, id as value'))->get();
         $data['category'] = BusinessCategory::whereId($data['business']->category_id)->value('name');
         //省
