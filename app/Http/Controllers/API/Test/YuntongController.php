@@ -112,14 +112,18 @@ class YuntongController extends Controller
 
     /**
      * 异步通知测试
+     * @param Request $request
      */
-    public function notify()
+    public function notify(Request $request)
     {
         try {
+            Log::debug('YuntongPay_notify_post.log', [serialize($request->post())]);
+            Log::debug('YuntongPay_notify_get.log', [serialize($request->get())]);
             $Pay = new YuntongPay();
             $data = $Pay->Notify();
             Log::debug('YuntongPay_notify.log', [serialize($data)]);
         } catch (\Exception $e) {
+            Log::debug('YuntongPay_notify_error.log', [serialize($e)]);
         }
     }
 
