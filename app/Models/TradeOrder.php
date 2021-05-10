@@ -127,4 +127,26 @@ class TradeOrder extends Model
     {
         return DB::table($this->table)->where('oid', $oid)->first();
     }
+
+    /**计算用户当月消费额
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function getMonthSum(array $data)
+    {
+        $firstday = date('Y-m-01 00:00:00', strtotime(date("Y-m-d")));
+        $lastday = date('Y-m-d 23:59:59', strtotime("$firstday +1 month -1 day"));
+        $data['firstday'] = $firstday;
+        $data['lastday'] = $lastday;
+
+        //返回
+        return (new TradeOrder())
+            ->where(function($query) use ($data){
+                $query->where('user_id', $data['uid'])
+                    ->where('description', $data['description'])
+                    ->where('status', 'succeeded')
+                    ->whereBetween('created_at', [$data['firstday'], $data['lastday']]);
+            })->sum('price');
+    }
 }

@@ -93,6 +93,9 @@ class OrderController extends Controller
         $bOrder = $request->input('bOrder', false);
 
         $data = (new Order())
+            ->join('trade_order', function($join){
+                $join->on('order.id', 'trade_order.oid');
+            })
             ->when(!$bOrder,function($query) use ($user) {
                 return $query->where('uid', $user->id);
             })
@@ -100,35 +103,6 @@ class OrderController extends Controller
                 $query->where('business_uid', $user->id);
             })
             ->orderBy('status', 'asc')
-            ->latest('id')
-            ->forPage(Paginator::resolveCurrentPage('page'), $request->per_page ?: 10)
-            ->get();
-
-        return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => OrdersResources::collection($data)]);
-    }
-
-    /**获取我的订单
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function getOrdersList(Request $request)
-    {
-        $this->validate($request, [
-            'page' => ['bail', 'nullable', 'int', 'min:1'],
-            'per_page' => ['bail', 'nullable', 'int', 'min:1', 'max:50'],
-        ]);
-
-        $user = $request->user();
-        $data = (new Order())
-            ->join('trade_order', function($join){
-                $join->on('order.id', 'trade_order.oid');
-            })
-            ->where(function($query) use ($user){
-                $query->where('uid', $user->id)
-                    ->orWhere('business_uid', $user->id);
-            })
-            ->orderBy('created_at', 'desc')
             ->latest('id')
             ->forPage(Paginator::resolveCurrentPage('page'), $request->per_page ?: 10)
             ->get(['order.*', 'trade_order.numeric']);

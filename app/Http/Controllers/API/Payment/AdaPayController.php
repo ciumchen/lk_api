@@ -44,6 +44,21 @@ class AdaPayController extends Controller
 
         $totalFee = $paymentData['money'] * $paymentData['number'];
         $tradeOrder = new TradeOrder();
+
+        //检查用户当月消费金额
+        $sumData = [
+            'uid' => $uid,
+            'description' => $paymentData['description']
+        ];
+        $totalPrice = $tradeOrder->getMonthSum($sumData);
+        if ($paymentData['description'] == 'HF' && $totalPrice >= 500)
+        {
+            throw new LogicException('本月话费充值金额已达上限');
+        } elseif ($paymentData['description'] == 'LR' && $totalPrice >= 1000)
+        {
+            throw new LogicException('本月录单充值金额已达上限');
+        }
+
         $status = $tradeOrder->checkOrderPay($uid);
         $orderFrom = '';
 
