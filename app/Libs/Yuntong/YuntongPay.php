@@ -1,15 +1,13 @@
 <?php
 
-
 namespace App\Libs\Yuntong;
 
+use Exception;
 
 class YuntongPay extends Config
 {
-    /**
-     * @var string
-     */
-    private string $pay_api = '/v2/pay';
+
+    use Api;
 
     /**
      * [必须]
@@ -57,126 +55,254 @@ class YuntongPay extends Config
     /**
      * @var string 同步返回地址 仅支持app和wap渠道
      */
-    private string $return_url = '';
+    protected string $return_url = '';
 
     /**
      * @var string 场景 固定值[ios|android]
      */
-    private string $scene = '';
+    protected string $scene = '';
 
     /**
      * @var string 商户id 特定场景传递，默认不传
      */
-    private string $merchant_id = '';
+    protected string $merchant_id = '';
 
     /**
      * 用户端IP
      * 在type为wx，method为wap时必填（微信H5）
      */
-    private string $ip = '';
+    protected string $ip = '';
+
+
+    /**
+     * 可选参数
+     * @var array
+     */
+    private array $optional_param = ['return_url', 'scene', 'merchant_id', 'ip'];
 
     /**
      * @return bool|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function pay()
     {
         try {
             $data = [];
-            $data['app_id'] = $this->appID;
-            $data['goods_title'] = $this->goods_title;
-            $data['goods_desc'] = $this->goods_desc;
-            $data['order_id'] = $this->order_id;
-            $data['amount'] = $this->amount;
-            $data['type'] = $this->type;
-            $data['method'] = $this->method;
-            $data['notify_url'] = $this->notify_url;
-            if ($this->return_url) {
-                $data['return_url'] = $this->return_url;
+            $data[ 'app_id' ] = $this->appID;
+            $data[ 'goods_title' ] = $this->goods_title;
+            $data[ 'goods_desc' ] = $this->goods_desc;
+            $data[ 'order_id' ] = $this->order_id;
+            $data[ 'amount' ] = $this->amount;
+            $data[ 'type' ] = $this->type;
+            $data[ 'method' ] = $this->method;
+            $data[ 'notify_url' ] = $this->notify_url;
+            foreach ($this->optional_param as $val) { /* 判断可选参数是否设置 */
+                if ($this->$val) {
+                    $data[ $val ] = $val;
+                }
             }
-            if ($this->scene) {
-                $data['scene'] = $this->scene;
+            $data[ 'sign' ] = Sign::make($data, ['secret' => $this->appSecret]);
+            $res = Request::PostRequest(self::API_DOMIAN . $this->pay_api, $data);
+            $res = json_decode($res, true);
+            if (is_array($res) && $res[ 'code' ] == '000001') {
+                return $res[ 'data' ][ 'pay_info' ];
+            } else if (is_array($res)) {
+                throw new Exception('请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]);
+            } else {
+                throw new Exception('返回结果解析异常');
             }
-            if ($this->merchant_id) {
-                $data['merchant_id'] = $this->merchant_id;
-            }
-            if ($this->ip) {
-                $data['ip'] = $this->ip;
-            }
-            $data['sign'] = Sign::make($data, ['secret' => self::APP_SECRET]);
-            dump($data);
-//            dd('挂了~！~');
-            return Request::PostRequest(self::API_DOMIAN . $this->pay_api, $data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
-        return false;
-
-
     }
 
+
+    /**
+     * 查询
+     * @param $order_id
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function OrderQuery(string $order_id)
+    {
+        try {
+            $data = [
+                'app_id' => $this->appID,
+                'method' => 'query',
+            ];
+            $data[ 'order_id' ] = $order_id;
+            $data[ 'sign' ] = Sign::make($data, ['secret' => $this->appSecret]);
+            $res = Request::PostRequest(self::API_DOMIAN . $this->query_api, $data);
+            $res = json_decode($res, true);
+            if (is_array($res) && $res[ 'code' ] == '000003') {
+                return $res[ 'data' ][ 'order_info' ];
+            } else if (is_array($res)) {
+                throw new Exception('请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]);
+            } else {
+                throw new Exception('返回结果解析异常');
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * 退款
+     * @param string $order_id
+     * @return bool|mixed
+     * @throws Exception
+     */
+    public function OrderRefund(string $order_id)
+    {
+        try {
+            $data = [
+                'app_id' => $this->appID,
+                'method' => 'refund',
+            ];
+            $data[ 'order_id' ] = $order_id;
+            $data[ 'sign' ] = Sign::make($data, ['secret' => $this->appSecret]);
+            $res = Request::PostRequest(self::API_DOMIAN . $this->refund_api, $data);
+            $res = json_decode($res, true);
+            if (is_array($res) && $res[ 'code' ] == '000002') {
+                return $res[ 'data' ][ 'refund_info' ];
+            } else if (is_array($res)) {
+                throw new Exception('请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]);
+            } else {
+                throw new Exception('返回结果解析异常');
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * 异步通知接收
+     * @return mixed
+     * @throws Exception
+     */
+    public function Notify()
+    {
+        try {
+            $json_data = file_get_contents('php://input');
+            $data = json_decode($json_data);
+            if (Sign::check($data)) {
+                return $data;
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /********************************************************************************/
+    /**
+     * 设置商品名称
+     * @param $val
+     * @return $this
+     */
     public function setGoodsTitle($val)
     {
         $this->goods_title = $val;
         return $this;
     }
 
+    /**
+     * 设置商品描述
+     * @param $val
+     * @return $this
+     */
     public function setGoodsDesc($val)
     {
         $this->goods_desc = $val;
         return $this;
-
     }
 
+    /**
+     * 设置商户订单号
+     * @param $val
+     * @return $this
+     */
     public function setOrderId($val)
     {
         $this->order_id = $val;
         return $this;
     }
 
+    /**
+     * 设置价格 [单位/元]
+     * @param $val
+     * @return $this
+     */
     public function setAmount($val)
     {
         $this->amount = $val;
         return $this;
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
     public function setType($val)
     {
         $this->type = $val;
         return $this;
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
     public function setMethod($val)
     {
         $this->method = $val;
         return $this;
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
     public function setNotifyUrl($val)
     {
         $this->notify_url = $val;
         return $this;
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
     public function setReturnUrl($val)
     {
         $this->return_url = $val;
         return $this;
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
     public function setScene($val)
     {
         $this->scene = $val;
         return $this;
     }
 
+    /**
+     * @param $val
+     * @return $this
+     */
     public function setMerchantId($val)
     {
         $this->merchant_id = $val;
         return $this;
     }
 
-    public function setClientIp($val)
+    /**
+     * @param $val
+     * @return $this
+     */
+    public function setIp($val)
     {
         $this->ip = $val;
         return $this;

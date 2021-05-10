@@ -11,9 +11,11 @@ namespace App\Libs\Yuntong;
 class Config
 {
 
-    const APP_ID = 'app_d5d748e6d3e04dfe8a';
-    const APP_SECRET = 'sk_live_8B06DB8F29F94B20B50F9DCFA4DF904A';
-    const API_DOMIAN = 'http://api.foceplay.com/';
+//    const APP_ID = 'app_d5d748e6d3e04dfe8a'; /* 来客 TODO:上线使用 */
+//    const APP_SECRET = 'sk_live_8B06DB8F29F94B20B50F9DCFA4DF904A'; /* 来客 TODO:上线使用 */
+    const APP_ID = 'app_2ac357bae1ce441397'; /* 接口测试APP */
+    const APP_SECRET = 'sk_live_3a8a4723c00242cc9561'; /* 接口测试APP */
+    const API_DOMIAN = 'http://api.foceplay.com';
 
     protected string $appID;
     protected string $appSecret;
