@@ -27,6 +27,7 @@ class OrdersResources extends JsonResource
             'name' => $this->name,
             'created_at' => $this->created_at->format("Y-m-d H:i:s"),
             'pay_status' => $this->pay_status,
+            'numeric' => $this->numeric
         ];
     }
 }
