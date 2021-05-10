@@ -56,12 +56,52 @@ class BusinessService
 
             $businessData = $user->businessData()->first();
 
-            if (substr_count($request->banners, env('OSS_URL'))<=0) {
+            //查询商户申请表信息
+            $business_applyDB = new BusinessApply();
+            $business_apply_data = $business_applyDB->where('id',$businessData->business_apply_id)->first();
 
-                $imgUrl = OssService::base64Upload($request->banners);
-                $businessData->banners = $imgUrl;
+            //照片可以上传为空，为空就不修改图片
+            $business_applyDB->id = $businessData->business_apply_id;
+
+            //上传修改图片
+            $updateImg = 0;
+            if ($request->img!='') {
+                $imgUrl1 = OssService::base64Upload($request->img);
+                $business_applyDB->img = $imgUrl1;
+                $updateImg = 1;
+            }
+            if ($request->img2!='') {
+                $imgUrl2 = OssService::base64Upload($request->img2);
+                $business_applyDB->img2 = $imgUrl2;
+                $updateImg = 1;
+            }
+            if ($request->img_just!='') {
+                $imgUrl3 = OssService::base64Upload($request->img_just);
+                $business_applyDB->img_just = $imgUrl3;
+                $updateImg = 1;
+            }
+            if ($request->img_back!='') {
+                $imgUrl4 = OssService::base64Upload($request->img_back);
+                $business_applyDB->img_back = $imgUrl4;
+                $updateImg = 1;
+            }
+            if ($request->img_hold!='') {
+                $imgUrl5 = OssService::base64Upload($request->img_hold);
+                $business_applyDB->img_hold = $imgUrl5;
+                $updateImg = 1;
+            }
+            if ($request->img_details!='') {
+                $imgUrl6 = OssService::base64Upload($request->img_details);
+                $business_applyDB->img_details = $imgUrl6;
+                $updateImg = 1;
             }
 
+            //修改商家申请表
+            if ($updateImg==1){
+                $business_applyDB->save();
+            }
+
+            //修改商家信息表
             $businessData->contact_number = $request->contact_number;
             $businessData->address = $request->address;
             $businessData->category_id = $request->category_id;
@@ -75,13 +115,33 @@ class BusinessService
             $businessData->save();
             return true;
         }catch (PDOException $e) {
-            if(isset($imgUrl))
-                Storage::disk('oss')->delete($imgUrl);
+            if(isset($imgUrl1))
+                Storage::disk('oss')->delete($imgUrl1);
+            if(isset($imgUrl2))
+                Storage::disk('oss')->delete($imgUrl2);
+            if(isset($imgUrl3))
+                Storage::disk('oss')->delete($imgUrl3);
+            if(isset($imgUrl4))
+                Storage::disk('oss')->delete($imgUrl4);
+            if(isset($imgUrl5))
+                Storage::disk('oss')->delete($imgUrl5);
+            if(isset($imgUrl6))
+                Storage::disk('oss')->delete($imgUrl6);
             report($e);
             throw new LogicException('修改失败，请重试');
         } catch (Exception $e) {
-            if(isset($imgUrl))
-                Storage::disk('oss')->delete($imgUrl);
+            if(isset($imgUrl1))
+                Storage::disk('oss')->delete($imgUrl1);
+            if(isset($imgUrl2))
+                Storage::disk('oss')->delete($imgUrl2);
+            if(isset($imgUrl3))
+                Storage::disk('oss')->delete($imgUrl3);
+            if(isset($imgUrl4))
+                Storage::disk('oss')->delete($imgUrl4);
+            if(isset($imgUrl5))
+                Storage::disk('oss')->delete($imgUrl5);
+            if(isset($imgUrl6))
+                Storage::disk('oss')->delete($imgUrl6);
             throw $e;
         }
     }
