@@ -102,7 +102,7 @@ class OrderController extends Controller
             ->when($bOrder,function($query) use ($user) {
                 $query->where('business_uid', $user->id);
             })
-            ->orderBy('status', 'asc')
+            ->orderBy('order.created_at', 'desc')
             ->latest('id')
             ->forPage(Paginator::resolveCurrentPage('page'), $request->per_page ?: 10)
             ->get(['order.*', 'trade_order.numeric']);
