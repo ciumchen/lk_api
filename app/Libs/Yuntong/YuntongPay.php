@@ -177,17 +177,18 @@ class YuntongPay extends Config
 
     /**
      * 异步通知接收
-     * @return mixed
+     * @param array $data
+     * @return array|bool
      * @throws Exception
      */
-    public function Notify()
+    public function Notify(array $data)
     {
         try {
-            $json_data = file_get_contents('php://input');
-            $data = json_decode($json_data);
             if ( !is_array($data) || empty($data)) return false;
-            if (Sign::check($data)) {
+            if (Sign::check($data, ['secret' => $this->appSecret])) {
                 return $data;
+            } else {
+                throw new Exception('验签失败');
             }
         } catch (Exception $e) {
             throw $e;

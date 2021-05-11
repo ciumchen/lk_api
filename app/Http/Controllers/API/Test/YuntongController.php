@@ -59,12 +59,14 @@ class YuntongController extends Controller
 
     /**
      * 订单状态主动查询接口测试
+     * @param Request $request
      */
-    public function order_status()
+    public function order_status(Request $request)
     {
+        $order_id = $request->order_id;
         try {
             $Pay = new YuntongPay();
-            $res = $Pay->OrderQuery('order_no_1');
+            $res = $Pay->OrderQuery($order_id);
             dump($res);
             $res = json_decode($res, true);
 //array:9 [
@@ -86,12 +88,14 @@ class YuntongController extends Controller
 
     /**
      * 订单退款测试
+     * @param Request $request
      */
-    public function order_refund()
+    public function order_refund(Request $request)
     {
+        $order_id = $request->order_id;
         try {
             $Pay = new YuntongPay();
-            $res = $Pay->OrderRefund('order_no_1');
+            $res = $Pay->OrderRefund($order_id);
             dump($res);
             $res = json_decode($res, true);
 //array:8 [
@@ -117,18 +121,28 @@ class YuntongController extends Controller
     public function notify(Request $request)
     {
         try {
-            if ($request->isMethod('get')) {
-                Log::debug('YuntongPay_notify_get.log', [serialize($request->all())]);
-            } elseif ($request->isMethod('post')) {
-                Log::debug('YuntongPay_notify_post.log', [serialize($request->all())]);
-            } else {
-                Log::debug('YuntongPay_notify_else.log', [$request->getMethod()]);
-            }
-            $Pay = new YuntongPay();
-            $data = $Pay->Notify();
-            Log::debug('YuntongPay_notify.log', [serialize($data)]);
+            $data = $request->getContent();
+            Log::debug('YuntongPay_notify_post.log', ['getContent=' . $data]);
+//            $str = "a:8:{s:6:\"amount\";d:0.6;s:12:\"sys_order_id\";s:27:\"202105111537588934BF8862BFC\";s:11:\"create_time\";s:19:\"2021-05-11 15:37:58\";s:4:\"sign\";s:32:\"EA78C696FA3F54D98084A4D90A193450\";s:4:\"type\";s:15:\"payment.success\";s:8:\"order_id\";s:10:\"order_no_3\";s:6:\"app_id\";s:22:\"app_2ac357bae1ce441397\";s:8:\"pay_time\";s:19:\"2021-05-11 15:39:30\";}";
+//            $data = unserialize($str);
+//            $Pay = new YuntongPay();
+//            $res = $Pay->Notify($data);
+//            dump($res);
+//            dd($data);
+//            Log::debug('YuntongPay_notify.log', [serialize($data)]);
         } catch (\Exception $e) {
-            Log::debug('YuntongPay_notify_error.log', [serialize($e)]);
+//            throw $e;
+//            Log::debug('YuntongPay_notify_error.log', [serialize($e)]);
+        }
+        try {
+            $data = $request->all();
+            Log::debug('YuntongPay_notify_post.log', ['->all=' . $data]);
+        } catch (\Exception $e) {
+        }
+        try {
+            $data = $request->all();
+            Log::debug('YuntongPay_notify_post.log', ['json_encode' . json_encode($data)]);
+        } catch (\Exception $e) {
         }
     }
 
