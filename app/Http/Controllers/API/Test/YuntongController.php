@@ -51,7 +51,7 @@ class YuntongController extends Controller
 //  "pay_url" => "http://order.foceplay.com/o/payment/20210510112446348A37CD207ED"
 //  "status" => "pending"
 //]
-            response()->json($response);
+            return response()->json($response);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
