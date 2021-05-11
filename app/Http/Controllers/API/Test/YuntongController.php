@@ -120,29 +120,28 @@ class YuntongController extends Controller
      */
     public function notify(Request $request)
     {
+        $Pay = new YuntongPay();
         try {
-            $data = $request->getContent();
-            Log::debug('YuntongPay_notify_post.log', ['getContent=' . $data]);
-//            $str = "a:8:{s:6:\"amount\";d:0.6;s:12:\"sys_order_id\";s:27:\"202105111537588934BF8862BFC\";s:11:\"create_time\";s:19:\"2021-05-11 15:37:58\";s:4:\"sign\";s:32:\"EA78C696FA3F54D98084A4D90A193450\";s:4:\"type\";s:15:\"payment.success\";s:8:\"order_id\";s:10:\"order_no_3\";s:6:\"app_id\";s:22:\"app_2ac357bae1ce441397\";s:8:\"pay_time\";s:19:\"2021-05-11 15:39:30\";}";
-//            $data = unserialize($str);
-//            $Pay = new YuntongPay();
-//            $res = $Pay->Notify($data);
-//            dump($res);
-//            dd($data);
-//            Log::debug('YuntongPay_notify.log', [serialize($data)]);
+            $json = $request->getContent();
+            Log::debug('YuntongPay_notify_post.log', ['getContent=' . $json]);
+            $data = json_decode($json, true);
+            $res = $Pay->Notify($data);
+//$data =array:8 [
+//    "amount" => 0.6
+//"sys_order_id" => "202105111537588934BF8862BFC"
+//"create_time" => "2021-05-11 15:37:58"
+//"sign" => "EA78C696FA3F54D98084A4D90A193450"
+//"type" => "payment.success"
+//"order_id" => "order_no_3"
+//"app_id" => "app_2ac357bae1ce441397"
+//"pay_time" => "2021-05-11 15:39:30"
+//]
+            $Pay->Notify_success();
+            dump($res);
+            dd($data);
         } catch (\Exception $e) {
+            $Pay->Notify_failed();
 //            throw $e;
-//            Log::debug('YuntongPay_notify_error.log', [serialize($e)]);
-        }
-        try {
-            $data = $request->all();
-            Log::debug('YuntongPay_notify_post.log', ['->all=' . $data]);
-        } catch (\Exception $e) {
-        }
-        try {
-            $data = $request->all();
-            Log::debug('YuntongPay_notify_post.log', ['json_encode' . json_encode($data)]);
-        } catch (\Exception $e) {
         }
     }
 

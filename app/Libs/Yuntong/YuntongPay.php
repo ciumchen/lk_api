@@ -195,6 +195,19 @@ class YuntongPay extends Config
         }
     }
 
+    /**
+     * 异步通知处理成功返回;
+     */
+    public function Notify_success()
+    {
+        die('success');
+    }
+
+    public function Notify_failed()
+    {
+        exit('failed');
+    }
+
     /********************************************************************************/
     /**
      * 设置商品名称

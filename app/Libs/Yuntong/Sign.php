@@ -18,16 +18,13 @@ class Sign
         try {
             if (is_array($data) && !empty($data)) {
                 $status = ksort($data);
-//                dump($data);
                 if ($status == false) {
                     throw new Exception('array key sort failed');
                 }
                 if ( !empty($salt)) {
                     $data = array_merge($data, $salt);
                 }
-//                dump($data);
                 $str = self::params_build($data);
-//                dump($str);
                 $sign = md5($str);
             } else {
                 throw new Exception('sign can not be generate by empty array.');
@@ -47,18 +44,17 @@ class Sign
     static public function check(array $data, array $salt = [])
     {
         try {
-//            dump($data);
             $origin_sign = $data[ 'sign' ];
             $exclude = ['create_time', 'sign', 'pay_time', 'refund_time'];
-            foreach ($exclude as $key) {
+            foreach ($exclude as $key) { /*去除不参与签名的字段*/
                 if (array_key_exists($key, $data)) {
                     unset($data[ $key ]);
                 }
             }
+            if ($data[ 'amount' ]) { /*防止json_decode之后自动省略*/
+                $data[ 'amount' ] = sprintf("%.2f", $data[ 'amount' ]);
+            }
             $sign = self::make($data, $salt);
-//            dump(strtoupper($origin_sign));
-//            dump(strtoupper($sign));
-//            dump($data);
             if (strtolower($sign) == strtolower($origin_sign)) {
                 return true;
             } else {
