@@ -97,7 +97,7 @@ class OrderController extends Controller
                 $join->on('order.id', 'trade_order.oid');
             })
             ->when(!$bOrder,function($query) use ($user) {
-                return $query->where('uid', 8);
+                return $query->where('uid', $user->id);
             })
             ->when($bOrder,function($query) use ($user) {
                 $query->where('business_uid', $user->id);
