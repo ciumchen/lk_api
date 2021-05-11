@@ -110,32 +110,6 @@ class OrderController extends Controller
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => OrdersResources::collection($data)]);
     }
 
-    /**获取我的订单
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function getOrdersList(Request $request)
-    {
-        $this->validate($request, [
-            'page' => ['bail', 'nullable', 'int', 'min:1'],
-            'per_page' => ['bail', 'nullable', 'int', 'min:1', 'max:50'],
-        ]);
-
-        $user = $request->user();
-
-        $data = (new Order())
-            ->where(function($query) use ($user) {
-                $query->where('uid', $user->id);
-            })
-            ->orderBy('order.created_at', 'desc')
-            ->latest('id')
-            ->forPage(Paginator::resolveCurrentPage('page'), $request->per_page ?: 10)
-            ->get();
-
-        return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => OrdersResources::collection($data)]);
-    }
-
     /**删除
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
