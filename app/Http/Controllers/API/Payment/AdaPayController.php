@@ -54,7 +54,7 @@ class AdaPayController extends Controller
         if ($paymentData['description'] == 'HF' && $totalPrice >= 500)
         {
             throw new LogicException('本月话费充值金额已达上限');
-        } elseif ($paymentData['description'] == 'YK' && $totalPrice >= 0)
+        } elseif ($paymentData['description'] == 'YK' && $totalPrice >= 2000)
         {
             throw new LogicException('本月油卡充值金额已达上限');
         }
