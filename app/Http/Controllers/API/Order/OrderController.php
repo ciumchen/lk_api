@@ -97,7 +97,7 @@ class OrderController extends Controller
                 $join->on('order.id', 'trade_order.oid');
             })
             ->when(!$bOrder,function($query) use ($user) {
-                return $query->where('uid', $user->id);
+                return $query->where('uid', 8);
             })
             ->when($bOrder,function($query) use ($user) {
                 $query->where('business_uid', $user->id);
@@ -105,6 +105,7 @@ class OrderController extends Controller
             ->orderBy('order.created_at', 'desc')
             ->latest('id')
             ->forPage(Paginator::resolveCurrentPage('page'), $request->per_page ?: 10)
+            ->distinct('order.id')
             ->get(['order.*', 'trade_order.numeric']);
 
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => OrdersResources::collection($data)]);

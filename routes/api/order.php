@@ -6,7 +6,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('order', 'Order\OrderController');
 
     //获取我的订单
-    Route::get("get-my-orders","Order\OrderController@getMyOrders");
+    //Route::get("get-my-orders","Order\OrderController@getMyOrders");
 
     //删除订单
     Route::post("del-order","Order\OrderController@delOrder");
@@ -18,6 +18,8 @@ Route::any("consumer","Order\MyShareController@Consumer");
 Route::any("merchant","Order\MyShareController@Merchant");
 Route::any("team","Order\MyShareController@Team");
 Route::any("mytest","Order\MyShareController@test");
+
+Route::get("get-my-orders","Order\OrderController@getMyOrders");
 
 //当前登录用户的lk
 Route::any("getLkCount","Order\MyShareController@getLkCount");
