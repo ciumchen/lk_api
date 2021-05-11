@@ -13,65 +13,65 @@ class YuntongPay extends Config
      * [必须]
      * @var string 订单标题
      */
-    private string $goods_title;
+    private $goods_title;
 
     /**
      * [必须]
      * @var string 订单明细
      */
-    private string $goods_desc;
+    private  $goods_desc;
 
     /**
      * [必须]
      * @var string 商户订单号
      */
-    private string $order_id;
+    private  $order_id;
 
     /**
      * [必须]
      * @var float 支付金额
      */
-    private float $amount;
+    private  $amount;
 
     /**
      * [必须]
      * @var string 支付类型 固定值：alipay|wx|unionpay
      */
-    private string $type;
+    private  $type;
 
     /**
      * [必须]
-     * @var string 支付方式 固定值：app|wap|qr|mini|pub
+     * @var  支付方式 固定值：app|wap|qr|mini|pub
      */
-    private string $method;
+    private  $method;
 
     /**
      * [必须]
      * @var string 异步通知地址
      */
-    private string $notify_url;
+    private  $notify_url;
 
 
     /**
      * @var string 同步返回地址 仅支持app和wap渠道
      */
-    protected string $return_url = '';
+    protected  $return_url = '';
 
     /**
      * @var string 场景 固定值[ios|android]
      */
-    protected string $scene = '';
+    protected  $scene = '';
 
     /**
      * @var string 商户id 特定场景传递，默认不传
      */
-    protected string $merchant_id = '';
+    protected  $merchant_id = '';
 
     /**
      * 用户端IP
      * 在type为wx，method为wap时必填（微信H5）
      */
-    protected string $ip = '';
+    protected  $ip = '';
 
 
     /**
