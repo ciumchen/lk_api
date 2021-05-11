@@ -117,8 +117,13 @@ class YuntongController extends Controller
     public function notify(Request $request)
     {
         try {
-            Log::debug('YuntongPay_notify_post.log', [serialize($request->post())]);
-            Log::debug('YuntongPay_notify_get.log', [serialize($request->get())]);
+            if ($request->isMethod('get')) {
+                Log::debug('YuntongPay_notify_get.log', [serialize($request->all())]);
+            } elseif ($request->isMethod('post')) {
+                Log::debug('YuntongPay_notify_post.log', [serialize($request->all())]);
+            } else {
+                Log::debug('YuntongPay_notify_else.log', [$request->getMethod()]);
+            }
             $Pay = new YuntongPay();
             $data = $Pay->Notify();
             Log::debug('YuntongPay_notify.log', [serialize($data)]);

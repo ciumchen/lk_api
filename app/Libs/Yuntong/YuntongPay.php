@@ -185,6 +185,7 @@ class YuntongPay extends Config
         try {
             $json_data = file_get_contents('php://input');
             $data = json_decode($json_data);
+            if ( !is_array($data) || empty($data)) return false;
             if (Sign::check($data)) {
                 return $data;
             }
