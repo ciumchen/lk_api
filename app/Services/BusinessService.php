@@ -90,9 +90,19 @@ class BusinessService
                 $business_applyDB->img_hold = $imgUrl5;
                 $updateImg = 1;
             }
-            if ($request->img_details!='') {
-                $imgUrl6 = OssService::base64Upload($request->img_details);
-                $business_applyDB->img_details = $imgUrl6;
+            if ($request->img_details1!='') {
+                $imgUrl6 = OssService::base64Upload($request->img_details1);
+                $business_applyDB->img_details1 = $imgUrl6;
+                $updateImg = 1;
+            }
+            if ($request->img_details2!='') {
+                $imgUrl7 = OssService::base64Upload($request->img_details2);
+                $business_applyDB->img_details2 = $imgUrl7;
+                $updateImg = 1;
+            }
+            if ($request->img_details3!='') {
+                $imgUrl8 = OssService::base64Upload($request->img_details3);
+                $business_applyDB->img_details3 = $imgUrl8;
                 $updateImg = 1;
             }
 
@@ -127,6 +137,10 @@ class BusinessService
                 Storage::disk('oss')->delete($imgUrl5);
             if(isset($imgUrl6))
                 Storage::disk('oss')->delete($imgUrl6);
+            if(isset($imgUrl7))
+                Storage::disk('oss')->delete($imgUrl7);
+            if(isset($imgUrl8))
+                Storage::disk('oss')->delete($imgUrl8);
             report($e);
             throw new LogicException('修改失败，请重试');
         } catch (Exception $e) {
@@ -142,6 +156,10 @@ class BusinessService
                 Storage::disk('oss')->delete($imgUrl5);
             if(isset($imgUrl6))
                 Storage::disk('oss')->delete($imgUrl6);
+            if(isset($imgUrl7))
+                Storage::disk('oss')->delete($imgUrl7);
+            if(isset($imgUrl8))
+                Storage::disk('oss')->delete($imgUrl8);
             throw $e;
         }
     }
