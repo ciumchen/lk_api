@@ -240,6 +240,12 @@ class BusinessController extends Controller
 
         $data['business']['img'] = $business_apply_data->img;
         $data['business']['img2'] = $business_apply_data->img2;
+        $data['business']['img_just'] = $business_apply_data->img_just;
+        $data['business']['img_back'] = $business_apply_data->img_back;
+        $data['business']['img_hold'] = $business_apply_data->img_hold;
+        $data['business']['img_details1'] = $business_apply_data->img_details1;
+        $data['business']['img_details2'] = $business_apply_data->img_details2;
+        $data['business']['img_details3'] = $business_apply_data->img_details3;
 
         $data['business_category'] = BusinessCategory::select(DB::raw('name as text, id as value'))->get();
         $data['category'] = BusinessCategory::whereId($data['business']->category_id)->value('name');
