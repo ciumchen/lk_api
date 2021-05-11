@@ -53,6 +53,7 @@ class AdaPayController extends Controller
         $totalPrice = $tradeOrder->getMonthSum($sumData);
         if ($paymentData['description'] == 'HF' && $totalPrice > 50)
         {
+            Log::info('*******', ['code' => $totalPrice]);
             throw new LogicException('本月话费充值金额已达上限');
         } elseif ($paymentData['description'] == 'YK' && $totalPrice > 100)
         {
