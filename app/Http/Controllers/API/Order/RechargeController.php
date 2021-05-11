@@ -65,15 +65,28 @@ class RechargeController extends Controller
 
         //组装请求数据
         $userInfoData = (new TradeOrder())->getUser($data['order_no']);
+        $tradeOrderInfo = (new TradeOrder())->tradeOrderInfo($data['order_no']);
         $cardnum = 1;
+        $chargeType = 1;
         $game_userid = $data['game_userid'];
         $orderid = $data['order_no'];
-        if ($data['price'] == 1000)
+
+        if (substr($game_userid, 0, 6) == '100011' && strlen($game_userid) == 19)
         {
-            $proid = 10004;
-        } else
+            //中石化
+            if ($data['price'] == 1000)
+            {
+                $proid = 10004;
+            } else
+            {
+                $proid = -1;
+            }
+        } elseif (substr($game_userid, 0, 2) == '90' && strlen($game_userid) == 16)
         {
-            $proid = -1;
+            //中石油
+            $proid = 10008;
+            $cardnum = $data['price'];
+            $chargeType = 2;
         }
 
         $sign = md5(self::openId . $key . $proid . $cardnum . $game_userid . $orderid);
@@ -86,8 +99,8 @@ class RechargeController extends Controller
                 'cardnum'     => $cardnum,
                 'orderid'     => $orderid,
                 'game_userid' => $game_userid,
-                'gasCardTel'  => $userInfoData->phone,
-                'chargeType'  => 1,
+                'gasCardTel'  => $tradeOrderInfo->remarks ?: $userInfoData->phone,
+                'chargeType'  => $chargeType,
                 'key'         => $key,
                 'sign'        => $sign,
             ],

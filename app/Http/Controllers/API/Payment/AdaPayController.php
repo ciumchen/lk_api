@@ -51,10 +51,10 @@ class AdaPayController extends Controller
             'description' => $paymentData['description']
         ];
         $totalPrice = $tradeOrder->getMonthSum($sumData);
-        if ($paymentData['description'] == 'HF' && $totalPrice >= 500)
+        if ($paymentData['description'] == 'HF' && $totalPrice > 500)
         {
             throw new LogicException('本月话费充值金额已达上限');
-        } elseif ($paymentData['description'] == 'YK' && $totalPrice >= 2000)
+        } elseif ($paymentData['description'] == 'YK' && $totalPrice > 2000)
         {
             throw new LogicException('本月油卡充值金额已达上限');
         }
