@@ -78,7 +78,7 @@ class YuntongPay extends Config
      * 可选参数
      * @var array
      */
-    private array $optional_param = ['return_url', 'scene', 'merchant_id', 'ip'];
+    private $optional_param = ['return_url', 'scene', 'merchant_id', 'ip'];
 
     /**
      * @return bool|string
