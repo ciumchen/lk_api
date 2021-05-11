@@ -54,9 +54,9 @@ class AdaPayController extends Controller
         if ($paymentData['description'] == 'HF' && $totalPrice >= 500)
         {
             throw new LogicException('本月话费充值金额已达上限');
-        } elseif ($paymentData['description'] == 'LR' && $totalPrice >= 1000)
+        } elseif ($paymentData['description'] == 'YK' && $totalPrice >= 2000)
         {
-            throw new LogicException('本月录单充值金额已达上限');
+            throw new LogicException('本月油卡充值金额已达上限');
         }
 
         $status = $tradeOrder->checkOrderPay($uid);
@@ -144,6 +144,10 @@ class AdaPayController extends Controller
         if ($paymentData['description'] == 'MT')
         {
             $orderData['remarks'] = $paymentData['name'];
+        } elseif ($paymentData['description'] == 'YK')
+        {
+            //油卡备注手机号
+            $orderData['remarks'] = $paymentData['telephone'];
         }
 
         if ($paymentData['description'] == 'LR')
