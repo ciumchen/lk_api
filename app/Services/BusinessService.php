@@ -114,6 +114,7 @@ class BusinessService
                 $imgData['img_details3']=$imgUrl8;
             }
 
+            return response()->json(['code'=>0, 'msg'=>$imgData]);
             //修改商家申请表
             if ($updateImg==1){
                 $business_applyDB->update($imgData);
