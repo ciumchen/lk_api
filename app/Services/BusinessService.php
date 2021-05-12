@@ -61,7 +61,7 @@ class BusinessService
             $business_apply_data = $business_applyDB->where('id',$businessData->business_apply_id)->first();
 
             //照片可以上传为空，为空就不修改图片
-            $business_applyDB->id = $businessData->business_apply_id;
+            $business_applyDB->id = $business_apply_data->business_apply_id;
 
             //上传修改图片
             $updateImg = 0;
