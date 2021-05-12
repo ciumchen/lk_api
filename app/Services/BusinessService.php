@@ -63,6 +63,7 @@ class BusinessService
             //照片可以上传为空，为空就不修改图片
             $business_applyDB->id = $business_apply_data->business_apply_id;
 
+            $imgData['img'] = $business_apply_data->business_apply_id;
             //上传修改图片
             $updateImg = 0;
             if ($request->img!='') {
@@ -117,7 +118,8 @@ class BusinessService
             Log::info("oss图片log:",$imgData);
             //修改商家申请表
             if ($updateImg==1){
-                $business_applyDB->update($imgData);
+                $ossDatare = $business_applyDB->update($imgData);
+                Log::info("oss图片log2:",$ossDatare);
             }
 
             //修改商家信息表
