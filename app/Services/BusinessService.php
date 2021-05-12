@@ -52,6 +52,67 @@ class BusinessService
      * @throws LogicException
      */
     public static function updateBusiness($request,$user){
+        $businessData = $user->businessData()->first();
+
+        //查询商户申请表信息
+        $business_applyDB = new BusinessApply();
+        $business_apply_data = $business_applyDB->where('id',$businessData->business_apply_id)->first();
+
+        //照片可以上传为空，为空就不修改图片
+        $business_applyDB->id = $business_apply_data->business_apply_id;
+
+        //上传修改图片
+        $updateImg = 0;
+        if ($request->img!='') {
+            $imgUrl1 = OssService::base64Upload($request->img);
+            $business_applyDB->img = $imgUrl1;
+            $updateImg = 1;
+            $imgData['img']=$imgUrl1;
+        }
+        if ($request->img2!='') {
+            $imgUrl2 = OssService::base64Upload($request->img2);
+            $business_applyDB->img2 = $imgUrl2;
+            $updateImg = 1;
+            $imgData['img2']=$imgUrl2;
+        }
+        if ($request->img_just!='') {
+            $imgUrl3 = OssService::base64Upload($request->img_just);
+            $business_applyDB->img_just = $imgUrl3;
+            $updateImg = 1;
+            $imgData['img_just']=$imgUrl3;
+        }
+        if ($request->img_back!='') {
+            $imgUrl4 = OssService::base64Upload($request->img_back);
+            $business_applyDB->img_back = $imgUrl4;
+            $updateImg = 1;
+            $imgData['img_back']=$imgUrl4;
+        }
+        if ($request->img_hold!='') {
+            $imgUrl5 = OssService::base64Upload($request->img_hold);
+            $business_applyDB->img_hold = $imgUrl5;
+            $updateImg = 1;
+            $imgData['img_hold']=$imgUrl5;
+        }
+        if ($request->img_details1!='') {
+            $imgUrl6 = OssService::base64Upload($request->img_details1);
+            $business_applyDB->img_details1 = $imgUrl6;
+            $updateImg = 1;
+            $imgData['img_details1']=$imgUrl6;
+        }
+        if ($request->img_details2!='') {
+            $imgUrl7 = OssService::base64Upload($request->img_details2);
+            $business_applyDB->img_details2 = $imgUrl7;
+            $updateImg = 1;
+            $imgData['img_details2']=$imgUrl7;
+        }
+        if ($request->img_details3!='') {
+            $imgUrl8 = OssService::base64Upload($request->img_details3);
+            $business_applyDB->img_details3 = $imgUrl8;
+            $updateImg = 1;
+            $imgData['img_details3']=$imgUrl8;
+        }
+
+        return response()->json(['code'=>0, 'msg'=>$imgData]);exit;
         try{
 
             $businessData = $user->businessData()->first();
@@ -114,7 +175,7 @@ class BusinessService
                 $imgData['img_details3']=$imgUrl8;
             }
 
-            return response()->json(['code'=>0, 'msg'=>$imgData]);
+            return response()->json(['code'=>0, 'msg'=>$imgData]);exit;
             //修改商家申请表
             if ($updateImg==1){
                 $business_applyDB->update($imgData);
