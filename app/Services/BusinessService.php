@@ -8,7 +8,7 @@ use App\Models\BusinessData;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use PDOException;
-
+use Illuminate\Support\Facades\Log;
 class BusinessService
 {
     /**申请成为商家
@@ -114,6 +114,7 @@ class BusinessService
                 $imgData['img_details3']=$imgUrl8;
             }
 
+            Log::info("oss图片log:",$imgData);
             //修改商家申请表
             if ($updateImg==1){
                 $business_applyDB->update($imgData);
