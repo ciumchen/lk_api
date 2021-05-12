@@ -108,7 +108,7 @@ class BusinessService
 
             //修改商家申请表
             if ($updateImg==1){
-                $business_applyDB->save();
+                $business_applyDB->update();
             }
 
             //修改商家信息表
