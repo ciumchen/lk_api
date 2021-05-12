@@ -27,8 +27,8 @@ class BusinessService
                 'phone' => $request->phone,
                 'uid' => $user->id,
                 'name' => $request->name,
-                'address' => $request->address,
-                'work' => $request->work,
+//                'address' => $request->address,
+//                'work' => $request->work,
                 'img' => $imgUrl,
                 'img2' => $imgUrl2
             ]);

@@ -29,8 +29,8 @@ class ApplyBusinessRequest extends FormRequest
             'img' => ['bail', 'required'],
             'phone' => ['bail','required', new PhoneNumber()],
             'name' => ['bail', 'required'],
-            'address' => ['bail', 'required'],
-            'work' => ['bail', 'required'],
+//            'address' => ['bail', 'required'],
+//            'work' => ['bail', 'required'],
             'img2' => ['bail', 'required'],
         ];
     }
@@ -46,8 +46,8 @@ class ApplyBusinessRequest extends FormRequest
             'img' => '营业执照',
             'phone' => '联系电话',
             'name' => '联系人',
-            'address' => '商家地址',
-            'work' => '主营业务',
+//            'address' => '商家地址',
+//            'work' => '主营业务',
             'img2' => '门头照',
         ];
     }
