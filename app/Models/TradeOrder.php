@@ -9,9 +9,19 @@ use App\Exceptions\LogicException;
 
 class TradeOrder extends Model
 {
+
     use HasFactory;
 
     protected $table = 'trade_order';
+
+    /**
+     * 生成订单号
+     * @return string
+     */
+    public function CreateOrderNo()
+    {
+        return "PY_" . date("YmdHis") . rand(100000, 999999);
+    }
 
     /**生成订单
      * @param array $data
@@ -28,17 +38,14 @@ class TradeOrder extends Model
      * @return array
      * @throws
      */
-    public function checkOrderPay (int $uid)
+    public function checkOrderPay(int $uid)
     {
         $res = DB::table($this->table)->where([['user_id', '=', $uid], ['status', '=', 'await']])->get();
-        if (!$res)
+        if ( !$res)
             throw new LogicException('请先下单');
-
-        if (count($res) > 0)
-        {
+        if (count($res) > 0) {
             return ['code' => 1, 'msg' => '订单待支付'];
-        } else
-        {
+        } else {
             return ['code' => -1, 'msg' => '订单已支付'];
         }
     }
@@ -49,36 +56,30 @@ class TradeOrder extends Model
      */
     public function upTradeOrder(array $data)
     {
-        $orderInfo = DB::table('trade_order')->where('order_no', '=', $data['order_no'])->get()->toArray();
+        $orderInfo = DB::table('trade_order')->where('order_no', '=', $data[ 'order_no' ])->get()->toArray();
         $order = [];
-        foreach ($orderInfo as $val)
-        {
+        foreach ($orderInfo as $val) {
             $order = $val;
         }
         $orderData = get_object_vars($order);
-
-        if (!$orderInfo)
+        if ( !$orderInfo)
             throw new LogicException('订单不存在');
-        if ($orderData['status'] != 'await')
+        if ($orderData[ 'status' ] != 'await')
             throw new LogicException('订单已支付');
-
         $orderIntegral = 0;
-
         //计算让利金额
-        $profitPrice = $orderData['need_fee'] * $orderData['profit_ratio'];
-
+        $profitPrice = $orderData[ 'need_fee' ] * $orderData[ 'profit_ratio' ];
         try {
-            if ($data['status'] == 'succeeded' && !in_array($orderData['status'], ['pending', 'succeeded']))
-            {
+            if ($data[ 'status' ] == 'succeeded' && !in_array($orderData[ 'status' ], ['pending', 'succeeded'])) {
                 //更新订单表
                 $upData = [
-                    'status' => $data['status'],
+                    'status'       => $data[ 'status' ],
                     'profit_price' => $profitPrice,
-                    'integral' => $orderIntegral,
-                    'pay_time' => $data['pay_time'],
-                    'end_time' => $data['end_time'],
+                    'integral'     => $orderIntegral,
+                    'pay_time'     => $data[ 'pay_time' ],
+                    'end_time'     => $data[ 'end_time' ],
                 ];
-                DB::table('trade_order')->where('order_no', $data['order_no'])->update($upData);
+                DB::table('trade_order')->where('order_no', $data[ 'order_no' ])->update($upData);
             }
         } catch (Exception $e) {
             throw $e;
@@ -112,7 +113,7 @@ class TradeOrder extends Model
      */
     public function getUser(string $orderNo)
     {
-        return DB::table($this->table)->join('users', function ($join) use($orderNo) {
+        return DB::table($this->table)->join('users', function ($join) use ($orderNo) {
             $join->on('trade_order.user_id', '=', 'users.id')
                 ->where(['trade_order.order_no' => $orderNo, 'users.status' => 1]);
         })->get()->first();
@@ -127,4 +128,6 @@ class TradeOrder extends Model
     {
         return DB::table($this->table)->where('oid', $oid)->first();
     }
+
+
 }

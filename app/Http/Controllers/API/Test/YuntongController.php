@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api\Test;
 
+use App\Http\Controllers\api\Payment\YuntongPayController;
 use App\Http\Controllers\Controller;
 use App\Libs\Yuntong\YuntongPay;
 use Illuminate\Http\Request;
@@ -143,6 +144,13 @@ class YuntongController extends Controller
             $Pay->Notify_failed();
 //            throw $e;
         }
+    }
+
+
+    public function order(Request $request)
+    {
+        $YuntongPayController = new YuntongPayController();
+        dd($YuntongPayController->createPay($request));
     }
 
 

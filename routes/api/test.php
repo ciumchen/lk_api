@@ -9,7 +9,7 @@ Route::post('yttest1', 'Test\YuntongController@pay');
 Route::post('yttest2', 'Test\YuntongController@order_status');
 Route::post('yttest3', 'Test\YuntongController@order_refund');
 Route::any('yttest4', 'Test\YuntongController@notify');
-Route::post('yttest5', 'Test\YuntongController@index');
+Route::any('yttest5', 'Test\YuntongController@order');
 Route::post('yttest6', 'Test\YuntongController@index');
 
 
