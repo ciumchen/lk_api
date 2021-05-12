@@ -77,6 +77,9 @@ class RechargeController extends Controller
             if ($data['price'] == 1000)
             {
                 $proid = 10004;
+            } elseif ($data['price'] == 500)
+            {
+                $proid = 10003;
             } else
             {
                 $proid = -1;

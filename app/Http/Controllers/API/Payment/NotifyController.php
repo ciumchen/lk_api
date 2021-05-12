@@ -98,9 +98,6 @@ class NotifyController extends Controller
                 //更新订单状态
                 $tradeOrder->upTradeOrder($tradeOrderData);
 
-                //更新order 表状态
-                //$order->upOrder($json_data['order_no']);
-
                 //自动充值
                 if ($json_data['description'] == "HF")
                 {
