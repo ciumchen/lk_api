@@ -24,14 +24,12 @@ class GetBusinessController extends Controller
         $data = (new BusinessData())
             ->where("status", 1)
             ->where('is_recommend', 1)
-            ->with(['businessApply' => function ($query) {$query->select('img2','img_details1','img_details2','img_details3');}])
-
+            ->with(['businessApply'])
             ->orderBy('is_recommend', 'desc')
             ->orderBy('sort', 'desc')
             ->latest('id')
             ->forPage($page, $pageSize)
-            ->get(['id','name','district','category','contact_number','address','run_time','created_at',
-                'banners']);
+            ->get();
 
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
