@@ -14,7 +14,6 @@ use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
