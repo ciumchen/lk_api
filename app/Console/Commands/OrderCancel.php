@@ -38,6 +38,7 @@ class OrderCancel extends Command
      */
     public function handle()
     {
+        Log::info('**********' . '1111111111111111');
         $year = date("Y");
         $month = date("m");
         $day = date("d");
