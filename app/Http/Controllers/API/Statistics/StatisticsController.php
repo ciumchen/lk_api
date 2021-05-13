@@ -119,11 +119,11 @@ class StatisticsController extends Controller
 
         //昨日消费5%-10%-20%的消费金额的统计
         $Data['yesterdayPriceTotal']['rl5'] = DB::table('order')->where('profit_ratio',5)->where('status',2)
-            ->where('updated_at','>',date('Y-m-d',strtotime("-2 day")))->where('updated_at','<',date('Y-m-d',time()))->sum('price');
+            ->where('updated_at','>',date('Y-m-d',strtotime("-1 day")))->where('updated_at','<',date('Y-m-d',time()))->sum('price');
         $Data['yesterdayPriceTotal']['rl10'] = DB::table('order')->where('profit_ratio',10)->where('status',2)
-            ->where('updated_at','>',date('Y-m-d',strtotime("-2 day")))->where('updated_at','<',date('Y-m-d',time()))->sum('price');
+            ->where('updated_at','>',date('Y-m-d',strtotime("-1 day")))->where('updated_at','<',date('Y-m-d',time()))->sum('price');
         $Data['yesterdayPriceTotal']['rl20'] = DB::table('order')->where('profit_ratio',20)->where('status',2)
-            ->where('updated_at','>',date('Y-m-d',strtotime("-2 day")))->where('updated_at','<',date('Y-m-d',time()))->sum('price');
+            ->where('updated_at','>',date('Y-m-d',strtotime("-1 day")))->where('updated_at','<',date('Y-m-d',time()))->sum('price');
 
         return $Data;
     }

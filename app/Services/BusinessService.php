@@ -119,7 +119,6 @@ class BusinessService
                 }
 
             }
-            Log::info("修改商家信息log:1111111111111111111111111111111================================");
             //修改商家身份证表图片
             if ($user_updateImg==1){
                 $res = DB::table('user_id_img')->where('uid',$userIdImgData['uid'])->where('business_apply_id',$userIdImgData['business_apply_id'])->first();
@@ -151,7 +150,6 @@ class BusinessService
 //                }
 
             }
-            Log::info("修改商家信息log:22222222222222222222222222222222=====================================");
             //修改商家信息表
             $businessData->contact_number = $request->contact_number;
             $businessData->address = $request->address;
@@ -164,7 +162,6 @@ class BusinessService
             $businessData->main_business = $request->main_business;
             $businessData->run_time = $request->start_time.'-'.$request->end_time;
             $businessData->save();
-            Log::info("修改商家信息log:33333333333333333333333333333333333=====================================");
             return true;
         }catch (PDOException $e) {
             foreach ($imgArrData as $k=>$v){
