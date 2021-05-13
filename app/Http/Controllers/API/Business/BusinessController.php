@@ -237,7 +237,7 @@ class BusinessController extends Controller
 
         //查询商户的营业执照和头图
         $business_apply_data = DB::table('business_apply')->where('id',$data['business']->business_apply_id)->first();
-        $userIdImgData = DB::table('user_id_img')->where('business_apply_id',$data['business']->id)->first();
+        $userIdImgData = DB::table('user_id_img')->where('business_apply_id',$data['business']->business_apply_id)->first();
 
         $data['business']['img'] = $business_apply_data->img;
         $data['business']['img2'] = $business_apply_data->img2;
