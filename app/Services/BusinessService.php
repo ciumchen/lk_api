@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Exceptions\LogicException;
 use App\Models\BusinessApply;
+use App\Models\UserIdImg;
 use App\Models\BusinessData;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use PDOException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+
 class BusinessService
 {
     /**申请成为商家
@@ -104,7 +106,8 @@ class BusinessService
             Log::info("oss图片身份证表log:",$userIdImgData);
             //修改商家申请表
             if ($updateImg==1){
-                $re = DB::table('business_apply')->where('id',$businessApplyData['id'])->update($businessApplyData);
+                $re = BusinessApply::save($businessApplyData);
+//                $re = DB::table('business_apply')->where('id',$businessApplyData['id'])->update($businessApplyData);
                 if ($re){
                     Log::info("oss图片申请表修改成功");
                 }else{
@@ -116,21 +119,25 @@ class BusinessService
             //修改商家身份证表图片
             if ($user_updateImg==1){
                 $res = DB::table('user_id_img')->where('uid',$userIdImgData['uid'])->where('business_apply_id',$userIdImgData['business_apply_id'])->first();
-                if ($res){//有记录就更新记录
-                    $re = DB::table('user_id_img')->where('id',$res->id)->update($userIdImgData);
-                    if ($re){
-                        Log::info("oss图片身份证信息表修改成功");
-                    }else{
-                        Log::info("oss图片身份证信息表修改失败");
-                    }
-                }else{//没有记录就插入数据
-                    $re = DB::table('user_id_img')->insert($userIdImgData);
-                    if ($re){
-                        Log::info("oss图片身份证信息表插入成功");
-                    }else{
-                        Log::info("oss图片身份证信息表插入失败");
-                    }
+                if ($res){
+                    $userIdImgData['id'] = $res->id;
                 }
+                UserIdImg::save($userIdImgData);
+//                if ($res){//有记录就更新记录
+//                    $re = DB::table('user_id_img')->where('id',$res->id)->update($userIdImgData);
+//                    if ($re){
+//                        Log::info("oss图片身份证信息表修改成功");
+//                    }else{
+//                        Log::info("oss图片身份证信息表修改失败");
+//                    }
+//                }else{//没有记录就插入数据
+//                    $re = DB::table('user_id_img')->insert($userIdImgData);
+//                    if ($re){
+//                        Log::info("oss图片身份证信息表插入成功");
+//                    }else{
+//                        Log::info("oss图片身份证信息表插入失败");
+//                    }
+//                }
 
             }
             Log::info("修改商家信息log:22222222222222222222222222222222=====================================");
