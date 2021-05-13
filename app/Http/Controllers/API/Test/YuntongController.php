@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Libs\Yuntong\YuntongPay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class YuntongController 云通支付接口测试类
@@ -150,7 +151,21 @@ class YuntongController extends Controller
     public function order(Request $request)
     {
         $YuntongPayController = new YuntongPayController();
-        dd($YuntongPayController->createPay($request));
+        $res = $YuntongPayController->createPay($request);
+        $trade_order = Schema::getColumnListing('trade_order');
+        $order = Schema::getColumnListing('order');
+        $trade_order_keys = array_flip($trade_order);
+        $order_keys = array_flip($order);
+        dump('$trade_order=');
+        dump($trade_order_keys);
+        dump('$order=');
+        dump($order_keys);
+        dump('diff');
+        dump(array_diff_key($trade_order_keys, $order_keys));
+        dump('merge');
+        dump(array_keys(array_merge($trade_order_keys, $order_keys)));
+        dump(array_diff_key($res, $trade_order_keys));
+        dd($res);
     }
 
 

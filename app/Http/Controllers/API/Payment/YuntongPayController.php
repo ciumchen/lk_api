@@ -1,86 +1,59 @@
 <?php
 
-namespace App\Http\Controllers\api\Payment;
+namespace App\Http\Controllers\API\Payment;
 
-use App\Http\Controllers\API\Order\TradeOrderController;
+use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\TradeOrder;
+use App\Models\Traits\AllowField;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Libs\Yuntong\YuntongPay;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use const pcov\all;
 
 class YuntongPayController extends Controller
 {
 
+    use AllowField;
+
+    /**
+     * 订单 trade_order 表插入数据
+     * @param array $data 已经组装好的订单数据
+     * @return bool
+     * @throws Exception
+     */
     public function createTradeOrder($data = [])
     {
-        $uid = $data[ 'uid' ];
-        $TradeOrder = new TradeOrder();
-        $totalFee = $totalFee = $data[ 'money' ] * $data[ 'number' ];
-        switch ($data[ 'payChannel' ]) {
-            case 'alipay':
-                $payChannel = 'alipay';
-                break;
-            case 'wx':
-                $payChannel = 'wx';
-                break;
-            default:
-                $payChannel = '';;
+        try {
+            $TradeOrder = new TradeOrder();
+            $data = $this->allowFiled($data, $TradeOrder);
+            return $TradeOrder->setOrder($data);
+        } catch (Exception $e) {
+            throw $e;
         }
-        $date = date("Y-m-d H:i:s");
-        $tradeOrderData = [
-            'order_no'      => $TradeOrder->CreateOrderNo(),
-            'user_id'       => $uid,
-            'numeric'       => $data[ 'numeric' ],
-            'telecom'       => $data[ 'telecom' ],
-            'title'         => $data[ 'goodsTitle' ],
-            'price'         => $data[ 'money' ],
-            'num'           => $data[ 'number' ],
-            'description'   => $data[ 'description' ],
-            'pay_time'      => time(),
-            'end_time'      => time(),
-            'status'        => 'await',
-            'remarks'       => '',
-            'order_from'    => $payChannel,
-            'need_fee'      => sprintf("%.2f", $totalFee),
-            'profit_price'  => 0,
-            'profit_ratio'  => 0,
-            'created_at'    => $date,
-            'modified_time' => $date,
-        ];
-        $TradeOrderController = new TradeOrderController();
-        $TradeOrderController->setOrder($tradeOrderData, $uid);
     }
 
+    /**
+     * 订单 order 表插入数据
+     * @param array $data
+     * @return int
+     * @throws Exception
+     */
     public function createOrder($data = [])
     {
-        $uid = $data[ 'uid' ];
-        switch ($data[ 'description' ]) {
-            case "MT":
-                $name = '美团';
-                break;
-            case "HF":
-                $name = '话费';
-                break;
-            case "YK":
-                $name = '油卡';
-                break;
-            default:
-                $name = '';
+        try {
+            $Order = new Order();
+            $data = $this->allowFiled($data, $Order);
+            if (isset($data[ 'status' ])) {
+                unset($data[ 'status' ]);
+            }
+            return $Order->setOrder($data);
+        } catch (Exception $e) {
+            throw $e;
         }
-        $profit_ratio = $this->getProfitRatio($name);
-        $profit_price = $data[ 'money' ] * ($profit_ratio / 100);
-        $date = date("Y-m-d H:i:s");
-        $orderData = [
-            'uid'          => $uid,
-            'business_uid' => 2,
-            'name'         => $name,
-            'profit_ratio' => $profit_ratio,
-            'price'        => $data[ 'money' ],
-            'profit_price' => sprintf("%.2f", $profit_price),
-            'pay_status'   => 'await',
-            'created_at'   => $date,
-            'updated_at'   => $date,
-        ];
     }
 
 
@@ -93,10 +66,117 @@ class YuntongPayController extends Controller
     public function createData($data, TradeOrder $TradeOrder = null)
     {
         $uid = $data[ 'uid' ];
-        if ( !$TradeOrder) {
+        if (!$TradeOrder) {
             $TradeOrder = new TradeOrder();
         }
-        switch ($data[ 'description' ]) {
+        $name = $this->getName($data[ 'description' ]);
+        $remarks = $this->getRemarks($data[ 'description' ], $data);
+        $profit_ratio = $this->getProfitRatio($name);
+        $totalFee = $totalFee = $data[ 'money' ] * $data[ 'number' ];
+        $profit_price = $data[ 'money' ] * ($profit_ratio / 100);
+        $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
+        $date = date("Y-m-d H:i:s");
+        $time = time();
+        $order_no = $TradeOrder->CreateOrderNo();
+        $oid = $this->getOrderId($data[ 'description' ], $data);
+        return [
+            'order_no'      => $order_no,
+            'user_id'       => $uid,
+            'uid'           => $uid,
+            'business_uid'  => 2,
+            'numeric'       => $data[ 'numeric' ],
+            'telecom'       => $data[ 'telecom' ],
+            'title'         => $data[ 'goodsTitle' ],
+            'price'         => $data[ 'money' ],
+            'num'           => $data[ 'number' ],
+            'description'   => $data[ 'description' ],
+            'name'          => $name,
+            'oid'           => $oid,
+            'pay_time'      => $time,
+            'end_time'      => $time,
+            'status'        => 'await',
+            'pay_status'    => 'await',
+            'remarks'       => $remarks,
+            'order_from'    => $payChannel,
+            'need_fee'      => sprintf("%.2f", $totalFee),
+            'profit_price'  => $profit_price,
+            'profit_ratio'  => $profit_ratio,
+            'created_at'    => $date,
+            'modified_time' => $date,
+        ];
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function createPay(Request $request)
+    {
+        if (empty($data)) {
+            $data = $request->all();
+        }
+        $orderData = $this->createData($data);
+        DB::beginTransaction();
+        try {
+            $this->createTradeOrder($orderData);
+            $this->createOrder($orderData);
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        DB::commit();
+        return $this->payRequest(array_merge($data, $orderData));
+    }
+
+    public function againPay(Request $request)
+    {
+        $data = $request->all();
+        $TradeOrder = new TradeOrder();
+        $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
+        if (in_array($order_data->status, ['pending', 'succeeded'])) {
+            throw new LogicException('订单不属于未支付或支付失败状态');
+        }
+        $orderData = $this->createData(array_merge($data, $order_data));
+        /* TODO:再次请求支付组装订单数据和请求数据 */
+    }
+
+    /**
+     * 发起支付请求
+     * @param $data
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function payRequest($data)
+    {
+        $return_url = '';
+        $YuntongPay = new YuntongPay();
+        try {
+            $res = $YuntongPay
+                ->setGoodsTitle($data[ 'goodsTitle' ])
+                ->setGoodsDesc($data[ 'goodsDesc' ])
+                ->setAmount($data[ 'need_fee' ])
+                ->setOrderId($data[ 'order_no' ])
+                ->setNotifyUrl($return_url)
+                ->setType($data[ 'order_from' ])
+                ->setMethod('wap')
+                ->pay();
+            $response = json_decode($res, true);
+            return response()->json(['url' => $response[ 'pay_url' ]]);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /*******************************************************************/
+    /**
+     * 获取 order 表中 name 字段的值
+     * @param $type
+     * @return string
+     */
+    public function getName($type)
+    {
+        switch ($type) {
             case "MT":
                 $name = '美团';
                 break;
@@ -109,55 +189,39 @@ class YuntongPayController extends Controller
             default:
                 $name = '';
         }
-        $profit_ratio = $this->getProfitRatio($name);
-        $totalFee = $totalFee = $data[ 'money' ] * $data[ 'number' ];
-        $profit_price = $data[ 'money' ] * ($profit_ratio / 100);
-        $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
-        $date = date("Y-m-d H:i:s");
-        $order_no = $TradeOrder->CreateOrderNo();
-        $remarks = $this->getRemarks($data[ 'description' ]);
-        return [
-            'order_no'      => $order_no,
-            'user_id'       => $uid,
-            'numeric'       => $data[ 'numeric' ],
-            'telecom'       => $data[ 'telecom' ],
-            'title'         => $data[ 'goodsTitle' ],
-            'price'         => $data[ 'money' ],
-            'num'           => $data[ 'number' ],
-            'description'   => $data[ 'description' ],
-            'name'          => $name,
-            'pay_time'      => time(),
-            'end_time'      => time(),
-            'status'        => 'await',
-            'remarks'       => $remarks,
-            'order_from'    => $payChannel,
-            'need_fee'      => sprintf("%.2f", $totalFee),
-            'profit_price'  => $profit_price,
-            'profit_ratio'  => $profit_ratio,
-            'created_at'    => $date,
-            'modified_time' => $date,
-        ];
+        return $name;
     }
 
-    public function createPay(Request $request)
+    /**
+     * 获取 trade_order 表 oid 字段
+     * @param $type
+     * @param array $data
+     * @return mixed|string
+     */
+    public function getOrderId($type, $data = [])
     {
-        if (empty($data)) {
-            $data = $request->all();
-        }
-        $orderData = $this->createData($data);
-        return $orderData;
-        exit;
-        $OrderData = $this->createTradeOrder($data);
-        $trade_order = $this->createTradeOrder($data);
-        $order = $this->createOrder($data);
-        $YuntongPay = new YuntongPay();
-    }
-
-    /*******************************************************************/
-    public function getRemarks($type)
-    {
-        //        TODO:获取备注
         switch ($type) {
+            case 'LR':
+                $oid = $data[ 'orderId' ];
+                break;
+            default:
+                $oid = 0;
+        }
+        return $oid;
+    }
+
+    /**
+     * 获取 trade_order 表中的 remarks 字段值
+     * @param $type
+     * @param array $data
+     * @return string
+     */
+    public function getRemarks($type, $data = [])
+    {
+        switch ($type) {
+            case 'MT':
+                $remarks = $data[ 'name' ] ?? '美团用户';
+                break;
             default:
                 $remarks = '';
         }
@@ -204,6 +268,4 @@ class YuntongPayController extends Controller
         }
         return $profit_ratio;
     }
-
-
 }
