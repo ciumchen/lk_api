@@ -44,7 +44,7 @@ class OrderCancel extends Command
 
         $time = time();
         //当天订单结束时间戳
-        $end= mktime(14,40,00, $month, $day, $year);
+        $end= mktime(15,00,00, $month, $day, $year);
 
         //获取当天订单数据
         $orderData = (new Order())->getTodayOrders();
