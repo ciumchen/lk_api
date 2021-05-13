@@ -87,6 +87,7 @@ class BusinessService
                     $businessApplyData[$k] = $reossimg;
                     $updateImg = 1;
                     $imgArrData[] = $reossimg;
+                    Log::info("oss图片申请表log---上传:".$reossimg);
                 }
             }
             foreach ($reImg2 as $k=>$v){
@@ -95,6 +96,7 @@ class BusinessService
                     $userIdImgData[$k] = $reossimg;
                     $user_updateImg = 1;
                     $imgArrData[] = $reossimg;
+                    Log::info("oss图片身份证表log---上传:".$reossimg);
                 }
             }
 
