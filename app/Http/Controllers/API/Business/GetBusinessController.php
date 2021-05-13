@@ -10,6 +10,7 @@ use App\Models\BusinessData;
 use PDOException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 class GetBusinessController extends Controller
 {
 
@@ -53,20 +54,20 @@ class GetBusinessController extends Controller
                     $query->where('district', $districtId);
                 }
             })
-            ->where("status", 1);
-        if($is_recommend==1){
-            $data.=$data
-                ->where('is_recommend', 1);
-        }
-
-        $data.=$data
+            ->where("status", 1)
+            ->when($is_recommend,function($query)use($is_recommend){
+                if($is_recommend){
+                    return $query->where('is_recommend', 1);
+                }
+                return $query;
+            })
             ->with(['businessApply'])
             ->orderBy('is_recommend', 'desc')
             ->orderBy('sort', 'desc')
             ->latest('id')
             ->forPage($page, $pageSize)
             ->get();
-
+//        dd(DB::getQueryLog());
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
     }
