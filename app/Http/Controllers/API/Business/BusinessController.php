@@ -220,7 +220,7 @@ class BusinessController extends Controller
 
         $re = DB::table('business_apply')->where('id',$data->business_apply_id)->first();
         $data['img2'] = $re->img2;
-        return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => BusinessDataResources::make($data)]);
+        return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
     }
 
     /**获取商家信息
