@@ -246,9 +246,9 @@ class BusinessController extends Controller
         $data['business']['img_details3'] = $business_apply_data->img_details3;
 
         if ($userIdImgData){
-            $data['business']['img_just'] = $business_apply_data->img_just;
-            $data['business']['img_back'] = $business_apply_data->img_back;
-            $data['business']['img_hold'] = $business_apply_data->img_hold;
+            $data['business']['img_just'] = $userIdImgData->img_just;
+            $data['business']['img_back'] = $userIdImgData->img_back;
+            $data['business']['img_hold'] = $userIdImgData->img_hold;
         }else{
             $data['business']['img_just'] = '';
             $data['business']['img_back'] = '';
