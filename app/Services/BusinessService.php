@@ -106,7 +106,11 @@ class BusinessService
             Log::info("oss图片身份证表log:",$userIdImgData);
             //修改商家申请表
             if ($updateImg==1){
-                $re = BusinessApply::save($businessApplyData);
+                $BusinessApply = new BusinessApply();
+                foreach ($businessApplyData as $k=>$v){
+                    $BusinessApply->$k = $v;
+                }
+                $re = $BusinessApply->save();
 //                $re = DB::table('business_apply')->where('id',$businessApplyData['id'])->update($businessApplyData);
                 if ($re){
                     Log::info("oss图片申请表修改成功");
@@ -122,7 +126,14 @@ class BusinessService
                 if ($res){
                     $userIdImgData['id'] = $res->id;
                 }
-                UserIdImg::save($userIdImgData);
+
+                $UserIdImg = new UserIdImg();
+                foreach ($userIdImgData as $k=>$v){
+                    $UserIdImg->$k = $v;
+                }
+                $re = $UserIdImg->save();
+
+
 //                if ($res){//有记录就更新记录
 //                    $re = DB::table('user_id_img')->where('id',$res->id)->update($userIdImgData);
 //                    if ($re){
