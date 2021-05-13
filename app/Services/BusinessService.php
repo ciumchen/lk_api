@@ -61,65 +61,89 @@ class BusinessService
             $business_apply_data = $business_applyDB->where('id',$businessData->business_apply_id)->first();
 
             //照片可以上传为空，为空就不修改图片
-            $business_applyDB->id = $business_apply_data->business_apply_id;
+            $businessApplyData['id'] = $business_apply_data->business_apply_id;
+            $userIdImgData['uid'] = $business_apply_data->uid;
+            $userIdImgData['business_apply_id'] = $business_apply_data->business_apply_id;
 
-            $imgData['img'] = $business_apply_data->business_apply_id;
             //上传修改图片
             $updateImg = 0;
+            $user_updateImg = 0;
             if ($request->img!='') {
                 $imgUrl1 = OssService::base64Upload($request->img);
-                $business_applyDB->img = $imgUrl1;
+                $businessApplyData['img'] = $imgUrl1;
                 $updateImg = 1;
-                $imgData['img']=$imgUrl1;
             }
             if ($request->img2!='') {
                 $imgUrl2 = OssService::base64Upload($request->img2);
-                $business_applyDB->img2 = $imgUrl2;
+                $businessApplyData['img2'] = $imgUrl2;
                 $updateImg = 1;
-                $imgData['img2']=$imgUrl2;
             }
+
+
             if ($request->img_just!='') {
                 $imgUrl3 = OssService::base64Upload($request->img_just);
-                $business_applyDB->img_just = $imgUrl3;
-                $updateImg = 1;
-                $imgData['img_just']=$imgUrl3;
+                $userIdImgData['img_just'] = $imgUrl3;
+                $user_updateImg = 1;
             }
             if ($request->img_back!='') {
                 $imgUrl4 = OssService::base64Upload($request->img_back);
-                $business_applyDB->img_back = $imgUrl4;
-                $updateImg = 1;
-                $imgData['img_back']=$imgUrl4;
+                $userIdImgData['img_back'] = $imgUrl4;
+                $user_updateImg = 1;
             }
             if ($request->img_hold!='') {
                 $imgUrl5 = OssService::base64Upload($request->img_hold);
-                $business_applyDB->img_hold = $imgUrl5;
-                $updateImg = 1;
-                $imgData['img_hold']=$imgUrl5;
+                $userIdImgData['img_hold'] = $imgUrl5;
+                $user_updateImg = 1;
             }
+
+
             if ($request->img_details1!='') {
                 $imgUrl6 = OssService::base64Upload($request->img_details1);
-                $business_applyDB->img_details1 = $imgUrl6;
+                $businessApplyData['img_details1'] = $imgUrl6;
                 $updateImg = 1;
-                $imgData['img_details1']=$imgUrl6;
             }
             if ($request->img_details2!='') {
                 $imgUrl7 = OssService::base64Upload($request->img_details2);
-                $business_applyDB->img_details2 = $imgUrl7;
+                $businessApplyData['img_details2'] = $imgUrl7;
                 $updateImg = 1;
-                $imgData['img_details2']=$imgUrl7;
             }
             if ($request->img_details3!='') {
                 $imgUrl8 = OssService::base64Upload($request->img_details3);
-                $business_applyDB->img_details3 = $imgUrl8;
+                $businessApplyData['img_details3'] = $imgUrl8;
                 $updateImg = 1;
-                $imgData['img_details3']=$imgUrl8;
             }
 
-            Log::info("oss图片log:",$imgData);
+            Log::info("oss图片申请表log:",$businessApplyData);
+            Log::info("oss图片身份证表log:",$userIdImgData);
             //修改商家申请表
             if ($updateImg==1){
-                $ossDatare = $business_applyDB->update($imgData);
-                Log::info("oss图片log2:",$ossDatare);
+                $re = DB::table('business_apply')->where('id',$businessApplyData['id'])->update($businessApplyData);
+                if ($re){
+                    Log::info("oss图片申请表修改成功");
+                }else{
+                    Log::info("oss图片申请表修改失败");
+                }
+
+            }
+            //修改商家身份证表图片
+            if ($user_updateImg==1){
+                $res = DB::table('user_id_img')->where('uid',$userIdImgData['uid'])->where('business_apply_id',$userIdImgData['business_apply_id'])->first();
+                if ($res){//有记录就更新记录
+                    $re = DB::table('user_id_img')->where('id',$res->id)->update($userIdImgData);
+                    if ($re){
+                        Log::info("oss图片身份证信息表修改成功");
+                    }else{
+                        Log::info("oss图片身份证信息表修改失败");
+                    }
+                }else{//没有记录就插入数据
+                    $re = DB::table('user_id_img')->insert($userIdImgData);
+                    if ($re){
+                        Log::info("oss图片身份证信息表插入成功");
+                    }else{
+                        Log::info("oss图片身份证信息表插入失败");
+                    }
+                }
+
             }
 
             //修改商家信息表
