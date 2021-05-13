@@ -36,21 +36,15 @@ class GetBusinessController extends Controller
     }
 
     //获取星级商户列表-商家页-分类筛选搜索
-    public function getStarBusinessListFlSs(Request $request){
-
-        $page = $request->input('page');
-        $pageSize = $request->input('pageSize',10);
+    public function getAllBusinessList(Request $request){
 
         $category = $request->input("category");
         $keyword = $request->input('keyword');
         $city = $request->input('city');
         $district = $request->input('district');
 
-
-
-
-
-
+        $page = $request->input('page');
+        $pageSize = $request->input('pageSize',10);
         $data = (new BusinessData())
             ->where("status", 1)
             ->where('is_recommend', 1)
