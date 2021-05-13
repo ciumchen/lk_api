@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Facades\Storage;
 use PDOException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 class BusinessService
 {
     /**申请成为商家
