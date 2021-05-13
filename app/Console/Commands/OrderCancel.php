@@ -51,12 +51,12 @@ class OrderCancel extends Command
         $ids = array_column($orderData, 'id');
 
         try {
-            //if ($time - $end > 0)
-            //{
+            if ($time - $end > 0)
+            {
                 //更新 order 表订单状态
                 Order::whereIn('id', $ids)->update(['pay_status' => 'close', 'updated_at' => date("Y-m-d H:i:s")]);
                 Log::info('订单关闭成功：'. implode(',', $ids));
-            //}
+            }
         } catch (\Exception $e)
         {
             Log::info('未知错误：' . $e->getMessage());
