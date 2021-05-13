@@ -105,11 +105,9 @@ class Order extends Model
         $month = date("m");
         $day = date("d");
         //当天开始时间
-        //$start = date("Y-m-d H:i:s", mktime(0,0,0,$month,$day,$year));
+        $start = date("Y-m-d H:i:s", mktime(0,0,0,$month,$day,$year));
         //当天结束时间
-        //$end= date("Y-m-d H:i:s", mktime(23,59,59,$month,$day,$year));
-        $start= '2021-05-12 00:00:00';
-        $end= '2021-05-12 23:59:59';
+        $end= date("Y-m-d H:i:s", mktime(23,59,59,$month,$day,$year));
         $data['start'] = $start;
         $data['end'] = $end;
 
