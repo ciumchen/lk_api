@@ -26,7 +26,7 @@ class GetBusinessController extends Controller
         $keyword = $request->input('keyword');
         $city = $request->input('city');
         $district = $request->input('district');
-
+        $is_recommend = $request->input('is_recommend');
 
         $data = (new BusinessData())
             ->when($category,function($query) use ($category) {
@@ -53,8 +53,13 @@ class GetBusinessController extends Controller
                     $query->where('district', $districtId);
                 }
             })
-            ->where("status", 1)
-            ->where('is_recommend', 1)
+            ->where("status", 1);
+        if($is_recommend==1){
+            $data=$data
+                ->where('is_recommend', 1);
+        }
+
+        $data=$data
             ->with(['businessApply'])
             ->orderBy('is_recommend', 'desc')
             ->orderBy('sort', 'desc')
