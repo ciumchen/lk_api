@@ -69,49 +69,33 @@ class BusinessService
             //上传修改图片
             $updateImg = 0;
             $user_updateImg = 0;
-            if ($request->img!='') {
-                $imgUrl1 = OssService::base64Upload($request->img);
-                $businessApplyData['img'] = $imgUrl1;
-                $updateImg = 1;
-            }
-            if ($request->img2!='') {
-                $imgUrl2 = OssService::base64Upload($request->img2);
-                $businessApplyData['img2'] = $imgUrl2;
-                $updateImg = 1;
-            }
+            $reImg['img'] = $request->img;
+            $reImg['img2'] = $request->img2;
+            $reImg['img_details1'] = $request->img_details1;
+            $reImg['img_details2'] = $request->img_details2;
+            $reImg['img_details3'] = $request->img_details3;
 
+            $reImg2['img_just'] = $request->img_just;
+            $reImg2['img_back'] = $request->img_back;
+            $reImg2['img_hold'] = $request->img_hold;
 
-            if ($request->img_just!='') {
-                $imgUrl3 = OssService::base64Upload($request->img_just);
-                $userIdImgData['img_just'] = $imgUrl3;
-                $user_updateImg = 1;
-            }
-            if ($request->img_back!='') {
-                $imgUrl4 = OssService::base64Upload($request->img_back);
-                $userIdImgData['img_back'] = $imgUrl4;
-                $user_updateImg = 1;
-            }
-            if ($request->img_hold!='') {
-                $imgUrl5 = OssService::base64Upload($request->img_hold);
-                $userIdImgData['img_hold'] = $imgUrl5;
-                $user_updateImg = 1;
-            }
+            $imgArrData = array();
 
-
-            if ($request->img_details1!='') {
-                $imgUrl6 = OssService::base64Upload($request->img_details1);
-                $businessApplyData['img_details1'] = $imgUrl6;
-                $updateImg = 1;
+            foreach ($reImg as $k=>$v){
+                if ($v!='') {
+                    $reossimg = OssService::base64Upload($v);
+                    $businessApplyData[$k] = $reossimg;
+                    $updateImg = 1;
+                    $imgArrData[] = $reossimg;
+                }
             }
-            if ($request->img_details2!='') {
-                $imgUrl7 = OssService::base64Upload($request->img_details2);
-                $businessApplyData['img_details2'] = $imgUrl7;
-                $updateImg = 1;
-            }
-            if ($request->img_details3!='') {
-                $imgUrl8 = OssService::base64Upload($request->img_details3);
-                $businessApplyData['img_details3'] = $imgUrl8;
-                $updateImg = 1;
+            foreach ($reImg2 as $k=>$v){
+                if ($v!='') {
+                    $reossimg = OssService::base64Upload($v);
+                    $userIdImgData[$k] = $reossimg;
+                    $user_updateImg = 1;
+                    $imgArrData[] = $reossimg;
+                }
             }
 
             Log::info("oss图片申请表log:",$businessApplyData);
@@ -126,6 +110,7 @@ class BusinessService
                 }
 
             }
+            Log::info("修改商家信息log:1111111111111111111111111111111================================");
             //修改商家身份证表图片
             if ($user_updateImg==1){
                 $res = DB::table('user_id_img')->where('uid',$userIdImgData['uid'])->where('business_apply_id',$userIdImgData['business_apply_id'])->first();
@@ -146,7 +131,7 @@ class BusinessService
                 }
 
             }
-
+            Log::info("修改商家信息log:22222222222222222222222222222222=====================================");
             //修改商家信息表
             $businessData->contact_number = $request->contact_number;
             $businessData->address = $request->address;
@@ -159,43 +144,20 @@ class BusinessService
             $businessData->main_business = $request->main_business;
             $businessData->run_time = $request->start_time.'-'.$request->end_time;
             $businessData->save();
+            Log::info("修改商家信息log:33333333333333333333333333333333333=====================================");
             return true;
         }catch (PDOException $e) {
-            if(isset($imgUrl1))
-                Storage::disk('oss')->delete($imgUrl1);
-            if(isset($imgUrl2))
-                Storage::disk('oss')->delete($imgUrl2);
-            if(isset($imgUrl3))
-                Storage::disk('oss')->delete($imgUrl3);
-            if(isset($imgUrl4))
-                Storage::disk('oss')->delete($imgUrl4);
-            if(isset($imgUrl5))
-                Storage::disk('oss')->delete($imgUrl5);
-            if(isset($imgUrl6))
-                Storage::disk('oss')->delete($imgUrl6);
-            if(isset($imgUrl7))
-                Storage::disk('oss')->delete($imgUrl7);
-            if(isset($imgUrl8))
-                Storage::disk('oss')->delete($imgUrl8);
+            foreach ($imgArrData as $k=>$v){
+                if(isset($v))
+                    Storage::disk('oss')->delete($v);
+            }
             report($e);
             throw new LogicException('修改失败，请重试');
         } catch (Exception $e) {
-            if(isset($imgUrl1))
-                Storage::disk('oss')->delete($imgUrl1);
-            if(isset($imgUrl2))
-                Storage::disk('oss')->delete($imgUrl2);
-            if(isset($imgUrl3))
-                Storage::disk('oss')->delete($imgUrl3);
-            if(isset($imgUrl4))
-                Storage::disk('oss')->delete($imgUrl4);
-            if(isset($imgUrl5))
-                Storage::disk('oss')->delete($imgUrl5);
-            if(isset($imgUrl6))
-                Storage::disk('oss')->delete($imgUrl6);
-            if(isset($imgUrl7))
-                Storage::disk('oss')->delete($imgUrl7);
-            if(isset($imgUrl8))
-                Storage::disk('oss')->delete($imgUrl8);
+            foreach ($imgArrData as $k=>$v){
+                if(isset($v))
+                    Storage::disk('oss')->delete($v);
+            }
             throw $e;
         }
     }
