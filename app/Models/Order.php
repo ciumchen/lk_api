@@ -47,33 +47,6 @@ class Order extends Model
         return $this->hasOne(User::class, 'id', 'uid');
     }
 
-    /**更新状态
-     * @param string $orderNo
-     * @throws
-     */
-    public function upOrder(string $orderNo)
-    {
-        $tradeOrderInfo = DB::table('trade_order')->where('order_no', $orderNo)->first();
-        $orders = get_object_vars($tradeOrderInfo);
-        $data = [
-            'pay_status' => 'succeeded',
-            'updated_at' => date("Y-m-d H:i:s")
-        ];
-
-        /*if ($orders['description'] == 'LR')
-        {
-            $data['status'] = 2;
-        }*/
-        //更新 order 订单表
-        DB::table($this->table)->where('id', $orders['oid'])->update($data);
-        /*if ($orders['description'] == 'LR')
-        {
-            $res = DB::table($this->table)->where('id', $orders['oid'])->first();
-            $resData = get_object_vars($res);
-            $this->getPast($resData['status'], $orders['oid']);
-        }*/
-    }
-
     /**获取商家信息
      * @param string $orderNo
      * @return array

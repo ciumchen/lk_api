@@ -14,7 +14,6 @@ use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
@@ -33,6 +32,7 @@ class OrderService
 
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';
+            $order->updated_at = date("Y-m-d H:i:s");
 
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');

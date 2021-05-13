@@ -22,12 +22,14 @@ class TransferController extends Controller
     {
         $this->validate($request, [
             'amount' => ['bail', 'required', 'numeric', 'regex:#\A(\d+)(.\d{0,8})?\z#', 'min:2', 'max:10000'],
+            'address' => ['bail', 'required'],
             'verify_code' => ['bail', 'required'],
         ], [
             'amount.numeric' => '数量只能是数字',
             'amount.regex' => '数量格式不正确',
         ], [
             'amount' => '数量',
+            'address' => '钱包地址',
             'verify_code' => '验证码',
         ]);
 
@@ -56,7 +58,7 @@ class TransferController extends Controller
         ];
 
         //执行
-        (new TransferService())->transfer($user, $request->amount, $options);
+        (new TransferService())->transfer($user, $request->amount, $request->address, $options);
 
 
         return response()->json(['code'=>0, 'msg'=>'提现成功，大额提现请等待审核']);

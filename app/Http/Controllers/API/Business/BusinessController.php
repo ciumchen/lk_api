@@ -228,10 +228,33 @@ class BusinessController extends Controller
      */
     public function getBusinessData(Request $request){
         $user = $request->user();
+//        $user->id;//用户ID
+//        print_r($user->id);exit;
         if($user->role != User::ROLE_BUSINESS)
             throw new LogicException('非法访问');
 
         $data['business'] = $user->businessData()->first();
+
+        //查询商户的营业执照和头图
+        $business_apply_data = DB::table('business_apply')->where('id',$data['business']->business_apply_id)->first();
+        $userIdImgData = DB::table('user_id_img')->where('business_apply_id',$data['business']->id)->first();
+
+        $data['business']['img'] = $business_apply_data->img;
+        $data['business']['img2'] = $business_apply_data->img2;
+        $data['business']['img_details1'] = $business_apply_data->img_details1;
+        $data['business']['img_details2'] = $business_apply_data->img_details2;
+        $data['business']['img_details3'] = $business_apply_data->img_details3;
+
+        if ($userIdImgData){
+            $data['business']['img_just'] = $business_apply_data->img_just;
+            $data['business']['img_back'] = $business_apply_data->img_back;
+            $data['business']['img_hold'] = $business_apply_data->img_hold;
+        }else{
+            $data['business']['img_just'] = '';
+            $data['business']['img_back'] = '';
+            $data['business']['img_hold'] = '';
+        }
+
         $data['business_category'] = BusinessCategory::select(DB::raw('name as text, id as value'))->get();
         $data['category'] = BusinessCategory::whereId($data['business']->category_id)->value('name');
         //省

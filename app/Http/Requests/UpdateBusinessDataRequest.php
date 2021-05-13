@@ -26,7 +26,12 @@ class UpdateBusinessDataRequest extends FormRequest
     public function rules()
     {
         return [
-            'banners' => ['bail', 'required'],
+//            'img' => ['bail', 'required'],
+//            'img2' => ['bail', 'required'],
+//            'img_just' => ['bail', 'required'],
+//            'img_back' => ['bail', 'required'],
+//            'img_hold' => ['bail', 'required'],
+//            'img_details' => ['bail', 'required'],
             'contact_number' => ['bail', 'required', new PhoneNumber()],
             'address' => ['bail', 'required'],
             'category_id' => ['bail', 'required', 'exists:business_category,id'],
@@ -48,7 +53,12 @@ class UpdateBusinessDataRequest extends FormRequest
     {
 
         return [
-            'banners' => '门店图片',
+//            'img' => '营业执照',
+//            'img2' => '商家头图',
+//            'img_just' => '身份证正面照',
+//            'img_back' => '身份证反面照',
+//            'img_hold' => '身份证手持照',
+//            'img_details' => '商家详情照',
             'contact_number' => '联系电话',
             'address' => '详细地址',
             'category_id' => '商家分类',

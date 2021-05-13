@@ -52,4 +52,8 @@ class BusinessData extends Model
         return $this->belongsTo(CityData::class, 'district','code');
     }
 
+    public function businessApply()
+    {
+        return $this->belongsTo(BusinessApply::class, 'business_apply_id','id');
+    }
 }

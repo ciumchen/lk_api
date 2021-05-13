@@ -20,6 +20,11 @@ Route::get("get-business-info","Business\BusinessController@getBusinessInfo");
 //获取星级商户列表
 Route::get("getStarBusinessList","Business\GetBusinessController@getStarBusinessList");
 
+//获取星级商户列表-商家页-分类筛选搜索
+Route::get("getStarBusinessListFlSs","Business\GetBusinessController@getStarBusinessListFlSs");
+
+
+
 
 
 

@@ -93,16 +93,20 @@ class OrderController extends Controller
         $bOrder = $request->input('bOrder', false);
 
         $data = (new Order())
+            ->leftJoin('trade_order', function($join){
+                $join->on('order.id', 'trade_order.oid');
+            })
             ->when(!$bOrder,function($query) use ($user) {
                 return $query->where('uid', $user->id);
             })
             ->when($bOrder,function($query) use ($user) {
                 $query->where('business_uid', $user->id);
             })
-            ->orderBy('status', 'asc')
+            ->orderBy('order.created_at', 'desc')
             ->latest('id')
             ->forPage(Paginator::resolveCurrentPage('page'), $request->per_page ?: 10)
-            ->get();
+            ->distinct('order.id')
+            ->get(['order.*', 'trade_order.numeric']);
 
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => OrdersResources::collection($data)]);
     }

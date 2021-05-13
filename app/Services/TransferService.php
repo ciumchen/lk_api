@@ -19,6 +19,7 @@ class TransferService
      * 提现
      * @param User $user
      * @param $amount
+     * @param $address
      * @param array $options
      * @return bool
      * @throws LogicException
@@ -28,12 +29,10 @@ class TransferService
      * @throws \EthereumRPC\Exception\GethException
      * @throws \HttpClient\Exception\HttpClientException
      */
-    public function transfer(User $user, $amount, $options = [])
+    public function transfer(User $user, $amount, $address, $options = [])
     {
-
-        $userAddress = Address::where('uid', $user->id)->first();
-        if (!$userAddress) {
-            throw new LogicException('请先绑定地址');
+        if (strlen($address) != 42) {
+            throw new LogicException('请输入正确的钱包地址');
         }
 
         //检测托管地址余额
@@ -122,7 +121,7 @@ class TransferService
             $withdrawLog->status = 2; //2为提现成功
             $withdrawLog->amount = $toAmount;
             $withdrawLog->fee = $fee;
-            $withdrawLog->address = $userAddress->address;
+            $withdrawLog->address = $address;
             $withdrawLog->ip = $options['ip'] ?? '';
             $withdrawLog->remark = '提现到钱包';
             $withdrawLog->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 255, 'utf-8') : '';
@@ -147,7 +146,7 @@ class TransferService
 
         if (3 != $withdrawLog->status) {
             try {
-                $address = $userAddress->address;
+                $address = $address;
                 $txHash = (new AssetsService())->transfer($toAmount, $address);
                 if (!$txHash) {
                     throw new LogicException('提现失败', 108);
