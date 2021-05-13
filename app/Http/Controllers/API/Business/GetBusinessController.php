@@ -55,11 +55,11 @@ class GetBusinessController extends Controller
             })
             ->where("status", 1);
         if($is_recommend==1){
-            $data=$data
+            $data.=$data
                 ->where('is_recommend', 1);
         }
 
-        $data=$data
+        $data.=$data
             ->with(['businessApply'])
             ->orderBy('is_recommend', 'desc')
             ->orderBy('sort', 'desc')
