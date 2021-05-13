@@ -94,6 +94,33 @@ class Order extends Model
         return DB::table($this->table)->insertGetId($data);
     }
 
+    /**获取当天未支付订单
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function getTodayOrders()
+    {
+        $year = date("Y");
+        $month = date("m");
+        $day = date("d");
+        //当天开始时间
+        //$start = date("Y-m-d H:i:s", mktime(0,0,0,$month,$day,$year));
+        //当天结束时间
+        //$end= date("Y-m-d H:i:s", mktime(23,59,59,$month,$day,$year));
+        $start= '2021-05-12 00:00:00';
+        $end= '2021-05-12 23:59:59';
+        $data['start'] = $start;
+        $data['end'] = $end;
+
+        //返回
+        return (new Order())
+            ->where(function($query) use ($data){
+                $query->where('pay_status', 'await')
+                    ->whereBetween('created_at', [$data['start'], $data['end']]);
+            })->get()->toArray();
+    }
+
     /**
      * The attributes that are mass assignable.
      *

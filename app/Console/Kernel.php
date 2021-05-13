@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        \App\Console\Commands\OrderCancel::class,
     ];
 
     /**
@@ -25,6 +25,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+
+        //当天未支付订单每分钟执行一次
+        $schedule->command('order:cancel')->everyMinute();
     }
 
     /**
