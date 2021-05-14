@@ -72,7 +72,6 @@ class RechargeController extends Controller
         $game_userid = $data['game_userid'];
         $orderid = $data['order_no'];
 
-        Log::info('油卡号：' . $game_userid);
         if (substr($game_userid, 0, 6) == '100011' && strlen($game_userid) == 19)
         {
             //中石化
@@ -92,7 +91,6 @@ class RechargeController extends Controller
             $proid = 10008;
             $cardnum = intval($data['price']);
             $chargeType = 2;
-            Log::info('金额：' . $data['price']);
         }
 
         $sign = md5(self::openId . $key . $proid . $cardnum . $game_userid . $orderid);
