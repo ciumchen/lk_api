@@ -98,7 +98,7 @@ class YuntongPay extends Config
             $data[ 'notify_url' ] = $this->notify_url;
             foreach ($this->optional_param as $val) { /* 判断可选参数是否设置 */
                 if ($this->$val) {
-                    $data[ $val ] = $val;
+                    $data[ $val ] = $this->$val;
                 }
             }
             $data[ 'sign' ] = Sign::make($data, ['secret' => $this->appSecret]);

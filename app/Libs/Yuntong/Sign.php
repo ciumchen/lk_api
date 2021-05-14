@@ -17,11 +17,26 @@ class Sign
     {
         try {
             if (is_array($data) && !empty($data)) {
+                $exclude = [
+                    'create_time',
+                    'sign',
+                    'pay_time',
+                    'refund_time',
+                    'return_url',
+                    'scene',
+                    'merchant_id',
+                    'ip'
+                ];
+                foreach ($exclude as $key) { /*去除不参与签名的字段*/
+                    if (array_key_exists($key, $data)) {
+                        unset($data[ $key ]);
+                    }
+                }
                 $status = ksort($data);
                 if ($status == false) {
                     throw new Exception('array key sort failed');
                 }
-                if ( !empty($salt)) {
+                if (!empty($salt)) {
                     $data = array_merge($data, $salt);
                 }
                 $str = self::params_build($data);
@@ -45,12 +60,6 @@ class Sign
     {
         try {
             $origin_sign = $data[ 'sign' ];
-            $exclude = ['create_time', 'sign', 'pay_time', 'refund_time'];
-            foreach ($exclude as $key) { /*去除不参与签名的字段*/
-                if (array_key_exists($key, $data)) {
-                    unset($data[ $key ]);
-                }
-            }
             if ($data[ 'amount' ]) { /*防止json_decode之后自动省略*/
                 $data[ 'amount' ] = sprintf("%.2f", $data[ 'amount' ]);
             }

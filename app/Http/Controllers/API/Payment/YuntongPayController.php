@@ -86,7 +86,7 @@ class YuntongPayController extends Controller
                 ->setNotifyUrl($return_url)
                 ->setType($data[ 'order_from' ])
                 ->setMethod('wap');
-            if ($data[ 'order_from' ] == 'wx') {
+            if (isset($data[ 'ip' ])) {
                 $res = $res->setIp($data[ 'ip' ]);
             }
             $res = $res->pay();
@@ -236,7 +236,7 @@ class YuntongPayController extends Controller
     public function getClientIP($channel, $data)
     {
         $ip = '';
-        if ($channel == 'wx') {
+        if ($channel == 'wx' || isset($data[ 'deviceInfo' ])) {
             $deviceInfo = json_decode($data[ 'deviceInfo' ], true);
             $ip = $deviceInfo[ 'device_ip' ];
         }
