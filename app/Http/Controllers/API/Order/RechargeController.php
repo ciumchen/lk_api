@@ -90,7 +90,7 @@ class RechargeController extends Controller
         {
             //中石油
             $proid = 10008;
-            $cardnum = $data['price'];
+            $cardnum = intval($data['price']);
             $chargeType = 2;
             Log::info('金额：' . $data['price']);
         }
