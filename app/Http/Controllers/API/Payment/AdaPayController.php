@@ -45,6 +45,12 @@ class AdaPayController extends Controller
         $totalFee = $paymentData['money'] * $paymentData['number'];
         $tradeOrder = new TradeOrder();
 
+        //判断支付金额
+        if (!in_array($paymentData['money'], [50, 100, 200]))
+        {
+            throw new LogicException('话费充值金额不在可选值范围内');
+        }
+
         //检查用户当月消费金额
         $sumData = [
             'uid' => $uid,
