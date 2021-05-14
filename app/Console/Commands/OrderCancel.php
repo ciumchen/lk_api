@@ -49,7 +49,6 @@ class OrderCancel extends Command
         //获取当天订单数据
         $orderData = (new Order())->getTodayOrders();
         $ids = array_column($orderData, 'id');
-        Log::info('定时任务：' . $ids);
 
         try {
             if ($time - $end > 0)
