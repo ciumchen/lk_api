@@ -75,7 +75,7 @@ class YuntongPayController extends Controller
      */
     public function payRequest($data)
     {
-        $return_url = '';
+        $return_url = url('/api/yun-notify');
         $YuntongPay = new YuntongPay();
         try {
             $res = $YuntongPay
