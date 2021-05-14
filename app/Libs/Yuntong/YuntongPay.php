@@ -165,7 +165,7 @@ class YuntongPay extends Config
             $res = json_decode($res, true);
             if (is_array($res) && $res[ 'code' ] == '000002') {
                 return $res[ 'data' ][ 'refund_info' ];
-            } else if (is_array($res)) {
+            } elseif (is_array($res)) {
                 throw new Exception('请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]);
             } else {
                 throw new Exception('返回结果解析异常');
@@ -184,7 +184,9 @@ class YuntongPay extends Config
     public function Notify(array $data)
     {
         try {
-            if ( !is_array($data) || empty($data)) return false;
+            if (!is_array($data) || empty($data)) {
+                throw new Exception('数据格式错误');
+            }
             if (Sign::check($data, ['secret' => $this->appSecret])) {
                 return $data;
             } else {

@@ -12,13 +12,92 @@ use Illuminate\Http\Request;
 use App\Libs\Yuntong\YuntongPay;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use const pcov\all;
 
 class YuntongPayController extends Controller
 {
 
     use AllowField;
 
+    /**
+     * 创建支付
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function createPay(Request $request)
+    {
+        if (empty($data)) {
+            $data = $request->all();
+        }
+        $orderData = $this->createData($data);
+        DB::beginTransaction();
+        try {
+            $oid = $this->createOrder($orderData);
+            if (!is_numeric($oid)) {
+                throw new Exception('订单生成失败');
+            }
+            $orderData[ 'oid' ] = $oid;
+            $this->createTradeOrder($orderData);
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        DB::commit();
+        return $this->payRequest(array_merge($data, $orderData));
+    }
+
+    /**
+     * 再次请求支付
+     * @param Request $request
+     * @return JsonResponse
+     * @throws LogicException
+     * @throws Exception
+     */
+    public function againPay(Request $request)
+    {
+        $data = $request->all();
+        $TradeOrder = new TradeOrder();
+        $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
+        dump($order_data);
+        if (in_array($order_data->status, ['pending', 'succeeded'])) {
+            throw new LogicException('订单不属于未支付或支付失败状态');
+        }
+        $order_data = (array)$order_data;
+//        dd($order_data);
+        $orderData = $this->createData(array_merge($data, $order_data));
+        $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
+//        dd($orderData);
+        return $this->payRequest(array_merge($data, $orderData));
+    }
+
+    /**
+     * 发起支付请求
+     * @param $data
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function payRequest($data)
+    {
+        $return_url = '';
+        $YuntongPay = new YuntongPay();
+        try {
+            $res = $YuntongPay
+                ->setGoodsTitle($data[ 'goodsTitle' ] ?? $data[ 'title' ])
+                ->setGoodsDesc($data[ 'goodsDesc' ])
+                ->setAmount($data[ 'need_fee' ])
+                ->setOrderId($data[ 'order_no' ])
+                ->setNotifyUrl($return_url)
+                ->setType($data[ 'order_from' ])
+                ->setMethod('wap')
+                ->pay();
+            $response = json_decode($res, true);
+            return response()->json(['url' => $response[ 'pay_url' ]]);
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /*******************************************************************/
     /**
      * 订单 trade_order 表插入数据
      * @param array $data 已经组装好的订单数据
@@ -56,7 +135,6 @@ class YuntongPayController extends Controller
         }
     }
 
-
     /**
      * 组装订单数据
      * @param $data
@@ -65,15 +143,15 @@ class YuntongPayController extends Controller
      */
     public function createData($data, TradeOrder $TradeOrder = null)
     {
-        $uid = $data[ 'uid' ];
+        $uid = $data[ 'uid' ] ?? $data[ 'user_id' ];
         if (!$TradeOrder) {
             $TradeOrder = new TradeOrder();
         }
-        $name = $this->getName($data[ 'description' ]);
-        $remarks = $this->getRemarks($data[ 'description' ], $data);
+        $name = $this->getName($data[ 'description' ] ?? '');
+        $remarks = $this->getRemarks($data[ 'description' ] ?? '', $data);
         $profit_ratio = $this->getProfitRatio($name);
-        $totalFee = $totalFee = $data[ 'money' ] * $data[ 'number' ];
-        $profit_price = $data[ 'money' ] * ($profit_ratio / 100);
+        $totalFee = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $data[ 'number' ]);
+        $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * ($profit_ratio / 100));
         $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
         $date = date("Y-m-d H:i:s");
         $time = time();
@@ -86,9 +164,9 @@ class YuntongPayController extends Controller
             'business_uid'  => 2,
             'numeric'       => $data[ 'numeric' ],
             'telecom'       => $data[ 'telecom' ],
-            'title'         => $data[ 'goodsTitle' ],
-            'price'         => $data[ 'money' ],
-            'num'           => $data[ 'number' ],
+            'title'         => $data[ 'title' ] ?? $data[ 'goodsTitle' ],
+            'price'         => $data[ 'price' ] ?? $data[ 'money' ],
+            'num'           => $data[ 'num' ] ?? $data[ 'number' ],
             'description'   => $data[ 'description' ],
             'name'          => $name,
             'oid'           => $oid,
@@ -106,69 +184,6 @@ class YuntongPayController extends Controller
         ];
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function createPay(Request $request)
-    {
-        if (empty($data)) {
-            $data = $request->all();
-        }
-        $orderData = $this->createData($data);
-        DB::beginTransaction();
-        try {
-            $this->createTradeOrder($orderData);
-            $this->createOrder($orderData);
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-        DB::commit();
-        return $this->payRequest(array_merge($data, $orderData));
-    }
-
-    public function againPay(Request $request)
-    {
-        $data = $request->all();
-        $TradeOrder = new TradeOrder();
-        $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
-        if (in_array($order_data->status, ['pending', 'succeeded'])) {
-            throw new LogicException('订单不属于未支付或支付失败状态');
-        }
-        $orderData = $this->createData(array_merge($data, $order_data));
-        /* TODO:再次请求支付组装订单数据和请求数据 */
-    }
-
-    /**
-     * 发起支付请求
-     * @param $data
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function payRequest($data)
-    {
-        $return_url = '';
-        $YuntongPay = new YuntongPay();
-        try {
-            $res = $YuntongPay
-                ->setGoodsTitle($data[ 'goodsTitle' ])
-                ->setGoodsDesc($data[ 'goodsDesc' ])
-                ->setAmount($data[ 'need_fee' ])
-                ->setOrderId($data[ 'order_no' ])
-                ->setNotifyUrl($return_url)
-                ->setType($data[ 'order_from' ])
-                ->setMethod('wap')
-                ->pay();
-            $response = json_decode($res, true);
-            return response()->json(['url' => $response[ 'pay_url' ]]);
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
-
-    /*******************************************************************/
     /**
      * 获取 order 表中 name 字段的值
      * @param $type

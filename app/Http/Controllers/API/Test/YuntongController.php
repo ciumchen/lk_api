@@ -20,6 +20,13 @@ class YuntongController extends Controller
     //
     public function index()
     {
+        $amount = 0.6;
+        $amount2 = '0.60';
+        dump($amount != $amount2);
+        dump($amount == $amount2);
+        dump($amount !== $amount2);
+        /*TODO:尝试日志操作*/
+//        Log::channel('')->debug('');
     }
 
     /**
