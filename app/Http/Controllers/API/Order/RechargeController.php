@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Order;
 use App\Http\Controllers\Controller;
 use App\Models\TradeOrder;
 use GuzzleHttp;
+use Illuminate\Support\Facades\Log;
 
 /*
  * 话费、油卡自动充值接口
@@ -71,6 +72,7 @@ class RechargeController extends Controller
         $game_userid = $data['game_userid'];
         $orderid = $data['order_no'];
 
+        Log::info('油卡号：' . $game_userid);
         if (substr($game_userid, 0, 6) == '100011' && strlen($game_userid) == 19)
         {
             //中石化
@@ -90,6 +92,7 @@ class RechargeController extends Controller
             $proid = 10008;
             $cardnum = $data['price'];
             $chargeType = 2;
+            Log::info('金额：' . $data['price']);
         }
 
         $sign = md5(self::openId . $key . $proid . $cardnum . $game_userid . $orderid);
@@ -111,6 +114,7 @@ class RechargeController extends Controller
 
         //返回数据
         $res = json_decode( $response->getBody(), 1);
+        Log::info('返回：', $res);
         if ($res['error_code'] == 0)
         {
             return json_encode(['code' => 0, 'msg' => '充值成功']);
