@@ -87,7 +87,7 @@ class YuntongPayController extends Controller
                 ->setType($data[ 'order_from' ])
                 ->setMethod('wap');
             if ($data[ 'order_from' ] == 'wx') {
-                $res = $res->setIp($data[ '' ]);
+                $res = $res->setIp($data[ 'ip' ]);
             }
             $res = $res->pay();
             $response = json_decode($res, true);
