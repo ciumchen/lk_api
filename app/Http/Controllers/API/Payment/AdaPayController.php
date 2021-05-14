@@ -49,6 +49,12 @@ class AdaPayController extends Controller
         if (!in_array($paymentData['money'], [50, 100, 200]) && $paymentData['description'] == "HF")
         {
             throw new LogicException('话费充值金额不在可选值范围内');
+        } elseif (!in_array($paymentData['money'], [300, 500, 1000]) && $paymentData['description'] == "MT")
+        {
+            throw new LogicException('美团充值金额不在可选值范围内');
+        } elseif (!in_array($paymentData['money'], [100, 200, 500, 1000]) && $paymentData['description'] == "YK")
+        {
+            throw new LogicException('油卡充值金额不在可选值范围内');
         }
 
         //检查用户当月消费金额
