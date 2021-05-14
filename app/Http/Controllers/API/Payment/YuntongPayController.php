@@ -85,8 +85,11 @@ class YuntongPayController extends Controller
                 ->setOrderId($data[ 'order_no' ])
                 ->setNotifyUrl($return_url)
                 ->setType($data[ 'order_from' ])
-                ->setMethod('wap')
-                ->pay();
+                ->setMethod('wap');
+            if ($data[ 'order_from' ] == 'wx') {
+                $res = $res->setIp($data[ '' ]);
+            }
+            $res = $res->pay();
             $response = json_decode($res, true);
             return response()->json(['url' => $response[ 'pay_url' ]]);
         } catch (Exception $e) {
@@ -150,6 +153,7 @@ class YuntongPayController extends Controller
         $totalFee = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $data[ 'number' ]);
         $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * ($profit_ratio / 100));
         $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
+        $ip = $this->getClientIP($data[ 'payChannel' ], $data);
         $date = date("Y-m-d H:i:s");
         $time = time();
         $order_no = $TradeOrder->CreateOrderNo();
@@ -171,6 +175,7 @@ class YuntongPayController extends Controller
             'end_time'      => $time,
             'status'        => 'await',
             'pay_status'    => 'await',
+            'ip'            => $ip,
             'remarks'       => $remarks,
             'order_from'    => $payChannel,
             'need_fee'      => sprintf("%.2f", $totalFee),
@@ -220,6 +225,22 @@ class YuntongPayController extends Controller
                 $oid = 0;
         }
         return $oid;
+    }
+
+    /**
+     * 获取客户端IP
+     * @param $channel
+     * @param $data
+     * @return mixed|string
+     */
+    public function getClientIP($channel, $data)
+    {
+        $ip = '';
+        if ($channel == 'wx') {
+            $deviceInfo = json_decode($data[ 'deviceInfo' ], true);
+            $ip = $deviceInfo[ 'device_ip' ];
+        }
+        return $ip;
     }
 
     /**
