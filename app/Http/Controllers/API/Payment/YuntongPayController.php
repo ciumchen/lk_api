@@ -58,15 +58,12 @@ class YuntongPayController extends Controller
         $data = $request->all();
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
-        dump($order_data);
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
         $order_data = (array)$order_data;
-//        dd($order_data);
         $orderData = $this->createData(array_merge($data, $order_data));
         $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
-//        dd($orderData);
         return $this->payRequest(array_merge($data, $orderData));
     }
 
