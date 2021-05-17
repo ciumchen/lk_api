@@ -152,7 +152,7 @@ class YuntongPayController extends Controller
         }
         $name = $this->getName($data[ 'description' ] ?? '');
         $remarks = $this->getRemarks($data[ 'description' ] ?? '', $data);
-        $profit_ratio = $this->getProfitRatio($name);
+        $profit_ratio = $this->getProfitRatio($data[ 'description' ]);
         $totalFee = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $data[ 'number' ]);
         $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $profit_ratio);
         $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
