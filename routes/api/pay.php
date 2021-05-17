@@ -13,4 +13,4 @@ Route::post('yun-pay', 'Payment\YuntongPayController@createPay');
 //二次支付
 Route::post('yun-pay-again', 'Payment\YuntongPayController@againPay');
 //二次支付
-Route::post('yun-notify', 'Payment\YuntongNotifyController@againPay');
+Route::post('yun-notify', 'Payment\YuntongNotifyController@callBack');
