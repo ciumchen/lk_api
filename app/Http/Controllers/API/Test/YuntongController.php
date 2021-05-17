@@ -18,8 +18,15 @@ class YuntongController extends Controller
 
 
     //
-    public function index()
+    public function index(Request $request)
     {
+        $url=null;
+        dump($url);
+        dump(empty($url));
+        dump(url(''));
+        dump($request->server('REQUEST_SCHEME'));
+        dump($request->method());
+        dump($request->method());
         $amount = 0.6;
         $amount2 = '0.60';
         dump($amount != $amount2);

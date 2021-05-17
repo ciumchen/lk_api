@@ -89,6 +89,9 @@ class YuntongPayController extends Controller
             if (isset($data[ 'ip' ])) {
                 $res = $res->setIp($data[ 'ip' ]);
             }
+            if (isset($data[ 'return_url' ])) {
+                $res = $res->setReturnUrl($data[ 'return_url' ]);
+            }
             $res = $res->pay();
             $response = json_decode($res, true);
             return response()->json(['url' => $response[ 'pay_url' ]]);
@@ -154,6 +157,7 @@ class YuntongPayController extends Controller
         $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * ($profit_ratio / 100));
         $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
         $ip = $this->getClientIP($data[ 'payChannel' ], $data);
+        $return_url = $this->getReturnUrl($data[ 'returnUrl' ] ?? '');
         $date = date("Y-m-d H:i:s");
         $time = time();
         $order_no = $TradeOrder->CreateOrderNo();
@@ -176,6 +180,7 @@ class YuntongPayController extends Controller
             'status'        => 'await',
             'pay_status'    => 'await',
             'ip'            => $ip,
+            'return_url'    => $return_url,
             'remarks'       => $remarks,
             'order_from'    => $payChannel,
             'need_fee'      => sprintf("%.2f", $totalFee),
@@ -184,6 +189,23 @@ class YuntongPayController extends Controller
             'created_at'    => $date,
             'modified_time' => $date,
         ];
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     */
+    public function getReturnUrl(string $url)
+    {
+        switch (true) {
+            case (strpos($url, 'http') !== false):
+            case (strpos($url, 'https') !== false):
+            case (empty($url)):
+                break;
+            default:
+                $url = url('') . '/' . $url;
+        }
+        return $url;
     }
 
     /**
