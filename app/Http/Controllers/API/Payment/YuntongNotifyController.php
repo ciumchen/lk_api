@@ -73,13 +73,13 @@ class YuntongNotifyController extends Controller
                 'pid'            => $data[ 'sys_order_id' ],
                 'uid'            => $userData[ 'user_id' ],
                 'order_no'       => $data[ 'order_id' ],
-                'pay_channel'    => $trade_order[ 'order_from' ],
+                'pay_channel'    => $trade_order->order_from,
                 'pay_amt'        => $data[ 'amount' ],
-                'description'    => $trade_order[ 'description' ],
+                'description'    => $trade_order->description,
                 'party_order_id' => $data[ 'sys_order_id' ],
                 'out_trans_id'   => $data[ 'sys_order_id' ],
                 'status'         => $data[ 'type' ],
-                'created_time'   => $trade_order[ 'created_at' ],
+                'created_time'   => $trade_order->created_at,
                 'end_time'       => $data[ 'pay_time' ],
             ];
             //更新订单表数据
