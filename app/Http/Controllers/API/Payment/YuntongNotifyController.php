@@ -20,7 +20,9 @@ class YuntongNotifyController extends Controller
     public function callBack(Request $request)
     {
         $Pay = new YuntongPay();
-        $json = $request->getContent();
+//        $json = $request->getContent();
+        $json =
+            "{\"amount\":50.00,\"sys_order_id\":\"202105171550219548C78E1348F\",\"create_time\":\"2021-05-17 15:50:21\",\"sign\":\"EAF529214E38C09CEBC74DD472C53373\",\"type\":\"payment.success\",\"order_id\":\"PY_20210517155021100903\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-05-17 15:50:40\"}";
         try {
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
@@ -80,14 +82,14 @@ class YuntongNotifyController extends Controller
                 'description'    => $trade_order->description,
                 'party_order_id' => $data[ 'sys_order_id' ],
                 'out_trans_id'   => $data[ 'sys_order_id' ],
-                'status'         => $data[ 'type' ],
+                'status'         => 'succeeded',
                 'created_time'   => $trade_order->created_at,
                 'end_time'       => $data[ 'pay_time' ],
             ];
             //更新订单表数据
             $tradeOrderData = [
                 'order_no'      => $data[ 'order_id' ],
-                'status'        => $data[ 'type' ],
+                'status'        => 'succeeded',
                 'uid'           => $userData[ 'user_id' ],
                 'pay_time'      => $data[ 'pay_time' ],
                 'end_time'      => $data[ 'pay_time' ],
@@ -112,10 +114,11 @@ class YuntongNotifyController extends Controller
             $TradeOrder->upTradeOrder($tradeOrderData);
             //自动充值
             if ($trade_order->description == "HF") {
-                (new RechargeController())->setCall($callData);
+                $res = (new RechargeController())->setCall($callData);
             } elseif ($trade_order->description == "YK") {
-                (new RechargeController())->setGas($gasData);
+                $res = (new RechargeController())->setGas($gasData);
             }
+
             //更新 order 表审核状态
             (new OrderService())->completeOrder($data[ 'order_id' ]);
         } catch (\LogicException $le) {
