@@ -237,7 +237,11 @@ class YuntongPayController extends Controller
     {
         $ip = '';
         if ($channel == 'wx' || isset($data[ 'deviceInfo' ])) {
-            $deviceInfo = json_decode($data[ 'deviceInfo' ], true);
+            if (is_array($data[ 'deviceInfo' ])) {
+                $deviceInfo = $data[ 'deviceInfo' ];
+            } else {
+                $deviceInfo = json_decode($data[ 'deviceInfo' ], true);
+            }
             $ip = $deviceInfo[ 'device_ip' ];
         }
         return $ip;
