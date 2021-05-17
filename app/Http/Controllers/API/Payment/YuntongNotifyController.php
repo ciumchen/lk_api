@@ -20,9 +20,9 @@ class YuntongNotifyController extends Controller
     public function callBack(Request $request)
     {
         $Pay = new YuntongPay();
-//        $json = $request->getContent();
-        $json =
-            "{\"amount\":50.00,\"sys_order_id\":\"202105171550219548C78E1348F\",\"create_time\":\"2021-05-17 15:50:21\",\"sign\":\"EAF529214E38C09CEBC74DD472C53373\",\"type\":\"payment.success\",\"order_id\":\"PY_20210517155021100903\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-05-17 15:50:40\"}";
+        $json = $request->getContent();
+//        $json =
+//            "{\"amount\":50.00,\"sys_order_id\":\"202105171550219548C78E1348F\",\"create_time\":\"2021-05-17 15:50:21\",\"sign\":\"EAF529214E38C09CEBC74DD472C53373\",\"type\":\"payment.success\",\"order_id\":\"PY_20210517155021100903\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-05-17 15:50:40\"}";
         try {
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
@@ -114,14 +114,14 @@ class YuntongNotifyController extends Controller
             $TradeOrder->upTradeOrder($tradeOrderData);
             //自动充值
             if ($trade_order->description == "HF") {
-                $res = (new RechargeController())->setCall($callData);
+                (new RechargeController())->setCall($callData);
             } elseif ($trade_order->description == "YK") {
-                $res = (new RechargeController())->setGas($gasData);
+                (new RechargeController())->setGas($gasData);
             }
-
             //更新 order 表审核状态
             (new OrderService())->completeOrder($data[ 'order_id' ]);
         } catch (\LogicException $le) {
+            dd($le);
             throw $le;
         }
     }

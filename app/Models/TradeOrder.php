@@ -62,6 +62,7 @@ class TradeOrder extends Model
             $order = $val;
         }
         $orderData = get_object_vars($order);
+        dd($orderData);
         if ( !$orderInfo)
             throw new LogicException('订单不存在');
         if ($orderData[ 'status' ] != 'await')

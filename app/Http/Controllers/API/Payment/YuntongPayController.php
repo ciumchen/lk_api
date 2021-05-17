@@ -154,7 +154,7 @@ class YuntongPayController extends Controller
         $remarks = $this->getRemarks($data[ 'description' ] ?? '', $data);
         $profit_ratio = $this->getProfitRatio($name);
         $totalFee = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $data[ 'number' ]);
-        $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * ($profit_ratio / 100));
+        $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $profit_ratio);
         $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
         $ip = $this->getClientIP($data[ 'payChannel' ], $data);
         $return_url = $this->getReturnUrl($data[ 'returnUrl' ] ?? '');
@@ -320,10 +320,10 @@ class YuntongPayController extends Controller
         switch ($type) {
             case 'HF':
             case 'YK':
-                $profit_ratio = 5;
+                $profit_ratio = 0.05;
                 break;
             default:
-                $profit_ratio = 10;
+                $profit_ratio = 0.10;
         }
         return $profit_ratio;
     }
