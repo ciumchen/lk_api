@@ -10,6 +10,7 @@ use App\Models\PayLogs;
 use App\Models\TradeOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\API\Order\RechargeController;
 
 class YuntongNotifyController extends Controller
 {
