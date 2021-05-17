@@ -30,4 +30,9 @@ Route::any("merchantCount","User\CountUserController@merchantCount");
 
 
 
+//获取用户的消费记录
+Route::any("getUserOrderJl","User\RecordsOfConsumptionController@getUserOrderJl");
+//获取用户的资产记录
+Route::any("getUserAssets","User\RecordsOfConsumptionController@getUserAssets");
+
 
