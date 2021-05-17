@@ -10,7 +10,7 @@ Route::post('again-pay', 'Payment\AdaPayController@againPay');
 /******************************** 云通支付 ********************************/
 //云通支付接口
 Route::post('yun-pay', 'Payment\YuntongPayController@createPay');
-//二次支付
+//云通二次支付
 Route::post('yun-pay-again', 'Payment\YuntongPayController@againPay');
-//二次支付
+//云通支付回调
 Route::post('yun-notify', 'Payment\YuntongNotifyController@callBack');

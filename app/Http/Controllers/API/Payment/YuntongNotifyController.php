@@ -26,6 +26,7 @@ class YuntongNotifyController extends Controller
                 $this->updateOrderPaid($res);
             } else {
                 Log::debug('YuntongNotify解析为空', [$json]);
+                throw new \Exception('YuntongNotify解析为空');
             }
             $Pay->Notify_success();
         } catch (\Exception $e) {
