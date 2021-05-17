@@ -27,6 +27,7 @@ class YuntongNotifyController extends Controller
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
             if (!empty($res)) {
+                Log::debug('YuntongNotify订单更新', [$json]);
                 $this->updateOrderPaid($res);
             } else {
                 Log::debug('YuntongNotify解析为空', [$json]);
