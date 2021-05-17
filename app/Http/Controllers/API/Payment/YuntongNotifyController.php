@@ -109,9 +109,9 @@ class YuntongNotifyController extends Controller
             //更新订单状态
             $TradeOrder->upTradeOrder($tradeOrderData);
             //自动充值
-            if ($trade_order[ 'description' ] == "HF") {
+            if ($trade_order->description == "HF") {
                 (new RechargeController())->setCall($callData);
-            } elseif ($trade_order[ 'description' ] == "YK") {
+            } elseif ($trade_order->description == "YK") {
                 (new RechargeController())->setGas($gasData);
             }
             //更新 order 表审核状态
