@@ -35,4 +35,7 @@ Route::any("getUserOrderJl","User\RecordsOfConsumptionController@getUserOrderJl"
 //获取用户的资产记录
 Route::any("getUserAssets","User\RecordsOfConsumptionController@getUserAssets");
 
+//获取用户的冻结资产记录
+Route::any("getUserFreeze","User\RecordsOfConsumptionController@getUserFreeze");
+
 

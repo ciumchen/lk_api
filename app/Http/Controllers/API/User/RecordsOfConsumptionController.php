@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\AssetsLogs;
+use App\Models\FreezeLogs;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -41,10 +42,24 @@ class RecordsOfConsumptionController extends Controller
 
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
+    }
 
+    //获取用户的冻结资产usdt的记录
+    public function getUserFreeze(Request $request){
+        $uid = $request->input('uid');
+        $page = $request->input('page');
+        $pageSize = $request->input('pageSize',10);
+        $data = (new FreezeLogs())
+            ->where("uid", $uid)
+            ->where('assets_type_id', 3)
+            ->orderBy('id', 'desc')
+            ->latest('id')
+            ->forPage($page, $pageSize)
+            ->get(['operate_type','amount','updated_at']);
 
-
+        return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
     }
+
 
 }

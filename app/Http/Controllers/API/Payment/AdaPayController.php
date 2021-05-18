@@ -45,6 +45,18 @@ class AdaPayController extends Controller
         $totalFee = $paymentData['money'] * $paymentData['number'];
         $tradeOrder = new TradeOrder();
 
+        //判断支付金额
+        if (!in_array($paymentData['money'], [50, 100, 200]) && $paymentData['description'] == "HF")
+        {
+            throw new LogicException('话费充值金额不在可选值范围内');
+        } elseif (!in_array($paymentData['money'], [300, 500, 1000]) && $paymentData['description'] == "MT")
+        {
+            throw new LogicException('美团充值金额不在可选值范围内');
+        } elseif (!in_array($paymentData['money'], [100, 200, 500, 1000]) && $paymentData['description'] == "YK")
+        {
+            throw new LogicException('油卡充值金额不在可选值范围内');
+        }
+
         //检查用户当月消费金额
         $sumData = [
             'uid' => $uid,
@@ -117,6 +129,9 @@ class AdaPayController extends Controller
             case "YK":
                 $name = '油卡';
                 break;
+            case "DD":
+                $name = '滴滴';
+                break;
         }
         if (in_array($paymentData['description'], ['HF', 'YK']))
         {
@@ -140,8 +155,8 @@ class AdaPayController extends Controller
             'updated_at' => $date,
         ];
 
-        //美团卡备注姓名
-        if ($paymentData['description'] == 'MT')
+        //美团卡、滴滴备注姓名
+        if (in_array($paymentData['description'], ['MT', 'DD']))
         {
             $orderData['remarks'] = $paymentData['name'];
         } elseif ($paymentData['description'] == 'YK')
@@ -160,7 +175,7 @@ class AdaPayController extends Controller
             $Order = new Order();
 
             //创建订单
-            if (in_array($paymentData['description'], ['HF', 'YK', 'MT']))
+            if (in_array($paymentData['description'], ['HF', 'YK', 'MT', 'DD']))
             {
                 $oid = $Order->setOrder($orderParam);
                 $orderData['oid'] = $oid;

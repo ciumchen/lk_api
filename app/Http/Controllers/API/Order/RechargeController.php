@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Order;
 use App\Http\Controllers\Controller;
 use App\Models\TradeOrder;
 use GuzzleHttp;
+use Illuminate\Support\Facades\Log;
 
 /*
  * 话费、油卡自动充值接口
@@ -88,7 +89,7 @@ class RechargeController extends Controller
         {
             //中石油
             $proid = 10008;
-            $cardnum = $data['price'];
+            $cardnum = intval($data['price']);
             $chargeType = 2;
         }
 
