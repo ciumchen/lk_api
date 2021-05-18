@@ -38,14 +38,13 @@ class OrderCancel extends Command
      */
     public function handle()
     {
-        Log::info('**********' . '1111111111111111');
         $year = date("Y");
         $month = date("m");
         $day = date("d");
 
         $time = time();
         //当天订单结束时间戳
-        $end= mktime(15,00,00, $month, $day, $year);
+        $end= mktime(23,58,00, $month, $day, $year);
 
         //获取当天订单数据
         $orderData = (new Order())->getTodayOrders();
