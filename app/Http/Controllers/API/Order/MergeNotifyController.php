@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\API\Order;
 
 use App\Http\Controllers\Controller;
+use http\Message;
 use Illuminate\Http\Request;
 use App\Exceptions\LogicException;
 use Illuminate\Support\Facades\Log;
 use App\Models\RechargeLogs;
+use App\Http\Controllers\API\Message\UserMsgController;
 
 /*话费、油卡自动充值回调*/
 
@@ -62,6 +64,10 @@ class MergeNotifyController extends Controller
             $recharge->created_at = date("Y-m-d H:i:s");
             $recharge->updated_at = date("Y-m-d H:i:s");
             $recharge->save();
+
+            //添加消息通知
+            (new UserMsgController())->setMsg($orderId);
+
         } elseif ($status == 9)
         {
             throw new LogicException('充值失败');
@@ -118,6 +124,10 @@ class MergeNotifyController extends Controller
             $recharge->created_at = date("Y-m-d H:i:s");
             $recharge->updated_at = date("Y-m-d H:i:s");
             $recharge->save();
+
+            //添加消息通知
+            (new UserMsgController())->setMsg($orderId);
+
         } elseif ($status == 9)
         {
             throw new LogicException('充值失败');
