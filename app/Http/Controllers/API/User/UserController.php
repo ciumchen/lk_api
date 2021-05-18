@@ -38,9 +38,8 @@ class UserController extends Controller
         if(BusinessApply::where('uid', $user->id)->whereIn('status', [BusinessApply::DEFAULT_STATUS, BusinessApply::BY_STATUS])->exists())
             throw new LogicException('已申请成为商家，请等待审核结果');
 
-        var_dump($request->all());exit;
         try{
-          //写入申请商家数据
+            //写入申请商家数据
             BusinessService::submitApply($request, $user);
         }catch (Exception $e) {
             throw $e;
