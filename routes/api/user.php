@@ -38,4 +38,10 @@ Route::any("getUserAssets","User\RecordsOfConsumptionController@getUserAssets");
 //获取用户的冻结资产记录
 Route::any("getUserFreeze","User\RecordsOfConsumptionController@getUserFreeze");
 
+//获取用户分享积分
+Route::any("getUserAssetsFxJf","User\RecordsOfConsumptionController@getUserAssetsFxJf");
+
+//用户的公益贡献接口
+Route::any("getUoserGYGX","User\RecordsOfConsumptionController@getUoserGYGX");
+
 
