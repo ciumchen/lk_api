@@ -1,0 +1,1612 @@
+commit c0443e4adae177d525b0cf52f25bb67eac8b9ad1
+Merge: d91072b 4f60f91
+Author: ning <ning@qq.com>
+Date:   Fri May 7 17:43:33 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit 4f60f91c50fcb22fe75291476187da0fc6d53307
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri May 7 17:32:56 2021 +0800
+
+    自动充值接口
+
+commit 9c39db43fb4f111b757e9c5e35249f66a9c41284
+Merge: 47c8cee 56d3faf
+Author: ning <ning@qq.com>
+Date:   Fri May 7 17:25:04 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit 56d3faf28b217b59df4232cf78ef965dd980c4f3
+Merge: bfd9a5b ba2fc87
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 17:22:21 2021 +0800
+
+    Merge branch 'master' of http://112.124.9.185:8020/root/lk-api.git into master
+
+commit bfd9a5bf89083925be2922a972155899ecec8a9e
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 17:22:12 2021 +0800
+
+    提现限制
+
+commit ba2fc87fdc9b6ba7873ce5b487b06bc461149774
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri May 7 17:02:15 2021 +0800
+
+    自动充值接口
+
+commit b66e28825c3b52304fbdb85e3ab3662580343a63
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri May 7 16:29:54 2021 +0800
+
+    自动充值接口
+
+commit 6d9b2d7df6422bb81cf072851558bfb7577576fa
+Merge: bce5259 b7d2639
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri May 7 16:23:02 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+    
+    the commit.
+
+commit bce525912faeff6e492de6ab2755a301775a89b8
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri May 7 16:21:43 2021 +0800
+
+    自动充值接口
+
+commit c83c22fabbcac4e94acca23bf1fffae1a4746fcd
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri May 7 15:49:00 2021 +0800
+
+    自动充值接口
+
+commit d91072bd890199d46ecf8445b44c33c45af94711
+Merge: ab62209 b7d2639
+Author: ning <ning@qq.com>
+Date:   Fri May 7 15:47:56 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit b7d2639588e1ff19439c0706e9b0cc6f68ba207f
+Author: ning <ning@qq.com>
+Date:   Fri May 7 15:47:25 2021 +0800
+
+    修改我的分享判断条件统计
+
+commit ae4318a6ab0d6493458449d32885e32c6f7398da
+Merge: 7fd056e 2785590
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 07:13:44 2021 +0000
+
+    合并分支 'yyxo' 到 'master'
+    
+    资产类型
+    
+    查看合并请求 root/lk-api!2
+
+commit 2785590c98457a42efa5a012f5d96990b12e3887
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 15:12:39 2021 +0800
+
+    资产类型
+
+commit 7fd056e5288d0fadfb29a0fba4327120fdb2d59a
+Merge: ce2f38c 431e640
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 07:10:39 2021 +0000
+
+    合并分支 'yyxo' 到 'master'
+    
+    同步、充值代码
+    
+    查看合并请求 root/lk-api!1
+
+commit 431e640979c897819245f7bc9c38bf8508d93062
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 15:04:47 2021 +0800
+
+    删除无用代码
+
+commit 9e0e22232ebe8698a8e613c6f3aa5eb53589d24a
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 14:56:42 2021 +0800
+
+    类型名称
+
+commit 4cc71065f156983b58254bdb02c4aa5734ef4f34
+Merge: 8d454ca ce2f38c
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 14:49:54 2021 +0800
+
+    Merge branch 'master' of http://112.124.9.185:8020/root/lk-api.git into yyxo
+
+commit 8d454caaf671aee64acbaad9b2156913d78e2f35
+Author: yyxo <550503811@qq.com>
+Date:   Fri May 7 14:47:36 2021 +0800
+
+    托管地址
+
+commit ab622095e6b490ccec61a010334d8d5442b10aa0
+Merge: 595eb15 ce2f38c
+Author: ning <ning@qq.com>
+Date:   Fri May 7 14:26:23 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit ce2f38ce7e9e113810ea8bd20808b45b059bc227
+Author: ning <ning@qq.com>
+Date:   Fri May 7 14:25:47 2021 +0800
+
+    修改我的分享判断条件统计
+
+commit 595eb159739c78cab0ecf8c9cf4d6f55e0f766a2
+Merge: 47aaf89 cedc8f0
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:48:04 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit cedc8f0b6d786ad08598ad4fb2edeb98944f46ef
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:46:18 2021 +0800
+
+    修改我的分享判断条件统计
+
+commit 47aaf89a212b02cff2b2a4187ca5eb480a00efb0
+Merge: 36820a7 6ef6d7e
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:43:29 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit 6ef6d7e850afa3e353c2ea6e3beffe60c721f3c1
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:43:22 2021 +0800
+
+    修改我的分享判断条件统计
+
+commit 36820a7c4b6edb671060c364ca85b57c4b875bfc
+Merge: 996c5be ae44eff
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:39:10 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit ae44eff6317c0cd9b7302870148ae2966ec63043
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:38:56 2021 +0800
+
+    修改我的分享判断条件统计
+
+commit 996c5be2a6225df00691e6897f5c296ccae304e0
+Merge: 227edd9 1aa9ad4
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:13:16 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit 1aa9ad4da52dd138750bb898f1a7dc218d7f99fa
+Author: ning <ning@qq.com>
+Date:   Fri May 7 11:11:03 2021 +0800
+
+    修改我的分享判断条件统计
+
+commit be009e090b9b35b7f38f97fca6515dd0873ddcef
+Author: ning <ning@qq.com>
+Date:   Fri May 7 10:26:05 2021 +0800
+
+    测试商家申请
+
+commit f7be505bc9940752085c70d5c6be7ef11e215a32
+Author: ning <ning@qq.com>
+Date:   Fri May 7 10:01:39 2021 +0800
+
+    测试商家申请
+
+commit d861a2604ee7abf67394fe64e94f1cdb0d659f2d
+Author: ning <ning@qq.com>
+Date:   Thu May 6 18:55:39 2021 +0800
+
+    测试商家申请
+
+commit f5bb5b6befae2724d79b76763f39f55876b0ee4a
+Author: ning <ning@qq.com>
+Date:   Thu May 6 18:53:27 2021 +0800
+
+    测试商家申请
+
+commit 9fc2c95a74d1d84774861ac1a34ad6e2712256ba
+Author: ning <ning@qq.com>
+Date:   Thu May 6 18:43:51 2021 +0800
+
+    测试商家申请
+
+commit b07226bef209667d093c52cc955c88077a18cf57
+Author: ning <ning@qq.com>
+Date:   Thu May 6 18:32:18 2021 +0800
+
+    测试商家申请
+
+commit 703b15d0403a7266a0dc0f2f467a746811de88ea
+Author: ning <ning@qq.com>
+Date:   Thu May 6 18:21:45 2021 +0800
+
+    测试商家申请
+
+commit 4e740ace65afcbe6bbeb1e05646e4e1b51fda73b
+Author: ning <ning@qq.com>
+Date:   Thu May 6 18:14:35 2021 +0800
+
+    测试商家申请
+
+commit d13b2bcf57a95432796e8ccf04525f861bb3bf21
+Author: yyxo <550503811@qq.com>
+Date:   Thu May 6 17:16:57 2021 +0800
+
+    同步、充值代码
+
+commit e5f48d9219a4ef290492175b706b6988f1d83943
+Author: ning <ning@qq.com>
+Date:   Thu May 6 16:35:35 2021 +0800
+
+    更新json
+
+commit e472f0f65854f78573f188cbb99b98f711d3473f
+Author: ning <ning@qq.com>
+Date:   Thu May 6 15:02:43 2021 +0800
+
+    更新配置
+
+commit 9e8f4742512e4281d6f887b93387401b04c0ea8f
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu May 6 11:19:29 2021 +0800
+
+    话费充值接口
+
+commit 227edd99c252aa6637616a7c37dca242544f1ae3
+Merge: 25dc7e3 e90806e
+Author: ning <ning@qq.com>
+Date:   Thu May 6 10:21:01 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit 25dc7e301e81b6ff8f8e8ebb191da4e382a2beed
+Author: ning <ning@qq.com>
+Date:   Thu May 6 10:15:21 2021 +0800
+
+    修改座机验证
+
+commit 0e08370793bb645b3551684e55b42f2320f6f33e
+Author: ning <ning@qq.com>
+Date:   Thu May 6 10:12:53 2021 +0800
+
+    修改座机验证
+
+commit 47c8cee8fa6b3a713ce944fbcb6baf224c688a80
+Merge: 498420c e90806e
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 20:21:45 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit e90806e0f50bc56d3f66992777c791bc15fb28b8
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 20:21:38 2021 +0800
+
+    更新json文件
+
+commit 498420c0376326b2fc7421f300eb142216d422a8
+Merge: ad9fa49 bf29b27
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 20:15:09 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit bf29b2769c5f67d8f60631161ea83a25f489877b
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 20:14:50 2021 +0800
+
+    更新json文件
+
+commit e5dcbad900db5894f6290b20c3cce5f6857ef4d1
+Merge: 4dc3904 4fcd60c
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 18:56:01 2021 +0800
+
+    Merge branch 'master' of ssh://112.124.9.185:8022/root/lk-api
+
+commit ad9fa49066733544a69235c6b84f9eea4a558713
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 16:33:19 2021 +0800
+
+    更改电话号验证
+
+commit 4dc3904d4f341e2f4adf164444a79ca752bda047
+Merge: f0da933 f2d1a84
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 18:52:15 2021 +0800
+
+    更新json文件
+
+commit 4fcd60c7ff30f9c5e8da2a1a841ed2f84cb3d25c
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 18:47:58 2021 +0800
+
+    api调试
+
+commit f2d1a84c57cc7735886e51d8a2f59c16a580a73d
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 18:45:44 2021 +0800
+
+    更新json文件
+
+commit 239af53d19d624e93408931b2a2f109775778422
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 18:10:29 2021 +0800
+
+    api调试
+
+commit 5a1f47c76e94cb468f1ccbde46953450a6c3049f
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 18:06:21 2021 +0800
+
+    api调试
+
+commit c31d581d8021348e5a41723f63b92c5f4d83c641
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:52:22 2021 +0800
+
+    api调试
+
+commit 42d73ef53f3682a41cfecae758064eb281b7fb8b
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:45:32 2021 +0800
+
+    api调试
+
+commit f090ce302e1e3378395cec23d82a5fb38984c4e3
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:43:05 2021 +0800
+
+    api调试
+
+commit db3611ab8718c24cabe5614d7e11e5fb45ddf99e
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:41:16 2021 +0800
+
+    api调试
+
+commit 2bf1c8ded8e147fcef90598ed8621a79e8844c24
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:39:08 2021 +0800
+
+    api调试
+
+commit 8b6eac13eb37c3527d629d4eb5488af985510285
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:36:45 2021 +0800
+
+    api调试
+
+commit 6eba5d6ae8628ee754042155c38128c39dcff673
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:34:16 2021 +0800
+
+    api调试
+
+commit 2ebb72e19eae3e6448ffb70da30fe4b3ff7007cb
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:29:37 2021 +0800
+
+    api调试
+
+commit d95c50fcec167d17da3cfc18d1a55cf545922869
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:26:53 2021 +0800
+
+    api调试
+
+commit 6f461d4f10438d7cc9af43bb9311cf7ea9be08ec
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 17:23:02 2021 +0800
+
+    api调试
+
+commit 09017d47cc497a75b831f9fd6c1892543d366bae
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 16:33:19 2021 +0800
+
+    更改电话号验证
+
+commit f0da9334cabce44800c526e4799b5759fdf10677
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 16:21:33 2021 +0800
+
+    更新app.json
+
+commit 3552ad60c9bb046bcd8071b54834f2c02cb82a30
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 15:57:54 2021 +0800
+
+    更新app.json
+
+commit cb68fb995a25535f8ab8539e7a856ca5aa3643c6
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 15:50:24 2021 +0800
+
+    更新app.json
+
+commit 547a95d75a75ed6a647739dcb8e32bfd15f51841
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 15:40:29 2021 +0800
+
+    更新app.json
+
+commit a265e061d78a85b83e69410652a3fdb9685480ee
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 15:16:53 2021 +0800
+
+    api调试
+
+commit 9224d76f5b38534157f7b34ecf57a90c87dc2be9
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 15:09:48 2021 +0800
+
+    api调试
+
+commit ca06f40c8bff382167931e17b99abe7b3171a294
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 14:53:40 2021 +0800
+
+    api调试
+
+commit 92ec47731ecea0f4b1cedc7c92391173f8e86c3a
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 13:56:28 2021 +0800
+
+    修改消费者和商家今日分配
+
+commit 17f4bd9373b5f9ffc7930f1634fe140ca8e1d20f
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 10:28:36 2021 +0800
+
+    测试商家申请第二张图片
+
+commit 546e868053fb9e2f367eda9fb0bcb6882bb74673
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 10:22:18 2021 +0800
+
+    测试商家申请第二张图片
+
+commit c1d0a6882909ad634658d1fa8490409ad299e38a
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 18:38:20 2021 +0800
+
+    添加座机号验证
+
+commit 80623206955e428e8c739f10bff3b2fffb41d6b7
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 18:19:52 2021 +0800
+
+    添加座机号验证
+
+commit 75291c199338c082e9a8cae75d0efcddba855692
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 13:56:28 2021 +0800
+
+    修改消费者和商家今日分配
+
+commit f0c56d3b3f61e2935af1b71a3078174ebf2e509a
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 13:38:07 2021 +0800
+
+    api调试
+
+commit 69ff22ce41b983aab9500c057d6ef4f4a79eb15a
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 11:52:50 2021 +0800
+
+    api调试
+
+commit 8ecd82059e3fa5180fff1dabd112bd0d602ff126
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 11:49:31 2021 +0800
+
+    api调试
+
+commit ce6945a3eeb4536b561b9571a7d8eeef8814f4c0
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 11:48:00 2021 +0800
+
+    api调试
+
+commit b1d681dd82cb525551e41b606d1d4004a650af96
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 11:46:15 2021 +0800
+
+    api调试
+
+commit ad8993dc20296da31a16a4cb32049ce2ff6dd4a6
+Author: ciumchen <ciumchen@163.com>
+Date:   Fri Apr 30 11:30:01 2021 +0800
+
+    api调试
+
+commit aea75d9ab319b8237b1b0425e0463e0db7d34258
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 10:28:36 2021 +0800
+
+    测试商家申请第二张图片
+
+commit 830b19459127a66a79df940eb447c8567b46a067
+Author: ning <ning@qq.com>
+Date:   Fri Apr 30 10:22:18 2021 +0800
+
+    测试商家申请第二张图片
+
+commit d832d59d74950f3209f6b5bd5d63b97469527905
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 21:04:03 2021 +0800
+
+    api调试
+
+commit 947e2bb84cc65ca473faa9aeb788e84c28d1d25c
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 20:33:44 2021 +0800
+
+    api调试
+
+commit e3795c99bc0efde4096dda47ed84c411ace687a3
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:43:34 2021 +0800
+
+    api调试
+
+commit 4e6b95822d188639370df1212e2ee3994a0564b4
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:41:04 2021 +0800
+
+    api调试
+
+commit 1bb1acf5f94ed4fb4c7ad4c88498690dd41f6941
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 18:38:20 2021 +0800
+
+    添加座机号验证
+
+commit 3b89a837d095725bea92404e9c06870511630a12
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:27:42 2021 +0800
+
+    api调试
+
+commit 961f75cf51d71d3eafa34171e0eb0af571666fd1
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:25:56 2021 +0800
+
+    api调试
+
+commit 28481ff5f40f3f71dedcc483d92ccfbe35b51e32
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:20:40 2021 +0800
+
+    api调试
+
+commit dc085f8dabb26e19127ef2c762fe1324d537cc6b
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 18:19:52 2021 +0800
+
+    添加座机号验证
+
+commit 9e0e7a8ddc15d985f59ca9e56c955f270ad478db
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:16:31 2021 +0800
+
+    api调试
+
+commit 99c1604ab87f1acbacdd2c144efd13c74787de2d
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:14:20 2021 +0800
+
+    api调试
+
+commit e0cbeb7663682297ca1587e7d33698241c4f3102
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 18:00:33 2021 +0800
+
+    api调试
+
+commit 998e1c8415043ab1740bc96648a855006b5d00b0
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:57:27 2021 +0800
+
+    api调试
+
+commit 2e566ccdfe82af41ed2b6253ea0cca187d9d8e37
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:53:53 2021 +0800
+
+    api调试
+
+commit b30be3f79b44475127cf70d9bee978a9b89d754a
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:48:06 2021 +0800
+
+    api调试
+
+commit 45d6238a561696ba5f5fe058f632030ba75461ca
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:45:44 2021 +0800
+
+    api调试
+
+commit 0fae3b7fe08d08c8a9e87ca7f57997c2d04414ba
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:44:15 2021 +0800
+
+    api调试
+
+commit fe1542a9f02fb48c9b9dfa27561da0fa372ae166
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:43:04 2021 +0800
+
+    api调试
+
+commit 496b5444c7f65b9d91238ad814598bf4a021b2d0
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:40:50 2021 +0800
+
+    api调试
+
+commit 4e6daa1313dd2e5e95617e1b2dcd360a2a17a0e0
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:35:37 2021 +0800
+
+    api调试
+
+commit e472edddfbd094afb52f863ec55735f54c68a4b2
+Author: ciumchen <ciumchen@163.com>
+Date:   Thu Apr 29 17:24:20 2021 +0800
+
+    api调试
+
+commit 2cd8f254569bfb446b3674bb2ddfbdfc475a83db
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 17:24:06 2021 +0800
+
+    测回修改
+
+commit fe22dd1cdd5ec0e22982b012c3fb28741a61ed72
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 17:06:44 2021 +0800
+
+    添加座机号验证
+
+commit 6ffe2679bbbc5b3dc853308ee50bdb46308e9064
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 17:05:17 2021 +0800
+
+    添加座机号验证
+
+commit c1c19f929f8d6f29481058618c23bcc0f6300768
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 17:03:05 2021 +0800
+
+    添加座机号验证
+
+commit 1ee734289f514b7a1638cb7410ea54f21be68327
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 17:01:38 2021 +0800
+
+    添加座机号验证
+
+commit f42c98c82db75d69408cf6239d52d45aef0b18db
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:50:51 2021 +0800
+
+    添加座机号验证
+
+commit b5c5677857bf3d106ee16edee9b222831736033c
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:49:26 2021 +0800
+
+    添加座机号验证
+
+commit 23e2e2adc0654751ae8f7de270231db85dd52f7c
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:46:51 2021 +0800
+
+    添加座机号验证
+
+commit 7d4d59d53c78977d0f609379ad04cbef3cfe228e
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:39:56 2021 +0800
+
+    添加座机号验证
+
+commit a13774b9b44d92760105fb23f410fff5508519a5
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:33:30 2021 +0800
+
+    添加座机号验证
+
+commit c5be72e5b725fdcc5a79e83537071949eee2611a
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:30:09 2021 +0800
+
+    添加座机号验证
+
+commit d3b7ab18d352c607a1653233ba86e7c9a7af7a02
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:23:30 2021 +0800
+
+    添加默认验证码
+
+commit d3e1c9117dae2db973891b0a980b4a8464e11254
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 16:08:14 2021 +0800
+
+    修改商家申请第二张图片
+
+commit ee03aa17ef003053abfdd9be6ec96f49f26ac6eb
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 10:56:00 2021 +0800
+
+    更新apk文件
+
+commit ea1c1ed7dfaca671fc1332c775ab288c101b9792
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 10:41:00 2021 +0800
+
+    更新apk文件
+
+commit a598a63452f901056cbd3c5bc094cc43c3f40c1c
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 10:26:58 2021 +0800
+
+    更新apk文件
+
+commit 8434ef874c20ee5a004d3b83d1480e18661c9dd1
+Author: ning <ning@qq.com>
+Date:   Thu Apr 29 10:20:41 2021 +0800
+
+    屏蔽商家申请图片2上传
+
+commit 42da0414368afa3eb28abd296723266ddf1225b5
+Author: yyxo <550503811@qq.com>
+Date:   Wed Apr 28 22:42:50 2021 +0800
+
+    删除代码
+
+commit 4713f17ea03fae895ec0ad6f16c81f3d0c8553e2
+Author: yyxo <550503811@qq.com>
+Date:   Wed Apr 28 22:35:06 2021 +0800
+
+    save
+
+commit 17d827195e91eddaeb9c355b2ef1ca273cbadd0d
+Author: yyxo <550503811@qq.com>
+Date:   Wed Apr 28 22:25:05 2021 +0800
+
+    筛选条件
+
+commit 35dc78c128a6f6849ec2d08e27c7c0c5c4c7576f
+Author: yyxo <550503811@qq.com>
+Date:   Wed Apr 28 22:13:33 2021 +0800
+
+    路由
+
+commit 7bd7ccf6d105bdd8ac76d5bc5a36d98616234df1
+Author: yyxo <550503811@qq.com>
+Date:   Wed Apr 28 22:00:58 2021 +0800
+
+    积分修复
+
+commit ab3a594751dbe36a973a14e4d8f201584b7bdcb9
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 19:24:49 2021 +0800
+
+    api调试
+
+commit f83a1a955345a9b5c431a91b5add8de94c178189
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 19:20:40 2021 +0800
+
+    api调试
+
+commit 6d29130d29065ad01d2c20be3868465868812cad
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 19:07:30 2021 +0800
+
+    api调试
+
+commit 4dcfda650eeb9a2995526b4fac7eaffe8b66700d
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 18:48:37 2021 +0800
+
+    api调试
+
+commit 0e97d091e861c4456a724393e7c8865e93b40a70
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 18:37:04 2021 +0800
+
+    api调试
+
+commit d2acf2fb7e7bcd9c765828397bdca87afce5069d
+Author: ning <ning@qq.com>
+Date:   Wed Apr 28 18:28:18 2021 +0800
+
+    更新图片
+
+commit 2a180e337940020ace2712fa8613863fae13ffe2
+Author: ning <ning@qq.com>
+Date:   Wed Apr 28 16:55:03 2021 +0800
+
+    2021年4月28日 16:55:02
+
+commit 86cd56606f3226982920719d4bbf372afdb6cbce
+Author: ning <ning@qq.com>
+Date:   Wed Apr 28 16:50:50 2021 +0800
+
+    2021年4月28日 16:50:46
+
+commit bf20b2e7b28aa923c4fbf72b92b140fa07b60e4c
+Author: ning <ning@qq.com>
+Date:   Wed Apr 28 16:08:44 2021 +0800
+
+    更新json文件
+
+commit 0fad6eb7bc3f9564aa97f7022dad4503bfc7124d
+Author: ning <ning@qq.com>
+Date:   Wed Apr 28 15:56:21 2021 +0800
+
+    更新app文件下载
+
+commit f8f79d108e5a72e09a460879cd4ed32521108678
+Author: ning <ning@qq.com>
+Date:   Wed Apr 28 15:35:22 2021 +0800
+
+    2021年4月28日 15:35:21
+
+commit 4e44dab1f6d12c3fec0468ef1b3cd7519421f6f1
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 15:25:17 2021 +0800
+
+    api调试
+
+commit 53f473216d8f30961606ee79557e467a6c3a119c
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 15:17:27 2021 +0800
+
+    api调试
+
+commit 6a143dd3aef14379cbaec34b28fef37407db7942
+Merge: 39aaee1 fc75f44
+Author: PS2020PVMMPKJW\Admin <476469085@qq.com>
+Date:   Wed Apr 28 14:35:32 2021 +0800
+
+    Merge branch 'master' of http://112.124.9.185:8020/root/lk-api
+
+commit 39aaee1a3bc5caa66d49fcacf1b47141c6be3890
+Author: PS2020PVMMPKJW\Admin <476469085@qq.com>
+Date:   Wed Apr 28 14:35:24 2021 +0800
+
+    代码完善
+
+commit fc75f44554952b5a57771c6f3a118ea7dc823cf0
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 13:42:08 2021 +0800
+
+    api调试
+
+commit 45417f90069266f54304b3b181ff6b0396968f82
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 13:21:36 2021 +0800
+
+    api调试
+
+commit e3100902fa75462f174dba4ae6b8080b230fcae7
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 13:11:14 2021 +0800
+
+    api调试
+
+commit 5643d0f5606edf291b11b03c2e02ec0ffc7578dd
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 13:10:15 2021 +0800
+
+    api调试
+
+commit c22949e358738a12d738b0eeaeb42f632a097d39
+Author: ning <ning@qq.com>
+Date:   Wed Apr 28 10:55:28 2021 +0800
+
+    更新今日新增商户判断条件
+
+commit 3232bbb172f0790ff342bdb78edbcfdb1c4a98b0
+Author: ciumchen <ciumchen@163.com>
+Date:   Wed Apr 28 10:17:16 2021 +0800
+
+    api调试
+
+commit db424cc4c7d9823138bb4ab9ceee8a9711ec4016
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 22:25:16 2021 +0800
+
+    api调试
+
+commit 09331f325534e30cfad19afe2c874a225ef35568
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 22:03:12 2021 +0800
+
+    api调试
+
+commit 51bc3369c1a1e223b214ec2b36058c2606376729
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:49:03 2021 +0800
+
+    api调试
+
+commit 4faccca63676c43becf19cb72d1ca13867dcc49b
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:47:19 2021 +0800
+
+    api调试
+
+commit 6855ce1a14be7ae4dd50661d0ba7fbb026b28e93
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:45:50 2021 +0800
+
+    api调试
+
+commit 888baf4b2371de5bb33e7a4dc8355125e06ca04e
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:42:39 2021 +0800
+
+    api调试
+
+commit 854cde401f55f3e3da24f2a753beceba61a3ebc0
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:30:47 2021 +0800
+
+    api调试
+
+commit b691824c06f5ca4c6a91ce5bd324b2ab871f6f3d
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:26:22 2021 +0800
+
+    api调试
+
+commit c9501db6743371f95702dbfa0c2db48ce6ef25cc
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:23:49 2021 +0800
+
+    api调试
+
+commit 2b54b874ef77b958eb52dc430b4617088e21f94e
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:20:53 2021 +0800
+
+    api调试
+
+commit 8e2e14e51b905d7cd08c17fddab7664cd9f62b51
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:18:03 2021 +0800
+
+    api调试
+
+commit 15b5721254f89ef785315355490b5dfb11a0f43f
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:14:25 2021 +0800
+
+    api调试
+
+commit 42c6b0ff065386749757d4fb886f64c7ddba5740
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:05:17 2021 +0800
+
+    api调试
+
+commit b695d6374c3b734a9e43136c2279e1cc7a988e11
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 20:02:58 2021 +0800
+
+    api调试
+
+commit eb19222c1170747524c34236bdf8816261139cba
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:56:39 2021 +0800
+
+    api调试
+
+commit f7ab236cd6d0d52cba8e08a85bf3d6989891980e
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:55:04 2021 +0800
+
+    api调试
+
+commit dc8089a309a14c58cbb4958b1db9fdecc8a7818f
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:29:24 2021 +0800
+
+    api调试
+
+commit 66f5695e022cfc33439cb16028ab6f21c68b57b2
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:28:22 2021 +0800
+
+    api调试
+
+commit c4afd7c6c85668cc0b8e61e5f71cd1b08fd8c7f1
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:26:31 2021 +0800
+
+    api调试
+
+commit 9cc81271d8e2f1e052fb273374faedff40df31e7
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:23:52 2021 +0800
+
+    api调试
+
+commit 0a0ce171e16b8dcc1ad757826055b686148bbc11
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:16:06 2021 +0800
+
+    api调试
+
+commit 9b41aeab845a1eb9a973ab0f6d1d11761b5c8d63
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 19:08:04 2021 +0800
+
+    api调试
+
+commit 38ee39b79ea0f0c2810ddbc5508b9ec5e98f74ba
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 17:50:59 2021 +0800
+
+    api调试
+
+commit 03c8ad20e1a55667581b791ce90efafac4f9262b
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 17:34:53 2021 +0800
+
+    api调试
+
+commit eeb7e913d93201c847983be4ce3a94049b2f2b6b
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 17:29:25 2021 +0800
+
+    api调试
+
+commit d8c77d5a3ba4b3483367d9bebfb73decf9cd29d1
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 17:23:43 2021 +0800
+
+    api调试
+
+commit 9c5cf49c6e3d8d543db672ceb5af4c3b51b816d1
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 17:18:27 2021 +0800
+
+    api调试
+
+commit 9ab99792966aa022878b326687e64a8929f0d26a
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:59:52 2021 +0800
+
+    api调试
+
+commit ca130ea8d6e70b932e4082c95c6dc225f7ca4385
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:49:56 2021 +0800
+
+    api调试
+
+commit 5276c22dc4aef00c1645fbce3702992f954f33c1
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:48:00 2021 +0800
+
+    api调试
+
+commit b09e24ac159a1d5c1acab6ad6d276638002a8899
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:46:17 2021 +0800
+
+    api调试
+
+commit ad01ecc833f200f871ea43db5aa44b34ddf1c121
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:44:19 2021 +0800
+
+    api调试
+
+commit dba8f61418cdb294c5a3f1478ca8de3eda958502
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:42:32 2021 +0800
+
+    api调试
+
+commit 0e843ec503c7b129b31f722c05bf548b5a79a7d7
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:40:29 2021 +0800
+
+    api调试
+
+commit aee1956ecb18116616701177b33e67ab03e4a799
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:38:21 2021 +0800
+
+    api调试
+
+commit c8258d1066675ebcdff82a3df5db11f0738f9aac
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 16:35:56 2021 +0800
+
+    添加商户今日录单限额接口
+
+commit 72d6f39de9d6b96008df52a8c3f0a13b6e5c592a
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:34:02 2021 +0800
+
+    api调试
+
+commit dc2ca42e8ff5b19c2bfbd639bec9776d8dd44286
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:31:01 2021 +0800
+
+    api调试
+
+commit 6daa2ecfb8ad73be127212f61d6fcfd6c0f3f40d
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:27:44 2021 +0800
+
+    api调试
+
+commit 10c6e09eb7e11d9288247cefe5b7e11b93ec79e2
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:19:11 2021 +0800
+
+    api调试
+
+commit cd80b38e5c6c327961799b5fff0b28b5fddf92b1
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:15:34 2021 +0800
+
+    api调试
+
+commit a05fc2e34d1a28cb5dc5ebfb364725bdb492ba20
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:13:50 2021 +0800
+
+    api调试
+
+commit 81007afe94844dae6f427a593d4647622e347f28
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:12:00 2021 +0800
+
+    api调试
+
+commit 7c62f9196bb92f13ce800ad13083eb41d50c998f
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:10:26 2021 +0800
+
+    api调试
+
+commit c5f489d920ef45d7c21f91c336275cf4214701e6
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:08:54 2021 +0800
+
+    api调试
+
+commit d8d4f78edce032b89b31dd0aeca99f68c9435ee9
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:06:46 2021 +0800
+
+    api调试
+
+commit 9eae8956100bfcfb6399df20e38e5e70c3a96754
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:04:26 2021 +0800
+
+    api调试
+
+commit fb1daa3b9ef5780068d91917aee3a9a5a1273e87
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 16:02:49 2021 +0800
+
+    api调试
+
+commit 0e22c7baea01642063948785c91c09aff156eab4
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:55:26 2021 +0800
+
+    api调试
+
+commit 37674057a19838f02c0e20b6c8bb31be1abcb785
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:53:41 2021 +0800
+
+    api调试
+
+commit d997d00795543b8f6e9fbebf7c3e5952c3dca636
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:49:10 2021 +0800
+
+    api调试
+
+commit 5e0b83443ffe5060da0b883b699280884e79fd27
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:47:13 2021 +0800
+
+    api调试
+
+commit c60b463dea6dbd52105ce0874f14a18dc7c4f17e
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:46:02 2021 +0800
+
+    api调试
+
+commit 71c2afac54eb3594d38ace48b36ec2a9bf387e4c
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:37:56 2021 +0800
+
+    api调试
+
+commit 13b2655aaaaf97d6b002068d24f7402f1dd8fa29
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:32:25 2021 +0800
+
+    api调试
+
+commit de40787d2fabec0dbcc9df6291d7d5e399296d69
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:31:09 2021 +0800
+
+    api调试
+
+commit df60d9a3a4ed8e8af05920d2f5696ae65cda3c77
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:26:59 2021 +0800
+
+    api调试
+
+commit 0ef3929ac6e9bd2ba9fe1a3d09235de189aacbdd
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:20:55 2021 +0800
+
+    api调试
+
+commit b928a75fec88e01ea4681d2bac46c4443efad164
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:19:37 2021 +0800
+
+    api调试
+
+commit cdda404281644a62fc2b720d55bc5d5f844e7d4f
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:16:39 2021 +0800
+
+    api调试
+
+commit 498e2520714fd96752d44c928c9655eb6c583fa3
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:13:28 2021 +0800
+
+    api调试
+
+commit cded5fa0b387c34d670269a95fb800b31dbd30d8
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:11:37 2021 +0800
+
+    api调试
+
+commit 3a7318d5622c016129c053c57c5b17e80cf3365a
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:09:38 2021 +0800
+
+    api调试
+
+commit 771779b43c48f88aeeab5bb64ce350f9e35f7c89
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:06:40 2021 +0800
+
+    api调试
+
+commit 6a48971bab10ab43c4d24715b4e17f6302c8f36d
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:04:47 2021 +0800
+
+    api调试
+
+commit 1cf77ac4c1aee3a82f5631e0afdf755c0c08b779
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:02:35 2021 +0800
+
+    api调试
+
+commit aa5bfd34119be4606ecc9d9d7e4b18ac916faa7b
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 15:00:15 2021 +0800
+
+    api调试
+
+commit a2a1a27df359e5c99deaef37cc3476067c0e10d1
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 14:57:33 2021 +0800
+
+    api调试
+
+commit e0aedf7854a5fc434d89a0ed02bb2ebe500741e1
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 14:56:12 2021 +0800
+
+    api调试
+
+commit 49858f7274e3fbe4114d5722347c5ea1f70b8d0e
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 14:49:11 2021 +0800
+
+    api调试
+
+commit 7008119fc7d7edf1e92f86ae309badbc1029f2d3
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 14:31:26 2021 +0800
+
+    修改商家申请上传两张图片
+
+commit 1010b99323e47b1b497cf760b812ea13aea731ce
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 14:31:31 2021 +0800
+
+    api调试
+
+commit 5c7bf9d495c9648c0bfa69045cc48f6a2907b2a6
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 14:26:31 2021 +0800
+
+    api调试
+
+commit f1abafb326152962b147aee02c92101bd85c7369
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 14:25:20 2021 +0800
+
+    修改商家申请上传两张图片
+
+commit 58a859ee0af02c8ca70c9e2c4ffdfc0d5c27e97d
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 14:05:13 2021 +0800
+
+    api调试
+
+commit 2d158622ae09c94d9040186a4b259829fccac74b
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 14:04:31 2021 +0800
+
+    修改商家申请上传两张图片
+
+commit 0c38c77fa516df56ca3fd476bb8b8c4455c9fd1f
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 14:02:25 2021 +0800
+
+    修改商家申请上传两张图片
+
+commit f0a7c9257d83b673d497bde3e6237e03f1b6e99e
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 14:01:15 2021 +0800
+
+    api调试
+
+commit c5a6260fde8815416b83ac9b4677a7c4b7e39431
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 13:56:30 2021 +0800
+
+    api调试
+
+commit afcd8fa75be3d793c9c18193847572772a450908
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 13:51:47 2021 +0800
+
+    修改商家申请上传两张图片
+
+commit ac9782a0db6eb4e3e343d81166c1d8740c26c75e
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 13:33:54 2021 +0800
+
+    申请商家添加第二张图片
+
+commit 29c6eac4678173c449987a25e8562d27c401fb61
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 11:50:11 2021 +0800
+
+    api调试
+
+commit a73c9bed2fc3e4c6e7972b7835f410dc84865746
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 11:47:13 2021 +0800
+
+    api调试
+
+commit 99cea69fbb919171d7e2c4a2121a1b2ee8b7aaac
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 11:40:28 2021 +0800
+
+    api调试
+
+commit 06b8bacaaa879b643766fcc5e26daa7236e3f33e
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 11:34:31 2021 +0800
+
+    api调试
+
+commit d647efb3b0fd114bda47d12f1d8b7f95723ecd63
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 11:30:30 2021 +0800
+
+    api调试
+
+commit 26a455b28c3153688dd16215700659d77ed3593c
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 10:46:33 2021 +0800
+
+    api调试
+
+commit 45b99805039c359096afc28b5f2c7045530e5be2
+Author: ning <ning@qq.com>
+Date:   Tue Apr 27 10:43:03 2021 +0800
+
+    添加图片
+
+commit 44ed473b7f6e711bf2bd20a52e42548e73538227
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 10:10:13 2021 +0800
+
+    api调试
+
+commit 428f64d6be8217a647d2967a419a097a08e41400
+Author: ciumchen <ciumchen@163.com>
+Date:   Tue Apr 27 09:41:50 2021 +0800
+
+    api调试
+
+commit 91d0e6ae849232f82af1be781c1aa1aadef693b2
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 18:40:10 2021 +0800
+
+    api调试
+
+commit 946f436ce21d37331fcefebb9db3f3423fb52455
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 18:30:49 2021 +0800
+
+    api调试
+
+commit 481774090f34635d21766c61c75a5f013550039b
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 18:19:06 2021 +0800
+
+    api调试
+
+commit 606c1dfeee6d7ef943bc8c89dc8ef2fdbf0b45ba
+Author: ning <ning@qq.com>
+Date:   Mon Apr 26 18:14:11 2021 +0800
+
+    添加获取商户让利累计接口
+
+commit 0ead97a4887c1cfdb8f18bed797e7202b6960d28
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 17:53:55 2021 +0800
+
+    api调试
+
+commit a2cfae36e27151a331a4e0c8b2c1dcc063044a1c
+Author: ning <ning@qq.com>
+Date:   Mon Apr 26 17:49:38 2021 +0800
+
+    获取今日消费金额和昨日消费金额统计
+
+commit 6df6c2228113d1077a9a85ad0e314c524c95b9f9
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 17:31:30 2021 +0800
+
+    api调试
+
+commit f92c5c2a261f2cceab9e576327e8862e9690fcb3
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 17:22:12 2021 +0800
+
+    api调试
+
+commit 0fab35da4c81921e834dc5948c9480fb4550662c
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 17:11:06 2021 +0800
+
+    api调试
+
+commit 7d72b2bd9b14665740abfc1f05b83f1ff9459802
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 17:07:01 2021 +0800
+
+    api调试
+
+commit 6e0531176504304f8db1647b294509c4ac0b5f77
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 17:03:24 2021 +0800
+
+    api调试
+
+commit c52021723841f9d7452ca54a8ad657f55294ad7e
+Author: ning <ning@qq.com>
+Date:   Mon Apr 26 16:56:24 2021 +0800
+
+    添加消费者今日消费金额和昨日消费金额让利统计
+
+commit 4a095f561bc7beba74755c8d43f99edb2d7365fc
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 15:44:00 2021 +0800
+
+    api调试
+
+commit a68a3ac9b6eb1b8e38e521ad09c67c1aebf71eaf
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 15:37:20 2021 +0800
+
+    api调试
+
+commit a6c078734b0c8036751392071f621e0817633dd2
+Author: ciumchen <ciumchen@163.com>
+Date:   Mon Apr 26 15:30:37 2021 +0800
+
+    api调试
+
+commit ab7a11bf77349af173407cde8a19ec7f792c6326
+Author: ning <ning@qq.com>
+Date:   Mon Apr 26 15:07:11 2021 +0800
+
+    统计添加支付成功判断
+
+commit eaeecc86e445aa9eafd137cd613bbc920c812251
+Author: ning <ning@qq.com>
+Date:   Mon Apr 26 14:59:33 2021 +0800
+
+    统计添加支付成功判断
+
+commit 9d03008f0e92cabe0a72e89f9b7820a810e1536c
+Author: ning <ning@qq.com>
+Date:   Mon Apr 26 14:04:33 2021 +0800
+
+    最后一次老仓库合并到新的分仓库
+
+commit b405bd53c7cce4d389eb089a3604bca3aa227937
+Author: ning <ning@qq.com>
+Date:   Sun Apr 25 22:43:29 2021 +0800
+
+    添加录入支付
+
+commit 903c39684c391f439f897390f6479ef8b675f924
+Author: ning <ning@qq.com>
+Date:   Sun Apr 25 21:38:34 2021 +0800
+
+    添加消费者和商户lk获取接口
+
+commit 772c113f8fdb6645b82e9e7d59afcb410ae3f60d
+Author: ciumchen <ciumchen@163.com>
+Date:   Sun Apr 25 17:21:18 2021 +0800
+
+    api调试
+
+commit fb91658661816a936a1c266d28f164eedde4edc5
+Author: ciumchen <ciumchen@163.com>
+Date:   Sun Apr 25 16:24:05 2021 +0800
+
+    api调试
+
+commit 74cead160b0f4a8002c9502483cc6d4dbc91a60c
+Author: ning <ning@qq.com>
+Date:   Sun Apr 25 15:54:18 2021 +0800
+
+    初始化api仓库
