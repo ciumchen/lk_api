@@ -9,7 +9,9 @@ use App\Models\Order;
 use App\Models\PayLogs;
 use App\Models\TradeOrder;
 use App\Services\OrderService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\Order\RechargeController;
 
@@ -21,8 +23,7 @@ class YuntongNotifyController extends Controller
     {
         $Pay = new YuntongPay();
         $json = $request->getContent();
-//        $json =
-//            "{\"amount\":50.00,\"sys_order_id\":\"202105171550219548C78E1348F\",\"create_time\":\"2021-05-17 15:50:21\",\"sign\":\"EAF529214E38C09CEBC74DD472C53373\",\"type\":\"payment.success\",\"order_id\":\"PY_20210517155021100903\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-05-17 15:50:40\"}";
+//        $json = "{\"amount\":50.00,\"sys_order_id\":\"202105181025040236DD7B1E8B1\",\"create_time\":\"2021-05-18 10:25:04\",\"sign\":\"65653ADD0E9BCEE2C47E7E7ED52FB6EA\",\"type\":\"payment.success\",\"order_id\":\"PY_20210518102503845710\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-05-18 10:25:32\"}";
         try {
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
@@ -31,10 +32,10 @@ class YuntongNotifyController extends Controller
                 $this->updateOrderPaid($res);
             } else {
                 Log::debug('YuntongNotify解析为空', [$json]);
-                throw new \Exception('YuntongNotify解析为空');
+                throw new Exception('YuntongNotify解析为空');
             }
             $Pay->Notify_success();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::debug('YuntongNotify验证不通过', [$json . '---------' . json_encode($e)]);
             $Pay->Notify_failed();
 //            throw $e;

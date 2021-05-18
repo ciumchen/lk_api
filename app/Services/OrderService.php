@@ -40,7 +40,7 @@ class OrderService
             $customer = User::lockForUpdate()->find($order->uid);
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
-            $profit_ratio = bcdiv($rebateScale[ $profit_ratio_offset ], 100, 4);
+            $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
             $customerIntegral = bcmul($order->price, $profit_ratio, 2);
             $amountBeforeChange = $customer->integral;
             $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
