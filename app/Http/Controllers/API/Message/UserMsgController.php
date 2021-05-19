@@ -12,11 +12,12 @@ class UserMsgController extends Controller
 {
     /**插入消息
      * @param string $orderNo
+     * @param int $type
      * @throws
      */
-    public function setMsg(string $orderNo)
+    public function setMsg(string $orderNo, int $type)
     {
-        (new UserMessage())->setMsg($orderNo);
+        (new UserMessage())->setMsg($orderNo, $type);
     }
 
     /**获取消息

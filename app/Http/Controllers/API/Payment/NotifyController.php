@@ -110,6 +110,10 @@ class NotifyController extends Controller
                 //更新 order 表审核状态
                 (new OrderService())->completeOrder($json_data['order_no']);
 
+                //发送录单消息通知
+                (new Order())->orderMsg($json_data['order_no']);
+
+
             } catch (\Exception $e) {
                 //记录错误日志
                 Log::error("adaPay notify fail:".$e->getMessage());

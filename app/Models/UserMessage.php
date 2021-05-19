@@ -17,17 +17,25 @@ class UserMessage extends Model
 
     /**插入消息
      * @param string $orderNo
+     * @param int $type
      * @return mixed
      * @throws
      */
-    public function setMsg(string $orderNo)
+    public function setMsg(string $orderNo, int $type)
     {
         $date = date("Y-m-d H:i:s");
-        $userInfo = (new TradeOrder())->tradeOrderInfo($orderNo);
+        $userInfo = (new Order())
+            ->join('trade_order', function($join){
+                $join->on('order.id', 'trade_order.oid');
+            })
+            ->where(['trade_order.order_no' => $orderNo])
+            ->distinct('order.id')
+            ->get(['order.uid'])
+            ->first();
         $message = new UserMessage();
-        $message->user_id = $userInfo->user_id;
+        $message->user_id = $userInfo->uid;
         $message->status = 1;
-        $message->type = 1;
+        $message->type = $type;
         $message->created_at = $date;
         $message->updated_at = $date;
         $message->save();
@@ -56,14 +64,31 @@ class UserMessage extends Model
                     ->where('trade_order.user_id', $uid)
                     ->where('trade_order.status', 'succeeded');
             })
-            ->orderBy('recharge_logs.created_at', 'desc')
             ->distinct('recharge_logs.order_no')
-            ->get(['recharge_logs.*', 'trade_order.price', 'trade_order.numeric'])
+            ->get(['recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price', 'trade_order.numeric'])
             ->toArray();
+
+        //录单审核通过
+        $userOrder = (new Order())
+            ->join('trade_order', function($join){
+                $join->on('order.id', 'trade_order.oid');
+            })
+            ->where(['order.uid' => $uid, 'order.name' => '录单', 'order.status' => 2, 'order.pay_status' => 'succeeded'])
+            ->distinct('order.id')
+            ->get(['order.created_at', 'order.price', 'trade_order.numeric'])
+            ->toArray();
+        foreach ($userOrder as $key => $value)
+        {
+            $userOrder[$key]['type'] = 'LR';
+        }
+
+        //合并数据并按创建时间倒序
+        $magDatas = array_merge($msgArr, $userOrder);
+        array_multisort(array_column($magDatas, 'created_at'), SORT_DESC, $magDatas);
 
         $msgList = [];
         $name = '';
-        foreach ($msgArr as $key => $val)
+        foreach ($magDatas as $key => $val)
         {
             switch ($val['type'])
             {
@@ -72,6 +97,9 @@ class UserMessage extends Model
                     break;
                 case 'YK':
                     $name = '油卡';
+                    break;
+                case 'LR':
+                    $name = '录单';
                     break;
             }
 

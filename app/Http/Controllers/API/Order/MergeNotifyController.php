@@ -66,7 +66,7 @@ class MergeNotifyController extends Controller
             $recharge->save();
 
             //添加消息通知
-            (new UserMsgController())->setMsg($orderId);
+            (new UserMsgController())->setMsg($orderId, 1);
 
         } elseif ($status == 9)
         {
@@ -126,7 +126,7 @@ class MergeNotifyController extends Controller
             $recharge->save();
 
             //添加消息通知
-            (new UserMsgController())->setMsg($orderId);
+            (new UserMsgController())->setMsg($orderId, 1);
 
         } elseif ($status == 9)
         {

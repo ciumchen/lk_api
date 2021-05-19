@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\API\Message\UserMsgController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -117,6 +118,32 @@ class Order extends Model
                 $query->where('pay_status', 'await')
                     ->whereBetween('created_at', [$data['start'], $data['end']]);
             })->get()->toArray();
+    }
+
+    /**录单消息通知
+     * @param string $orderNo
+     * @return mixed
+     * @throws
+     */
+    public function orderMsg(string $orderNo)
+    {
+        $orderDataInfo = (new Order())
+            ->join('trade_order', function($join){
+                $join->on('order.id', 'trade_order.oid');
+            })
+            ->where(function($query) use ($orderNo){
+                $query->where('trade_order.order_no', $orderNo)
+                    ->where('order.pay_status', 'succeeded')
+                    ->where('order.status', 2);
+            })
+            ->get(['order.*', 'trade_order.numeric']);
+        if (!$orderDataInfo)
+        {
+            throw new LogicException('订单录单未通过');
+        }
+
+        //添加消息通知
+        (new UserMsgController())->setMsg($orderNo, 2);
     }
 
     /**
