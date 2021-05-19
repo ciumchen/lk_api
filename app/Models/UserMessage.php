@@ -36,6 +36,7 @@ class UserMessage extends Model
         $message->user_id = $userInfo->uid;
         $message->status = 1;
         $message->type = $type;
+        $message->sys_mid = 0;
         $message->created_at = $date;
         $message->updated_at = $date;
         $message->save();
