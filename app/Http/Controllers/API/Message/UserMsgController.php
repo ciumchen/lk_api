@@ -29,8 +29,10 @@ class UserMsgController extends Controller
     {
         $data = $request->all();
         $uid = $data['uid'];
+        $page = $data['page'];
+        $perpage = $data['perpage'];
 
-        return (new UserMessage())->getMsg($uid);
+        return (new UserMessage())->getMsg($uid, $page, $perpage);
     }
 
     /**获取消息小红点
