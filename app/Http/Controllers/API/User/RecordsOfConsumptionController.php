@@ -66,18 +66,45 @@ class RecordsOfConsumptionController extends Controller
         $uid = $request->input('uid');
         $page = $request->input('page');
         $pageSize = $request->input('pageSize',10);
-        $data['amount_count'] = AssetsLogs::where('uid',$uid)->sum('amount');
-        $data['jls'] = (new AssetsLogs())
-            ->where("uid", $uid)
-            ->where('assets_name', 'encourage')
-            ->orwhere('assets_type_id','share_b_rebate')
-            ->orwhere('operate_type','invite_rebate')
-            ->orderBy('id', 'desc')
-            ->latest('id')
-            ->forPage($page, $pageSize)
-            ->get(['operate_type','amount','updated_at']);
+        $data['amount_count'] = 0;
+        if($uid!=''){
+            $count1 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','share_b_rebate')->sum('amount');
+            $count2 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','invite_rebate')->sum('amount');
+            $data['amount_count'] = $count1+$count2;
+            $data1 = (new AssetsLogs())
+                ->where("uid", $uid)
+                ->where('assets_name', 'encourage')
+                ->where('operate_type','share_b_rebate')
+                ->orderBy('id', 'desc')
+                ->latest('id')
+                ->forPage($page, $pageSize)
+                ->get(['operate_type','amount','updated_at']);
 
-        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+            $data2 = (new AssetsLogs())
+                ->where("uid", $uid)
+                ->where('assets_name', 'encourage')
+                ->where('operate_type','invite_rebate')
+                ->orderBy('id', 'desc')
+                ->latest('id')
+                ->forPage($page, $pageSize)
+                ->get(['operate_type','amount','updated_at']);
+
+            if(!empty($data1)){
+                foreach ($data1 as $k=>$v){
+                    $data['jls'][] = $v;
+                }
+            }
+            if(!empty($data2)){
+                foreach ($data2 as $k=>$v){
+                    $data['jls'][] = $v;
+                }
+            }
+
+            return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+        }else{
+            $data['jls'] = 0;
+            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => $data]);
+        }
 
     }
 
