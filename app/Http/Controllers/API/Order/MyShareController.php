@@ -100,8 +100,14 @@ class MyShareController extends Controller
             if(!$tuanYuanOrder[0]->nums){//团员累计奖励为空时等于0
                 $tuanYuanOrder[0]->nums = 0;
             }
-            //每个用户的所有团员订单让利额都乘2%
-            $userData["$v->phone"]['tuanyuan'] = round($tuanYuanOrder[0]->nums*0.02,2);
+            //判断当前用户是盟主就乘0.035，非盟主就乘0.02
+            $userInfo = DB::table('users')->where('id',$userId)->first();
+            if ($userInfo->member_head==2){//盟主
+                $userData["$v->phone"]['tuanyuan'] = round($tuanYuanOrder[0]->nums*0.035,2);
+            }else{//非盟主
+                $userData["$v->phone"]['tuanyuan'] = round($tuanYuanOrder[0]->nums*0.02,2);
+            }
+
 
 //            //查询当前用户的邀请人是盟主的所有订单并统计实际让利金额求和
 //            $mengZhuOrder = DB::select("SELECT SUM(profit_price) AS nums FROM `order` WHERE uid=$v->id and state=2 and status=2 and pay_status='succeeded'");
