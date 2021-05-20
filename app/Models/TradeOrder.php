@@ -16,6 +16,7 @@ class TradeOrder extends Model
 
     /**
      * 生成订单号
+     *
      * @return string
      */
     public function CreateOrderNo()
@@ -24,7 +25,9 @@ class TradeOrder extends Model
     }
 
     /**生成订单
+     *
      * @param array $data
+     *
      * @return bool
      * @throws
      */
@@ -34,14 +37,16 @@ class TradeOrder extends Model
     }
 
     /**检查是否已经支付
+     *
      * @param int $uid
+     *
      * @return array
      * @throws
      */
     public function checkOrderPay(int $uid)
     {
         $res = DB::table($this->table)->where([['user_id', '=', $uid], ['status', '=', 'await']])->get();
-        if ( !$res)
+        if (!$res)
             throw new LogicException('请先下单');
         if (count($res) > 0) {
             return ['code' => 1, 'msg' => '订单待支付'];
@@ -51,7 +56,9 @@ class TradeOrder extends Model
     }
 
     /**更新订单状态
+     *
      * @param array $data
+     *
      * @throws
      */
     public function upTradeOrder(array $data)
@@ -62,7 +69,7 @@ class TradeOrder extends Model
             $order = $val;
         }
         $orderData = get_object_vars($order);
-        if ( !$orderInfo)
+        if (!$orderInfo)
             throw new LogicException('订单不存在');
         if ($orderData[ 'status' ] != 'await')
             throw new LogicException('订单已支付');
@@ -87,7 +94,9 @@ class TradeOrder extends Model
     }
 
     /**获取用户信息
+     *
      * @param string $orderNo
+     *
      * @return array
      * @throws
      */
@@ -97,7 +106,9 @@ class TradeOrder extends Model
     }
 
     /**获取订单信息
+     *
      * @param string $orderNo
+     *
      * @return mixed
      * @throws
      */
@@ -107,7 +118,9 @@ class TradeOrder extends Model
     }
 
     /**获取用户信息
+     *
      * @param string $orderNo
+     *
      * @return array
      * @throws
      */
@@ -115,12 +128,14 @@ class TradeOrder extends Model
     {
         return DB::table($this->table)->join('users', function ($join) use ($orderNo) {
             $join->on('trade_order.user_id', '=', 'users.id')
-                ->where(['trade_order.order_no' => $orderNo, 'users.status' => 1]);
+                 ->where(['trade_order.order_no' => $orderNo, 'users.status' => 1]);
         })->get()->first();
     }
 
     /** 支付失败再次支付
+     *
      * @param string $oid
+     *
      * @return mixed
      * @throws
      */
@@ -129,9 +144,10 @@ class TradeOrder extends Model
         return DB::table($this->table)->where('oid', $oid)->first();
     }
 
-<<<<<<< HEAD
     /**计算用户当月消费额
+     *
      * @param array $data
+     *
      * @return mixed
      * @throws
      */
@@ -139,19 +155,15 @@ class TradeOrder extends Model
     {
         $firstday = date('Y-m-01 00:00:00', strtotime(date("Y-m-d")));
         $lastday = date('Y-m-d 23:59:59', strtotime("$firstday +1 month -1 day"));
-        $data['firstday'] = $firstday;
-        $data['lastday'] = $lastday;
-
+        $data[ 'firstday' ] = $firstday;
+        $data[ 'lastday' ] = $lastday;
         //返回
         return (new TradeOrder())
-            ->where(function($query) use ($data){
-                $query->where('user_id', $data['uid'])
-                    ->where('description', $data['description'])
-                    ->where('status', 'succeeded')
-                    ->whereBetween('created_at', [$data['firstday'], $data['lastday']]);
+            ->where(function ($query) use ($data) {
+                $query->where('user_id', $data[ 'uid' ])
+                      ->where('description', $data[ 'description' ])
+                      ->where('status', 'succeeded')
+                      ->whereBetween('created_at', [$data[ 'firstday' ], $data[ 'lastday' ]]);
             })->sum('price');
     }
-=======
-
->>>>>>> ytpay
 }
