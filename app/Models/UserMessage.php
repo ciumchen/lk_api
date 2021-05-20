@@ -44,10 +44,12 @@ class UserMessage extends Model
 
     /**获取消息内容
      * @param int $uid
+     * @param int $page
+     * @param int $perpage
      * @return mixed
      * @throws
      */
-    public function getMsg(int $uid)
+    public function getMsg(int $uid, int $page, int $perpage)
     {
         $res = (new UserMessage())::withTrashed()->where('user_id', $uid)->exists();
         if (!$res)
@@ -56,7 +58,7 @@ class UserMessage extends Model
         }
 
         //获取充值数据
-        $msgArr = (new RechargeLogs())
+        $orderData = (new RechargeLogs())
             ->join('trade_order', function($join){
                 $join->on('recharge_logs.order_no', 'trade_order.order_no');
             })
@@ -68,6 +70,11 @@ class UserMessage extends Model
             ->distinct('recharge_logs.order_no')
             ->get(['recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price', 'trade_order.numeric'])
             ->toArray();
+        foreach ($orderData as $key => $value)
+        {
+            $orderData[$key]['title'] = '';
+            $orderData[$key]['content'] = '';
+        }
 
         //录单审核通过
         $userOrder = (new Order())
@@ -81,15 +88,32 @@ class UserMessage extends Model
         foreach ($userOrder as $key => $value)
         {
             $userOrder[$key]['type'] = 'LR';
+            $userOrder[$key]['title'] = '';
+            $userOrder[$key]['content'] = '';
         }
 
         //合并数据并按创建时间倒序
-        $magDatas = array_merge($msgArr, $userOrder);
-        array_multisort(array_column($magDatas, 'created_at'), SORT_DESC, $magDatas);
+        $magDatas = array_merge($orderData, $userOrder);
+
+        //系统消息
+        $sysMessage = (new UserMessage())
+            ->join('sys_message', function($join){
+                $join->on('user_message.sys_mid', 'sys_message.id');
+            })
+            ->where(['user_message.user_id' => $uid, 'user_message.type' => 8])
+            ->distinct('sys_message.id')
+            ->get(['sys_message.title', 'sys_message.content', 'sys_message.created_at'])
+            ->toArray();
+        foreach ($sysMessage as $k => $v)
+        {
+            $sysMessage[$k]['type'] = '';
+        }
+        $magsArr = array_merge($magDatas, $sysMessage);
+        array_multisort(array_column($magsArr, 'created_at'), SORT_DESC, $magsArr);
 
         $msgList = [];
         $name = '';
-        foreach ($magDatas as $key => $val)
+        foreach ($magsArr as $key => $val)
         {
             switch ($val['type'])
             {
@@ -106,14 +130,18 @@ class UserMessage extends Model
 
             //组装返回数据
             $msgList[] = [
-                'title'   => $name . '充值',
+                'title'   => $val['title'] ?: $name . '充值',
                 'time'    => $val['created_at'],
-                'content' => '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
+                'content' => $val['content'] ?: '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
             ];
         }
 
+        //分页
+        $start = ($page - 1) * $perpage;
+        $length = $perpage;
+
         //返回
-        return $msgList;
+        return array_slice($msgList, $start, $length);
     }
 
     /**获取消息小红点
