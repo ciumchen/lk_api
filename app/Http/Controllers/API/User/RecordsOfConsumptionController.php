@@ -68,7 +68,9 @@ class RecordsOfConsumptionController extends Controller
         $pageSize = $request->input('pageSize',10);
         $data['amount_count'] = 0;
         if($uid!=''){
-            $data['amount_count'] = AssetsLogs::where('uid',$uid)->sum('amount');
+            $count1 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','share_b_rebate')->sum('amount');
+            $count2 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','invite_rebate')->sum('amount');
+            $data['amount_count'] = $count1+$count2;
             $data1 = (new AssetsLogs())
                 ->where("uid", $uid)
                 ->where('assets_name', 'encourage')
