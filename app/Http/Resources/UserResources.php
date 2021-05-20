@@ -18,14 +18,15 @@ class UserResources extends JsonResource
      * Transform the resource into an array.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
     public function toArray($request)
     {
         //我的消费
         $mySpent = Order::where("status", Order::STATUS_SUCCEED)
-            ->where("uid", $this->id)
-            ->sum("price");
+                        ->where("uid", $this->id)
+                        ->sum("price");
         //iets余额
         $user = User::find($this->id);
         $assetsType = AssetsType::where("assets_name", AssetsType::DEFAULT_ASSETS_NAME)->first();
@@ -38,6 +39,7 @@ class UserResources extends JsonResource
             'id'                => $this->id,
             'phone'             => $this->phone,
             'role'              => $this->role,
+            'invite_uid'        => $this->invite_uid,
             'username'          => (string)$this->username,
             'avatar'            => (string)$this->avatar,
             'lk'                => rtrim_zero(format_decimal($this->lk)),
