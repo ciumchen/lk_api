@@ -201,6 +201,8 @@ class UserController extends Controller
     public function changeUserSex(Request $request)
     {
         $sex = $request->input('sex');
+        $user = $request->user();
+
     }
 
     /**
