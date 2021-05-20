@@ -153,11 +153,11 @@ class UserController extends Controller
         $phone = $request->input('phone');
         $user = $request->user();
         if (!in_array($user->invite_uid, [1, 2])) {
-            return response()->json(['code' => 3, 'msg' => '非系统默认邀请人不可修改']);
+            throw new LogicException('非系统默认邀请人不可修改');
         }
         $new_invite_user = (new User)->getUserByPhone($phone);
         if ($new_invite_user->status != 1) {
-            return response()->json(['code' => 3, 'msg' => '邀请人状态为非正常状态不可修改']);
+            throw new LogicException('邀请人状态为非正常状态不可修改');
         }
         try {
             $user->invite_uid = $new_invite_user->id;
@@ -176,6 +176,7 @@ class UserController extends Controller
     /**
      * 修改头像
      * TODO:修改头像
+     *
      * @param \Illuminate\Http\Request $request
      */
     public function changeUserAvatar(Request $request)
@@ -185,43 +186,91 @@ class UserController extends Controller
 
     /**
      * 修改个性签名
-     * TODO:修改个性签名
+     *
      * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\LogicException
      */
     public function changeUserSign(Request $request)
     {
         $sign = $request->input('sign');
+        $user = $request->user();
+        try {
+            if (empty($sign)) {
+                throw  new LogicException('请填写签名文字');
+            }
+            if (strlen($sign) > 50) {
+                throw new LogicException('签名不能超过50个字符');
+            }
+            $user->sign = $sign;
+            $user->save();
+        } catch (LogicException $le) {
+            throw $le;
+        }
+        return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
 
     /**
      * 修改性别
-     * TODO:修改性别
+     *
      * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\LogicException
      */
     public function changeUserSex(Request $request)
     {
         $sex = $request->input('sex');
         $user = $request->user();
-
+        try {
+            if (!in_array($sex, [0, 1, 2])) {
+                throw new LogicException('超出设置范围');
+            }
+            $user->sex = $sex;
+            $user->save();
+        } catch (LogicException $le) {
+            throw $le;
+        }
+        return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
 
     /**
      * 修改生日
-     * TODO:修改生日
+     *
      * @param \Illuminate\Http\Request $request
      */
     public function changeUserBirth(Request $request)
     {
         $birth = $request->input('birth');
+        $user = $request->user();
+        try {
+            if (strtotime($birth) > strtotime(date('Y-m-d')) || strtotime($birth) < strtotime(date('Y-m-d', 0))) {
+                throw new LogicException('生日格式错误或超出设置范围');
+            }
+            $birth = date('Y-m-d', strtotime($birth));
+            $user->birth = $birth;
+            $user->save();
+        } catch (LogicException $le) {
+            throw $le;
+        }
+        return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
 
     /**
      * 修改密码
      * TODO:修改密码
+     *
      * @param \Illuminate\Http\Request $request
      */
     public function changeUserPassword(Request $request)
     {
         $password = $request->input('password');
+        $user = $request->user();
+        dd($user->changePassword('111111'));
+        try {
+            $user = '';
+        } catch (LogicException $le) {
+        }
     }
 }

@@ -92,7 +92,6 @@ class UserMessage extends Model
             $userOrder[$key]['content'] = '';
         }
 
-        //合并数据并按创建时间倒序
         $magDatas = array_merge($orderData, $userOrder);
 
         //系统消息
@@ -108,6 +107,8 @@ class UserMessage extends Model
         {
             $sysMessage[$k]['type'] = '';
         }
+
+        //合并数据并按创建时间倒序
         $magsArr = array_merge($magDatas, $sysMessage);
         array_multisort(array_column($magsArr, 'created_at'), SORT_DESC, $magsArr);
 
