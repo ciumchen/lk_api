@@ -1,4 +1,7 @@
 <?php
+
+use Illuminate\Support\Facades\Route;
+
 Route::middleware(['auth:sanctum'])->group(function () {
     //申请商家
     Route::post('apply-business', 'User\UserController@applyBusiness');
@@ -12,6 +15,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('get-assets-logs', 'User\AssetsController@getAssetsLogs');
     //获取积分记录
     Route::get('get-integral-log', 'User\UserController@getMyIntegralLog');
+    //修改邀请人
+    Route::post('change-invite', 'User\UserController@changeInviteUid');
+    //修改头像
+    Route::post('change-avatar', 'User\UserController@changeUserAvatar');
+    //修改个性签名
+    Route::post('change-sign', 'User\UserController@changeUserSign');
+    //修改性别
+    Route::post('change-sex', 'User\UserController@changeUserSex');
+    //修改邀请人
+    Route::post('change-birth', 'User\UserController@changeUserBirth');
+    //修改密码
+    Route::post('change-pass', 'User\UserController@changeUserPassword');
 });
 //新增消费者统计和新增商家统计
 Route::any("addConsumer", "User\CountUserController@addConsumer");
