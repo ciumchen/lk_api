@@ -100,7 +100,7 @@ class UserMessage extends Model
             ->join('sys_message', function($join){
                 $join->on('user_message.sys_mid', 'sys_message.id');
             })
-            ->where(['user_message.user_id' => $uid])
+            ->where(['user_message.user_id' => $uid, 'user_message.type' => 8])
             ->distinct('sys_message.id')
             ->get(['sys_message.title', 'sys_message.content', 'sys_message.created_at'])
             ->toArray();
