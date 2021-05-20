@@ -66,6 +66,7 @@ class RecordsOfConsumptionController extends Controller
         $uid = $request->input('uid');
         $page = $request->input('page');
         $pageSize = $request->input('pageSize',10);
+        $data['amount_count'] = 0;
         if($uid!=''){
             $data['amount_count'] = AssetsLogs::where('uid',$uid)->sum('amount');
             $data1 = (new AssetsLogs())
@@ -96,10 +97,11 @@ class RecordsOfConsumptionController extends Controller
                     $data['jls'][] = $v;
                 }
             }
-            
+
             return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
         }else{
-            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
+            $data['jls'] = 0;
+            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => $data]);
         }
 
     }
