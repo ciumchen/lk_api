@@ -71,36 +71,44 @@ class RecordsOfConsumptionController extends Controller
             $count1 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','share_b_rebate')->sum('amount');
             $count2 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','invite_rebate')->sum('amount');
             $data['amount_count'] = $count1+$count2;
-            $data1 = (new AssetsLogs())
+//            $data1 = (new AssetsLogs())
+//                ->where("uid", $uid)
+//                ->where('assets_name', 'encourage')
+//                ->where('remark','邀请商家，获得盈利返佣')
+//                ->where('operate_type','share_b_rebate')
+//                ->orderBy('id', 'desc')
+//                ->latest('id')
+//                ->forPage($page, $pageSize)
+//                ->get(['operate_type','amount','updated_at']);
+//
+//            $data2 = (new AssetsLogs())
+//                ->where("uid", $uid)
+//                ->where('assets_name', 'encourage')
+//                ->where('remark','邀请商家，获得盈利返佣')
+//                ->where('operate_type','invite_rebate')
+//                ->orderBy('id', 'desc')
+//                ->latest('id')
+//                ->forPage($page, $pageSize)
+//                ->get(['operate_type','amount','updated_at']);
+
+//            if(!empty($data1)){
+//                foreach ($data1 as $k=>$v){
+//                    $data['jls'][] = $v;
+//                }
+//            }
+//            if(!empty($data2)){
+//                foreach ($data2 as $k=>$v){
+//                    $data['jls'][] = $v;
+//                }
+//            }
+
+            $data = (new AssetsLogs())
                 ->where("uid", $uid)
-                ->where('assets_name', 'encourage')
                 ->where('remark','邀请商家，获得盈利返佣')
-                ->where('operate_type','share_b_rebate')
                 ->orderBy('id', 'desc')
                 ->latest('id')
                 ->forPage($page, $pageSize)
                 ->get(['operate_type','amount','updated_at']);
-
-            $data2 = (new AssetsLogs())
-                ->where("uid", $uid)
-                ->where('assets_name', 'encourage')
-                ->where('remark','邀请商家，获得盈利返佣')
-                ->where('operate_type','invite_rebate')
-                ->orderBy('id', 'desc')
-                ->latest('id')
-                ->forPage($page, $pageSize)
-                ->get(['operate_type','amount','updated_at']);
-
-            if(!empty($data1)){
-                foreach ($data1 as $k=>$v){
-                    $data['jls'][] = $v;
-                }
-            }
-            if(!empty($data2)){
-                foreach ($data2 as $k=>$v){
-                    $data['jls'][] = $v;
-                }
-            }
 
             return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
         }else{
