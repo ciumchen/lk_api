@@ -156,6 +156,9 @@ class UserController extends Controller
             throw new LogicException('非系统默认邀请人不可修改');
         }
         $new_invite_user = (new User)->getUserByPhone($phone);
+        if (empty($new_invite_user)) {
+            throw new LogicException('邀请人不存在');
+        }
         if ($new_invite_user->status != 1) {
             throw new LogicException('邀请人状态为非正常状态不可修改');
         }
