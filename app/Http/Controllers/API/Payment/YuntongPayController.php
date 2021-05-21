@@ -62,6 +62,9 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
+        if ($data) {
+            throw new LogicException('支付通道异常请升级APP版本');
+        }
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
