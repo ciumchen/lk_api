@@ -159,6 +159,9 @@ class UserController extends Controller
         if (empty($new_invite_user)) {
             throw new LogicException('邀请人不存在');
         }
+        if ($new_invite_user->id == $user->id) {
+            throw new LogicException('邀请人不能是自己');
+        }
         if ($new_invite_user->status != 1) {
             throw new LogicException('邀请人状态为非正常状态不可修改');
         }
