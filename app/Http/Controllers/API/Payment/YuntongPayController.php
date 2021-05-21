@@ -198,6 +198,7 @@ class YuntongPayController extends Controller
             'description'   => $data[ 'description' ],
             'name'          => $name,
             'oid'           => $oid,
+            'integral'      => 0.00,
             'pay_time'      => $time,
             'end_time'      => $time,
             'status'        => 'await',
