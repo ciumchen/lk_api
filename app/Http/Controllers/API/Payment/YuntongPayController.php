@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Libs\Yuntong\YuntongPay;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Log;
 
 class YuntongPayController extends Controller
 {
@@ -28,8 +29,9 @@ class YuntongPayController extends Controller
      */
     public function createPay(Request $request)
     {
-        if (empty($data)) {
-            $data = $request->all();
+        $data = $request->all();
+        if (isset($data[ 'description' ]) && $data[ 'description' ] == 'LR') {
+            Log::debug('录单提交', [json_encode($data)]);
         }
         $orderData = $this->createData($data);
         DB::beginTransaction();
