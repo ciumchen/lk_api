@@ -72,8 +72,9 @@ class RecordsOfConsumptionController extends Controller
 //            $count2 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','invite_rebate')->sum('amount');
 //            $data['amount_count'] = $count1+$count2;
 
-            $count = AssetsLogs::where('uid',$uid)->where('remark','邀请商家，获得盈利返佣')->sum('amount');
-            $data['amount_count'] = $count;
+            $count1 = AssetsLogs::where('uid',$uid)->where('remark','邀请商家，获得盈利返佣')->sum('amount');
+            $count2 = AssetsLogs::where('uid',$uid)->where('remark','下级消费返佣')->sum('amount');
+            $data['amount_count'] = $count1+$count2;
 //            $data1 = (new AssetsLogs())
 //                ->where("uid", $uid)
 //                ->where('assets_name', 'encourage')
@@ -104,14 +105,26 @@ class RecordsOfConsumptionController extends Controller
 //                    $data['jls'][] = $v;
 //                }
 //            }
+//            $data['countjl'] = (new AssetsLogs())
+//                ->where("uid", $uid)
+//                ->where(function ($query){
+//                    $query->orwhere('remark','邀请商家，获得盈利返佣')
+//                        ->orwhere('remark','下级消费返佣');
+//                })
+//                ->orderBy('id', 'desc')
+//                ->latest('id')
+//                ->count();
 
             $data['jls'] = (new AssetsLogs())
                 ->where("uid", $uid)
-                ->where('remark','邀请商家，获得盈利返佣')
+                ->where(function ($query){
+                    $query->orwhere('remark','邀请商家，获得盈利返佣')
+                        ->orwhere('remark','下级消费返佣');
+                })
                 ->orderBy('id', 'desc')
                 ->latest('id')
                 ->forPage($page, $pageSize)
-                ->get(['operate_type','amount','updated_at']);
+                ->get(['operate_type','amount','updated_at','remark']);
 
             return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
         }else{
