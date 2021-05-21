@@ -68,9 +68,12 @@ class RecordsOfConsumptionController extends Controller
         $pageSize = $request->input('pageSize',10);
         $data['amount_count'] = 0;
         if($uid!=''){
-            $count1 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','share_b_rebate')->sum('amount');
-            $count2 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','invite_rebate')->sum('amount');
-            $data['amount_count'] = $count1+$count2;
+//            $count1 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','share_b_rebate')->sum('amount');
+//            $count2 = AssetsLogs::where('uid',$uid)->where('assets_name', 'encourage')->where('operate_type','invite_rebate')->sum('amount');
+//            $data['amount_count'] = $count1+$count2;
+
+            $count = AssetsLogs::where('uid',$uid)->where('remark','邀请商家，获得盈利返佣')->sum('amount');
+            $data['amount_count'] = $count;
 //            $data1 = (new AssetsLogs())
 //                ->where("uid", $uid)
 //                ->where('assets_name', 'encourage')
