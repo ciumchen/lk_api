@@ -28,6 +28,7 @@ class YuntongNotifyController extends Controller
         $Pay = new YuntongPay();
         $json = $request->getContent();
         try {
+            Log::debug('YunNotify入口数据', [$json]);
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
             if (!empty($res)) {
