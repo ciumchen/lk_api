@@ -154,10 +154,10 @@ class UserMessage extends Model
     public function getReddot(int $uid)
     {
         $res = (new UserMessage())::where('user_id', $uid)->exists();
-        if (!$res)
+        /*if (!$res)
         {
             throw new LogicException('用户消息不存在');
-        }
+        }*/
 
         return (new UserMessage())::where(['user_id' => $uid, 'deleted_at' => null])->exists();
     }
@@ -169,10 +169,10 @@ class UserMessage extends Model
     public function delReddot(int $uid)
     {
         $res = (new UserMessage())::where('user_id', $uid)->exists();
-        if (!$res)
+        /*if (!$res)
         {
             throw new LogicException('用户消息不存在');
-        }
+        }*/
 
         (new UserMessage())
             ->where(function($query) use ($uid){
