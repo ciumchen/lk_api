@@ -30,6 +30,9 @@ class YuntongPayController extends Controller
     public function createPay(Request $request)
     {
         $data = $request->all();
+        if ($data) {
+            throw new LogicException('支付通道异常请升级APP版本');
+        }
         $orderData = $this->createData($data);
         DB::beginTransaction();
         try {
