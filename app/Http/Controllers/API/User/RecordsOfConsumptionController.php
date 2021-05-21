@@ -105,7 +105,7 @@ class RecordsOfConsumptionController extends Controller
 //                }
 //            }
 
-            $data = (new AssetsLogs())
+            $data['jls'] = (new AssetsLogs())
                 ->where("uid", $uid)
                 ->where('remark','邀请商家，获得盈利返佣')
                 ->orderBy('id', 'desc')
