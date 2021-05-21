@@ -108,11 +108,13 @@ class BusinessService
             if ($updateImg==1){
                 $BusinessApply = new BusinessApply();
                 foreach ($businessApplyData as $k=>$v){
-                    $BusinessApply->$k = $v;
+//                    $BusinessApply->$k = $v;
+                    $businessApplyData[$k] = $v;
                 }
-                $BusinessApply->id = $business_apply_data->id;
-                $re = $BusinessApply->save();
-//                $re = DB::table('business_apply')->where('id',$businessApplyData['id'])->update($businessApplyData);
+//                $BusinessApply->id = $business_apply_data->id;
+//                $re = $BusinessApply->save();
+                $re = DB::table('business_apply')->where('id',$business_apply_data->id)->update($businessApplyData);
+
                 if ($re){
                     Log::info("oss图片申请表修改成功");
                 }else{
