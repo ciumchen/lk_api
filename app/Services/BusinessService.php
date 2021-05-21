@@ -89,7 +89,7 @@ class BusinessService
                     $businessApplyData[$k] = $reossimg;
                     $updateImg = 1;
                     $imgArrData[] = $reossimg;
-                    Log::info("oss图片申请表log---上传:".$reossimg);
+                    Log::info("oss图片申请表log---申请表上传:".$reossimg);
                 }
             }
             foreach ($reImg2 as $k=>$v){
@@ -98,7 +98,7 @@ class BusinessService
                     $userIdImgData[$k] = $reossimg;
                     $user_updateImg = 1;
                     $imgArrData[] = $reossimg;
-                    Log::info("oss图片身份证表log---上传:".$reossimg);
+                    Log::info("oss图片身份证表log---身份证表上传:".$reossimg);
                 }
             }
 
@@ -110,6 +110,7 @@ class BusinessService
                 foreach ($businessApplyData as $k=>$v){
                     $BusinessApply->$k = $v;
                 }
+                $BusinessApply->id = $business_apply_data->id;
                 $re = $BusinessApply->save();
 //                $re = DB::table('business_apply')->where('id',$businessApplyData['id'])->update($businessApplyData);
                 if ($re){
