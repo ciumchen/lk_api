@@ -90,7 +90,7 @@ class YuntongPayController extends Controller
         try {
             $res = $YuntongPay
                 ->setGoodsTitle($data[ 'goodsTitle' ] ?? $data[ 'title' ])
-                ->setGoodsDesc($data[ 'goodsDesc' ])
+                ->setGoodsDesc($data[ 'goodsDesc' ] ?? '商品描述')
                 ->setAmount($data[ 'need_fee' ])
                 ->setOrderId($data[ 'order_no' ])
                 ->setNotifyUrl($return_url)
