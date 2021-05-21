@@ -12,7 +12,7 @@ class QrcodeService
         $share_img_path = public_path('images/share/' . $id . '.png');
         if (!file_exists($share_img_path)) {
             $base_path = base_path();
-            $img_path = resource_path('img' . DIRECTORY_SEPARATOR . 'qrcode.png');
+            $img_path = resource_path('img' . DIRECTORY_SEPARATOR . 'icon.png');
             $relative_path = str_replace($base_path, '', $img_path);
             QrCode::errorCorrection('H')
                 ->margin(2)

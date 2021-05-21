@@ -18,47 +18,39 @@ use App\Http\Controllers\API\Order\RechargeController;
 class YuntongNotifyController extends Controller
 {
 
-    //
+    /**
+     * 雲通支付回調
+     *
+     * @param \Illuminate\Http\Request $request
+     */
     public function callBack(Request $request)
     {
         $Pay = new YuntongPay();
         $json = $request->getContent();
-//        $json = "{\"amount\":50.00,\"sys_order_id\":\"202105181025040236DD7B1E8B1\",\"create_time\":\"2021-05-18 10:25:04\",\"sign\":\"65653ADD0E9BCEE2C47E7E7ED52FB6EA\",\"type\":\"payment.success\",\"order_id\":\"PY_20210518102503845710\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-05-18 10:25:32\"}";
         try {
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
             if (!empty($res)) {
-                Log::debug('YuntongNotify订单更新', [$json]);
                 $this->updateOrderPaid($res);
             } else {
-                Log::debug('YuntongNotify解析为空', [$json]);
-                throw new Exception('YuntongNotify解析为空');
+                throw new Exception('解析为空');
             }
             $Pay->Notify_success();
         } catch (Exception $e) {
-            Log::debug('YuntongNotify验证不通过', [$json . '---------' . json_encode($e)]);
+            Log::debug('YuntongNotify-验证不通过-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
             $Pay->Notify_failed();
-//            throw $e;
         }
     }
 
     /**
      * 更新订单为已支付
+     *
      * @param $data
+     *
      * @throws LogicException
      */
     public function updateOrderPaid($data)
     {
-//$data =array:8 [
-//    "amount" => 0.6
-//"sys_order_id" => "202105111537588934BF8862BFC"
-//"create_time" => "2021-05-11 15:37:58"
-//"sign" => "EA78C696FA3F54D98084A4D90A193450"
-//"type" => "payment.success"
-//"order_id" => "order_no_3"
-//"app_id" => "app_2ac357bae1ce441397"
-//"pay_time" => "2021-05-11 15:39:30"
-//]
         try {
             $TradeOrder = new TradeOrder();
             $trade_order = $TradeOrder->tradeOrderInfo($data[ 'order_id' ]);

@@ -30,9 +30,6 @@ class YuntongPayController extends Controller
     public function createPay(Request $request)
     {
         $data = $request->all();
-        if (isset($data[ 'description' ]) && $data[ 'description' ] == 'LR') {
-            Log::debug('录单提交', [json_encode($data)]);
-        }
         $orderData = $this->createData($data);
         DB::beginTransaction();
         try {
