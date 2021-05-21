@@ -70,6 +70,11 @@ class YuntongPayController extends Controller
         $order_data = (array)$order_data;
         $orderData = $this->createData(array_merge($data, $order_data));
         $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
+        try {
+            $this->createTradeOrder($orderData);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
         return $this->payRequest(array_merge($data, $orderData));
     }
 
