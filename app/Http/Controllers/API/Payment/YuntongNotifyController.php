@@ -102,6 +102,10 @@ class YuntongNotifyController extends Controller
                 'price'       => $data[ 'amount' ],
                 'game_userid' => $tradeData->numeric,
             ];
+            Log::debug('Trade订单数据$payData', [json_encode($payData)]);
+            Log::debug('Trade订单数据$tradeData', [json_encode($tradeData)]);
+            Log::debug('Trade订单数据$callData', [json_encode($callData)]);
+            Log::debug('Trade订单数据$gasData', [json_encode($gasData)]);
             $payLogs = new PayLogs();
             $payLogs->setPay($payData);
             //更新订单状态
@@ -115,7 +119,6 @@ class YuntongNotifyController extends Controller
             //更新 order 表审核状态
             (new OrderService())->completeOrder($data[ 'order_id' ]);
         } catch (\LogicException $le) {
-            dd($le);
             throw $le;
         }
     }
