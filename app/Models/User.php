@@ -45,17 +45,17 @@ class User extends Authenticatable
 
     const STATUS_BANNED = 2;//已封禁
 
-    const ROLE_NORMAL = 1;  //普通用户
+    const ROLE_NORMAL   = 1;  //普通用户
 
     const ROLE_BUSINESS = 2;//商家
 
-    const NO_IS_AUTH = 1;   //未实名
+    const NO_IS_AUTH    = 1;   //未实名
 
-    const YES_IS_AUTH = 2;  //已实名
+    const YES_IS_AUTH   = 2;  //已实名
 
-    const CUSTOMER = 1;     //普通用户
+    const CUSTOMER      = 1;     //普通用户
 
-    const LEADER = 2;       //盟主
+    const LEADER        = 2;       //盟主
 
     /**
      * 用户信息
@@ -153,7 +153,8 @@ class User extends Authenticatable
      *
      * @return bool
      */
-    public function verifyPassword(string $password) : bool
+    public function verifyPassword(string $password)
+    : bool
     {
         $password = encrypt_password($this->phone, $password, $this->salt);
         return Password::where('password', $password)->exists();
@@ -190,7 +191,8 @@ class User extends Authenticatable
      *
      * @return bool
      */
-    public static function hasPhone(string $phone) : bool
+    public static function hasPhone(string $phone)
+    : bool
     {
         return static::where('phone', $phone)->exists();
     }
@@ -201,7 +203,8 @@ class User extends Authenticatable
      *
      * @return bool
      */
-    public function isVerifiedRealName() : bool
+    public function isVerifiedRealName()
+    : bool
     {
         return true;
         return self::YES_IS_AUTH === $this->is_auth;

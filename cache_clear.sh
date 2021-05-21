@@ -1,4 +1,4 @@
-#!/usr/bin
+#!/usr/bin/bash
 
 #清理配置缓存
 php artisan config:clear
