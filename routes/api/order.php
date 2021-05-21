@@ -32,5 +32,8 @@ Route::any("get-call","Order\MergeNotifyController@getCall");
 //返回油卡数据
 Route::any("get-gas","Order\MergeNotifyController@getGas");
 
+//返回佐兰话费数据
+Route::any("get-call-defray","Order\MergeNotifyController@callDefray");
+
 
 
