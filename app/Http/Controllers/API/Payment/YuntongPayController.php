@@ -20,7 +20,9 @@ class YuntongPayController extends Controller
 
     /**
      * 创建支付
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      * @throws Exception
      */
@@ -48,7 +50,9 @@ class YuntongPayController extends Controller
 
     /**
      * 再次请求支付
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      * @throws LogicException
      * @throws Exception
@@ -69,7 +73,9 @@ class YuntongPayController extends Controller
 
     /**
      * 发起支付请求
+     *
      * @param $data
+     *
      * @return JsonResponse
      * @throws Exception
      */
@@ -103,7 +109,9 @@ class YuntongPayController extends Controller
     /*******************************************************************/
     /**
      * 订单 trade_order 表插入数据
+     *
      * @param array $data 已经组装好的订单数据
+     *
      * @return bool
      * @throws Exception
      */
@@ -120,7 +128,9 @@ class YuntongPayController extends Controller
 
     /**
      * 订单 order 表插入数据
+     *
      * @param array $data
+     *
      * @return int
      * @throws Exception
      */
@@ -128,6 +138,13 @@ class YuntongPayController extends Controller
     {
         try {
             $Order = new Order();
+            $oid = intval($data[ 'oid' ]);
+            if ($oid > 0) {
+                $order_info = $Order->find($oid);
+                if ($order_info) {
+                    return $oid;
+                }
+            }
             $data = $this->allowFiled($data, $Order);
             if (isset($data[ 'status' ])) {
                 unset($data[ 'status' ]);
@@ -140,8 +157,10 @@ class YuntongPayController extends Controller
 
     /**
      * 组装订单数据
-     * @param $data
+     *
+     * @param                 $data
      * @param TradeOrder|null $TradeOrder
+     *
      * @return array
      */
     public function createData($data, TradeOrder $TradeOrder = null)
@@ -193,6 +212,7 @@ class YuntongPayController extends Controller
 
     /**
      * @param string $url
+     *
      * @return string
      */
     public function getReturnUrl(string $url)
@@ -210,7 +230,9 @@ class YuntongPayController extends Controller
 
     /**
      * 获取 order 表中 name 字段的值
+     *
      * @param $type
+     *
      * @return string
      */
     public function getName($type)
@@ -233,15 +255,17 @@ class YuntongPayController extends Controller
 
     /**
      * 获取 trade_order 表 oid 字段
-     * @param $type
+     *
+     * @param       $type
      * @param array $data
+     *
      * @return mixed|string
      */
     public function getOrderId($type, $data = [])
     {
         switch ($type) {
             case 'LR':
-                $oid = $data[ 'orderId' ];
+                $oid = $data[ 'orderId' ] ?? $data[ 'oid' ];
                 break;
             default:
                 $oid = 0;
@@ -251,8 +275,10 @@ class YuntongPayController extends Controller
 
     /**
      * 获取客户端IP
+     *
      * @param $channel
      * @param $data
+     *
      * @return mixed|string
      */
     public function getClientIP($channel, $data)
@@ -271,8 +297,10 @@ class YuntongPayController extends Controller
 
     /**
      * 获取 trade_order 表中的 remarks 字段值
-     * @param $type
+     *
+     * @param       $type
      * @param array $data
+     *
      * @return string
      */
     public function getRemarks($type, $data = [])
@@ -289,7 +317,9 @@ class YuntongPayController extends Controller
 
     /**
      * 获取支付通道标记
+     *
      * @param string $type 支付类型
+     *
      * @return string
      */
     public function getPayChannel(string $type)
@@ -312,7 +342,9 @@ class YuntongPayController extends Controller
 
     /**
      * 获取比例
+     *
      * @param string $type
+     *
      * @return int
      */
     public function getProfitRatio(string $type)
