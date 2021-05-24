@@ -11,6 +11,7 @@ use PDOException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\CityData;
 class GetBusinessController extends Controller
 {
 
@@ -30,10 +31,10 @@ class GetBusinessController extends Controller
         $is_recommend = $request->input('is_recommend');
 
         $data = (new BusinessData())
-            ->when($category,function($query) use ($category) {
+            ->when($category,function($query) use ($category) {//店铺分类
                 return $query->where('category_id', $category);
             })
-            ->when($keyword,function($query) use ($keyword) {
+            ->when($keyword,function($query) use ($keyword) {//店铺名称关键字
                 return $query->where('name', 'like', "%" . $keyword . "%");
             })
             ->when($city,function($query) use ($city) {
@@ -41,33 +42,37 @@ class GetBusinessController extends Controller
 
                 if($cityId)
                 {
-                    $query->where('city', $cityId);
+                    $cityPCode = CityData::where("p_code", $cityId)->value("code");
+                    return  $query->where('city', $cityPCode);
                 }
             })
             ->when($district,function($query) use ($city, $district) {
                 $cityId = CityData::where("name", $city)->value("code");
+
                 if($cityId)
                 {
+                    $cityPCode = CityData::where("p_code", $cityId)->value("code");
                     $districtId = CityData::where("name", $district)
-                        ->where("p_code", $cityId)
+                        ->where("p_code", $cityPCode)
                         ->value("code");
-                    $query->where('district', $districtId);
+                    if($districtId){
+                        return  $query->where('district', $districtId);
+                    }
+
                 }
             })
-            ->where("status", 1)
             ->when($is_recommend,function($query)use($is_recommend){
                 if($is_recommend){
                     return $query->where('is_recommend', 1);
                 }
-                return $query;
             })
+            ->where("status", 1)
             ->with(['businessApply'])
             ->orderBy('is_recommend', 'desc')
             ->orderBy('sort', 'desc')
             ->latest('id')
             ->forPage($page, $pageSize)
             ->get();
-//        dd(DB::getQueryLog());
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
     }
