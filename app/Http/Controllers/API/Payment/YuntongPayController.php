@@ -62,7 +62,7 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
-        $return_url = url('/api/yun-notify')
+        $return_url = url('/api/yun-notify');
         dd($return_url);
 //        if ($data) {
 //            throw new LogicException('支付通道异常请升级APP版本');
