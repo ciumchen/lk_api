@@ -99,6 +99,7 @@ class UserMessage extends Model
             ->join('sys_message', function($join){
                 $join->on('user_message.sys_mid', 'sys_message.id');
             })
+            ->withTrashed()
             ->where(['user_message.user_id' => $uid, 'user_message.type' => 8])
             ->distinct('sys_message.id')
             ->get(['sys_message.title', 'sys_message.content', 'sys_message.created_at'])
@@ -153,10 +154,10 @@ class UserMessage extends Model
     public function getReddot(int $uid)
     {
         $res = (new UserMessage())::where('user_id', $uid)->exists();
-        if (!$res)
+        /*if (!$res)
         {
             throw new LogicException('用户消息不存在');
-        }
+        }*/
 
         return (new UserMessage())::where(['user_id' => $uid, 'deleted_at' => null])->exists();
     }
@@ -168,10 +169,10 @@ class UserMessage extends Model
     public function delReddot(int $uid)
     {
         $res = (new UserMessage())::where('user_id', $uid)->exists();
-        if (!$res)
+        /*if (!$res)
         {
             throw new LogicException('用户消息不存在');
-        }
+        }*/
 
         (new UserMessage())
             ->where(function($query) use ($uid){

@@ -28,11 +28,14 @@ class YuntongNotifyController extends Controller
         $Pay = new YuntongPay();
         $json = $request->getContent();
         try {
+            Log::debug('YunNotify入口数据', [$json]);
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
             if (!empty($res)) {
+                Log::debug('YunNotify数据', [$json]);
                 $this->updateOrderPaid($res);
             } else {
+                Log::debug('YunNotify数据为空', [$json]);
                 throw new Exception('解析为空');
             }
             $Pay->Notify_success();
@@ -52,6 +55,7 @@ class YuntongNotifyController extends Controller
     public function updateOrderPaid($data)
     {
         try {
+            Log::debug('UpdateTrade订单数据$data', [json_encode($data)]);
             $TradeOrder = new TradeOrder();
             $trade_order = $TradeOrder->tradeOrderInfo($data[ 'order_id' ]);
             if ($trade_order->price != $data[ 'amount' ]) {
@@ -102,6 +106,10 @@ class YuntongNotifyController extends Controller
                 'price'       => $data[ 'amount' ],
                 'game_userid' => $tradeData->numeric,
             ];
+            Log::debug('Trade订单数据$payData', [json_encode($payData)]);
+            Log::debug('Trade订单数据$tradeData', [json_encode($tradeData)]);
+            Log::debug('Trade订单数据$callData', [json_encode($callData)]);
+            Log::debug('Trade订单数据$gasData', [json_encode($gasData)]);
             $payLogs = new PayLogs();
             $payLogs->setPay($payData);
             //更新订单状态
@@ -115,7 +123,6 @@ class YuntongNotifyController extends Controller
             //更新 order 表审核状态
             (new OrderService())->completeOrder($data[ 'order_id' ]);
         } catch (\LogicException $le) {
-            dd($le);
             throw $le;
         }
     }

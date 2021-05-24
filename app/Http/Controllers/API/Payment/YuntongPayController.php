@@ -30,6 +30,9 @@ class YuntongPayController extends Controller
     public function createPay(Request $request)
     {
         $data = $request->all();
+        if ($data) {
+            throw new LogicException('支付通道异常请升级APP版本');
+        }
         $orderData = $this->createData($data);
         DB::beginTransaction();
         try {
@@ -59,6 +62,9 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
+        if ($data) {
+            throw new LogicException('支付通道异常请升级APP版本');
+        }
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
@@ -90,7 +96,7 @@ class YuntongPayController extends Controller
         try {
             $res = $YuntongPay
                 ->setGoodsTitle($data[ 'goodsTitle' ] ?? $data[ 'title' ])
-                ->setGoodsDesc($data[ 'goodsDesc' ])
+                ->setGoodsDesc($data[ 'goodsDesc' ] ?? '商品描述')
                 ->setAmount($data[ 'need_fee' ])
                 ->setOrderId($data[ 'order_no' ])
                 ->setNotifyUrl($return_url)
@@ -198,6 +204,7 @@ class YuntongPayController extends Controller
             'description'   => $data[ 'description' ],
             'name'          => $name,
             'oid'           => $oid,
+            'integral'      => 0.00,
             'pay_time'      => $time,
             'end_time'      => $time,
             'status'        => 'await',
