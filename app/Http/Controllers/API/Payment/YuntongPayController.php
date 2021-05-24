@@ -188,7 +188,6 @@ class YuntongPayController extends Controller
         $ip = $this->getClientIP($data[ 'payChannel' ], $data);
         $return_url = $this->getReturnUrl($data[ 'returnUrl' ] ?? '');
         $date = date("Y-m-d H:i:s");
-        $time = time();
         $order_no = $TradeOrder->CreateOrderNo();
         $oid = $this->getOrderId($data[ 'description' ], $data);
         return [
@@ -205,8 +204,8 @@ class YuntongPayController extends Controller
             'name'          => $name,
             'oid'           => $oid,
             'integral'      => 0.00,
-            'pay_time'      => $time,
-            'end_time'      => $time,
+            'pay_time'      => $date,
+            'end_time'      => $date,
             'status'        => 'await',
             'pay_status'    => 'await',
             'ip'            => $ip,
