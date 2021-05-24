@@ -15,11 +15,13 @@ class QrcodeService
             $img_path = resource_path('img' . DIRECTORY_SEPARATOR . 'icon.png');
             $relative_path = str_replace($base_path, '', $img_path);
             QrCode::errorCorrection('H')
-                ->margin(2)
-                ->format('png')
-                ->merge($relative_path)
-                ->encoding('UTF-8')
-                ->generate($text, $share_img_path);
+                  ->size(220)
+                  ->margin(2)
+                  ->format('png')
+                  ->style('round')
+                  ->merge($relative_path, '0.2')
+                  ->encoding('UTF-8')
+                  ->generate($text, $share_img_path);
         }
         return str_replace('\\', '/', url('') . str_replace(public_path(), '', $share_img_path));
     }

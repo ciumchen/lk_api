@@ -66,6 +66,16 @@ class User extends Authenticatable
     }
 
     /**
+     * 邀请用户信息
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function inviteUserData()
+    {
+        return $this->hasOne(User::class, 'id', 'invite_uid');
+    }
+
+    /**
      * 商家信息
      */
     public function businessData()
