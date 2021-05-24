@@ -101,8 +101,8 @@ class NotifyController extends Controller
                 //自动充值
                 if ($json_data['description'] == "HF")
                 {
-                    //(new RechargeController())->setCall($callData);
-                    (new RechargeController())->callDefray($callData);
+                    (new RechargeController())->setCall($callData);
+                    //(new RechargeController())->callDefray($callData);
                 } elseif ($json_data['description'] == "YK")
                 {
                     (new RechargeController())->setGas($gasData);
