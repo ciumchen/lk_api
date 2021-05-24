@@ -87,7 +87,7 @@ class YuntongPayController extends Controller
     {
         $return_url = url('/api/yun-notify');
         if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
-            $return_url = env('').'/api/yun-notify';
+            $return_url = env('HTTP_URL').'/api/yun-notify';
         }
         $YuntongPay = new YuntongPay();
         try {
