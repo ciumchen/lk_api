@@ -110,7 +110,7 @@ class YuntongPayController extends Controller
             if (isset($data[ 'return_url' ])) {
                 $res = $res->setReturnUrl($data[ 'return_url' ]);
             }
-            return response()->json($res);
+            return response()->json([$return_url]);
             $res = $res->pay();
             $response = json_decode($res, true);
             return response()->json(['url' => $response[ 'pay_url' ]]);
