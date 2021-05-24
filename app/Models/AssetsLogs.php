@@ -19,6 +19,7 @@ class AssetsLogs extends Model
         'user_agent',
         'remark',
     ];
+    protected $appends = ['updated_date'];
 
 
 
@@ -60,5 +61,11 @@ class AssetsLogs extends Model
         self::OPERATE_TYPE_EXCHANGE_IETS_SUB_ENCOURATGE => '兑换扣除',
         self::OPERATE_TYPE_IETS_TO_USDT => '转换为USDT',
     ];
+
+    public function getUpdatedDateAttribute($value)
+    {
+//        dd($value);
+        return date("Y-m-d H:i:s",strtotime($this->attributes['updated_at']));
+    }
 
 }
