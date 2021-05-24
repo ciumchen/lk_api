@@ -128,8 +128,8 @@ class RechargeController extends Controller
      */
     public function callDefray(array $data)
     {
-        $apiKey = ''; //正式环境
-        $appId = ''; //正式环境
+        $apiKey = 'WYdxpYeFTHZ54kkactPaCkQF'; //正式环境
+        $appId = 'QHTEJQG4TFJX'; //正式环境
         $url = 'http://cz.sklos.cn/api/allocateAction';
 
         //组装请求数据
