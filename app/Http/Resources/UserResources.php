@@ -39,7 +39,6 @@ class UserResources extends JsonResource
             'id'                => $this->id,
             'phone'             => $this->phone,
             'role'              => $this->role,
-            'invite_uid'        => $this->invite_uid,
             'username'          => (string)$this->username,
             'avatar'            => (string)$this->avatar,
             'lk'                => rtrim_zero(format_decimal($this->lk)),
@@ -53,6 +52,7 @@ class UserResources extends JsonResource
             'encourage'         => rtrim_zero($encourage->amount ?? 0),
             'freeze_amount'     => rtrim_zero($balance->freeze_amount ?? 0),
             'share_url'         => $share_url . " 邀请注册，获得更多奖励",
+            'invite_uid'        => $this->invite_uid,
             'qrcode'            => $qrcode_url,
         ];
     }

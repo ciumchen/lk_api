@@ -265,18 +265,24 @@ class UserController extends Controller
 
     /**
      * 修改密码
-     * TODO:修改密码
      *
      * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function changeUserPassword(Request $request)
     {
         $password = $request->input('password');
-        $user = $request->user();
-        dd($user->changePassword('111111'));
-        try {
-            $user = '';
-        } catch (LogicException $le) {
+        $new_password = $request->input('new_password');
+        $confirm_password = $request->input('confirm_password');
+        if ($new_password != $confirm_password) {
+            throw new LogicException('两次输入密码不一致');
         }
+        $user = $request->user();
+        if ($user->verifyPassword($password) == false) {
+            throw new LogicException('原密码错误');
+        }
+        $user->changePassword($new_password);
+        return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
 }
