@@ -14,29 +14,33 @@ use Illuminate\Support\Facades\DB;
 
 class BusinessService
 {
+
     /**申请成为商家
+     *
      * @param $request
      * @param $user
+     *
      * @return bool
      * @throws LogicException
      */
-    public static function submitApply($request, $user){
-        $imgUrl ='';
-        $imgUrl2 ='';
-        try{
+    public static function submitApply($request, $user)
+    {
+        $imgUrl = '';
+        $imgUrl2 = '';
+        try {
             $imgUrl = OssService::base64Upload($request->img);
             $imgUrl2 = OssService::base64Upload($request->img2);
             BusinessApply::create([
                 'phone' => $request->phone,
-                'uid' => $user->id,
-                'name' => $request->name,
-//                'address' => $request->address,
-//                'work' => $request->work,
-                'img' => $imgUrl,
-                'img2' => $imgUrl2
+                'uid'   => $user->id,
+                'name'  => $request->name,
+                //                'address' => $request->address,
+                //                'work' => $request->work,
+                'img'   => $imgUrl,
+                'img2'  => $imgUrl2,
             ]);
             return true;
-        }catch (PDOException $e) {
+        } catch (PDOException $e) {
             Storage::disk('oss')->delete($imgUrl);
             Storage::disk('oss')->delete($imgUrl2);
             report($e);
@@ -49,93 +53,86 @@ class BusinessService
     }
 
     /**修改商家信息
+     *
      * @param $request
      * @param $user
+     *
      * @return bool
      * @throws LogicException
      */
-    public static function updateBusiness($request,$user){
-        try{
-
+    public static function updateBusiness($request, $user)
+    {
+        try {
             $businessData = $user->businessData()->first();
-
             //查询商户申请表信息
             $business_applyDB = new BusinessApply();
-            $business_apply_data = $business_applyDB->where('id',$businessData->business_apply_id)->first();
-
+            $business_apply_data = $business_applyDB->where('id', $businessData->business_apply_id)->first();
             //照片可以上传为空，为空就不修改图片
-            $businessApplyData['id'] = $business_apply_data->id;
-            $userIdImgData['uid'] = $business_apply_data->uid;
-            $userIdImgData['business_apply_id'] = $business_apply_data->id;
-
+            $businessApplyData[ 'id' ] = $business_apply_data->id;
+            $userIdImgData[ 'uid' ] = $business_apply_data->uid;
+            $userIdImgData[ 'business_apply_id' ] = $business_apply_data->id;
             //上传修改图片
             $updateImg = 0;
             $user_updateImg = 0;
-            $reImg['img'] = $request->img;
-            $reImg['img2'] = $request->img2;
-            $reImg['img_details1'] = $request->img_details1;
-            $reImg['img_details2'] = $request->img_details2;
-            $reImg['img_details3'] = $request->img_details3;
-
-            $reImg2['img_just'] = $request->img_just;
-            $reImg2['img_back'] = $request->img_back;
-            $reImg2['img_hold'] = $request->img_hold;
-
-            $imgArrData = array();
-
-            foreach ($reImg as $k=>$v){
-                if ($v!='') {
+            $reImg[ 'img' ] = $request->img;
+            $reImg[ 'img2' ] = $request->img2;
+            $reImg[ 'img_details1' ] = $request->img_details1;
+            $reImg[ 'img_details2' ] = $request->img_details2;
+            $reImg[ 'img_details3' ] = $request->img_details3;
+            $reImg2[ 'img_just' ] = $request->img_just;
+            $reImg2[ 'img_back' ] = $request->img_back;
+            $reImg2[ 'img_hold' ] = $request->img_hold;
+            $imgArrData = [];
+            foreach ($reImg as $k => $v) {
+                if ($v != '') {
                     $reossimg = OssService::base64Upload($v);
-                    $businessApplyData[$k] = $reossimg;
+                    $businessApplyData[ $k ] = $reossimg;
                     $updateImg = 1;
                     $imgArrData[] = $reossimg;
-                    Log::info("oss图片申请表log---申请表上传:".$reossimg);
+                    Log::info("oss图片申请表log---申请表上传:" . $reossimg);
                 }
             }
-            foreach ($reImg2 as $k=>$v){
-                if ($v!='') {
+            foreach ($reImg2 as $k => $v) {
+                if ($v != '') {
                     $reossimg = OssService::base64Upload($v);
-                    $userIdImgData[$k] = $reossimg;
+                    $userIdImgData[ $k ] = $reossimg;
                     $user_updateImg = 1;
                     $imgArrData[] = $reossimg;
-                    Log::info("oss图片身份证表log---身份证表上传:".$reossimg);
+                    Log::info("oss图片身份证表log---身份证表上传:" . $reossimg);
                 }
             }
-
-            Log::info("oss图片申请表log:",$businessApplyData);
-            Log::info("oss图片身份证表log:",$userIdImgData);
+            Log::info("oss图片申请表log:", $businessApplyData);
+            Log::info("oss图片身份证表log:", $userIdImgData);
             //修改商家申请表
-            if ($updateImg==1){
+            if ($updateImg == 1) {
                 $BusinessApply = new BusinessApply();
-                foreach ($businessApplyData as $k=>$v){
+                foreach ($businessApplyData as $k => $v) {
 //                    $BusinessApply->$k = $v;
-                    $businessApplyData[$k] = $v;
+                    $businessApplyData[ $k ] = $v;
                 }
 //                $BusinessApply->id = $business_apply_data->id;
 //                $re = $BusinessApply->save();
-                $re = DB::table('business_apply')->where('id',$business_apply_data->id)->update($businessApplyData);
-
-                if ($re){
+                $re = DB::table('business_apply')->where('id', $business_apply_data->id)->update($businessApplyData);
+                if ($re) {
                     Log::info("oss图片申请表修改成功");
-                }else{
+                } else {
                     Log::info("oss图片申请表修改失败");
                 }
-
             }
             //修改商家身份证表图片
-            if ($user_updateImg==1){
-                $res = DB::table('user_id_img')->where('uid',$userIdImgData['uid'])->where('business_apply_id',$userIdImgData['business_apply_id'])->first();
-                if ($res){
-                    $userIdImgData['id'] = $res->id;
+            if ($user_updateImg == 1) {
+                $res = DB::table('user_id_img')
+                         ->where('uid', $userIdImgData[ 'uid' ])
+                         ->where('business_apply_id', $userIdImgData[ 'business_apply_id' ])
+                         ->first();
+                if ($res) {
+                    $userIdImgData[ 'id' ] = $res->id;
                 }
-
                 $UserIdImg = new UserIdImg();
-                foreach ($userIdImgData as $k=>$v){
+                foreach ($userIdImgData as $k => $v) {
                     $UserIdImg->$k = $v;
                 }
                 $re = $UserIdImg->save();
-
-
 //                if ($res){//有记录就更新记录
 //                    $re = DB::table('user_id_img')->where('id',$res->id)->update($userIdImgData);
 //                    if ($re){
@@ -151,7 +148,6 @@ class BusinessService
 //                        Log::info("oss图片身份证信息表插入失败");
 //                    }
 //                }
-
             }
             //修改商家信息表
             $businessData->contact_number = $request->contact_number;
@@ -163,19 +159,19 @@ class BusinessService
             $businessData->status = 1;
             $businessData->name = $request->name;
             $businessData->main_business = $request->main_business;
-            $businessData->run_time = $request->start_time.'-'.$request->end_time;
+            $businessData->run_time = $request->start_time . '-' . $request->end_time;
             $businessData->save();
             return true;
-        }catch (PDOException $e) {
-            foreach ($imgArrData as $k=>$v){
-                if(isset($v))
+        } catch (PDOException $e) {
+            foreach ($imgArrData as $k => $v) {
+                if (isset($v))
                     Storage::disk('oss')->delete($v);
             }
             report($e);
             throw new LogicException('修改失败，请重试');
         } catch (Exception $e) {
-            foreach ($imgArrData as $k=>$v){
-                if(isset($v))
+            foreach ($imgArrData as $k => $v) {
+                if (isset($v))
                     Storage::disk('oss')->delete($v);
             }
             throw $e;

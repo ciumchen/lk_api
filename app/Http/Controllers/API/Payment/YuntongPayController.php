@@ -30,9 +30,6 @@ class YuntongPayController extends Controller
     public function createPay(Request $request)
     {
         $data = $request->all();
-        if ($data) {
-            throw new LogicException('支付通道异常请升级APP版本');
-        }
         $orderData = $this->createData($data);
         DB::beginTransaction();
         try {
@@ -62,9 +59,6 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
-        if ($data) {
-            throw new LogicException('支付通道异常请升级APP版本');
-        }
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
@@ -92,6 +86,9 @@ class YuntongPayController extends Controller
     public function payRequest($data)
     {
         $return_url = url('/api/yun-notify');
+        if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
+            $return_url = env('HTTP_URL') . '/api/yun-notify';
+        }
         $YuntongPay = new YuntongPay();
         try {
             $res = $YuntongPay
@@ -128,6 +125,9 @@ class YuntongPayController extends Controller
     public function createTradeOrder($data = [])
     {
         try {
+            if (array_key_exists('profit_ratio', $data)) {
+                $data[ 'profit_ratio' ] = ($data[ 'profit_ratio' ] / 100);
+            }
             $TradeOrder = new TradeOrder();
             $data = $this->allowFiled($data, $TradeOrder);
             return $TradeOrder->setOrder($data);
@@ -183,7 +183,7 @@ class YuntongPayController extends Controller
         $remarks = $this->getRemarks($data[ 'description' ] ?? '', $data);
         $profit_ratio = $this->getProfitRatio($data[ 'description' ]);
         $totalFee = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $data[ 'number' ]);
-        $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * $profit_ratio);
+        $profit_price = $data[ 'need_fee' ] ?? ($data[ 'money' ] * ($profit_ratio / 100));
         $payChannel = $this->getPayChannel($data[ 'payChannel' ]);
         $ip = $this->getClientIP($data[ 'payChannel' ], $data);
         $return_url = $this->getReturnUrl($data[ 'returnUrl' ] ?? '');
@@ -363,10 +363,10 @@ class YuntongPayController extends Controller
         switch ($type) {
             case 'HF':
             case 'YK':
-                $profit_ratio = 0.05;
+                $profit_ratio = 5;
                 break;
             default:
-                $profit_ratio = 0.10;
+                $profit_ratio = 10;
         }
         return $profit_ratio;
     }
