@@ -55,7 +55,7 @@ class RecordsOfConsumptionController extends Controller
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, $pageSize)
-            ->get(['operate_type','amount','updated_at']);
+            ->get(['operate_type','amount','updated_at'])->append(['updated_date']);
 
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
 
