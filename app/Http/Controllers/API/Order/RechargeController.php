@@ -132,6 +132,9 @@ class RechargeController extends Controller
         $appId = 'QHTEJQG4TFJX'; //正式环境
         $url = 'http://cz.sklos.cn/api/allocateAction';
 
+        //回调地址
+        $callback = 'http://tao.catspawvideo.com/api/get-call-defray';
+
         //组装请求数据
         $mobile = $data['numeric'];
         $flow = intval($data['price']);
@@ -149,7 +152,7 @@ class RechargeController extends Controller
                 't'        => $time,
                 'sign'     => $sign,
                 'seqNo'    => $orderid,
-                'callback' => urlencode('http://tao.catspawvideo.com/api/get-call-defray')
+                'callback' => urlencode($callback)
             ],
         ]);
 

@@ -30,6 +30,35 @@ class YuntongPayController extends Controller
     public function createPay(Request $request)
     {
         $data = $request->all();
+        $uid = $data['uid'] ?: 0;
+        $tradeOrder = new TradeOrder();
+
+        //判断支付金额
+        if (!in_array($data['money'], [50, 100, 200]) && $data['description'] == "HF")
+        {
+            throw new LogicException('话费充值金额不在可选值范围内');
+        } elseif (!in_array($data['money'], [300, 500, 1000]) && $data['description'] == "MT")
+        {
+            throw new LogicException('美团充值金额不在可选值范围内');
+        } elseif (!in_array($data['money'], [100, 200, 500, 1000]) && $data['description'] == "YK")
+        {
+            throw new LogicException('油卡充值金额不在可选值范围内');
+        }
+
+        //检查用户当月消费金额
+        $sumData = [
+            'uid' => $uid,
+            'description' => $data['description']
+        ];
+        $totalPrice = $tradeOrder->getMonthSum($sumData);
+        if ($data['description'] == 'HF' && $totalPrice >= 500)
+        {
+            throw new LogicException('本月话费充值金额已达上限');
+        } elseif ($data['description'] == 'YK' && $totalPrice >= 2000)
+        {
+            throw new LogicException('本月油卡充值金额已达上限');
+        }
+
         $orderData = $this->createData($data);
         DB::beginTransaction();
         try {
@@ -256,6 +285,9 @@ class YuntongPayController extends Controller
                 break;
             case "YK":
                 $name = '油卡';
+                break;
+            case "DD":
+                $name = '滴滴';
                 break;
             default:
                 $name = '';
