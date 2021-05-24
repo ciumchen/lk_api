@@ -19,6 +19,7 @@ class FreezeLogs extends Model
         'user_agent',
         'remark',
     ];
+    protected $appends = ['updated_date'];
 
 
 
@@ -36,5 +37,11 @@ class FreezeLogs extends Model
         self::OPERATE_TYPE_EXCHANGE_IETS => '兑换',
         self::OPERATE_TYPE_IETS_TO_USDT => '转换为USDT',
     ];
+
+    public function getUpdatedDateAttribute($value)
+    {
+//        dd($value);
+        return date("Y-m-d H:i:s",strtotime($this->attributes['updated_at']));
+    }
 
 }
