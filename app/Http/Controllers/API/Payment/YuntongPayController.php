@@ -30,9 +30,6 @@ class YuntongPayController extends Controller
     public function createPay(Request $request)
     {
         $data = $request->all();
-//        if ($data) {
-//            throw new LogicException('支付通道异常请升级APP版本');
-//        }
         $orderData = $this->createData($data);
         DB::beginTransaction();
         try {
@@ -62,11 +59,6 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
-        $return_url = url('/api/yun-notify');
-        dd($return_url);
-//        if ($data) {
-//            throw new LogicException('支付通道异常请升级APP版本');
-//        }
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
@@ -94,6 +86,9 @@ class YuntongPayController extends Controller
     public function payRequest($data)
     {
         $return_url = url('/api/yun-notify');
+        if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
+            $return_url = env('').'/api/yun-notify';
+        }
         $YuntongPay = new YuntongPay();
         try {
             $res = $YuntongPay
@@ -110,7 +105,6 @@ class YuntongPayController extends Controller
             if (isset($data[ 'return_url' ])) {
                 $res = $res->setReturnUrl($data[ 'return_url' ]);
             }
-            return response()->json([$return_url]);
             $res = $res->pay();
             $response = json_decode($res, true);
             return response()->json(['url' => $response[ 'pay_url' ]]);
