@@ -95,6 +95,15 @@ class User extends Authenticatable
         'code_invite',
     ];
 
+    protected $appends = ['avatar_url'];
+    public $avatar_default = [
+        'https://static.catspawvideo.com/no_avatar/1.png',
+        'https://static.catspawvideo.com/no_avatar/2.png',
+        'https://static.catspawvideo.com/no_avatar/3.png',
+        'https://static.catspawvideo.com/no_avatar/4.png',
+        'https://static.catspawvideo.com/no_avatar/5.png',
+    ];
+
     /**
      * The "booted" method of the model.
      *
@@ -114,19 +123,36 @@ class User extends Authenticatable
                 } while (static::where('code_invite', $user->code_invite)->exists());
             }
             if (null === $user->avatar) {
-                $default = [
-                    'https://static.catspawvideo.com/no_avatar/1.png',
-                    'https://static.catspawvideo.com/no_avatar/2.png',
-                    'https://static.catspawvideo.com/no_avatar/3.png',
-                    'https://static.catspawvideo.com/no_avatar/4.png',
-                    'https://static.catspawvideo.com/no_avatar/5.png',
-                ];
-                $user->avatar = $default[ array_rand($default) ];
+//                $default = [
+//                    'https://static.catspawvideo.com/no_avatar/1.png',
+//                    'https://static.catspawvideo.com/no_avatar/2.png',
+//                    'https://static.catspawvideo.com/no_avatar/3.png',
+//                    'https://static.catspawvideo.com/no_avatar/4.png',
+//                    'https://static.catspawvideo.com/no_avatar/5.png',
+//                ];
+                $user->avatar = $this->avatar_default[ array_rand($this->avatar_default) ];
             }
             if (null === $user->salt) {
                 $user->salt = Str::random(6);
             }
         });
+    }
+
+    /**
+     * 头像获取器
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    public function getAvatarUrlAttribute($value)
+    {
+        $value = $this->attributes[ 'avatar' ];
+        if (empty($value) || in_array($value, $this->avatar_default)) {
+            return $value;
+        } else {
+            return env('OSS_URL') . $value;
+        }
     }
 
     /**

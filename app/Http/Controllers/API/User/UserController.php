@@ -15,10 +15,12 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\BusinessService;
+use App\Services\OssService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use PDOException;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -184,10 +186,35 @@ class UserController extends Controller
      * TODO:修改头像
      *
      * @param \Illuminate\Http\Request $request
+     *
+     * @throws \App\Exceptions\LogicException|\OSS\Core\OssException
      */
     public function changeUserAvatar(Request $request)
     {
         $avatar = $request->input('avatar');
+        $user = $request->user();
+        $old_avatar = $user->avatar;
+        try {
+            if (!$avatar) {
+                throw new LogicException('请上传图片');
+            }
+            if (!in_array($old_avatar, (new User())->avatar_default)) {
+//                dd($old_avatar);
+                Storage::disk('oss')->delete($old_avatar);
+            }
+            $avatar = OssService::base64Upload($avatar, 'avatar/');
+            $user->avatar = $avatar;
+            $user->save();
+            $avatar_url = env('OSS_URL') . $avatar;
+        } catch (LogicException $e) {
+            throw new LogicException('');
+        }
+        $data = [
+            'code' => 0,
+            'msg'  => '修改成功',
+            'data' => ['avatar_url' => $avatar_url],
+        ];
+        return response()->json($data);
     }
 
     /**
