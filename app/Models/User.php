@@ -140,7 +140,7 @@ class User extends Authenticatable
 //                    'https://static.catspawvideo.com/no_avatar/4.png',
 //                    'https://static.catspawvideo.com/no_avatar/5.png',
 //                ];
-                $user->avatar = $this->avatar_default[ array_rand($this->avatar_default) ];
+                $user->avatar = $user->avatar_default[ array_rand($user->avatar_default) ];
             }
             if (null === $user->salt) {
                 $user->salt = Str::random(6);
