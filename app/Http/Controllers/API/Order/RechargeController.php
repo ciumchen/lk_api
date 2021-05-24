@@ -120,4 +120,47 @@ class RechargeController extends Controller
             return json_encode(['code' => -1, 'msg' => '充值失败，' . $res['reason']]);
         }
     }
+
+    /**佐兰话费自动充值
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function callDefray(array $data)
+    {
+        $apiKey = 'WYdxpYeFTHZ54kkactPaCkQF'; //正式环境
+        $appId = 'QHTEJQG4TFJX'; //正式环境
+        $url = 'http://cz.sklos.cn/api/allocateAction';
+
+        //组装请求数据
+        $mobile = $data['numeric'];
+        $flow = intval($data['price']);
+        $orderid = $data['order_no'];
+        $time = time();
+        $sign = md5($apiKey . $appId . $mobile . $time);
+        $http = new GuzzleHttp\Client;
+
+        //调用话费url
+        $response = $http->get($url, [
+            'query' => [
+                'appid'    => $appId,
+                'mobile'   => $mobile,
+                'flow'     => $flow,
+                't'        => $time,
+                'sign'     => $sign,
+                'seqNo'    => $orderid,
+                'callback' => urlencode('http://tao.catspawvideo.com/api/get-call-defray')
+            ],
+        ]);
+
+        //返回数据
+        $res = json_decode( $response->getBody(), 1);
+        if ($res['retCode'] == 0)
+        {
+            return json_encode(['code' => 0, 'msg' => '受理成功']);
+        } else
+        {
+            return json_encode(['code' => 99, 'msg' => '受理失败，' . $res['retMsg']]);
+        }
+    }
 }

@@ -24,7 +24,7 @@ class AdaPayController extends Controller
 {
     const appId = "app_c91b40ca-af1c-4eaa-a7dc-99bc39febe18";
     const notify = "https://lk.catspawvideo.com/api/notify"; //正式环境
-    //const notify = "http://112.124.9.185:8081/api/notify"; //测试环境
+    //const notify = "http://tao.catspawvideo.com/api/notify"; //测试环境
 
     /**
      * 调用支付
