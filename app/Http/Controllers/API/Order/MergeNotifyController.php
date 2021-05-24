@@ -133,4 +133,54 @@ class MergeNotifyController extends Controller
             throw new LogicException('充值失败');
         }
     }
+
+    /**佐兰话费自动充值
+     * @param Request $request
+     * @throws
+     */
+    public function getCallDefray(Request $request)
+    {
+        $data = $request->all();
+        if (!empty($data))
+        {
+            Log::debug("call notify info:\r\n" . json_encode($data));
+        } else
+        {
+            Log::debug("call notify fail:参数为空");
+        }
+
+        //数据组装
+        $allocateId = $data['allocateId'];
+        $seqNo = $data['seqNo'];
+        $status = $data['code'];
+
+        if ($status == 0)
+        {
+            //充值成功插入数据到数据库
+            $recharge = new RechargeLogs();
+
+            $res = (new RechargeLogs())->exRecharges($allocateId);
+            if ($res)
+            {
+                $recharge->created_at = date("Y-m-d H:i:s");
+                $recharge->updated_at = date("Y-m-d H:i:s");
+                $recharge->save();
+            }
+
+            $recharge->reorder_id = $allocateId;
+            $recharge->order_no = $seqNo;
+            $recharge->type = 'HF';
+            $recharge->status = $status;
+            $recharge->created_at = date("Y-m-d H:i:s");
+            $recharge->updated_at = date("Y-m-d H:i:s");
+            $recharge->save();
+
+            //添加消息通知
+            (new UserMsgController())->setMsg($seqNo, 1);
+
+        } elseif ($status == 10)
+        {
+            throw new LogicException('充值失败：' . $data['codeMsg']);
+        }
+    }
 }
