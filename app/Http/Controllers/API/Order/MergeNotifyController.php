@@ -162,14 +162,6 @@ class MergeNotifyController extends Controller
             //充值成功插入数据到数据库
             $recharge = new RechargeLogs();
 
-            $res = (new RechargeLogs())->exRecharges($allocateId);
-            if ($res)
-            {
-                $recharge->created_at = date("Y-m-d H:i:s");
-                $recharge->updated_at = date("Y-m-d H:i:s");
-                $recharge->save();
-            }
-
             $recharge->reorder_id = $allocateId;
             $recharge->order_no = $seqNo;
             $recharge->type = 'HF';
