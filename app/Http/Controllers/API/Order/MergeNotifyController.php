@@ -141,7 +141,6 @@ class MergeNotifyController extends Controller
     public function getCallDefray(Request $request)
     {
         $data = $request->all();
-        Log::info('话费充值：', $data);
         if (!empty($data))
         {
             Log::debug("call notify info:\r\n" . json_encode($data));
@@ -153,11 +152,7 @@ class MergeNotifyController extends Controller
         //数据组装
         $allocateId = $data['allocateId'];
         $seqNo = $data['seqNo'];
-        $status = $data['code'];
-        Log::info('话费充值：' . $allocateId);
-        Log::info('话费充值：' . $seqNo);
-        Log::info('话费充值：' . $status);
-        if ($status == 0)
+        if ($data['code'] == 0)
         {
             //充值成功插入数据到数据库
             $recharge = new RechargeLogs();
@@ -165,7 +160,7 @@ class MergeNotifyController extends Controller
             $recharge->reorder_id = $allocateId;
             $recharge->order_no = $seqNo;
             $recharge->type = 'HF';
-            $recharge->status = $status;
+            $recharge->status = 1;
             $recharge->created_at = date("Y-m-d H:i:s");
             $recharge->updated_at = date("Y-m-d H:i:s");
             $recharge->save();
@@ -173,7 +168,7 @@ class MergeNotifyController extends Controller
             //添加消息通知
             (new UserMsgController())->setMsg($seqNo, 1);
 
-        } elseif ($status == 10)
+        } elseif ($data['code'] == 10)
         {
             throw new LogicException('充值失败：' . $data['codeMsg']);
         }
