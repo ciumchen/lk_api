@@ -128,7 +128,6 @@ class RechargeController extends Controller
      */
     public function callDefray(array $data)
     {
-        Log::info('话费测试：', $data);
         $apiKey = 'WYdxpYeFTHZ54kkactPaCkQF'; //正式环境
         $appId = 'QHTEJQG4TFJX'; //正式环境
         $url = 'http://cz.sklos.cn/api/allocateAction';
@@ -159,7 +158,6 @@ class RechargeController extends Controller
 
         //返回数据
         $res = json_decode( $response->getBody(), 1);
-        Log::info('话费测试：', $res);
         if ($res['retCode'] == 0)
         {
             return json_encode(['code' => 0, 'msg' => '受理成功']);
