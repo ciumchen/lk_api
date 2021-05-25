@@ -42,8 +42,7 @@ class GetBusinessController extends Controller
 
                 if($cityId)
                 {
-                    $cityPCode = CityData::where("p_code", $cityId)->value("code");
-                    return  $query->where('city', $cityPCode);
+                    return  $query->where('city', $cityId);
                 }
             })
             ->when($district,function($query) use ($city, $district) {
