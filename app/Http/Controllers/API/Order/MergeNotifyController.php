@@ -163,10 +163,11 @@ class MergeNotifyController extends Controller
             $recharge->status = 1;
             $recharge->created_at = date("Y-m-d H:i:s");
             $recharge->updated_at = date("Y-m-d H:i:s");
-            $recharge->save();
+            $res = $recharge->save();
 
             //添加消息通知
             (new UserMsgController())->setMsg($seqNo, 1);
+            return $res == 'true' ? 1 : 0;
 
         } elseif ($data['code'] == 10)
         {
