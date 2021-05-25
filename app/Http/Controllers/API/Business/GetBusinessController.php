@@ -50,10 +50,10 @@ class GetBusinessController extends Controller
 
                 if($cityId)
                 {
-                    $cityPCode = CityData::where("p_code", $cityId)->value("code");
                     $districtId = CityData::where("name", $district)
-                        ->where("p_code", $cityPCode)
+                        ->where("p_code", $cityId)
                         ->value("code");
+
                     if($districtId){
                         return  $query->where('district', $districtId);
                     }
