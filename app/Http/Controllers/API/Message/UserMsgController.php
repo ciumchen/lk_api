@@ -77,6 +77,7 @@ class UserMsgController extends Controller
 
     /**删除单条消息
      * @param Request $request
+     * @return mixed
      * @throws
      */
     public function delMsg(Request $request)
@@ -84,11 +85,12 @@ class UserMsgController extends Controller
         $data = $request->all();
         $id = $data['id'];
 
-        (new UserMessage())->delMsg($id);
+        return (new UserMessage())->delMsg($id);
     }
 
     /**删除多条消息
      * @param Request $request
+     * @return mixed
      * @throws
      */
     public function delAllMsg(Request $request)
@@ -96,6 +98,6 @@ class UserMsgController extends Controller
         $data = $request->all();
         $uid = $data['uid'];
 
-        (new UserMessage())->delAllMsg($uid);
+        return (new UserMessage())->delAllMsg($uid);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\LogicException;
+use App\Libs\Yuntong\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,7 @@ class UserMessage extends Model
         $message->type = $type;
         $message->sys_mid = 0;
         $message->is_del = 0;
+        $message->order_no = $orderNo;
         $message->created_at = $date;
         $message->updated_at = $date;
         $message->save();
@@ -63,13 +65,17 @@ class UserMessage extends Model
             ->join('trade_order', function($join){
                 $join->on('recharge_logs.order_no', 'trade_order.order_no');
             })
+            ->join('user_message', function($join){
+                $join->on('trade_order.order_no', 'user_message.order_no');
+            })
             ->where(function($query) use ($uid) {
                 $query->where('recharge_logs.status', 1)
                     ->where('trade_order.user_id', $uid)
-                    ->where('trade_order.status', 'succeeded');
+                    ->where('trade_order.status', 'succeeded')
+                    ->where('user_message.is_del', 0);
             })
             ->distinct('recharge_logs.order_no')
-            ->get(['recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price', 'trade_order.numeric'])
+            ->get(['user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price', 'trade_order.numeric'])
             ->toArray();
         foreach ($orderData as $key => $value)
         {
@@ -82,9 +88,12 @@ class UserMessage extends Model
             ->join('trade_order', function($join){
                 $join->on('order.id', 'trade_order.oid');
             })
-            ->where(['order.uid' => $uid, 'order.name' => '录单', 'order.status' => 2, 'order.pay_status' => 'succeeded'])
+            ->join('user_message', function($join){
+                $join->on('trade_order.order_no', 'user_message.order_no');
+            })
+            ->where(['order.uid' => $uid, 'order.name' => '录单', 'order.status' => 2, 'order.pay_status' => 'succeeded', 'user_message.is_del' => 0])
             ->distinct('order.id')
-            ->get(['order.created_at', 'order.price', 'trade_order.numeric'])
+            ->get(['user_message.id', 'order.created_at', 'order.price', 'trade_order.numeric'])
             ->toArray();
         foreach ($userOrder as $key => $value)
         {
@@ -115,6 +124,7 @@ class UserMessage extends Model
 
             //组装返回数据
             $msgList[] = [
+                'id'      => $val['id'],
                 'title'   => $name . '充值',
                 'time'    => $val['created_at'],
                 'content' => '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
@@ -152,7 +162,8 @@ class UserMessage extends Model
             ->withTrashed()
             ->where(['user_message.user_id' => $uid, 'user_message.type' => 8, 'is_del' => 0])
             ->distinct('sys_message.id')
-            ->get(['sys_message.title', 'sys_message.content', 'sys_message.created_at'])
+            ->orderBy('created_at', 'desc')
+            ->get(['sys_message.id', 'sys_message.title', 'sys_message.content', 'sys_message.created_at'])
             ->toArray();
 
         //合并数据并按创建时间倒序
@@ -163,6 +174,7 @@ class UserMessage extends Model
         {
             //组装返回数据
             $msgList[] = [
+                'id'      => $val['id'],
                 'title'   => $val['title'],
                 'time'    => $val['created_at'],
                 'content' => $val['content'],
@@ -215,39 +227,55 @@ class UserMessage extends Model
 
     /**删除单条消息
      * @param int $id
+     * @return mixed
      * @throws
      */
     public function delMsg(int $id)
     {
-        $res = (new UserMessage())::withTrashed()->where('id', $id)->exists();
-        /*if (!$res)
+        $res = (new UserMessage())::withTrashed()->where(['id' => $id, 'is_del' => 0])->exists();
+        if (!$res)
         {
             throw new LogicException('用户消息不存在');
-        }*/
+        }
 
-        $userMessage = new UserMessage();
-        $userMessage->id = $id;
+        $userMessage = (new UserMessage())::withTrashed()->find($id);
         $userMessage->is_del = 1;
         $userMessage->updated_at = date("Y-m-d H:i:s");
-        $userMessage->save();
+        $data = $userMessage->save();
+        if ($data)
+        {
+            return json_encode(['code' => 1, 'msg' => '删除消息成功']);
+        } else
+        {
+            return json_encode(['code' => 0, 'msg' => '删除消息失败']);
+        }
     }
 
     /**删除所有消息
      * @param int $uid
+     * @return mixed
      * @throws
      */
     public function delAllMsg(int $uid)
     {
-        $res = (new UserMessage())::withTrashed()->where('user_id', $uid)->exists();
-        /*if (!$res)
+        $res = (new UserMessage())::withTrashed()->where(['user_id' => $uid, 'is_del' => 0])->exists();
+        if (!$res)
         {
             throw new LogicException('用户消息不存在');
-        }*/
+        }
 
-        $userMessage = new UserMessage();
-        $userMessage->user_id = $uid;
-        $userMessage->is_del = 1;
-        $userMessage->updated_at = date("Y-m-d H:i:s");
-        $userMessage->save();
+        $msgData = [
+            'is_del' => 1,
+            'updated_at' => date("Y-m-d H:i:s")
+        ];
+        $data = (new UserMessage())::withTrashed()->where('user_id', $uid)->update($msgData);
+
+        if ($data)
+        {
+            return json_encode(['code' => 1, 'msg' => '删除消息成功']);
+        } else
+        {
+            return json_encode(['code' => 0, 'msg' => '删除消息失败']);
+        }
     }
 }
