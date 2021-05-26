@@ -112,7 +112,7 @@ class UserMessage extends Model
             ->withTrashed()
             ->where(['user_message.user_id' => $uid, 'user_message.type' => 3, 'is_del' => 0])
             ->distinct('sys_message.id')
-            ->get(['sys_message.id', 'sys_message.title', 'sys_message.content', 'sys_message.created_at'])
+            ->get(['user_message.id', 'sys_message.title', 'sys_message.content', 'sys_message.created_at'])
             ->toArray();
         foreach ($selfMessage as $k => $v)
         {
