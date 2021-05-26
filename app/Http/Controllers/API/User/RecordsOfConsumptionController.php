@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\User;
 use App\Http\Controllers\Controller;
 use App\Models\AssetsLogs;
 use App\Models\FreezeLogs;
+use App\Models\IntegralLogs;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class RecordsOfConsumptionController extends Controller
@@ -142,6 +144,27 @@ class RecordsOfConsumptionController extends Controller
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => array('num',$count)]);
 
     }
+
+    //查询当前用户是邀请人所获得的商家积分记录
+    public function getInvitePoints(Request $request){
+        $uid = $request->input('uid');
+        $page = $request->input('page');
+        $pageSize = $request->input('pageSize',10);
+
+        $data['business_integral'] = User::where('id',$uid)->value('business_integral');
+
+        $data['jls'] = (new IntegralLogs())
+            ->where("uid", $uid)
+            ->where('role', 2)
+            ->orderBy('id', 'desc')
+            ->latest('id')
+            ->forPage($page, $pageSize)
+            ->get(['operate_type','amount','updated_at'])->append(['updated_date']);
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+    }
+
+
 
 }
 

@@ -35,5 +35,8 @@ Route::any("get-gas","Order\MergeNotifyController@getGas");
 //返回佐兰话费数据
 Route::any("get-call-defray","Order\MergeNotifyController@getCallDefray");
 
+//查询当前用户是邀请人所获得的商家积分记录
+Route::any("getInvitePoints","User\RecordsOfConsumptionController@getInvitePoints");
+
 
 

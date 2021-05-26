@@ -9,6 +9,11 @@ class IntegralLogs extends Model
     protected $table = 'integral_log';
     const TYPE_SPEND = 'spend';
     const TYPE_REBATE = 'rebate';
+
+    protected $appends = ['updated_date'];
+
+
+
     public static $typeLabel = [
         'consumption' => '消费增加',
         'Jangli' => '让利增加',
@@ -61,6 +66,12 @@ class IntegralLogs extends Model
             'user_agent' => ''
         ]);
 
+    }
+
+    public function getUpdatedDateAttribute($value)
+    {
+//        dd($value);
+        return date("Y-m-d H:i:s",strtotime($this->attributes['updated_at']));
     }
 
 }
