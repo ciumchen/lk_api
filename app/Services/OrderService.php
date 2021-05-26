@@ -307,6 +307,7 @@ class OrderService
             'HF'=>'Invite_points_hf',
             'YK'=>'Invite_points_yk',
             'MT'=>'Invite_points_mt',
+            'ZL'=>'Invite_points_zl',
         );
         $activityState = 0;
         if($description!='LR'){
