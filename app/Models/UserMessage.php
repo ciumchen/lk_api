@@ -208,6 +208,7 @@ class UserMessage extends Model
         {
             return json_encode(['code' => 10000, 'msg' => '暂无系统消息']);
         }
+        return $msgRes;
     }
 
     /**获取消息小红点
