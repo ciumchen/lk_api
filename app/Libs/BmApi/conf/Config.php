@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Libs\Bmapi\conf;
+
+/**
+ * 斑马力方 接口配置文档
+ * Class Config
+ *
+ * @package App\Libs\Bmapi\conf
+ */
+class Config
+{
+
+    const APP_KEY      = '10002911';
+
+    const APP_SECRET   = 'oBfoIUjgyTREH5c70qeAueUXgAoZT0AW';
+
+    const ACCESS_TOKEN = '2dd520ba581a4db5a3fcbd074e19d618';
+}
