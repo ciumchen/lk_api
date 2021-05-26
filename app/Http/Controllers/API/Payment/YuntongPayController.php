@@ -37,7 +37,7 @@ class YuntongPayController extends Controller
         if (!in_array($data['money'], [50, 100, 200]) && in_array($data['description'], ['HF', 'ZL']))
         {
             throw new LogicException('话费充值金额不在可选值范围内');
-        } elseif (!in_array($data['money'], [0.1, 300, 500, 1000]) && $data['description'] == "MT")
+        } elseif (!in_array($data['money'], [300, 500, 1000]) && $data['description'] == "MT")
         {
             throw new LogicException('美团充值金额不在可选值范围内');
         } elseif (!in_array($data['money'], [100, 200, 500, 1000]) && $data['description'] == "YK")
