@@ -122,6 +122,8 @@ class UserMessage extends Model
 
         //按创建时间排序
         array_multisort(array_column($magArr, 'created_at'), SORT_DESC, $magArr);
+        $key = 'id';
+        $magArr = $this->assoc_unique($magArr , $key);
 
         $msgList = [];
         $name = '';
@@ -185,6 +187,8 @@ class UserMessage extends Model
 
         //合并数据并按创建时间倒序
         array_multisort(array_column($sysMessage, 'created_at'), SORT_DESC, $sysMessage);
+        $key = 'id';
+        $sysMessage = $this->assoc_unique($sysMessage , $key);
 
         $msgList = [];
         foreach ($sysMessage as $key => $val)
@@ -337,5 +341,32 @@ class UserMessage extends Model
         {
             return json_encode(['code' => 0, 'msg' => '删除消息失败']);
         }
+    }
+
+    /**删除所有消息
+     * @param array $arr
+     * @param string $key
+     * @return mixed
+     * @throws
+     */
+    public function assoc_unique(array $arr, string $key)
+    {
+        $tmp_arr = array();
+        foreach ($arr as $k => $v)
+        {
+            if (in_array($v[$key], $tmp_arr))
+            {
+                //搜索$v[$key]是否在$tmp_arr数组中存在，若存在返回true
+                unset($arr[$k]);
+            } else
+            {
+                $tmp_arr[] = $v[$key];
+            }
+        }
+
+        //sort函数对数组进行排序
+        sort($arr);
+
+        return $arr;
     }
 }
