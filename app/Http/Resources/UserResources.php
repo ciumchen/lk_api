@@ -57,6 +57,7 @@ class UserResources extends JsonResource
             'sex'               => $this->sex,
             'sex_text'          => $this->sex_text,
             'birth'             => $this->birth,
+            'sign'              => $this->sign,
             'qrcode'            => $qrcode_url,
         ];
     }
