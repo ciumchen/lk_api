@@ -119,13 +119,12 @@ class YuntongNotifyController extends Controller
                 (new RechargeController())->setCall($callData);
             } elseif ($trade_order->description == "YK") {
                 (new RechargeController())->setGas($gasData);
-            } elseif ($trade_order->description == "ZL")
-            {
-                (new RechargeController())->callDefray($callData);
             }
+//            elseif ($trade_order->description == "ZL") {
+//                (new RechargeController())->callDefray($callData);
+//            }
             //更新 order 表审核状态
             (new OrderService())->completeOrder($data[ 'order_id' ]);
-
             //发送录单消息通知
             (new Order())->orderMsg($data[ 'order_id' ]);
         } catch (\LogicException $le) {
