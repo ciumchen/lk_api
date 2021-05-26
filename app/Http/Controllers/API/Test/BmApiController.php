@@ -15,4 +15,7 @@ class BmApiController extends Controller
 {
 
     //
+    public function index()
+    {
+    }
 }

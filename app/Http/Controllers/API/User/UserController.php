@@ -245,6 +245,37 @@ class UserController extends Controller
     }
 
     /**
+     * 修改姓名
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\LogicException
+     */
+    public function changeRealName(Request $request)
+    {
+        $real_name = $request->input('real_name');
+        $user = $request->user();
+        try {
+            if (empty($real_name)) {
+                throw  new LogicException('请填写您的姓名');
+            }
+            $reg = "/^[\x{4e00}-\x{9fa5}]{2,15}(\·[\x{4e00}-\x{9fa5}]{3,16}){0,1}$/u";
+            if (!preg_match($reg, $real_name)) {
+                throw new LogicException('姓名只能输入中文和 · ');
+            }
+            if (strlen($real_name) > 50) {
+                throw new LogicException('姓名不能超过30个字符');
+            }
+            $user->real_name = $real_name;
+            $user->save();
+        } catch (LogicException $le) {
+            throw $le;
+        }
+        return response()->json(['code' => 0, 'msg' => '修改成功']);
+    }
+
+    /**
      * 修改性别
      *
      * @param \Illuminate\Http\Request $request
