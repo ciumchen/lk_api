@@ -33,7 +33,7 @@ Route::any("get-call","Order\MergeNotifyController@getCall");
 Route::any("get-gas","Order\MergeNotifyController@getGas");
 
 //返回佐兰话费数据
-Route::any("get-call-defray","Order\MergeNotifyController@callDefray");
+Route::any("get-call-defray","Order\MergeNotifyController@getCallDefray");
 
 
 

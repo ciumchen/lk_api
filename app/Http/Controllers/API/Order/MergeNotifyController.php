@@ -152,33 +152,24 @@ class MergeNotifyController extends Controller
         //数据组装
         $allocateId = $data['allocateId'];
         $seqNo = $data['seqNo'];
-        $status = $data['code'];
-
-        if ($status == 0)
+        if ($data['code'] == 0)
         {
             //充值成功插入数据到数据库
             $recharge = new RechargeLogs();
 
-            $res = (new RechargeLogs())->exRecharges($allocateId);
-            if ($res)
-            {
-                $recharge->created_at = date("Y-m-d H:i:s");
-                $recharge->updated_at = date("Y-m-d H:i:s");
-                $recharge->save();
-            }
-
             $recharge->reorder_id = $allocateId;
             $recharge->order_no = $seqNo;
             $recharge->type = 'HF';
-            $recharge->status = $status;
+            $recharge->status = 1;
             $recharge->created_at = date("Y-m-d H:i:s");
             $recharge->updated_at = date("Y-m-d H:i:s");
-            $recharge->save();
+            $res = $recharge->save();
 
             //添加消息通知
             (new UserMsgController())->setMsg($seqNo, 1);
+            return $res == 'true' ? 1 : 0;
 
-        } elseif ($status == 10)
+        } elseif ($data['code'] == 10)
         {
             throw new LogicException('充值失败：' . $data['codeMsg']);
         }
