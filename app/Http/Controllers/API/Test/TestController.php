@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\API\Test;
 
 
+use App\Services\OrderService;
 use App\Services\OssService;
 use Illuminate\Http\Request;
 
@@ -59,6 +60,14 @@ class TestController
 //        return $path;
 
 
+    }
+
+    //订单回调测试
+    public function orderTest(){
+//        echo "测试积分添加";
+        //更新 order 表审核状态
+        $orderOn = 'PY_20210525153713649994';
+        (new OrderService())->completeOrder($orderOn);
     }
 
 }

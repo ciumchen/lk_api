@@ -50,15 +50,21 @@ class OrderService
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
             $customer->save();
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
-            //给商家加积分，更新LK
-            $business = User::lockForUpdate()->find($order->business_uid);
-            $amountBeforeChange = $business->business_integral;
-            $business->business_integral = bcadd($business->business_integral, $order->profit_price, 2);
-            $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
-            //更新LK
-            $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
-            $business->save();
-            IntegralLogs::addLog($business->id, $order->profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+
+            //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
+            $this->addInvitePoints($order->business_uid,$order->profit_price,$tradeOrderInfo->description,$tradeOrderInfo->user_id);
+
+//            //给商家加积分，更新LK
+//            $business = User::lockForUpdate()->find($order->business_uid);
+//            $amountBeforeChange = $business->business_integral;
+//            $business->business_integral = bcadd($business->business_integral, $order->profit_price, 2);
+//            $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
+//            //更新LK
+//            $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
+//            $business->save();
+//            IntegralLogs::addLog($business->id, $order->profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+//
+            $business = User::find($order->business_uid);
             //返佣
             $this->encourage($order, $customer, $business);
             $order->save();
@@ -291,4 +297,45 @@ class OrderService
         $rebateData->total_consumption = bcadd($price, $rebateData->total_consumption, 8);
         $rebateData->save();
     }
+
+    //邀请补贴和邀请人积分添加
+    //商户uid,实际让利比例，订单分类 HF YK MT,消费者uid
+    public function addInvitePoints($order_business_uid,$order_profit_price,$description,$uid){
+//判断邀请补贴活动是否开启，如果开启就将邀请积分添加到该用户的邀请人里
+        $InvitePointsArr = array(
+            'HF'=>'Invite_points_hf',
+            'YK'=>'Invite_points_yk',
+            'MT'=>'Invite_points_mt',
+        );
+        if($description!='LR'){
+            $key = $InvitePointsArr[$description];
+            //判断活动是否开启
+            $setValue = Setting::where('key',$key)->value('value');
+            if($setValue!=0){
+                $dateArr = explode('|',$setValue);
+                if(strtotime($dateArr[0]) < time() && time() < strtotime($dateArr[1])){
+                    $invite_uid = User::where('id',$uid)->value('invite_uid');//邀请人uid
+                }else{
+                    $invite_uid = $order_business_uid;
+                }
+            }else{
+                $invite_uid = $order_business_uid;
+            }
+        }else{
+            $invite_uid = $order_business_uid;
+        }
+        //给商家加积分，更新LK
+        $business = User::lockForUpdate()->find($invite_uid);
+        $amountBeforeChange = $business->business_integral;
+        $business->business_integral = bcadd($business->business_integral, $order_profit_price, 2);
+        $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
+        //更新LK
+        $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
+        $business->save();
+        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+
+    }
+
+
+
 }
