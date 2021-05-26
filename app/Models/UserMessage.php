@@ -103,11 +103,29 @@ class UserMessage extends Model
         }
 
         $magDatas = array_merge($orderData, $userOrder);
-        array_multisort(array_column($magDatas, 'created_at'), SORT_DESC, $magDatas);
+
+        //美团、滴滴等自营消息
+        $selfMessage = (new UserMessage())
+            ->join('sys_message', function($join){
+                $join->on('user_message.sys_mid', 'sys_message.id');
+            })
+            ->withTrashed()
+            ->where(['user_message.user_id' => $uid, 'user_message.type' => 3, 'is_del' => 0])
+            ->distinct('sys_message.id')
+            ->get(['sys_message.id', 'sys_message.title', 'sys_message.content', 'sys_message.created_at'])
+            ->toArray();
+        foreach ($selfMessage as $k => $v)
+        {
+            $selfMessage[$k]['type'] = '';
+        }
+        $magArr = array_merge($magDatas, $selfMessage);
+
+        //按创建时间排序
+        array_multisort(array_column($magArr, 'created_at'), SORT_DESC, $magArr);
 
         $msgList = [];
         $name = '';
-        foreach ($magDatas as $key => $val)
+        foreach ($magArr as $key => $val)
         {
             switch ($val['type'])
             {
@@ -125,9 +143,9 @@ class UserMessage extends Model
             //组装返回数据
             $msgList[] = [
                 'id'      => $val['id'],
-                'title'   => $name . '充值',
+                'title'   => $val['title'] ?: $name . '充值',
                 'time'    => $val['created_at'],
-                'content' => '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
+                'content' => $val['content'] ?: '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
             ];
         }
 
@@ -162,7 +180,6 @@ class UserMessage extends Model
             ->withTrashed()
             ->where(['user_message.user_id' => $uid, 'user_message.type' => 8, 'is_del' => 0])
             ->distinct('sys_message.id')
-            ->orderBy('created_at', 'desc')
             ->get(['sys_message.id', 'sys_message.title', 'sys_message.content', 'sys_message.created_at'])
             ->toArray();
 
