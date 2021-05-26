@@ -17,14 +17,15 @@ class OrderService
 {
 
     /**完成订单
+     *
      * @param string $orderNo
+     *
      * @return mixed
      */
     public function completeOrder(string $orderNo)
     {
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
-        $consumer_uid = $tradeOrderInfo->user_id;
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($id);
@@ -32,8 +33,6 @@ class OrderService
                 return false;
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';
-            $order->updated_at = date("Y-m-d H:i:s");
-
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
@@ -50,11 +49,64 @@ class OrderService
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
             $customer->save();
-            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单',$orderNo,0,$consumer_uid);
+            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
+            //给商家加积分，更新LK
+            $business = User::lockForUpdate()->find($order->business_uid);
+            $amountBeforeChange = $business->business_integral;
+            $business->business_integral = bcadd($business->business_integral, $order->profit_price, 2);
+            $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
+            //更新LK
+            $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
+            $business->save();
+            IntegralLogs::addLog($business->id, $order->profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+            //返佣
+            $this->encourage($order, $customer, $business);
+            $order->save();
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            var_dump($exception->getMessage());
+        }
+    }
 
+    /**完成订单
+     *
+     * @param string $orderNo
+     *
+     * @return mixed
+     */
+    public function completeOrder1(string $orderNo)
+    {
+        $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
+        $id = $tradeOrderInfo->oid;
+        $consumer_uid = $tradeOrderInfo->user_id;
+        DB::beginTransaction();
+        try {
+            $order = Order::lockForUpdate()->find($id);
+            if ($order->status != Order::STATUS_DEFAULT)
+                return false;
+            $order->status = Order::STATUS_SUCCEED;
+            $order->pay_status = 'succeeded';
+            $order->updated_at = date("Y-m-d H:i:s");
+            //用户应返还几分比例
+            $userRebateScale = Setting::getManySetting('user_rebate_scale');
+            $businessRebateScale = Setting::getManySetting('business_rebate_scale');
+            $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+            //通过，给用户加积分、更新LK
+            $customer = User::lockForUpdate()->find($order->uid);
+            //按比例计算实际获得积分
+            $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
+            $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
+            $customerIntegral = bcmul($order->price, $profit_ratio, 2);
+            $amountBeforeChange = $customer->integral;
+            $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
+            $lkPer = Setting::getSetting('lk_per') ?? 300;
+            //更新LK
+            $customer->lk = bcdiv($customer->integral, $lkPer, 0);
+            $customer->save();
+            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-            $this->addInvitePoints($order->business_uid,$order->profit_price,$tradeOrderInfo->description,$consumer_uid,$orderNo);
-
+            $this->addInvitePoints($order->business_uid, $order->profit_price, $tradeOrderInfo->description, $consumer_uid, $orderNo);
 //            //给商家加积分，更新LK
 //            $business = User::lockForUpdate()->find($order->business_uid);
 //            $amountBeforeChange = $business->business_integral;
@@ -77,9 +129,11 @@ class OrderService
     }
 
     /**返佣
+     *
      * @param $order
      * @param $user
      * @param $business
+     *
      * @throws \App\Exceptions\LogicException
      */
     private function encourage($order, $user, $business)
@@ -141,7 +195,12 @@ class OrderService
         if ($cityNodeRebate > 0) {
             //判断商家是否在市节点
             $cityNode =
-                CityNode::where('status', 1)->where('province', $order->business->province)->whereNotNull('uid')->where('city', $order->business->city)->whereNull('district')->first();
+                CityNode::where('status', 1)
+                        ->where('province', $order->business->province)
+                        ->whereNotNull('uid')
+                        ->where('city', $order->business->city)
+                        ->whereNull('district')
+                        ->first();
             if (!$cityNode) {
                 $uid = $platformUid;
                 $remark = '市级节点暂无，分配到来客平台';
@@ -166,7 +225,12 @@ class OrderService
         if ($districtNodeRebate > 0) {
             //判断商家是否在区节点
             $districtNode =
-                CityNode::where('status', 1)->where('province', $order->business->province)->whereNotNull('uid')->where('city', $order->business->city)->where('district', $order->business->district)->first();
+                CityNode::where('status', 1)
+                        ->where('province', $order->business->province)
+                        ->whereNotNull('uid')
+                        ->where('city', $order->business->city)
+                        ->where('district', $order->business->district)
+                        ->first();
             if (!$districtNode) {
                 $uid = $platformUid;
                 $remark = '区级节点暂无，分配到来客平台';
@@ -249,12 +313,14 @@ class OrderService
     }
 
     /**找盟主
-     * @param $invite_uid
-     * @param $amount
-     * @param $assets
-     * @param $msg
-     * @param $type
+     *
+     * @param     $invite_uid
+     * @param     $amount
+     * @param     $assets
+     * @param     $msg
+     * @param     $type
      * @param int $level
+     *
      * @return false
      * @throws \App\Exceptions\LogicException
      */
@@ -277,6 +343,7 @@ class OrderService
     }
 
     /**更新返佣统计
+     *
      * @param $welfare
      * @param $share
      * @param $market
@@ -292,42 +359,43 @@ class OrderService
         $rebateData->market = bcadd($rebateData->market, $market, 2);
         $rebateData->platform = bcadd($rebateData->platform, $platform, 2);
         $rebateData->people = Order::where("status", Order::STATUS_SUCCEED)
-                ->distinct("uid")
-                ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
-                ->count() + 1;
+                                   ->distinct("uid")
+                                   ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
+                                   ->count() + 1;
         $rebateData->total_consumption = bcadd($price, $rebateData->total_consumption, 8);
         $rebateData->save();
     }
 
     //邀请补贴和邀请人积分添加
     //商户uid,实际让利比例，订单分类 HF YK MT,消费者uid
-    public function addInvitePoints($order_business_uid,$order_profit_price,$description,$uid,$orderNo){
+    public function addInvitePoints($order_business_uid, $order_profit_price, $description, $uid, $orderNo)
+    {
 //判断邀请补贴活动是否开启，如果开启就将邀请积分添加到该用户的邀请人里
-        $InvitePointsArr = array(
-            'HF'=>'Invite_points_hf',
-            'YK'=>'Invite_points_yk',
-            'MT'=>'Invite_points_mt',
-            'ZL'=>'Invite_points_zl',
-        );
+        $InvitePointsArr = [
+            'HF' => 'Invite_points_hf',
+            'YK' => 'Invite_points_yk',
+            'MT' => 'Invite_points_mt',
+            'ZL' => 'Invite_points_zl',
+        ];
         $activityState = 0;
-        if($description!='LR'){
-            $key = $InvitePointsArr[$description];
+        if ($description != 'LR') {
+            $key = $InvitePointsArr[ $description ];
             //判断活动是否开启
-            $setValue = Setting::where('key',$key)->value('value');
-            if($setValue!=0){
-                $dateArr = explode('|',$setValue);
-                if(strtotime($dateArr[0]) < time() && time() < strtotime($dateArr[1])){
-                    $invite_uid = User::where('id',$uid)->value('invite_uid');//邀请人uid
+            $setValue = Setting::where('key', $key)->value('value');
+            if ($setValue != 0) {
+                $dateArr = explode('|', $setValue);
+                if (strtotime($dateArr[ 0 ]) < time() && time() < strtotime($dateArr[ 1 ])) {
+                    $invite_uid = User::where('id', $uid)->value('invite_uid');//邀请人uid
                     $activityState = 1;
-                }else{
+                } else {
                     $invite_uid = $order_business_uid;
                     $activityState = 0;
                 }
-            }else{
+            } else {
                 $invite_uid = $order_business_uid;
                 $activityState = 0;
             }
-        }else{
+        } else {
             $invite_uid = $order_business_uid;
             $activityState = 0;
         }
@@ -339,10 +407,8 @@ class OrderService
         //更新LK
         $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
         $business->save();
-        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单',$orderNo,$activityState,$uid);
-
+        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单', $orderNo, $activityState, $uid);
     }
-
 
 
 }
