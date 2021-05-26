@@ -143,10 +143,10 @@ class MergeNotifyController extends Controller
         $data = $request->all();
         if (!empty($data))
         {
-            Log::debug("call notify info:\r\n" . json_encode($data));
+            Log::debug("zlcall notify info:\r\n" . json_encode($data));
         } else
         {
-            Log::debug("call notify fail:参数为空");
+            Log::debug("zlcall notify fail:参数为空");
         }
 
         //数据组装
@@ -156,6 +156,14 @@ class MergeNotifyController extends Controller
         {
             //充值成功插入数据到数据库
             $recharge = new RechargeLogs();
+
+            $res = (new RechargeLogs())->exRecharges($allocateId);
+            if ($res)
+            {
+                $recharge->created_at = date("Y-m-d H:i:s");
+                $recharge->updated_at = date("Y-m-d H:i:s");
+                $recharge->save();
+            }
 
             $recharge->reorder_id = $allocateId;
             $recharge->order_no = $seqNo;
@@ -167,6 +175,7 @@ class MergeNotifyController extends Controller
 
             //添加消息通知
             (new UserMsgController())->setMsg($seqNo, 1);
+            Log::info('自营充值返回：', $res);
             return $res == 'true' ? 1 : 0;
 
         } elseif ($data['code'] == 10)

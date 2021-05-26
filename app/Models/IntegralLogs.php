@@ -35,6 +35,9 @@ class IntegralLogs extends Model
         'remark',
         'ip',
         'user_agent',
+        'order_no',
+        'activityState',
+        'consumer_uid'
     ];
     /**
      * 用户信息
@@ -52,7 +55,7 @@ class IntegralLogs extends Model
      * @param string $remark
      * @param $role
      */
-    public static function addLog($uid, $amount, $operateType, $amountBeforeChange, $role, $remark = '')
+    public static function addLog($uid, $amount, $operateType, $amountBeforeChange, $role, $remark = '',$orderNo='',$activityState=0,$consumer_uid)
     {
 
         self::create([
@@ -63,7 +66,10 @@ class IntegralLogs extends Model
             'role' => $role,
             'remark' => $remark,
             'ip' => '',
-            'user_agent' => ''
+            'user_agent' => '',
+            'order_no'=>$orderNo,
+            'activityState'=>$activityState,
+            'consumer_uid'=>$consumer_uid
         ]);
 
     }

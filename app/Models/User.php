@@ -104,8 +104,23 @@ class User extends Authenticatable
         'salt',
         'code_invite',
     ];
+    /**
+     * 附加字段
+     *
+     * @var string[]
+     */
+    protected $appends = ['avatar_url', 'sex_text'];
 
-    protected $appends = ['avatar_url'];
+    public $sex_status = [
+        '0' => '保密',
+        '1' => '男',
+        '2' => '女',
+    ];
+    /**
+     * 默认头像图片
+     *
+     * @var string[]
+     */
     public $avatar_default = [
         'https://static.catspawvideo.com/no_avatar/1.png',
         'https://static.catspawvideo.com/no_avatar/2.png',
@@ -163,6 +178,23 @@ class User extends Authenticatable
         } else {
             return env('OSS_URL') . $value;
         }
+    }
+
+    /**
+     * 性别文字获取器
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    public function getSexTextAttribute($value)
+    {
+        return $this->sex_status[ intval($this->attributes[ 'sex' ]) ];
+    }
+
+    public function getBirthAttribute($value)
+    {
+        return $value ?:'';
     }
 
     /**

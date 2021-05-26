@@ -34,7 +34,7 @@ class YuntongPayController extends Controller
         $tradeOrder = new TradeOrder();
 
         //判断支付金额
-        if (!in_array($data['money'], [50, 100, 200]) && $data['description'] == "HF")
+        if (!in_array($data['money'], [50, 100, 200]) && in_array($data['description'], ['HF', 'ZL']))
         {
             throw new LogicException('话费充值金额不在可选值范围内');
         } elseif (!in_array($data['money'], [300, 500, 1000]) && $data['description'] == "MT")
@@ -289,6 +289,9 @@ class YuntongPayController extends Controller
             case "DD":
                 $name = '滴滴';
                 break;
+            case "ZL":
+                $name = '自营';
+                break;
             default:
                 $name = '';
         }
@@ -393,6 +396,7 @@ class YuntongPayController extends Controller
     {
         switch ($type) {
             case 'HF':
+            case 'ZL':
             case 'YK':
                 $profit_ratio = 5;
                 break;

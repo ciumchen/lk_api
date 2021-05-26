@@ -24,6 +24,7 @@ class OrderService
     {
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
+        $consumer_uid = $tradeOrderInfo->user_id;
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($id);
@@ -49,10 +50,10 @@ class OrderService
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
             $customer->save();
-            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
+            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单',$orderNo,0,$consumer_uid);
 
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-            $this->addInvitePoints($order->business_uid,$order->profit_price,$tradeOrderInfo->description,$tradeOrderInfo->user_id);
+            $this->addInvitePoints($order->business_uid,$order->profit_price,$tradeOrderInfo->description,$consumer_uid,$orderNo);
 
 //            //给商家加积分，更新LK
 //            $business = User::lockForUpdate()->find($order->business_uid);
@@ -300,13 +301,15 @@ class OrderService
 
     //邀请补贴和邀请人积分添加
     //商户uid,实际让利比例，订单分类 HF YK MT,消费者uid
-    public function addInvitePoints($order_business_uid,$order_profit_price,$description,$uid){
+    public function addInvitePoints($order_business_uid,$order_profit_price,$description,$uid,$orderNo){
 //判断邀请补贴活动是否开启，如果开启就将邀请积分添加到该用户的邀请人里
         $InvitePointsArr = array(
             'HF'=>'Invite_points_hf',
             'YK'=>'Invite_points_yk',
             'MT'=>'Invite_points_mt',
+            'ZL'=>'Invite_points_zl',
         );
+        $activityState = 0;
         if($description!='LR'){
             $key = $InvitePointsArr[$description];
             //判断活动是否开启
@@ -315,14 +318,18 @@ class OrderService
                 $dateArr = explode('|',$setValue);
                 if(strtotime($dateArr[0]) < time() && time() < strtotime($dateArr[1])){
                     $invite_uid = User::where('id',$uid)->value('invite_uid');//邀请人uid
+                    $activityState = 1;
                 }else{
                     $invite_uid = $order_business_uid;
+                    $activityState = 0;
                 }
             }else{
                 $invite_uid = $order_business_uid;
+                $activityState = 0;
             }
         }else{
             $invite_uid = $order_business_uid;
+            $activityState = 0;
         }
         //给商家加积分，更新LK
         $business = User::lockForUpdate()->find($invite_uid);
@@ -332,7 +339,7 @@ class OrderService
         //更新LK
         $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
         $business->save();
-        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单',$orderNo,$activityState,$uid);
 
     }
 
