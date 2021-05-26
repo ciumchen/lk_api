@@ -396,6 +396,7 @@ class YuntongPayController extends Controller
     {
         switch ($type) {
             case 'HF':
+            case 'ZL':
             case 'YK':
                 $profit_ratio = 5;
                 break;
