@@ -364,9 +364,6 @@ class UserMessage extends Model
             }
         }
 
-        //sort函数对数组进行排序
-        sort($arr);
-
         return $arr;
     }
 }
