@@ -52,7 +52,7 @@ class IntegralLogs extends Model
      * @param string $remark
      * @param $role
      */
-    public static function addLog($uid, $amount, $operateType, $amountBeforeChange, $role, $remark = '')
+    public static function addLog($uid, $amount, $operateType, $amountBeforeChange, $role, $remark = '',$orderNo='')
     {
 
         self::create([
@@ -63,7 +63,8 @@ class IntegralLogs extends Model
             'role' => $role,
             'remark' => $remark,
             'ip' => '',
-            'user_agent' => ''
+            'user_agent' => '',
+            'order_no'=>$orderNo
         ]);
 
     }
