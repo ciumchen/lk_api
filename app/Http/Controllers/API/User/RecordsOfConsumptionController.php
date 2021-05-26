@@ -151,16 +151,36 @@ class RecordsOfConsumptionController extends Controller
         $page = $request->input('page');
         $pageSize = $request->input('pageSize',10);
 
+        //商家积分总数
         $data['business_integral'] = User::where('id',$uid)->value('business_integral');
+        $userData = User::where('invite_uid',$uid)->get()->toArray();
+        foreach ($userData as $k=>$v){
+//            dd($v);
+            $userArr[$v['id']]=$v['phone'];
+        }
 
-        $data['jls'] = (new IntegralLogs())
+        $operate_type = array(
+            'spend'=>'消费订单完成',
+            'rebate'=>'分红扣除积分',
+        );
+        $reData = (new IntegralLogs())
             ->where("uid", $uid)
             ->where('role', 2)
+            ->with(['user'])
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, $pageSize)
-            ->get(['operate_type','amount','updated_at'])->append(['updated_date']);
+            ->get()->append(['updated_date'])->toArray();
+//dd($reData);
+        foreach ($reData as $k=>$v){
+            $data['jls'][$v['uid']]['operate_type'] = $operate_type[$v['operate_type']];
+            $data['jls'][$v['uid']]['amount'] = $v['amount'];
+            $data['jls'][$v['uid']]['phone'] = $v['user']['phone'];
+            $data['jls'][$v['uid']]['updated_date'] = $v['updated_date'];
 
+        }
+
+//        dd($data);
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
     }
 
