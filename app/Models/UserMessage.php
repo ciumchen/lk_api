@@ -220,9 +220,47 @@ class UserMessage extends Model
         (new UserMessage())
             ->where(function($query) use ($uid){
             $query->where('user_id', $uid)
-                ->where('deleted_at', null);
+                ->where('deleted_at', null)
+                ->whereIn('type', [1, 2]);
         })
         ->delete();
+    }
+
+    /**获取系统消息小红点
+     * @param int $uid
+     * @return mixed
+     * @throws
+     */
+    public function getSysReddot(int $uid)
+    {
+        $res = (new UserMessage())::where(['user_id' => $uid, 'type' => 8])->exists();
+        /*if (!$res)
+        {
+            throw new LogicException('用户消息不存在');
+        }*/
+
+        return (new UserMessage())::where(['user_id' => $uid, 'type' => 8, 'deleted_at' => null])->exists();
+    }
+
+    /**删除系统消息小红点
+     * @param int $uid
+     * @throws
+     */
+    public function delSysReddot(int $uid)
+    {
+        $res = (new UserMessage())::where(['user_id' => $uid, 'type' => 8])->exists();
+        /*if (!$res)
+        {
+            throw new LogicException('用户消息不存在');
+        }*/
+
+        (new UserMessage())
+            ->where(function($query) use ($uid){
+                $query->where('user_id', $uid)
+                    ->where('type', 8)
+                    ->where('deleted_at', null);
+            })
+            ->delete();
     }
 
     /**删除单条消息
