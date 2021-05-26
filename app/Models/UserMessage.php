@@ -203,7 +203,11 @@ class UserMessage extends Model
         $length = $perpage;
 
         //返回
-        return array_slice($msgList, $start, $length);
+        $msgRes = array_slice($msgList, $start, $length);
+        if (!$msgRes)
+        {
+            return json_encode(['code' => 10000, 'msg' => '暂无系统消息']);
+        }
     }
 
     /**获取消息小红点
