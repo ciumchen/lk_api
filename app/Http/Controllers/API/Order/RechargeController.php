@@ -133,7 +133,7 @@ class RechargeController extends Controller
         $url = 'http://cz.sklos.cn/api/allocateAction';
 
         //回调地址
-        $callback = 'http://tao.catspawvideo.com/api/get-call-defray';
+        $callback = 'https://ceshi.catspawvideo.com/api/get-call-defray';
 
         //组装请求数据
         $mobile = $data['numeric'];
