@@ -54,6 +54,9 @@ class UserResources extends JsonResource
             'share_url'         => $share_url . " 邀请注册，获得更多奖励",
             'invite_uid'        => $this->invite_uid,
             'invite_phone'      => $this->inviteUserData->phone,
+            'sex'               => $this->sex,
+            'sex_text'          => $this->sex_text,
+            'birth'             => $this->birth,
             'qrcode'            => $qrcode_url,
         ];
     }
