@@ -13,6 +13,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //删除消息小红点
     Route::any('del-reddot', 'Message\UserMsgController@delReddot');
 
+    //获取系统消息小红点
+    Route::any('get-sys-reddot', 'Message\UserMsgController@getSysReddot');
+
+    //删除系统消息小红点
+    Route::any('del-sys-reddot', 'Message\UserMsgController@delSysReddot');
+
     //删除消息
     Route::get('del-msg', 'Message\UserMsgController@delMsg');
 
