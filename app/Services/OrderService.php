@@ -49,10 +49,10 @@ class OrderService
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
             $customer->save();
-            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单',$orderNo);
+            //IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单',$orderNo);
 
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-            $this->addInvitePoints($order->business_uid,$order->profit_price,$tradeOrderInfo->description,$tradeOrderInfo->user_id,$orderNo);
+            //$this->addInvitePoints($order->business_uid,$order->profit_price,$tradeOrderInfo->description,$tradeOrderInfo->user_id,$orderNo);
 
 //            //给商家加积分，更新LK
 //            $business = User::lockForUpdate()->find($order->business_uid);
