@@ -9,6 +9,11 @@ class IntegralLogs extends Model
     protected $table = 'integral_log';
     const TYPE_SPEND = 'spend';
     const TYPE_REBATE = 'rebate';
+
+    protected $appends = ['updated_date'];
+
+
+
     public static $typeLabel = [
         'consumption' => '消费增加',
         'Jangli' => '让利增加',
@@ -30,6 +35,9 @@ class IntegralLogs extends Model
         'remark',
         'ip',
         'user_agent',
+        'order_no',
+        'activityState',
+        'consumer_uid'
     ];
     /**
      * 用户信息
@@ -47,7 +55,7 @@ class IntegralLogs extends Model
      * @param string $remark
      * @param $role
      */
-    public static function addLog($uid, $amount, $operateType, $amountBeforeChange, $role, $remark = '')
+    public static function addLog($uid, $amount, $operateType, $amountBeforeChange, $role, $remark = '',$orderNo='',$activityState=0,$consumer_uid)
     {
 
         self::create([
@@ -58,9 +66,18 @@ class IntegralLogs extends Model
             'role' => $role,
             'remark' => $remark,
             'ip' => '',
-            'user_agent' => ''
+            'user_agent' => '',
+            'order_no'=>$orderNo,
+            'activityState'=>$activityState,
+            'consumer_uid'=>$consumer_uid
         ]);
 
+    }
+
+    public function getUpdatedDateAttribute($value)
+    {
+//        dd($value);
+        return date("Y-m-d H:i:s",strtotime($this->attributes['updated_at']));
     }
 
 }
