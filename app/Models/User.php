@@ -225,7 +225,7 @@ class User extends Authenticatable
 //    : bool
     {
         $password = encrypt_password($this->phone, $password, $this->salt);
-        return $password;
+        return [$this->phone, $password, $this->salt];
         return Password::where('password', $password)->exists();
     }
 
