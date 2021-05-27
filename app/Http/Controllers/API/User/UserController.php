@@ -333,6 +333,10 @@ class UserController extends Controller
         $password = $request->input('password');
         $new_password = $request->input('new_password');
         $confirm_password = $request->input('confirm_password');
+        return response()->json(['password'         => $password,
+                                 'new_password'     => $new_password,
+                                 'confirm_password' => $confirm_password,
+        ]);
         if ($new_password != $confirm_password) {
             throw new LogicException('两次输入密码不一致');
         }
