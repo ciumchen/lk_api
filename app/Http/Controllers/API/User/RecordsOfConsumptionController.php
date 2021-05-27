@@ -190,20 +190,30 @@ class RecordsOfConsumptionController extends Controller
             'spend'=>'消费订单完成',
             'rebate'=>'分红扣除积分',
         );
+        $descriptionArr = array(
+            'HF'=>'话费',
+            'YK'=>'油卡',
+            'MT'=>'美团',
+            'ZL'=>'代充',
+        );
         foreach ($integralData as $k=>$v){
             if (!empty($v)){
                 foreach ($v as $k2=>$v2){
-                    $data['jls'][$v2['id']]['operate_type'] = $operate_type[$v2['operate_type']];
-                    $data['jls'][$v2['id']]['amount'] = $v2['amount'];
-                    $data['jls'][$v2['id']]['phone'] = $v2['user']['phone'];
-                    $data['jls'][$v2['id']]['updated_date'] = $v2['updated_date'];
+                    $data1[strtotime($v2['updated_date'])]['operate_type'] = $operate_type[$v2['operate_type']];
+                    $data1[strtotime($v2['updated_date'])]['amount'] = $v2['amount'];
+                    $data1[strtotime($v2['updated_date'])]['description'] = $descriptionArr[$v2['description']];
+                    $data1[strtotime($v2['updated_date'])]['phone'] = $v2['user']['phone'];
+                    $data1[strtotime($v2['updated_date'])]['updated_date'] = $v2['updated_date'];
+                    $data1[strtotime($v2['updated_date'])]['item'] = strtotime($v2['updated_date']);
 
                 }
 
             }
         }
 
-//        dd($data);
+        array_multisort(array_column($data1, 'item'), SORT_DESC, $data1);
+        $data['jls'] =$data1;
+//            dd($data['jls']);
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
     }
 
