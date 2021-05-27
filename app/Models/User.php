@@ -222,7 +222,7 @@ class User extends Authenticatable
      * @return bool
      */
     public function verifyPassword(string $password)
-    : bool
+//    : bool
     {
         $password = encrypt_password($this->phone, $password, $this->salt);
         return $password;
