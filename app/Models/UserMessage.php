@@ -228,7 +228,7 @@ class UserMessage extends Model
             throw new LogicException('用户消息不存在');
         }*/
 
-        return (new UserMessage())::where(['user_id' => $uid, 'deleted_at' => null])->exists();
+        return (new UserMessage())::where(['user_id' => $uid, 'deleted_at' => null, 'is_del' => 0])->exists();
     }
 
     /**删除消息小红点
@@ -265,7 +265,7 @@ class UserMessage extends Model
             throw new LogicException('用户消息不存在');
         }*/
 
-        return (new UserMessage())::where(['user_id' => $uid, 'type' => 8, 'deleted_at' => null])->exists();
+        return (new UserMessage())::where(['user_id' => $uid, 'type' => 8, 'deleted_at' => null, 'is_del' => 0])->exists();
     }
 
     /**删除系统消息小红点
