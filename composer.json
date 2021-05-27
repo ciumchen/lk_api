@@ -45,7 +45,8 @@
     },
     "autoload": {
         "files": [
-            "app/helpers.php"
+            "app/helpers.php",
+            "app/Libs/BmApi/autoload.php"
         ],
         "psr-4": {
             "App\\": "app/",
