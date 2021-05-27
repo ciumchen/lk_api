@@ -22,7 +22,7 @@ class OrderService
      *
      * @return mixed
      */
-    public function completeOrder(string $orderNo)
+    public function completeOrder1(string $orderNo)
     {
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
@@ -75,7 +75,7 @@ class OrderService
      *
      * @return mixed
      */
-    public function completeOrder1(string $orderNo)
+    public function completeOrder(string $orderNo)
     {
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
