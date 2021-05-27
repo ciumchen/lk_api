@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API\User;
 use App\Http\Controllers\Controller;
 use App\Models\AssetsLogs;
 use App\Models\FreezeLogs;
+use App\Models\IntegralLog;
 use App\Models\IntegralLogs;
 use App\Models\Order;
+use App\Models\RecordsOfConsumption;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -153,31 +156,51 @@ class RecordsOfConsumptionController extends Controller
 
         //商家积分总数
         $data['business_integral'] = User::where('id',$uid)->value('business_integral');
-        $userData = User::where('invite_uid',$uid)->get()->toArray();
-        foreach ($userData as $k=>$v){
-//            dd($v);
-            $userArr[$v['id']]=$v['phone'];
+
+
+        $InvitePointsArr = [
+            'HF' => 'Invite_points_hf',
+            'YK' => 'Invite_points_yk',
+            'MT' => 'Invite_points_mt',
+            'ZL' => 'Invite_points_zl',
+        ];
+
+        foreach ($InvitePointsArr as $k=>$v){
+            $value = Setting::where('key', $v)->value('value');
+                if ($value != 0) {
+                    $dateArr = explode('|', $value);
+                    $integralData[$k]=RecordsOfConsumption::where('updated_at','>',$dateArr[0])
+                        ->where('updated_at','<',$dateArr[1])
+                        ->where("uid", $uid)
+                        ->where('description',$k)
+                        ->with(['user'])
+                        ->orderBy('id', 'desc')
+                        ->latest('id')
+                        ->forPage($page, $pageSize)
+                        ->get()
+                        ->append(['updated_date'])
+                        ->toArray();
+
+                }
+
         }
 
+//dd($integralData);
         $operate_type = array(
             'spend'=>'消费订单完成',
             'rebate'=>'分红扣除积分',
         );
-        $reData = (new IntegralLogs())
-            ->where("uid", $uid)
-            ->where('role', 2)
-            ->with(['user'])
-            ->orderBy('id', 'desc')
-            ->latest('id')
-            ->forPage($page, $pageSize)
-            ->get()->append(['updated_date'])->toArray();
-//dd($reData);
-        foreach ($reData as $k=>$v){
-            $data['jls'][$v['uid']]['operate_type'] = $operate_type[$v['operate_type']];
-            $data['jls'][$v['uid']]['amount'] = $v['amount'];
-            $data['jls'][$v['uid']]['phone'] = $v['user']['phone'];
-            $data['jls'][$v['uid']]['updated_date'] = $v['updated_date'];
+        foreach ($integralData as $k=>$v){
+            if (!empty($v)){
+                foreach ($v as $k2=>$v2){
+                    $data['jls'][$v2['id']]['operate_type'] = $operate_type[$v2['operate_type']];
+                    $data['jls'][$v2['id']]['amount'] = $v2['amount'];
+                    $data['jls'][$v2['id']]['phone'] = $v2['user']['phone'];
+                    $data['jls'][$v2['id']]['updated_date'] = $v2['updated_date'];
 
+                }
+
+            }
         }
 
 //        dd($data);
