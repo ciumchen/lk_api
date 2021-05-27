@@ -343,7 +343,7 @@ class UserController extends Controller
         $user = $request->user();
 //        echo json_encode($user);
 //        exit;
-//        return response()->json($user);
+        return response()->json($user);
         if ($user->verifyPassword($password) == false) {
             throw new LogicException('原密码错误');
         }
