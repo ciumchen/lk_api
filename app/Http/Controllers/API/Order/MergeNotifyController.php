@@ -175,7 +175,6 @@ class MergeNotifyController extends Controller
 
             //添加消息通知
             (new UserMsgController())->setMsg($seqNo, 1);
-            Log::info('自营充值返回：', $res);
             return $res == 'true' ? 1 : 0;
 
         } elseif ($data['code'] == 10)
