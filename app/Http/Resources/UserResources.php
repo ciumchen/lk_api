@@ -47,6 +47,7 @@ class UserResources extends JsonResource
             'business_integral' => format_decimal($this->business_integral),
             'integral'          => rtrim_zero(format_decimal($this->integral)),
             'return_integral'   => rtrim_zero(format_decimal(bcadd($this->return_integral, $this->return_business_integral, 8))),
+            'return_business_integral'   => rtrim_zero(format_decimal($this->return_business_integral)),
             'my_spent'          => rtrim_zero(format_decimal($mySpent)),
             'amount'            => rtrim_zero($balance->amount ?? 0),
             'encourage'         => rtrim_zero($encourage->amount ?? 0),
