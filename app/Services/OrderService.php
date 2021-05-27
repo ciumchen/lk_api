@@ -80,6 +80,7 @@ class OrderService
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
         $consumer_uid = $tradeOrderInfo->user_id;
+        $description = $tradeOrderInfo->description;
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($id);
@@ -104,9 +105,9 @@ class OrderService
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
             $customer->save();
-            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid);
+            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid,$description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-            $this->addInvitePoints($order->business_uid, $order->profit_price, $tradeOrderInfo->description, $consumer_uid, $orderNo);
+            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
 //            //给商家加积分，更新LK
 //            $business = User::lockForUpdate()->find($order->business_uid);
 //            $amountBeforeChange = $business->business_integral;
@@ -407,7 +408,7 @@ class OrderService
         //更新LK
         $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
         $business->save();
-        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单', $orderNo, $activityState, $uid);
+        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单', $orderNo, $activityState, $uid,$description);
     }
 
 
