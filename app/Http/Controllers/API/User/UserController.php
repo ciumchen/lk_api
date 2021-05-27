@@ -337,7 +337,6 @@ class UserController extends Controller
             throw new LogicException('两次输入密码不一致');
         }
         $user = $request->user();
-        return response()->json([$user->verifyPassword($password)]);
         if ($user->verifyPassword($password) == false) {
             throw new LogicException('原密码错误');
         }
