@@ -290,7 +290,7 @@ class YuntongPayController extends Controller
                 $name = '滴滴';
                 break;
             case "ZL":
-                $name = '自营';
+                $name = '代充';
                 break;
             default:
                 $name = '';
