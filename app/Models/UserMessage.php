@@ -168,7 +168,7 @@ class UserMessage extends Model
      */
     public function getSysMsg(int $uid, int $page, int $perpage)
     {
-        $res = (new UserMessage())::withTrashed()->where('user_id', $uid)->exists();
+        $res = (new UserMessage())::withTrashed()->where(['user_id' => $uid, 'is_del' => 0])->exists();
         if (!$res)
         {
             throw new LogicException('用户消息不存在');
@@ -222,12 +222,6 @@ class UserMessage extends Model
      */
     public function getReddot(int $uid)
     {
-        $res = (new UserMessage())::where('user_id', $uid)->exists();
-        /*if (!$res)
-        {
-            throw new LogicException('用户消息不存在');
-        }*/
-
         return (new UserMessage())::where(['user_id' => $uid, 'deleted_at' => null, 'is_del' => 0])->exists();
     }
 
@@ -237,12 +231,6 @@ class UserMessage extends Model
      */
     public function delReddot(int $uid)
     {
-        $res = (new UserMessage())::where('user_id', $uid)->exists();
-        /*if (!$res)
-        {
-            throw new LogicException('用户消息不存在');
-        }*/
-
         (new UserMessage())
             ->where(function($query) use ($uid){
             $query->where('user_id', $uid)
@@ -259,12 +247,6 @@ class UserMessage extends Model
      */
     public function getSysReddot(int $uid)
     {
-        $res = (new UserMessage())::where(['user_id' => $uid, 'type' => 8])->exists();
-        /*if (!$res)
-        {
-            throw new LogicException('用户消息不存在');
-        }*/
-
         return (new UserMessage())::where(['user_id' => $uid, 'type' => 8, 'deleted_at' => null, 'is_del' => 0])->exists();
     }
 
@@ -274,12 +256,6 @@ class UserMessage extends Model
      */
     public function delSysReddot(int $uid)
     {
-        $res = (new UserMessage())::where(['user_id' => $uid, 'type' => 8])->exists();
-        /*if (!$res)
-        {
-            throw new LogicException('用户消息不存在');
-        }*/
-
         (new UserMessage())
             ->where(function($query) use ($uid){
                 $query->where('user_id', $uid)
