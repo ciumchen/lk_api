@@ -194,7 +194,7 @@ class User extends Authenticatable
 
     public function getBirthAttribute($value)
     {
-        return $value ?:'';
+        return $value ?: '';
     }
 
     /**
@@ -224,8 +224,9 @@ class User extends Authenticatable
     public function verifyPassword(string $password)
 //    : bool
     {
+        $oldpass = $password;
         $password = encrypt_password($this->phone, $password, $this->salt);
-        return [$this->phone, $password, $this->salt];
+        return [$this->phone, $password, $this->salt, $oldpass];
         return Password::where('password', $password)->exists();
     }
 
