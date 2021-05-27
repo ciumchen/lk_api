@@ -167,7 +167,7 @@ class RecordsOfConsumptionController extends Controller
 
         foreach ($InvitePointsArr as $k=>$v){
             $value = Setting::where('key', $v)->value('value');
-                if ($value != 0) {
+                if ($value != 0 && strstr($value,'|') != false) {
                     $dateArr = explode('|', $value);
                     $integralData[$k]=RecordsOfConsumption::where('updated_at','>',$dateArr[0])
                         ->where('updated_at','<',$dateArr[1])

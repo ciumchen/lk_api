@@ -383,7 +383,7 @@ class OrderService
             $key = $InvitePointsArr[ $description ];
             //判断活动是否开启
             $setValue = Setting::where('key', $key)->value('value');
-            if ($setValue != 0) {
+            if ($setValue != 0 && strstr($setValue,'|') != false) {
                 $dateArr = explode('|', $setValue);
                 if (strtotime($dateArr[ 0 ]) < time() && time() < strtotime($dateArr[ 1 ])) {
                     $invite_uid = User::where('id', $uid)->value('invite_uid');//邀请人uid
