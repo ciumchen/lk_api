@@ -4,7 +4,7 @@
 Route::middleware(['auth:sanctum'])->group(function () {
     //申请商家
     Route::post('apply-business', 'User\UserController@applyBusiness');
-
+    Route::get('get-business', 'Business\BusinessController@getBusiness');
 
     //获取商家可修改信息
     Route::get('get-business-data', 'Business\BusinessController@getBusinessData');
@@ -14,4 +14,3 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 });
-Route::get('get-business', 'Business\BusinessController@getBusiness');
