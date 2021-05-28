@@ -9,6 +9,8 @@ use Exception;
 class ApiRequest
 {
 
+    const API_HOST = '';
+//    const API_HOST = '';
     /**
      * APP_KEY
      * 注册之后从斑马力方客服处获取

@@ -6,20 +6,21 @@ class Request
 {
 
     /**
-     * @param $url
+     * @param       $url
      * @param array $data
-     * @param bool $SSLStatus
+     * @param bool  $SSLStatus
+     *
      * @return bool|string
      * @throws \Exception
      */
-    static public function PostRequest($url, $data = [], $SSLStatus = false)
+    public static function PostRequest($url, $data = [], $SSLStatus = false)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if ($SSLStatus) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         }
         // POST数据
         curl_setopt($ch, CURLOPT_POST, 1);
