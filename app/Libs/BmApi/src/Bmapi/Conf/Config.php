@@ -1,14 +1,14 @@
 <?php
 
-namespace Bmapi\conf;
+namespace Bmapi\Conf;
 
-use Bmapi\interfaces\ConfigInterface;
+use Bmapi\Interfaces\ConfigInterface;
 
 /**
  * 斑马力方 接口配置文档
  * Class Config
  *
- * @package App\Libs\Bmapi\conf
+ * @package Bmapi\Conf
  */
 class Config implements ConfigInterface
 {
@@ -19,16 +19,31 @@ class Config implements ConfigInterface
 
     const ACCESS_TOKEN = '2dd520ba581a4db5a3fcbd074e19d618';
 
+    /**
+     * 获取 APP_KEY
+     *
+     * @return string
+     */
     public function getAppKey()
     {
         return self::APP_KEY;
     }
 
+    /**
+     * 获取 ACCESS_TOKEN
+     *
+     * @return string
+     */
     public function getAccessToken()
     {
         return self::ACCESS_TOKEN;
     }
 
+    /**
+     * 获取 APP_SECRET
+     *
+     * @return string
+     */
     public function getAppSecret()
     {
         return self::APP_SECRET;
