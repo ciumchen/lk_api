@@ -379,7 +379,7 @@ class OrderService
             'ZL' => 'Invite_points_zl',
         ];
         $activityState = 0;
-        if ($description != 'LR') {
+        if ($description != 'LR' && isset($InvitePointsArr[$description])) {
             $key = $InvitePointsArr[ $description ];
             //判断活动是否开启
             $setValue = Setting::where('key', $key)->value('value');

@@ -233,7 +233,7 @@ class UserController extends Controller
             if (empty($sign)) {
                 throw  new LogicException('请填写签名文字');
             }
-            if (strlen($sign) > 50) {
+            if (mb_strlen($sign) > 50) {
                 throw new LogicException('签名不能超过50个字符');
             }
             $user->sign = $sign;
@@ -264,7 +264,7 @@ class UserController extends Controller
             if (!preg_match($reg, $real_name)) {
                 throw new LogicException('姓名只能输入中文和 · ');
             }
-            if (strlen($real_name) > 50) {
+            if (mb_strlen($real_name) > 50) {
                 throw new LogicException('姓名不能超过30个字符');
             }
             $user->real_name = $real_name;
