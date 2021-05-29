@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\Test;
 
 use App\Http\Controllers\Controller;
 use Bmapi\Api\UtilityBill\ItemList;
+use Bmapi\Api\UtilityBill\ItemPropsList;
 use Bmapi\Conf\Config;
 use Bmapi\Core\Aes;
 use Bmapi\Core\Sign;
@@ -20,59 +21,115 @@ class BmApiController extends Controller
 {
     
     /**
+     * 水电煤商品列表查询测试
+     *
      * @throws \Exception
      */
     public function index()
     {
-//        $BmConfig = new Config();
-//        $res = $BmConfig->getAccessToken();
-//        $res1 = $BmConfig->getAppKey();
-//        $res2 = $BmConfig->getAppSecret();
-//        dump($res);
-//        dump($res1);
-//        dump($res2);
-//        $ApiRequest = new ApiRequest();
-//        dump($ApiRequest);
-//        $AES = new Aes();
-//        $key = '111111111111111111111111111';
-//        $str = $AES::encrypt('222', $key);
-//        dump($str);
-//        $str2 = $AES::decrypt($str, $key);
-//        dump($str2);
-//        $Sign = Sign::generateSign(['123', '123', '123', '123', '123', '123', '123'], 'sdasdd');
-//        dump($Sign);
-//        $check = (new Sign())->checkSign(['123',
-//                                          '123',
-//                                          '123',
-//                                          '123',
-//                                          '123',
-//                                          '123',
-//                                          '123',
-//                                          'sign' => '3119C5B37A09C5666615EF85912370262D33FD01',
-//        ], 'sdasdd');
-//        dump($check);
-//        dump(date_default_timezone_get());
-//        dump(date('Y-m-d H:m:i'));
         $ItemList = new ItemList();
-        $res = $ItemList->setPageNo(0)
-                        ->setPageSize(8)
-                        ->setCity('深圳')
-                        ->postParams()
-                        ->getResult();
-//        dump($ItemList->apiParams());
-        dump($res);
-        dump(microtime());
-        dump($this->msectime());
+        $ItemList->setPageNo(0)
+                 ->setPageSize(8)
+                 ->setCity('深圳')
+                 ->postParams()
+                 ->getResult();
+        $res = $ItemList->getList();
+        return response()->json($res);
+        /*
+        [
+            {
+                "itemId": "6434001",
+                "itemName": "广东深圳 深圳供电局 电费户号 直充任意充",
+                "inPrice": 1
+            },
+            {
+                "itemId": "6420401",
+                "itemName": "广东深圳_深圳市燃气集团股份有限公司_燃气费_户号_直充任意充",
+                "inPrice": 1
+            },
+            {
+                "itemId": "64642401",
+                "itemName": "广东深圳_深圳水务集团_水费户号_任意充直充",
+                "inPrice": 1
+            }
+        ]
+        */
     }
     
     /**
-     * 当前毫秒数时间戳
-     *
-     * @return float
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
-    public static function msectime()
+    public function goodsAttrList()
     {
-        [$usec, $sec] = explode(' ', microtime());
-        return (float)sprintf('%.0f', (floatval($usec) + floatval($sec)) * 1000);
+        $ItemPropsList = new ItemPropsList();
+        try {
+            $ItemPropsList->setItemId(6420401)
+                          ->getResult();
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        $res = $ItemPropsList->getList();
+        return response()->json($res);
+        /*
+        [
+            {
+                "vid": "v0",
+                "typeDesc": "充值方式",
+                "vname": "直充",
+                "type": "CHARGETYPE",
+                "vkey": "1"
+            },
+            {
+                "vid": "v2228",
+                "typeDesc": "省",
+                "vname": "广东",
+                "type": "PRVCIN",
+                "vkey": "广东"
+            },
+            {
+                "vid": "v2620",
+                "typeDesc": "缴费方式",
+                "vname": "户号",
+                "type": "SPECIAL",
+                "vkey": "户号"
+            },
+            {
+                "vid": "v2235",
+                "typeDesc": "市",
+                "vname": "深圳",
+                "type": "CITYIN",
+                "vkey": "深圳"
+            },
+            {
+                "vid": "v88008",
+                "typeDesc": "缴费单位",
+                "vname": "深圳市燃气集团股份有限公司",
+                "type": "BRAND",
+                "vkey": "深圳市燃气集团股份有限公司"
+            },
+            {
+                "vid": "v2574",
+                "typeDesc": "充值模板:",
+                "vname": "公共事业类 水电煤直充模板",
+                "type": "TPLID",
+                "vkey": "00040003"
+            },
+            {
+                "vid": "v2478",
+                "typeDesc": "充值类型:",
+                "vname": "公用事业充值缴费",
+                "type": "CARDTYPE",
+                "vkey": "64"
+            },
+            {
+                "vid": "v21",
+                "typeDesc": "面值:",
+                "vname": "任意充",
+                "type": "FACEVALUE",
+                "vkey": "1"
+            }
+        ]
+        */
     }
 }

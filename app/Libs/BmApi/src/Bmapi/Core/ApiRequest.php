@@ -75,11 +75,14 @@ class ApiRequest implements RequestInterface
     protected $allPostParams = [];
     
     /**
-     * API接口名称
-     *
-     * @var
+     * @var string API接口名称
      */
     protected $method;
+    
+    /**
+     * @var mixed 接口返回结果
+     */
+    protected $result;
     
     /**
      * ApiRequest constructor.
@@ -150,6 +153,19 @@ class ApiRequest implements RequestInterface
     }
     
     /**
+     * 解析返回结果
+     *
+     * @return mixed|null
+     */
+    public function fetchResult()
+    {
+        if (empty($this->result)) {
+            return null;
+        }
+        return $this->result;
+    }
+    
+    /**
      * 获取返回结果
      *
      * @return bool|string
@@ -157,8 +173,14 @@ class ApiRequest implements RequestInterface
      */
     public function getResult()
     {
+        if (empty($this->allPostParams)) {
+            $this->postParams();
+        }
         $url = $this->generateRequestUrl($this->allPostParams);
-        return self::postRequest($url, $this->allPostParams);
+        $result = self::postRequest($url, $this->allPostParams);
+        $this->result = $result;
+        $this->fetchResult();
+        return $result;
     }
     
     /**
