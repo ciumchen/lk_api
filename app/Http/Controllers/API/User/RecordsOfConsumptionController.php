@@ -172,6 +172,7 @@ class RecordsOfConsumptionController extends Controller
                     $integralData[$k]=RecordsOfConsumption::where('updated_at','>',$dateArr[0])
                         ->where('updated_at','<',$dateArr[1])
                         ->where("uid", $uid)
+                        ->where("consumer_uid",'!=', $uid)
                         ->where('description',$k)
                         ->with(['user'])
                         ->orderBy('id', 'desc')
