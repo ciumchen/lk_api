@@ -24,8 +24,8 @@ interface RequestInterface
     /**
      * 组装推送参数
      *
-     * @return array
+     * @return $this
      */
     public function postParams()
-    : array;
+    : object;
 }

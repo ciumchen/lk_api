@@ -10,17 +10,22 @@ use Exception;
 
 class ApiRequest implements RequestInterface
 {
-
+    
     /**
      * 请求地址:
      * 正式环境:
      * HTTP请求地址:http://api.bm001.com/api
      * HTTPS请求地址:https://api.bm001.com/api
      *
+     * 测试环境:
+     * http://test.api.bm001.com/api
+     *
      */
 //    const API_HOST = 'https://api.bm001.com/api';
     const API_HOST = 'http://api.bm001.com/api';
 
+//    const API_HOST = 'http://test.api.bm001.com/api';
+    
     /**
      * 注册之后从斑马力方客服处获取
      * 在 [Bmapi\conf\Config] 中配置
@@ -28,7 +33,7 @@ class ApiRequest implements RequestInterface
      * @var string APP_KEY
      */
     protected $app_key;
-
+    
     /**
      * 注册之后从斑马力方客服处获取
      * 在 [Bmapi\Conf\Config] 中配置
@@ -36,7 +41,7 @@ class ApiRequest implements RequestInterface
      * @var string APP_SECRET
      */
     protected $app_secret;
-
+    
     /**
      * 登录 [http://sale.bm001.com/]
      * 从 [http://sale.bm001.com/testtool/index] 页面获取
@@ -46,33 +51,36 @@ class ApiRequest implements RequestInterface
      * @var string 授权 Token
      */
     protected $access_token;
-
+    
     /**
      * @var \Bmapi\Conf\Config 配置文件
      */
     protected $config;
-
+    
     /**
      * 接口版本
      *
      * @var string
      */
     protected $version = '1.1';
-
+    
     /**
      * @var string 请求数据格式
      */
     protected $format = 'json';
-
-
+    
+    /**
+     * @var array POST需要推送的所有参数
+     */
+    protected $allPostParams = [];
+    
     /**
      * API接口名称
      *
      * @var
      */
     protected $method;
-
-
+    
     /**
      * ApiRequest constructor.
      *
@@ -87,8 +95,16 @@ class ApiRequest implements RequestInterface
         $this->app_key = $config->getAppKey();
         $this->app_secret = $config->getAppSecret();
         $this->access_token = $config->getAccessToken();
+        $this->init();
     }
-
+    
+    /**
+     * 用于子类初始化
+     */
+    public function init()
+    {
+    }
+    
     /**
      * 公共参数
      *
@@ -103,10 +119,10 @@ class ApiRequest implements RequestInterface
         $common_params[ 'method' ] = $this->method;
         $common_params[ 'v' ] = $this->version;
         $common_params[ 'access_token' ] = $this->access_token;
-        $common_params[ 'timestamp' ] = date('Y-m-d H:m:i');
+        $common_params[ 'timestamp' ] = self::msectime();
         return $common_params;
     }
-
+    
     /**
      * 接口业务参数
      *
@@ -117,21 +133,61 @@ class ApiRequest implements RequestInterface
     {
         return [];
     }
-
+    
     /**
      * 组装推送参数
      *
-     * @return array
+     * @return \Bmapi\core\ApiRequest
      * @throws \Exception
      */
     public function postParams()
-    : array
+    : object
     {
         $data = array_merge($this->commonParams(), $this->apiParams());
         $data[ 'sign' ] = Sign::generateSign($data, $this->app_secret);
-        return $data;
+        $this->allPostParams = $data;
+        return $this;
     }
-
+    
+    /**
+     * 获取返回结果
+     *
+     * @return bool|string
+     * @throws \Exception
+     */
+    public function getResult()
+    {
+        $url = $this->generateRequestUrl($this->allPostParams);
+        return self::postRequest($url, $this->allPostParams);
+    }
+    
+    /**
+     * 生成请求带参数链接
+     *
+     * @param array $data
+     *
+     * @return string
+     */
+    public function generateRequestUrl(array $data)
+    {
+        $url = self::API_HOST . '?';
+        foreach ($data as $key => $val) {
+            $url .= "$key=" . urlencode($val) . "&";
+        }
+        return rtrim($url, "&");
+    }
+    
+    /**
+     * 当前毫秒数时间戳
+     *
+     * @return float
+     */
+    public static function msectime()
+    {
+        [$usec, $sec] = explode(' ', microtime());
+        return (float)sprintf('%.0f', (floatval($usec) + floatval($sec)) * 1000);
+    }
+    
     /**
      * 发起 post 请求
      *
@@ -169,6 +225,4 @@ class ApiRequest implements RequestInterface
         curl_close($ch);
         return $output;
     }
-
-
 }
