@@ -88,6 +88,8 @@ class ItemList extends ApiRequest
     private $totalCount = 0;
     
     /**
+     * 接口业务参数
+     *
      * @return array
      */
     public function apiParams()

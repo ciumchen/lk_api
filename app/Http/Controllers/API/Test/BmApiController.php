@@ -132,4 +132,8 @@ class BmApiController extends Controller
         ]
         */
     }
+    
+    public function getInfo()
+    {
+    }
 }
