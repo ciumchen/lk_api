@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Business;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BusinessDataResources;
+use App\Models\User;
 use Illuminate\Support\Facades\Redis;
 use App\Models\BusinessData;
 use PDOException;
@@ -97,6 +98,23 @@ class GetBusinessController extends Controller
             ->get();
 
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
+
+    }
+
+    //获取用户的商家积分和已返回商家积分
+    public function getUserJf(Request $request){
+        $uid = $request->input('uid');
+        $userInfo = User::where('id',$uid)->first();
+        if($userInfo){
+            $data['uid']= $userInfo->id;
+            $data['business_integral']= $userInfo->business_integral;
+            $data['return_business_integral']= $userInfo->return_business_integral;
+            $data['business_lk']= $userInfo->business_lk;
+            return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+        }else{
+            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => '']);
+        }
+
 
     }
 

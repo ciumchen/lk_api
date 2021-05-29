@@ -23,6 +23,9 @@ Route::any("getStarBusinessList","Business\GetBusinessController@getStarBusiness
 //获取所有商户列表-商家页-分类筛选搜索
 Route::any("getAllBusinessList","Business\GetBusinessController@getAllBusinessList");
 
+//获取用户的商家积分和已返回商家积分
+Route::any("getUserJf","Business\GetBusinessController@getUserJf");
+
 
 
 
