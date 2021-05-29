@@ -109,6 +109,7 @@ class GetBusinessController extends Controller
             $data['uid']= $userInfo->id;
             $data['business_integral']= $userInfo->business_integral;
             $data['return_business_integral']= $userInfo->return_business_integral;
+            $data['business_lk']= $userInfo->business_lk;
             return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
         }else{
             return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => '']);
