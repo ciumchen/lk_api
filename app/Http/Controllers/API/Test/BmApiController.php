@@ -9,6 +9,9 @@ use Bmapi\Core\Aes;
 use Bmapi\Core\Sign;
 use Bmapi\Core\ApiRequest;
 use Illuminate\Http\Request;
+use Bmapi\Api\Air\StationsList;
+use Bmapi\Api\Air\ItemsList;
+use Bmapi\Api\Air\LinesList;
 
 /**
  * 斑马力方接口测试
@@ -18,7 +21,7 @@ use Illuminate\Http\Request;
  */
 class BmApiController extends Controller
 {
-    
+
     /**
      * @throws \Exception
      */
@@ -64,7 +67,7 @@ class BmApiController extends Controller
         dump(microtime());
         dump($this->msectime());
     }
-    
+
     /**
      * 当前毫秒数时间戳
      *
@@ -74,5 +77,35 @@ class BmApiController extends Controller
     {
         [$usec, $sec] = explode(' ', microtime());
         return (float)sprintf('%.0f', (floatval($usec) + floatval($sec)) * 1000);
+    }
+
+    public function airList()
+    {
+        $ItemList = new StationsList();
+        $res = $ItemList->setPageNo(0)
+            ->setPageSize(8)
+            ->postParams()
+            ->getResult();
+        var_dump(json_decode($res, 1)['air_stations_list_response']['stations']);die;
+    }
+
+    public function itemsList()
+    {
+        $ItemList = new ItemsList();
+        return $ItemList->setPageNo(0)
+            ->setPageSize(8)
+            ->postParams()
+            ->getResult();
+    }
+
+    public function linesList()
+    {
+        $LinesList = new LinesList();
+        return $LinesList->setFrom('PEK')
+            ->setTo('CTU')
+            ->setDate('2021-05-30')
+            ->setItemId('5500301')
+            ->postParams()
+            ->getResult();
     }
 }

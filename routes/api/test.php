@@ -18,3 +18,8 @@ Route::any('bm-test2', 'Test\BmApiController@index');
 Route::any('bm-test3', 'Test\BmApiController@index');
 Route::any('bm-test4', 'Test\BmApiController@index');
 Route::any('bm-test5', 'Test\BmApiController@index');
+
+
+Route::any('air', 'Test\BmApiController@airList');
+Route::any('item', 'Test\BmApiController@itemsList');
+Route::any('lines', 'Test\BmApiController@linesList');
