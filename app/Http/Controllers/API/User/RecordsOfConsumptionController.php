@@ -196,6 +196,7 @@ class RecordsOfConsumptionController extends Controller
             'MT'=>'美团',
             'ZL'=>'代充',
         );
+        $data1 = array();
         foreach ($integralData as $k=>$v){
             if (!empty($v)){
                 foreach ($v as $k2=>$v2){
@@ -210,8 +211,9 @@ class RecordsOfConsumptionController extends Controller
 
             }
         }
-
-        array_multisort(array_column($data1, 'item'), SORT_DESC, $data1);
+        if (!empty($data1)){
+            array_multisort(array_column($data1, 'item'), SORT_DESC, $data1);
+        }
         $data['jls'] =$data1;
 //            dd($data['jls']);
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
