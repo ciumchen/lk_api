@@ -81,6 +81,38 @@ class ItemPropsList extends ApiRequest
     }
     
     /**
+     * @throws \Exception
+     */
+    public function getNextParams()
+    {
+        if (empty($this->list)) {
+            throw new Exception('未获取到属性信息');
+        }
+        $data = [];
+        foreach ($this->list as $row) {
+            switch ($row[ 'type' ]) {
+                case 'CITYIN':
+                    $data[ 'city' ] = $row[ 'vname' ];
+                    $data[ 'city_id' ] = $row[ 'vid' ];
+                    break;
+                case 'SPECIAL':
+                    $data[ 'mode_id' ] = $row[ 'vid' ];
+                    break;
+                case 'PRVCIN':
+                    $data[ 'province' ] = $row[ 'vname' ];
+                    break;
+                case 'BRAND':
+                    $data[ 'unit_id' ] = $row[ 'vid' ];
+                    $data[ 'unit_name' ] = $row[ 'vname' ];
+                    break;
+                default:
+                    ;
+            }
+        }
+        return $data;
+    }
+    
+    /**
      * @return array 结果返回的列表
      */
     public function getList()

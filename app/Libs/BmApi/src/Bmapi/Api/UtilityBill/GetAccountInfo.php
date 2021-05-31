@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libs\BmApi\src\Bmapi\Api\UtilityBill;
+namespace Bmapi\Api\UtilityBill;
 
 use Bmapi\core\ApiRequest;
 use Exception;
@@ -142,6 +142,35 @@ class GetAccountInfo extends ApiRequest
         return $this;
     }
     
+    /**
+     * 获取账单信息
+     *
+     * @return array
+     */
+    public function getBill()
+    {
+        return $this->bill;
+    }
+    
+    /**
+     * 获取查询结果状态
+     *
+     * @return String
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+    
+    /**
+     * 获取查询结果提示信息
+     *
+     * @return String
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
     /**************************************************************/
     /**
      * 设置标准商品编号(页面选择)
@@ -273,68 +302,83 @@ class GetAccountInfo extends ApiRequest
         return $this;
     }
     
+    /**
+     * @return String
+     */
     public function getItemId()
     {
         return $this->itemId;
     }
     
+    /**
+     * @return String
+     */
     public function getAccount()
     {
         return $this->account;
     }
     
+    /**
+     * @return String
+     */
     public function getProjectId()
     {
         return $this->projectId;
     }
     
+    /**
+     * @return String
+     */
     public function getUnitId()
     {
         return $this->unitId;
     }
     
+    /**
+     * @return String
+     */
     public function getProvince()
     {
         return $this->province;
     }
     
+    /**
+     * @return String
+     */
     public function getCity()
     {
         return $this->city;
     }
     
+    /**
+     * @return String
+     */
     public function getUnitName()
     {
         return $this->unitName;
     }
     
+    /**
+     * @return String
+     */
     public function getCityId()
     {
         return $this->cityId;
     }
     
+    /**
+     * @return String
+     */
     public function getModeType()
     {
         return $this->modeType;
     }
     
+    /**
+     * @return String
+     */
     public function getModeId()
     {
         return $this->modeId;
-    }
-    
-    public function getBill()
-    {
-        return $this->bill;
-    }
-    
-    public function getStatus()
-    {
-        return $this->status;
-    }
-    
-    public function getMessage()
-    {
-        return $this->message;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\Test;
 
 use App\Http\Controllers\Controller;
+use Bmapi\Api\UtilityBill\GetAccountInfo;
 use Bmapi\Api\UtilityBill\ItemList;
 use Bmapi\Api\UtilityBill\ItemPropsList;
 use Bmapi\Conf\Config;
@@ -25,13 +26,15 @@ class BmApiController extends Controller
      *
      * @throws \Exception
      */
-    public function index()
+    public function index(Request $request)
     {
+        $city = trim($request->input('city'), '市');
+        $project_id = $request->input('project_id');
         $ItemList = new ItemList();
         $ItemList->setPageNo(0)
-                 ->setPageSize(8)
-                 ->setCity('深圳')
-                 ->postParams()
+                 ->setPageSize(10)
+                 ->setCity($city)
+                 ->setProjectId($project_id)
                  ->getResult();
         $res = $ItemList->getList();
         return response()->json($res);
@@ -60,17 +63,19 @@ class BmApiController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function goodsAttrList()
+    public function goodsAttrList(Request $request)
     {
+        $item_id = $request->input('item_id');
         $ItemPropsList = new ItemPropsList();
         try {
-            $ItemPropsList->setItemId(6420401)
+            $ItemPropsList->setItemId($item_id)
                           ->getResult();
         } catch (\Exception $e) {
             throw $e;
         }
         $res = $ItemPropsList->getList();
-        return response()->json($res);
+        $nex_params = $ItemPropsList->getNextParams();
+        return response()->json($nex_params);
         /*
         [
             {
@@ -133,7 +138,33 @@ class BmApiController extends Controller
         */
     }
     
-    public function getInfo()
+    public function getInfo(Request $request)
     {
+        $item_id = $request->input('item_id');
+        $account = $request->input('account');
+        $city = $request->input('city');
+        $city_id = $request->input('city_id');
+        $mode_id = $request->input('mode_id');
+        $mode_type = $request->input('mode_type');
+        $project_id = $request->input('project_id');
+        $province = $request->input('province');
+        $unit_id = $request->input('unit_id');
+        $unit_name = $request->input('unit_name');
+        $GetAccountInfo = new GetAccountInfo();
+        $GetAccountInfo->setItemId($item_id)               // 标准商品编号(页面选择)
+                       ->setAccount($account)              // 缴费单标识号（户号或条形码）
+                       ->setCity($city)                    // 市名称(后面不带"市"，属性查询接口中返回的参数itemProps-"type": "CITYIN"下的vname)
+                       ->setCityId($city_id)               // 城市V编号(属性查询接口中返回的参数itemProps-"type": "CITYIN"下的vid)
+                       ->setModeId($mode_id)               // 缴费方式V编号 (属性查询接口中返回的参数itemProps-"type": "SPECIAL"下的vid)
+                       ->setModeType($mode_type)           // 缴费方式：1是条形码 2是户号
+                       ->setProjectId($project_id)         // 缴费项目编号，水费c2670，电费c2680，气费c2681，(属性查询接口中返回的参数cid)
+                       ->setProvince($province)            // 省名称(后面不带"省"，属性查询接口中返回的参数itemProps-"type": "PRVCIN"下的vname)
+                       ->setUnitId($unit_id)               // 缴费单位V编号(属性查询接口中返回的参数itemProps-"type": "BRAND"下的vid)
+                       ->setUnitName($unit_name)           // 缴费单位名称(属性查询接口中返回的参数itemProps-"type": "BRAND"下的vname)
+                       ->getResult();
+        $res = $GetAccountInfo->getBill();
+        $status = $GetAccountInfo->getStatus();
+        $msg = $GetAccountInfo->getMessage();
+        return response()->json(['res' => $res, 'status' => $status, 'msg' => $msg]);
     }
 }

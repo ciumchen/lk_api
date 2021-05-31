@@ -22,9 +22,9 @@ class ApiRequest implements RequestInterface
      *
      */
 //    const API_HOST = 'https://api.bm001.com/api';
-    const API_HOST = 'http://api.bm001.com/api';
+//    const API_HOST = 'http://api.bm001.com/api';
 
-//    const API_HOST = 'http://test.api.bm001.com/api';
+    const API_HOST = 'http://test.api.bm001.com/api';
     
     /**
      * 注册之后从斑马力方客服处获取

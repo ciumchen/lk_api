@@ -15,7 +15,7 @@ Route::post('yttest6', 'Test\YuntongController@index');
 Route::any('qrtest', 'Test\QrcodeController@index');
 Route::any('bm-test', 'Test\BmApiController@index');
 Route::any('bm-test1', 'Test\BmApiController@goodsAttrList');
-Route::any('bm-test2', 'Test\BmApiController@index');
+Route::any('bm-test2', 'Test\BmApiController@getInfo');
 Route::any('bm-test3', 'Test\BmApiController@index');
 Route::any('bm-test4', 'Test\BmApiController@index');
 Route::any('bm-test5', 'Test\BmApiController@index');
