@@ -129,6 +129,8 @@ class LifeRecharge extends ApiRequest
     }
     
     /**
+     * 结果解析
+     *
      * @return $this|mixed|null
      * @throws \Exception
      */
