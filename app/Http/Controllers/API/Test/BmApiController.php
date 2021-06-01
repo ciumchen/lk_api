@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Bmapi\Api\UtilityBill\GetAccountInfo;
 use Bmapi\Api\UtilityBill\ItemList;
 use Bmapi\Api\UtilityBill\ItemPropsList;
+use Bmapi\Api\UtilityBill\LifeRecharge;
 use Bmapi\Conf\Config;
 use Bmapi\Core\Aes;
 use Bmapi\Core\Sign;
@@ -138,6 +139,12 @@ class BmApiController extends Controller
         */
     }
     
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function getInfo(Request $request)
     {
         $item_id = $request->input('item_id');
@@ -166,5 +173,19 @@ class BmApiController extends Controller
         $status = $GetAccountInfo->getStatus();
         $msg = $GetAccountInfo->getMessage();
         return response()->json(['res' => $res, 'status' => $status, 'msg' => $msg]);
+    }
+    
+    public function utilityRecharge(Request $request)
+    {
+        $money = $request->input('money');
+        $itemId = $request->input('item_id');
+        $account = $request->input('account');
+        $LIfeRecharge = new LifeRecharge();
+        $LIfeRecharge->setItemId($itemId)
+                     ->setItemNum($money)
+                     ->setRechargeAccount($account)
+                     ->getResult();
+        $data = $LIfeRecharge->getData();
+        return response()->json($data);
     }
 }

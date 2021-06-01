@@ -3,6 +3,7 @@
 namespace Bmapi\Api\UtilityBill;
 
 use Bmapi\core\ApiRequest;
+use Exception;
 
 class LifeRecharge extends ApiRequest
 {
