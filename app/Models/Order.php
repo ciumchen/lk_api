@@ -146,6 +146,11 @@ class Order extends Model
         (new UserMsgController())->setMsg($orderNo, 2);
     }
 
+    public function Trade_Order()
+    {
+        return $this->belongsTo(TradeOrder::class, 'id','oid');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

@@ -47,3 +47,19 @@ Route::any("getUserFreeze", "User\RecordsOfConsumptionController@getUserFreeze")
 Route::any("getUserAssetsFxJf", "User\RecordsOfConsumptionController@getUserAssetsFxJf");
 //用户的公益贡献接口
 Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
+
+//添加用户积分和商家积分
+Route::any("addUserIntegral", "User\AddIntegralController@addUserIntegral");
+
+
+
+
+
+
+
+
+
+
+
+
+
