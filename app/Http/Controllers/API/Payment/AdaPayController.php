@@ -46,7 +46,7 @@ class AdaPayController extends Controller
         $tradeOrder = new TradeOrder();
 
         //判断支付金额
-        if (!in_array($paymentData['money'], [50, 100, 200]) && $paymentData['description'] == "HF")
+        if (!in_array($paymentData['money'], [50, 100, 200]) && in_array($paymentData['description'], ['HF', 'ZL']))
         {
             throw new LogicException('话费充值金额不在可选值范围内');
         } elseif (!in_array($paymentData['money'], [300, 500, 1000]) && $paymentData['description'] == "MT")
