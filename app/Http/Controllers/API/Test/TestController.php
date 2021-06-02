@@ -80,12 +80,16 @@ class TestController
 //        $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->first();
 //        dd($orderInfo->order_no);
         if ($count){
-            for($i=1;$i<$count;$i++){
-                $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->first()->toArray();
-                $order_no = $orderInfo['trade__order']['order_no'];
-                (new OrderService_test())->completeOrder($order_no);
-                echo $i;
+            $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->limit(10)->get()->toArray();
+//            dd($orderInfo);
+            foreach ($orderInfo as $k=>$v){
+                $orderArr[$k] = $v['trade__order']['order_no'];
             }
+
+            foreach($orderArr as $k=>$v){
+                (new OrderService_test())->completeOrder($v);
+            }
+//            (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
 
         }else{
             return '所有订单审核完成';
