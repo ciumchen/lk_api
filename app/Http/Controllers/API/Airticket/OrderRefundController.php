@@ -35,7 +35,7 @@ class OrderRefundController extends Controller
         if ($ticketTrade['result'])
         {
             (new OrderAirTrade())->updAirTrade($request->tradeNo, $airTradeData);
-            throw new LogicException('机票退订成功');
+            return json_encode(['code' => 1, 'msg' => '机票退订成功']);
         }
     }
 }
