@@ -95,6 +95,8 @@ class AdaPayController extends Controller
             $orderFrom = 'wx';
         }
 
+        $date = date("Y-m-d H:i:s");
+
         //订单数据组装
         $orderData = [
             'order_no' => $orderNo,
@@ -105,18 +107,17 @@ class AdaPayController extends Controller
             'price' => $paymentData['money'],
             'num' => $paymentData['number'],
             'description' => $paymentData['description'],
-            'pay_time' => time(),
-            'end_time' => time(),
-            'modified_time' => date("Y-m-d H:i:s"),
+            'pay_time' => $date,
+            'end_time' => $date,
+            'modified_time' => $date,
             'status' => 'await',
             'remarks' => '',
             'order_from' => $orderFrom,
             'need_fee' => sprintf("%.2f", $totalFee),
-            'created_at' => date("Y-m-d H:i:s")
+            'created_at' => $date
         ];
 
         //组装 order 表订单数据
-        $date = date("Y-m-d H:i:s");
         $name = '';
         switch ($paymentData['description'])
         {
