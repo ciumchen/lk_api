@@ -90,6 +90,7 @@ class TestController
                 (new OrderService_test())->completeOrder($v);
             }
 //            (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
+            return "完成自动审核50条记录";
 
         }else{
             return '所有订单审核完成';
