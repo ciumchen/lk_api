@@ -76,15 +76,18 @@ class TestController
         set_time_limit(0);
         ini_set('max_execution_time', '0');
         $count = Order::where('status',"!=",2)->where('id','>',8242)->count();
-        
+
         if ($count){
             $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->limit(20)->get()->toArray();
 //            dd($orderInfo);
-            foreach ($orderInfo as $k=>$v){
-                if($v['trade__order']['order_no']){
-                    (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
-                }
+            if ($orderInfo){
+                foreach ($orderInfo as $k=>$v){
+//                    dd($v['trade__order']['order_no']);
+                    if($v['trade__order']['order_no']!=null){
+                        (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
+                    }
 
+                }
             }
 
             return "完成自动审核20条记录";
