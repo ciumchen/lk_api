@@ -102,10 +102,12 @@ class NotifyController extends Controller
                 if ($json_data['description'] == "HF")
                 {
                     (new RechargeController())->setCall($callData);
-                    //(new RechargeController())->callDefray($callData);
                 } elseif ($json_data['description'] == "YK")
                 {
                     (new RechargeController())->setGas($gasData);
+                } elseif ($json_data['description'] == "ZL")
+                {
+                    (new RechargeController())->callDefray($callData);
                 }
 
                 //更新 order 表审核状态

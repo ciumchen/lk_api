@@ -46,7 +46,7 @@ class AdaPayController extends Controller
         $tradeOrder = new TradeOrder();
 
         //判断支付金额
-        if (!in_array($paymentData['money'], [50, 100, 200]) && $paymentData['description'] == "HF")
+        if (!in_array($paymentData['money'], [50, 100, 200]) && in_array($paymentData['description'], ['HF', 'ZL']))
         {
             throw new LogicException('话费充值金额不在可选值范围内');
         } elseif (!in_array($paymentData['money'], [300, 500, 1000]) && $paymentData['description'] == "MT")
@@ -95,6 +95,8 @@ class AdaPayController extends Controller
             $orderFrom = 'wx';
         }
 
+        $date = date("Y-m-d H:i:s");
+
         //订单数据组装
         $orderData = [
             'order_no' => $orderNo,
@@ -105,18 +107,17 @@ class AdaPayController extends Controller
             'price' => $paymentData['money'],
             'num' => $paymentData['number'],
             'description' => $paymentData['description'],
-            'pay_time' => time(),
-            'end_time' => time(),
-            'modified_time' => date("Y-m-d H:i:s"),
+            'pay_time' => $date,
+            'end_time' => $date,
+            'modified_time' => $date,
             'status' => 'await',
             'remarks' => '',
             'order_from' => $orderFrom,
             'need_fee' => sprintf("%.2f", $totalFee),
-            'created_at' => date("Y-m-d H:i:s")
+            'created_at' => $date
         ];
 
         //组装 order 表订单数据
-        $date = date("Y-m-d H:i:s");
         $name = '';
         switch ($paymentData['description'])
         {
@@ -132,8 +133,11 @@ class AdaPayController extends Controller
             case "DD":
                 $name = '滴滴';
                 break;
+            case "ZL":
+                $name = '代充';
+                break;
         }
-        if (in_array($paymentData['description'], ['HF', 'YK']))
+        if (in_array($paymentData['description'], ['HF', 'YK', 'ZL']))
         {
             $profit_ratio = 5;
         } else
@@ -175,7 +179,7 @@ class AdaPayController extends Controller
             $Order = new Order();
 
             //创建订单
-            if (in_array($paymentData['description'], ['HF', 'YK', 'MT', 'DD']))
+            if (in_array($paymentData['description'], ['HF', 'YK', 'MT', 'DD', 'ZL']))
             {
                 $oid = $Order->setOrder($orderParam);
                 $orderData['oid'] = $oid;

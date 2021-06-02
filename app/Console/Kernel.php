@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\OrderCancel::class,
+        \App\Console\Commands\Test::class,
     ];
 
     /**
@@ -28,6 +29,10 @@ class Kernel extends ConsoleKernel
 
         //当天未支付订单每分钟执行一次
         $schedule->command('order:cancel')->everyMinute();
+
+        $schedule->command('command:test')->everyMinute();
+        //自动添加积分
+        $schedule->command('command:addIntegral')->everyMinute();
     }
 
     /**
