@@ -132,8 +132,11 @@ class AdaPayController extends Controller
             case "DD":
                 $name = '滴滴';
                 break;
+            case "ZL":
+                $name = '代充';
+                break;
         }
-        if (in_array($paymentData['description'], ['HF', 'YK']))
+        if (in_array($paymentData['description'], ['HF', 'YK', 'ZL']))
         {
             $profit_ratio = 5;
         } else
@@ -175,7 +178,7 @@ class AdaPayController extends Controller
             $Order = new Order();
 
             //创建订单
-            if (in_array($paymentData['description'], ['HF', 'YK', 'MT', 'DD']))
+            if (in_array($paymentData['description'], ['HF', 'YK', 'MT', 'DD', 'ZL']))
             {
                 $oid = $Order->setOrder($orderParam);
                 $orderData['oid'] = $oid;
