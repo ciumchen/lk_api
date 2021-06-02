@@ -82,8 +82,7 @@ class TestController
 //            dd($orderInfo);
             if ($orderInfo){
                 foreach ($orderInfo as $k=>$v){
-//                    dd($v['trade__order']['order_no']);
-                    if($v['trade__order']['order_no']!=null){
+                    if($v['trade__order']!=null){
                         (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
                     }
 
