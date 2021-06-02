@@ -80,7 +80,7 @@ class TestController
 //        $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->first();
 //        dd($orderInfo->order_no);
         if ($count){
-            $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->get()->toArray();
+            $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->limit(50)->get()->toArray();
 //            dd($orderInfo);
             foreach ($orderInfo as $k=>$v){
                 $orderArr[$k] = $v['trade__order']['order_no'];
