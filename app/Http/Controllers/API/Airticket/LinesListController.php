@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Bmapi\Api\Air\LinesList;
 use Illuminate\Http\Request;
 
-/** 航线列表 **/
+/** 查询航线列表 **/
 
 class LinesListController extends Controller
 {
@@ -18,15 +18,24 @@ class LinesListController extends Controller
     public function linesList(Request $request)
     {
         //获取数据
-        $LinesList = new LinesList();
-        $res = $LinesList->setFrom($request->from)
+        $linesList = new LinesList();
+        $linesInfo = $linesList->setFrom($request->from)
             ->setTo($request->to)
             ->setDate($request->date)
             ->setItemId($request->itemId)
             ->postParams()
             ->getResult();
+        /* $linesInfo = $linesList
+        ->setFrom('CKG')
+        ->setTo('SZX')
+        ->setDate('2021-06-16')
+        ->setItemId('5500301')
+        ->postParams()
+        ->getResult(); */
+
+        $linesArr = json_decode($linesInfo, 1);
 
         //返回
-        return json_decode($res, 1);
+        return $linesArr['airlines_list_response']['airlines']['airline'];
     }
 }

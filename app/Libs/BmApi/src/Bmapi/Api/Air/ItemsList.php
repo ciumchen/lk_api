@@ -7,7 +7,6 @@ use Bmapi\core\ApiRequest;
 /**
  * 查询飞机票标准商品列表
  * Class ItemsList
- *
  * @package Bmapi\Api\Air
  */
 class ItemsList extends ApiRequest
@@ -45,9 +44,7 @@ class ItemsList extends ApiRequest
 
     /**
      * 设置页码
-     *
      * @param int $val
-     *
      * @return $this
      */
     public function setPageNo($val)
@@ -58,9 +55,7 @@ class ItemsList extends ApiRequest
 
     /**
      * 设置单页数据条数
-     *
      * @param int $val
-     *
      * @return $this
      */
     public function setPageSize($val)
@@ -71,9 +66,7 @@ class ItemsList extends ApiRequest
 
     /**
      * 设置标准商品名称,支持不带特殊字符的模糊匹配
-     *
      * @param string $val
-     *
      * @return $this
      */
     public function setItemName($val)
@@ -84,9 +77,7 @@ class ItemsList extends ApiRequest
 
     /**
      * 设置标准商品编号,支持不带特殊字符的模糊匹配
-     *
      * @param string $val
-     *
      * @return $this
      */
     public function setItemId($val)

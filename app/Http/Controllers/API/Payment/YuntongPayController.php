@@ -10,6 +10,7 @@ use App\Models\Traits\AllowField;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Libs\Yuntong\YuntongPay;
+use App\Models\AirTradeLogs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Log;
@@ -60,12 +61,27 @@ class YuntongPayController extends Controller
         }
 
         $orderData = $this->createData($data);
+
+        //机票充值订单
+        if ($data['description'] == 'AT')
+        {
+            $orderNo = 'AT_'. date('YmdHis').rand(100000, 999999);
+            $orderData['order_no'] = $data['orderNo'] = $orderNo;
+        }
+
         DB::beginTransaction();
         try {
             $oid = $this->createOrder($orderData);
             if (!is_numeric($oid)) {
                 throw new Exception('订单生成失败');
             }
+
+            //如果是机票订单
+            if ($data['description'] == 'AT')
+            {
+               (new AirTradeLogs())->setAitTrade($data);
+            }
+
             $orderData[ 'oid' ] = $oid;
             $this->createTradeOrder($orderData);
         } catch (Exception $e) {
@@ -291,6 +307,9 @@ class YuntongPayController extends Controller
                 break;
             case "ZL":
                 $name = '代充';
+                break;
+            case "AT":
+                $name = '机票';
                 break;
             default:
                 $name = '';
