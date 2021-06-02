@@ -80,7 +80,7 @@ class TestController
 //        $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->first();
 //        dd($orderInfo->order_no);
         if ($count){
-            $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->limit(50)->get()->toArray();
+            $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->limit(20)->get()->toArray();
 //            dd($orderInfo);
             foreach ($orderInfo as $k=>$v){
                 $orderArr[$k] = $v['trade__order']['order_no'];
@@ -90,7 +90,7 @@ class TestController
                 (new OrderService_test())->completeOrder($v);
             }
 //            (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
-            return "完成自动审核50条记录";
+            return "完成自动审核20条记录";
 
         }else{
             return '所有订单审核完成';
