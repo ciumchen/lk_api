@@ -56,6 +56,7 @@ class AddIntegral extends Command
 
         $setValue = Setting::where('key','consumer_integral')->value('value');
         if($setValue==1){
+//            $orderInfo = Order::where("status",2)->where('pay_status','succeeded')->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
             $orderInfo = Order::where("status",2)->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
             if ($orderInfo!=null){
                 $orderInfo = $orderInfo->toArray();
@@ -82,7 +83,7 @@ class AddIntegral extends Command
             }
 
             $lddata = $orderldModer::where('day',$todaytime)->first();
-            $LkBlData['id'] = $lddata->id;
+            $id = $lddata->id;
 
             //比较
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
@@ -90,7 +91,7 @@ class AddIntegral extends Command
                 if (($addCountProfitPrice*0.675/$LkBlData['count_lk'])<1.1){
                     $this->completeOrder($order_no);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
-                    DB::table('order_integral_lk_distribution')->update($LkBlData);
+                    DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
                     return "添加积分成功";
                 }else{
                     return "添加积分已达到上限数量";
@@ -99,7 +100,7 @@ class AddIntegral extends Command
             }else{
                 $this->completeOrder($order_no);
                 $LkBlData['count_profit_price'] = $addCountProfitPrice;
-                DB::table('order_integral_lk_distribution')->update($LkBlData);
+                DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
                 return "添加积分成功";
             }
 
@@ -112,7 +113,7 @@ class AddIntegral extends Command
 
     public function completeOrder(string $orderNo)
     {
-        $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
+        $tradeOrderInfo = TradeOrder::where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
         $consumer_uid = $tradeOrderInfo->user_id;
         $description = $tradeOrderInfo->description;
