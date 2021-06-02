@@ -7,7 +7,8 @@ namespace App\Http\Controllers\API\Test;
 use App\Services\OrderService;
 use App\Services\OssService;
 use Illuminate\Http\Request;
-
+use App\Models\Order;
+use App\Services\OrderService_test;
 class TestController
 {
     //test测试
@@ -69,5 +70,29 @@ class TestController
         $orderOn = $request->input('orderOn');
         (new OrderService())->completeOrder($orderOn);
     }
+
+    //自动审核测试
+    public function pushOrder(){
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
+        $count = Order::where('status',"!=",2)->where('id','>',8242)->count();
+
+//        $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->first();
+//        dd($orderInfo->order_no);
+        if ($count){
+            for($i=1;$i<$count;$i++){
+                $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->first()->toArray();
+                $order_no = $orderInfo['trade__order']['order_no'];
+                (new OrderService_test())->completeOrder($order_no);
+                echo $i;
+            }
+
+        }else{
+            return '所有订单审核完成';
+        }
+
+
+    }
+
 
 }
