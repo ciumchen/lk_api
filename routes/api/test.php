@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 //test测试接口路由
 Route::post('test', 'Test\TestController@test');
 Route::post('test2', 'Test\TestController@test2');
@@ -19,3 +21,5 @@ Route::any('bm-test2', 'Test\BmApiController@getInfo');
 Route::any('bm-test3', 'Test\BmApiController@utilityRecharge');
 Route::any('bm-test4', 'Test\BmApiController@index');
 Route::any('bm-test5', 'Test\BmApiController@index');
+//自动审核测试
+Route::any('pushOrder', 'Test\TestController@pushOrder');
