@@ -116,8 +116,6 @@ class YuntongNotifyController extends Controller
             $TradeOrder->upTradeOrder($tradeOrderData);
             //更新 order 表审核状态
             (new OrderService())->completeOrder($data[ 'order_id' ]);
-            //发送录单消息通知
-            (new Order())->orderMsg($data[ 'order_id' ]);
             //自动充值
             if ($trade_order->description == "HF") {
                 (new RechargeController())->setCall($callData);
@@ -126,6 +124,8 @@ class YuntongNotifyController extends Controller
             } elseif ($trade_order->description == "ZL") {
                 (new RechargeController())->callDefray($callData);
             }
+            //发送录单消息通知
+            (new Order())->orderMsg($data[ 'order_id' ]);
         } catch (\LogicException $le) {
             throw $le;
         }
