@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\api\Test;
 
 use App\Http\Controllers\Controller;
+use Bmapi\Api\MobileRecharge\GetItemInfo;
+use Bmapi\Api\MobileRecharge\PayBill;
 use Bmapi\Api\UtilityBill\GetAccountInfo;
 use Bmapi\Api\UtilityBill\ItemList;
 use Bmapi\Api\UtilityBill\ItemPropsList;
@@ -187,5 +189,90 @@ class BmApiController extends Controller
                      ->getResult();
         $data = $LIfeRecharge->getData();
         return response()->json($data);
+    }
+    
+    /**
+     * 手机查话费
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function mobileGetInfo(Request $request)
+    {
+        $mobile = $request->input('mobile');
+        $money = $request->input('money');
+        $GetInfo = new GetItemInfo();
+        $res = $GetInfo->setMobileNo($mobile)
+                       ->setRechargeAmount($money)
+                       ->getResult();
+        $info = $GetInfo->getItemInfo();
+        return response()->json($info);
+    }
+    
+    public function mobilePayBill(Request $request)
+    {
+        $mobile = $request->input('mobile');
+        $money = $request->input('money');
+        $PayBill = new PayBill();
+        $res = $PayBill->setMobileNo($mobile)
+                       ->setRechargeAmount($money)
+                       ->getResult();
+        $bill = $PayBill->getBill();
+        return response()->json($bill);
+        /*
+        {
+            "orderCost": "9.960",
+            "orderProfit": "0.040",
+            "saleAmount": "10.000",
+            "cardPwdList": null,
+            "orderTime": "2021-06-03 18:58:33",
+            "operateTime": null,
+            "payState": "1",
+            "rechargeState": "0",
+            "supQq": null,
+            "classType": "4",
+            "itemCost": "9.960",
+            "facePrice": "10",
+            "supId": "S115281",
+            "supNickName": null,
+            "supContactUser": null,
+            "supMobile": null,
+            "billId": "S2106031191902",
+            "itemId": "141606",
+            "itemNum": "1",
+            "rechargeAccount": "18707145152",
+            "gameArea": null,
+            "gameServer": null,
+            "receiveMobile": null,
+            "actPrice": null,
+            "extPay": null,
+            "itemName": "湖北移动话费10元直充",
+            "isBatch": null,
+            "outerTid": null,
+            "userCode": "A5626842",
+            "battleAccount": null,
+            "openBank": null,
+            "cardNo": null,
+            "customerName": null,
+            "customerTel": null,
+            "purchaser": null,
+            "buyerTel": null,
+            "buyerAddress": null,
+            "buyerRemark": null,
+            "minConsume": null,
+            "packageName": null,
+            "preStore": null,
+            "idNo": null,
+            "idAddress": null,
+            "idFrontImage": null,
+            "idBackImage": null,
+            "remark": null,
+            "simCardId": null,
+            "mobileNo": null,
+            "tplId": "00010001"
+        }
+        */
     }
 }

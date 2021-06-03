@@ -34,7 +34,11 @@ class GetItemInfo extends ApiRequest
     /**
      * @var array 接口参数
      */
-    private $paramsKey;
+    private $paramsKey = [
+        'mobileNo',
+        'rechargeAmount',
+        'payType',
+    ];
     
     /**
      * @var array
@@ -68,7 +72,7 @@ class GetItemInfo extends ApiRequest
         if (array_key_exists('errorToken', $result)) {
             throw new Exception($this->result);
         }
-        $this->itemInfo = $result[ 'mobileItem' ];
+        $this->itemInfo = $result[ 'data' ];
         return $this;
     }
     

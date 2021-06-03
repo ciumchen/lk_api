@@ -19,7 +19,7 @@ Route::any('bm-test', 'Test\BmApiController@index');
 Route::any('bm-test1', 'Test\BmApiController@goodsAttrList');
 Route::any('bm-test2', 'Test\BmApiController@getInfo');
 Route::any('bm-test3', 'Test\BmApiController@utilityRecharge');
-Route::any('bm-test4', 'Test\BmApiController@index');
-Route::any('bm-test5', 'Test\BmApiController@index');
+Route::any('bm-test4', 'Test\BmApiController@mobileGetInfo');
+Route::any('bm-test5', 'Test\BmApiController@mobilePayBill');
 //自动审核测试
 Route::any('pushOrder', 'Test\TestController@pushOrder');
