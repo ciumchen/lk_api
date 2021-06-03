@@ -35,6 +35,7 @@ class OrderRefundController extends Controller
         }
 
         //组装机票订单数据
+        
         $airTradeData = explode(',', $request->orderNos);
         $ticketTrade = $refundArr['air_order_refund_response'];
         if ($ticketTrade['result'])
