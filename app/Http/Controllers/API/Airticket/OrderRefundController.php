@@ -11,6 +11,11 @@ use App\Models\OrderAirTrade;
 /** 退订飞机票订单 **/
 class OrderRefundController extends Controller
 {
+    /**退订单
+    * @param Request $request
+    * @return array
+    * @throws
+    */
     public function airRefund(Request $request)
     {
         //获取数据
