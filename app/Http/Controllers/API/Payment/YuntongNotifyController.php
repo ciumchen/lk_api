@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\api\Payment;
 
 use App\Exceptions\LogicException;
-use App\Http\Controllers\API\Airticket\OrderPayBillController;
 use App\Http\Controllers\Controller;
 use App\Libs\Yuntong\YuntongPay;
 use App\Models\Order;
@@ -15,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\Order\RechargeController;
-use App\Models\AirTradeLogs;
+use App\Services\AirOrderService;
 
 class YuntongNotifyController extends Controller
 {
@@ -133,38 +132,10 @@ class YuntongNotifyController extends Controller
             $airOrderNo = (new PayLogs())->payInfo($data[ 'order_id' ]);
             if ($airOrderNo)
             {
-                $this->airOrder($airOrderNo);
+                (new AirOrderService())->airOrder($airOrderNo);
             }
         } catch (\LogicException $le) {
             throw $le;
         }
-    }
-
-    /**生成机票订单
-     * @param string $orderNo
-     * @throws
-     */
-    private function airOrder(string $orderNo)
-    {
-        //获取机票信息
-        $airTradeLogs = (new AirTradeLogs())->getAirTradeInfo($orderNo);
-
-        //组装机票订单数据
-        $airTradeData = [
-            'seatCode' => $airTradeLogs->seatCode,
-            'passagers' => $airTradeLogs->passagers,
-            'itemId' => $airTradeLogs->itemId,
-            'contactName' => $airTradeLogs->contactName,
-            'contactTel' => $airTradeLogs->contactTel,
-            'date' => $airTradeLogs->date,
-            'from' => $airTradeLogs->from,
-            'to' => $airTradeLogs->to,
-            'companyCode' => $airTradeLogs->companyCode,
-            'flightNo' => $airTradeLogs->flightNo,
-            'aid' => $airTradeLogs->id
-        ];
-
-        //生成机票订单
-        (new OrderPayBillController())->setOrderPay($airTradeData);
     }
 }
