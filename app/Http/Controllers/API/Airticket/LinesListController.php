@@ -25,13 +25,6 @@ class LinesListController extends Controller
             ->setItemId($request->itemId)
             ->postParams()
             ->getResult();
-        /* $linesInfo = $linesList
-        ->setFrom('CKG')
-        ->setTo('SZX')
-        ->setDate('2021-06-16')
-        ->setItemId('5500301')
-        ->postParams()
-        ->getResult(); */
 
         $linesArr = json_decode($linesInfo, 1);
 
