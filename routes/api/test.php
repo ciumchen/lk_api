@@ -5,6 +5,7 @@ Route::post('test', 'Test\TestController@test');
 Route::post('test2', 'Test\TestController@test2');
 Route::post('test3', 'Test\TestController@test3');
 Route::any('orderTest', 'Test\TestController@orderTest');
+Route::any('pushOrder', 'Test\TestController@pushOrder');
 Route::any('yttest', 'Test\YuntongController@index');
 Route::post('yttest1', 'Test\YuntongController@pay');
 Route::post('yttest2', 'Test\YuntongController@order_status');
@@ -20,8 +21,7 @@ Route::any('bm-test3', 'Test\BmApiController@index');
 Route::any('bm-test4', 'Test\BmApiController@index');
 Route::any('bm-test5', 'Test\BmApiController@index');
 
-//自动审核测试
-Route::any('pushOrder', 'Test\TestController@pushOrder');
+
 
 
 

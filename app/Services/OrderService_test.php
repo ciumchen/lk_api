@@ -77,7 +77,6 @@ class OrderService_test
      */
     public function completeOrder(string $orderNo)
     {
-//        $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
         $tradeOrderInfo = TradeOrder::where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
         $consumer_uid = $tradeOrderInfo->user_id;

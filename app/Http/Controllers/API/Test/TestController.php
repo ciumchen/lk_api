@@ -9,6 +9,7 @@ use App\Services\OssService;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Services\OrderService_test;
+use Illuminate\Support\Facades\DB;
 class TestController
 {
     //test测试
@@ -75,18 +76,18 @@ class TestController
     public function pushOrder(){
         set_time_limit(0);
         ini_set('max_execution_time', '0');
-        $count = Order::where('status',"!=",2)->where('id','>',8242)->count();
+        $count = Order::where('status',"!=",2)->where('id','>',13281)->count();
 
         if ($count){
-            $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->limit(20)->get()->toArray();
-//            dd($orderInfo);
-            if ($orderInfo){
-                foreach ($orderInfo as $k=>$v){
-                    if($v['trade__order']!=null){
-                        (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
-                    }
-
+            $orderInfo = DB::table('order')->where('order.id','>','13281')
+                ->where('order.status',"!=",2)
+                ->leftJoin('trade_order','order.id','=','trade_order.oid')
+                ->limit(20)->get()->toArray();
+            foreach ($orderInfo as $k=>$v){
+                if($v->order_no){
+                    (new OrderService_test())->completeOrder($v->order_no);
                 }
+
             }
 
             return "完成自动审核20条记录";
