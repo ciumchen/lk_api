@@ -24,19 +24,41 @@ class PayBill extends ApiRequest
         'payType',
     ];
     
+    /**
+     * @var string 需要充值的手机号码
+     */
     private $mobileNo;
     
+    /**
+     * @var string 充值金额，需要充值的话费金额，如50、100、200等
+     */
     private $rechargeAmount;
     
+    /**
+     * @var string 外部订单编号
+     */
     private $outerTid;
     
+    /**
+     * 回调url（使用回调前请开通消息服务）
+     * 商户成功收到回调之后，返回给平台success字符串。
+     * 否则将每一分钟发送回调信息一次，共发送4次,以POST方式发送（回调数据键值对格式）。
+     *
+     * @var string
+     */
     private $callback;
     
+    /**
+     * @var string 话费充值商品编号，如果传递则使用传递的商品编号进行充值，否则系统自动内部匹配商品
+     */
     private $itemId;
     
+    /**
+     * @var string 运营商类型 联通-UNICOM 移动-MOBILE 电信-TELECOM
+     */
     private $payType;
     
-    private $bill;
+    private $bill = [];
     
     public function apiParams()
     : array

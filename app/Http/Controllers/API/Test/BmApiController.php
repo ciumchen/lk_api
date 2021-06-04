@@ -209,6 +209,21 @@ class BmApiController extends Controller
                        ->getResult();
         $info = $GetInfo->getItemInfo();
         return response()->json($info);
+        /*
+        {
+            "itemId": "141606",
+            "inPrice": "9.960",
+            "numberChoice": "1-10",
+            "province": "湖北",
+            "city": "湖北全省",
+            "operator": "移动",
+            "itemName": "湖北移动话费10元直充",
+            "rechargeAmount": "10",
+            "advicePrice": "10.00",
+            "mobileNo": "18707145152",
+            "reverseFlag": "0"
+        }
+         */
     }
     
     public function mobilePayBill(Request $request)
