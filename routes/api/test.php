@@ -7,6 +7,7 @@ Route::post('test', 'Test\TestController@test');
 Route::post('test2', 'Test\TestController@test2');
 Route::post('test3', 'Test\TestController@test3');
 Route::any('orderTest', 'Test\TestController@orderTest');
+Route::any('pushOrder', 'Test\TestController@pushOrder');
 Route::any('yttest', 'Test\YuntongController@index');
 Route::post('yttest1', 'Test\YuntongController@pay');
 Route::post('yttest2', 'Test\YuntongController@order_status');

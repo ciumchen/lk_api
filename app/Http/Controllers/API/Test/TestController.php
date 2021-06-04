@@ -9,6 +9,7 @@ use App\Services\OssService;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Services\OrderService_test;
+use Illuminate\Support\Facades\DB;
 class TestController
 {
     //test测试
@@ -72,27 +73,30 @@ class TestController
     }
 
     //自动审核测试
+//https://ceshi.catspawvideo.com/api/pushOrder
+//http://localhost:8081/api/pushOrder
     public function pushOrder(){
         set_time_limit(0);
         ini_set('max_execution_time', '0');
-        $count = Order::where('status',"!=",2)->where('id','>',8242)->count();
+        $count = Order::where('status',"!=",2)->where('id','>',13281)->where('pay_status',"!=","ddyc")->count();
 
         if ($count){
-            $orderInfo = Order::where('status',"!=",2)->where('id','>',8242)->with(['Trade_Order'])->limit(20)->get()->toArray();
-//            dd($orderInfo);
-            if ($orderInfo){
-                foreach ($orderInfo as $k=>$v){
-                    if($v['trade__order']!=null){
-                        (new OrderService_test())->completeOrder($v['trade__order']['order_no']);
-                    }
-
+            $orderInfo = DB::table('order')->where('order.id','>','13281')
+                ->where('order.status',"!=",2)
+                ->where('order.pay_status',"!=","ddyc")
+                ->leftJoin('trade_order','order.id','=','trade_order.oid')
+                ->limit(20)->get()->toArray();
+            foreach ($orderInfo as $k=>$v){
+                if($v->order_no){
+                    (new OrderService_test())->completeOrder($v->order_no);
                 }
+
             }
 
-            return "完成自动审核20条记录";
+            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
 
         }else{
-            return '所有订单审核完成';
+            return '<h4>所有订单审核完成</h4>';
         }
 
 
