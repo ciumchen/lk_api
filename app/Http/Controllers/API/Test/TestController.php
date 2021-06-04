@@ -90,10 +90,10 @@ class TestController
 
             }
 
-            return "完成自动审核20条记录";
+            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
 
         }else{
-            return '所有订单审核完成';
+            return '<h4>所有订单审核完成</h4>';
         }
 
 
