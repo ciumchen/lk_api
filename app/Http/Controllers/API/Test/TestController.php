@@ -76,11 +76,12 @@ class TestController
     public function pushOrder(){
         set_time_limit(0);
         ini_set('max_execution_time', '0');
-        $count = Order::where('status',"!=",2)->where('id','>',13281)->count();
+        $count = Order::where('status',"!=",2)->where('id','>',13281)->where('pay_status',"!=","ddyc")->count();
 
         if ($count){
             $orderInfo = DB::table('order')->where('order.id','>','13281')
                 ->where('order.status',"!=",2)
+                ->where('order.pay_status',"!=","ddyc")
                 ->leftJoin('trade_order','order.id','=','trade_order.oid')
                 ->limit(20)->get()->toArray();
             foreach ($orderInfo as $k=>$v){
