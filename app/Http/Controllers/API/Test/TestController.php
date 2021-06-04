@@ -73,6 +73,8 @@ class TestController
     }
 
     //自动审核测试
+//https://ceshi.catspawvideo.com/api/pushOrder
+//http://localhost:8081/api/pushOrder
     public function pushOrder(){
         set_time_limit(0);
         ini_set('max_execution_time', '0');
