@@ -65,7 +65,7 @@ class YuntongPayController extends Controller
         //机票充值订单
         if ($data['description'] == 'AT')
         {
-            $orderNo = 'AT_'. date('YmdHis').rand(100000, 999999);
+            $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
             $orderData['order_no'] = $data['orderNo'] = $orderNo;
         }
 
@@ -76,14 +76,15 @@ class YuntongPayController extends Controller
                 throw new Exception('订单生成失败');
             }
 
-            //如果是机票订单
-            if ($data['description'] == 'AT')
+            //生成机票订单
+            if (in_array($data['description'], ['AT']))
             {
                (new AirTradeLogs())->setAitTrade($data);
+            } else
+            {
+                $orderData[ 'oid' ] = $oid;
+                $this->createTradeOrder($orderData);
             }
-
-            $orderData[ 'oid' ] = $oid;
-            $this->createTradeOrder($orderData);
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -191,6 +192,11 @@ class YuntongPayController extends Controller
      */
     public function createOrder($data = [])
     {
+        //飞机票才有 order_no，其他充值类型不写入
+        if ($data['name'] != '飞机票')
+        {
+            $data['order_no'] = '';
+        }
         try {
             $Order = new Order();
             $oid = intval($data[ 'oid' ]);
@@ -309,7 +315,7 @@ class YuntongPayController extends Controller
                 $name = '代充';
                 break;
             case "AT":
-                $name = '机票';
+                $name = '飞机票';
                 break;
             default:
                 $name = '';
