@@ -2,7 +2,7 @@
 
 namespace Bmapi\Api\MobileRecharge;
 
-use Bmapi\core\ApiRequest;
+use Bmapi\Core\ApiRequest;
 
 /**
  * 发起话费冲正订单
