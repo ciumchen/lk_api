@@ -201,22 +201,20 @@ class MobileRechargeService
      */
     public function updateMobileOrder($order_id, $bill, OrderMobileRecharge $MobileRecharge = null)
     {
-        $data = [
-            'mobile'      => $bill[ 'rechargeAccount' ],
-            'money'       => $bill[ 'saleAmount' ],
-            'order_no'    => $bill[ 'outerTid' ],
-            'updated_at'  => $bill[ 'operateTime' ],
-            'trade_no'    => $bill[ 'billId' ],
-            'status'      => $bill[ 'rechargeState' ],
-            'pay_status'  => $bill[ 'payState' ],
-            'goods_title' => $bill[ 'itemName' ],
-        ];
         if ($MobileRecharge == null) {
             $MobileRecharge = OrderMobileRecharge::where('order_id', '=', $order_id)
                                                  ->first();
         }
         try {
-            $MobileRecharge->update($data);
+            $MobileRecharge->mobile = $bill[ 'rechargeAccount' ];
+            $MobileRecharge->money = $bill[ 'saleAmount' ];
+            $MobileRecharge->order_no = $bill[ 'outerTid' ];
+            $MobileRecharge->updated_at = $bill[ 'operateTime' ];
+            $MobileRecharge->trade_no = $bill[ 'billId' ];
+            $MobileRecharge->status = $bill[ 'rechargeState' ];
+            $MobileRecharge->pay_status = $bill[ 'payState' ];
+            $MobileRecharge->goods_title = $bill[ 'itemName' ];
+            $MobileRecharge->save();
         } catch (Exception $e) {
             throw $e;
         }
