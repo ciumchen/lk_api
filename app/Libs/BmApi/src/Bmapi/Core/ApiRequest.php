@@ -1,10 +1,10 @@
 <?php
 
-namespace Bmapi\core;
+namespace Bmapi\Core;
 
 ini_set('date.timezone', 'Etc/GMT-8');
 
-use Bmapi\conf\Config;
+use Bmapi\Conf\Config;
 use Bmapi\Interfaces\RequestInterface;
 use Exception;
 
