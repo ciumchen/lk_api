@@ -14,6 +14,16 @@ use Exception;
 class MobileRechargeService
 {
     
+    /**
+     * 生成充值订单
+     *
+     * @param \App\Models\User $user   付款用户数据模型
+     * @param string           $mobile 充值手机
+     * @param float            $money  充值金额
+     *
+     * @return mixed
+     * @throws \Exception
+     */
     public function setAllOrder($user, $mobile, $money)
     {
         try {
@@ -42,8 +52,8 @@ class MobileRechargeService
     /**
      * Order 表数据组装
      *
-     * @param $user
-     * @param $money
+     * @param \App\Models\User $user  充值用户模型数据
+     * @param float            $money 充值金额
      *
      * @return array
      */
@@ -92,6 +102,31 @@ class MobileRechargeService
     }
     
     /**
+     * 订单充值
+     * 付款成功后调用
+     *
+     * @param int    $order_id 订单ID
+     * @param string $order_no 订单编号
+     *
+     * @throws \Exception
+     */
+    public function recharge($order_id, $order_no)
+    {
+        $MobileOrder = new OrderMobileRecharge();
+        $mobileOrderInfo = $MobileOrder->where('order_id', '=', $order_id)
+                                       ->first();
+        try {
+            /* 调用充值 */
+            $bill = $this->bmMobileRecharge($mobileOrderInfo->mobile, $mobileOrderInfo->money, $order_no);
+            /* 更新订单 */
+            $this->updateMobileOrder($order_id, $bill);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
+    }
+    
+    /**
      * 手机充值
      *
      * @param string $mobile
@@ -122,6 +157,8 @@ class MobileRechargeService
     }
     
     /**
+     * 生成手机充值订单
+     *
      * @param int    $order_id 订单[order]表ID
      * @param string $order_no 订单号
      * @param int    $uid      用户ID
@@ -152,7 +189,16 @@ class MobileRechargeService
         return $mobileOrder;
     }
     
-    public function updateMobileOrder($order_id, $bill)
+    /**
+     * 手机充值订单表更新
+     *
+     * @param int                                  $order_id       订单ID
+     * @param array                                $bill           第三方返回账单信息
+     * @param \App\Models\OrderMobileRecharge|null $MobileRecharge 手机充值记录表
+     *
+     * @throws \Exception
+     */
+    public function updateMobileOrder($order_id, $bill, OrderMobileRecharge $MobileRecharge = null)
     {
         $data = [
             'mobile'      => $bill[ 'rechargeAccount' ],
@@ -164,5 +210,13 @@ class MobileRechargeService
             'pay_status'  => $bill[ 'payState' ],
             'goods_title' => $bill[ 'itemName' ],
         ];
+        if ($MobileRecharge == null) {
+            $MobileRecharge = OrderMobileRecharge::find($order_id);
+        }
+        try {
+            $MobileRecharge->update($data);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }

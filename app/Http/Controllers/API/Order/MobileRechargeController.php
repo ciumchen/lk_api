@@ -35,4 +35,12 @@ class MobileRechargeController extends Controller
         DB::commit();
         return response()->json(['code' => 0, 'data' => $order, 'msg' => '订单创建成功']);
     }
+    
+    public function rechargeTest(Request $request)
+    {
+        $order_id = $request->input('order_id');
+        $order_no = $request->input('order_no');
+        $MobileService = new MobileRechargeService();
+        $MobileService->recharge($order_id, $order_no);
+    }
 }
