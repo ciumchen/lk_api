@@ -212,7 +212,8 @@ class MobileRechargeService
             'goods_title' => $bill[ 'itemName' ],
         ];
         if ($MobileRecharge == null) {
-            $MobileRecharge = OrderMobileRecharge::find($order_id);
+            $MobileRecharge = OrderMobileRecharge::where('order_id', '=', $order_id)
+                                                 ->first();
         }
         try {
             $MobileRecharge->update($data);
