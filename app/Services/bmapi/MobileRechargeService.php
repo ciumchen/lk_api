@@ -34,7 +34,7 @@ class MobileRechargeService
         $Order = new Order();
         $TradeOrder = new TradeOrder();
         $order_no = $TradeOrder->CreateOrderNo();
-        $order_data = $this->createOrderParams($user, $money);
+        $order_data = $this->createOrderParams($user, $money, $order_no);
         DB::beginTransaction();
         try {
             /* 生成 order 表数据 */
@@ -52,12 +52,14 @@ class MobileRechargeService
     /**
      * Order 表数据组装
      *
-     * @param \App\Models\User $user  充值用户模型数据
-     * @param float            $money 充值金额
+     * @param \App\Models\User $user     充值用户模型数据
+     * @param float            $money    充值金额
+     *
+     * @param string           $order_no 订单号
      *
      * @return array
      */
-    public function createOrderParams($user, $money)
+    public function createOrderParams($user, $money, $order_no)
     {
         $profit_ratio = 5;
         $profit_price = $money * ($profit_ratio / 100);
@@ -70,7 +72,8 @@ class MobileRechargeService
             'name'         => '话费',
             'status'       => '1',
             'pay_status'   => 'await',
-            'remark'       => '1',
+            'remark'       => '',
+            'order_no'     => $order_no,
         ];
     }
     

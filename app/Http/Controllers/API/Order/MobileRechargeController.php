@@ -42,5 +42,6 @@ class MobileRechargeController extends Controller
         $order_no = $request->input('order_no');
         $MobileService = new MobileRechargeService();
         $MobileService->recharge($order_id, $order_no);
+        return response()->json();
     }
 }
