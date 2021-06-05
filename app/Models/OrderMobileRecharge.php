@@ -7,5 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderMobileRecharge extends Model
 {
+    
     use HasFactory;
+    
+    protected $table = 'order_mobile_recharge';
 }

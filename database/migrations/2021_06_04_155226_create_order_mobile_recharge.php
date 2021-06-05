@@ -43,7 +43,11 @@ class CreateOrderMobileRecharge extends Migration
             $table->tinyInteger('status')
                   ->unsigned()
                   ->default('0')
-                  ->comment('充值状态：0充值中 1成功 9撤销');
+                  ->comment('充值状态:0充值中,1成功,9撤销');
+            $table->tinyInteger('pay_status')
+                  ->unsigned()
+                  ->default('0')
+                  ->comment('平台订单付款状态:0未付款,1已付款');
             $table->string('goods_title', '80')
                   ->default('')
                   ->comment('商品名称');

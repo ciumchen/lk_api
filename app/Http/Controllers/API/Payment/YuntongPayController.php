@@ -16,9 +16,9 @@ use Log;
 
 class YuntongPayController extends Controller
 {
-
+    
     use AllowField;
-
+    
     /**
      * 创建支付
      *
@@ -30,35 +30,27 @@ class YuntongPayController extends Controller
     public function createPay(Request $request)
     {
         $data = $request->all();
-        $uid = $data['uid'] ?: 0;
+        $uid = $data[ 'uid' ] ?: 0;
         $tradeOrder = new TradeOrder();
-
         //判断支付金额
-        if (!in_array($data['money'], [50, 100, 200]) && in_array($data['description'], ['HF', 'ZL']))
-        {
+        if (!in_array($data[ 'money' ], [50, 100, 200]) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
             throw new LogicException('话费充值金额不在可选值范围内');
-        } elseif (!in_array($data['money'], [300, 500, 1000]) && $data['description'] == "MT")
-        {
+        } elseif (!in_array($data[ 'money' ], [300, 500, 1000]) && $data[ 'description' ] == "MT") {
             throw new LogicException('美团充值金额不在可选值范围内');
-        } elseif (!in_array($data['money'], [100, 200, 500, 1000]) && $data['description'] == "YK")
-        {
+        } elseif (!in_array($data[ 'money' ], [100, 200, 500, 1000]) && $data[ 'description' ] == "YK") {
             throw new LogicException('油卡充值金额不在可选值范围内');
         }
-
         //检查用户当月消费金额
         $sumData = [
-            'uid' => $uid,
-            'description' => $data['description']
+            'uid'         => $uid,
+            'description' => $data[ 'description' ],
         ];
         $totalPrice = $tradeOrder->getMonthSum($sumData);
-        if ($data['description'] == 'HF' && $totalPrice >= 500)
-        {
+        if ($data[ 'description' ] == 'HF' && $totalPrice >= 500) {
             throw new LogicException('本月话费充值金额已达上限');
-        } elseif ($data['description'] == 'YK' && $totalPrice >= 2000)
-        {
+        } elseif ($data[ 'description' ] == 'YK' && $totalPrice >= 2000) {
             throw new LogicException('本月油卡充值金额已达上限');
         }
-
         $orderData = $this->createData($data);
         DB::beginTransaction();
         try {
@@ -75,7 +67,7 @@ class YuntongPayController extends Controller
         DB::commit();
         return $this->payRequest(array_merge($data, $orderData));
     }
-
+    
     /**
      * 再次请求支付
      *
@@ -103,7 +95,7 @@ class YuntongPayController extends Controller
         }
         return $this->payRequest(array_merge($data, $orderData));
     }
-
+    
     /**
      * 发起支付请求
      *
@@ -141,7 +133,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-
+    
     /*******************************************************************/
     /**
      * 订单 trade_order 表插入数据
@@ -164,7 +156,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-
+    
     /**
      * 订单 order 表插入数据
      *
@@ -193,7 +185,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-
+    
     /**
      * 组装订单数据
      *
@@ -248,7 +240,7 @@ class YuntongPayController extends Controller
             'modified_time' => $date,
         ];
     }
-
+    
     /**
      * @param string $url
      *
@@ -266,7 +258,7 @@ class YuntongPayController extends Controller
         }
         return $url;
     }
-
+    
     /**
      * 获取 order 表中 name 字段的值
      *
@@ -297,7 +289,7 @@ class YuntongPayController extends Controller
         }
         return $name;
     }
-
+    
     /**
      * 获取 trade_order 表 oid 字段
      *
@@ -317,7 +309,7 @@ class YuntongPayController extends Controller
         }
         return $oid;
     }
-
+    
     /**
      * 获取客户端IP
      *
@@ -339,7 +331,7 @@ class YuntongPayController extends Controller
         }
         return $ip;
     }
-
+    
     /**
      * 获取 trade_order 表中的 remarks 字段值
      *
@@ -359,7 +351,7 @@ class YuntongPayController extends Controller
         }
         return $remarks;
     }
-
+    
     /**
      * 获取支付通道标记
      *
@@ -384,7 +376,7 @@ class YuntongPayController extends Controller
         }
         return $payChannel;
     }
-
+    
     /**
      * 获取比例
      *
