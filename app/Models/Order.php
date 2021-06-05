@@ -166,6 +166,10 @@ class Order extends Model
         'name',
     ];
 
-
+    public function getUpdatedDateAttribute($value)
+    {
+//        dd($value);
+        return date("Y-m-d H:i:s",strtotime($this->attributes['updated_at']));
+    }
 
 }

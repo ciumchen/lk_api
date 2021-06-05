@@ -90,7 +90,7 @@ class CountUserController extends Controller
 //        $data['merchantTodayFfNum'] = round($re->business/DB::table('users')->sum('business_lk'),2);
 
         $countProfitPrice = DB::table('order')->where('status',2)->where('created_at','>=',date('Y-m-d',time()))->sum('profit_price');
-        $data['merchantTodayFfNum'] = round($countProfitPrice*0.15/DB::table('users')->sum('lk'),2);
+        $data['merchantTodayFfNum'] = round($countProfitPrice*0.15/DB::table('users')->sum('business_lk'),2);
 
     //商户-昨日lk总数
         $re = DB::table('rebate_data')->where('day',date("Y-m-d",strtotime("-1 day")))->first();
