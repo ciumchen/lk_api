@@ -174,22 +174,20 @@ class MobileRechargeService
     public function setMobileOrder($order_id, $order_no, $uid, $mobile, $money)
     {
         $date = date('Y-m-d H:i:s');
-        $data = [
-            'mobile'     => $mobile,
-            'money'      => $money,
-            'order_id'   => $order_id,
-            'order_no'   => $order_no,
-            'created_at' => $date,
-            'updated_at' => $date,
-            'uid'        => $uid,
-        ];
-        $mobileOrder = new OrderMobileRecharge();
+        $MobileOrder = new OrderMobileRecharge();
         try {
-            $mobileOrder->save($data);
+            $MobileOrder->mobile = $mobile;
+            $MobileOrder->money = $money;
+            $MobileOrder->order_id = $order_id;
+            $MobileOrder->order_no = $order_no;
+            $MobileOrder->created_at = $date;
+            $MobileOrder->updated_at = $date;
+            $MobileOrder->uid = $uid;
+            $MobileOrder->save();
         } catch (Exception $e) {
             throw  $e;
         }
-        return $mobileOrder;
+        return $MobileOrder;
     }
     
     /**
