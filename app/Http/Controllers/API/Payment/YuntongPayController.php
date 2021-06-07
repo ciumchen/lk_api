@@ -87,7 +87,7 @@ class YuntongPayController extends Controller
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
         try {
-            if (empty($order_data[ 'end_time' ])) {
+            if (empty($order_data->end_time)) {
                 $order_data->end_time = date('Y-m-d H:i:s');
                 $order_data->order_from = $this->getPayChannel($data[ 'payChannel' ]);
                 $order_data->save();
