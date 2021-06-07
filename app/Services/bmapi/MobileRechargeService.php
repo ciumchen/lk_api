@@ -55,6 +55,11 @@ class MobileRechargeService
         return $Order->find($order_id);
     }
     
+    public function setAllOrderDl()
+    {
+        /*TODO:代充订单生成*/
+    }
+    
     /**
      * TradeOrder 表数据组装
      *
