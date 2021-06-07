@@ -4,12 +4,12 @@
 namespace App\Http\Controllers\API\Test;
 
 
+use App\Http\Controllers\API\Test\OpenClient;
 use App\Services\OrderService;
 use App\Services\OssService;
 use Illuminate\Http\Request;
-use App\Models\Order;
-use App\Services\OrderService_test;
-use Illuminate\Support\Facades\DB;
+use GuzzleHttp;
+
 class TestController
 {
     //test测试
@@ -64,43 +64,6 @@ class TestController
 
     }
 
-    //订单回调测试
-    public function orderTest(Request $request){
-//        echo "测试积分添加";
-        //更新 order 表审核状态
-        $orderOn = $request->input('orderOn');
-        (new OrderService())->completeOrder($orderOn);
-    }
-
-//    //自动审核测试
-////https://ceshi.catspawvideo.com/api/pushOrder
-////http://localhost:8081/api/pushOrder
-//    public function pushOrder(){
-//        set_time_limit(0);
-//        ini_set('max_execution_time', '0');
-//        $count = Order::where('status',"!=",2)->where('id','>',13281)->where('pay_status',"!=","ddyc")->count();
-//
-//        if ($count){
-//            $orderInfo = DB::table('order')->where('order.id','>','13281')
-//                ->where('order.status',"!=",2)
-//                ->where('order.pay_status',"!=","ddyc")
-//                ->leftJoin('trade_order','order.id','=','trade_order.oid')
-//                ->limit(20)->get()->toArray();
-//            foreach ($orderInfo as $k=>$v){
-//                if($v->order_no){
-//                    (new OrderService_test())->completeOrder($v->order_no);
-//                }
-//
-//            }
-//
-//            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
-//
-//        }else{
-//            return '<h4>所有订单审核完成</h4>';
-//        }
-//
-//
-//    }
 
 
 }

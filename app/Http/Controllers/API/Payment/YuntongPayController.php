@@ -10,6 +10,7 @@ use App\Models\Traits\AllowField;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Libs\Yuntong\YuntongPay;
+use App\Models\AirTradeLogs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Log;
@@ -53,14 +54,30 @@ class YuntongPayController extends Controller
             throw new LogicException('本月油卡充值金额已达上限');
         }
         $orderData = $this->createData($data);
+
+        //机票充值订单
+        if ($data['description'] == 'AT')
+        {
+            $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
+            $orderData['order_no'] = $data['orderNo'] = $orderNo;
+        }
+
         DB::beginTransaction();
         try {
             $oid = $this->createOrder($orderData);
             if (!is_numeric($oid)) {
                 throw new Exception('订单生成失败');
             }
-            $orderData[ 'oid' ] = $oid;
-            $this->createTradeOrder($orderData);
+
+            //生成机票订单
+            if (in_array($data['description'], ['AT']))
+            {
+               (new AirTradeLogs())->setAitTrade($data);
+            } else
+            {
+                $orderData[ 'oid' ] = $oid;
+                $this->createTradeOrder($orderData);
+            }
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -115,6 +132,8 @@ class YuntongPayController extends Controller
      */
     public function payRequest($data)
     {
+
+//        return false;//TODO:屏蔽支付请求
         $return_url = url('/api/yun-notify');
         if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
             $return_url = env('HTTP_URL') . '/api/yun-notify';
@@ -176,6 +195,11 @@ class YuntongPayController extends Controller
      */
     public function createOrder($data = [])
     {
+        //飞机票才有 order_no，其他充值类型不写入
+        if ($data['name'] != '飞机票')
+        {
+            $data['order_no'] = '';
+        }
         try {
             $Order = new Order();
             $oid = intval($data[ 'oid' ]);
@@ -292,6 +316,9 @@ class YuntongPayController extends Controller
                 break;
             case "ZL":
                 $name = '代充';
+                break;
+            case "AT":
+                $name = '飞机票';
                 break;
             default:
                 $name = '';

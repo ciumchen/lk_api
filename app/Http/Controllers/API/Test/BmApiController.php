@@ -14,6 +14,9 @@ use Bmapi\Core\Aes;
 use Bmapi\Core\Sign;
 use Bmapi\Core\ApiRequest;
 use Illuminate\Http\Request;
+use Bmapi\Api\Air\StationsList;
+use Bmapi\Api\Air\ItemsList;
+use Bmapi\Api\Air\LinesList;
 
 /**
  * 斑马力方接口测试
@@ -23,7 +26,7 @@ use Illuminate\Http\Request;
  */
 class BmApiController extends Controller
 {
-    
+
     /**
      * 水电煤商品列表查询测试
      *
@@ -190,7 +193,7 @@ class BmApiController extends Controller
         $data = $LIfeRecharge->getData();
         return response()->json($data);
     }
-    
+
     /**
      * 手机查话费
      *
@@ -289,5 +292,35 @@ class BmApiController extends Controller
             "tplId": "00010001"
         }
         */
+    }
+
+    public function airList()
+    {
+        $ItemList = new StationsList();
+        $res = $ItemList->setPageNo(0)
+            ->setPageSize(8)
+            ->postParams()
+            ->getResult();
+        var_dump(json_decode($res, 1)['air_stations_list_response']['stations']);die;
+    }
+
+    public function itemsList()
+    {
+        $ItemList = new ItemsList();
+        return $ItemList->setPageNo(0)
+            ->setPageSize(8)
+            ->postParams()
+            ->getResult();
+    }
+
+    public function linesList()
+    {
+        $LinesList = new LinesList();
+        return $LinesList->setFrom('PEK')
+            ->setTo('CTU')
+            ->setDate('2021-05-30')
+            ->setItemId('5500301')
+            ->postParams()
+            ->getResult();
     }
 }
