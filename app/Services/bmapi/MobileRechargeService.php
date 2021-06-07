@@ -90,6 +90,7 @@ class MobileRechargeService
             'pay_time'      => $date,
             'modified_time' => $date,
             'remarks'       => '',
+            'order_from'    => '',
         ];
     }
     
