@@ -4,12 +4,12 @@
 namespace App\Http\Controllers\API\Test;
 
 
+use App\Http\Controllers\API\Test\OpenClient;
 use App\Services\OrderService;
 use App\Services\OssService;
 use Illuminate\Http\Request;
-use App\Models\Order;
-use App\Services\OrderService_test;
-use Illuminate\Support\Facades\DB;
+use GuzzleHttp;
+
 class TestController
 {
     //test测试
@@ -72,35 +72,108 @@ class TestController
         (new OrderService())->completeOrder($orderOn);
     }
 
-//    //自动审核测试
-////https://ceshi.catspawvideo.com/api/pushOrder
-////http://localhost:8081/api/pushOrder
-//    public function pushOrder(){
-//        set_time_limit(0);
-//        ini_set('max_execution_time', '0');
-//        $count = Order::where('status',"!=",2)->where('id','>',13281)->where('pay_status',"!=","ddyc")->count();
-//
-//        if ($count){
-//            $orderInfo = DB::table('order')->where('order.id','>','13281')
-//                ->where('order.status',"!=",2)
-//                ->where('order.pay_status',"!=","ddyc")
-//                ->leftJoin('trade_order','order.id','=','trade_order.oid')
-//                ->limit(20)->get()->toArray();
-//            foreach ($orderInfo as $k=>$v){
-//                if($v->order_no){
-//                    (new OrderService_test())->completeOrder($v->order_no);
-//                }
-//
-//            }
-//
-//            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
-//
-//        }else{
-//            return '<h4>所有订单审核完成</h4>';
-//        }
-//
-//
-//    }
+    /**获取机场站点测试
+     * @return mixed
+     * @throws
+     */
+    public function airList()
+    {
+        $appKey = '10002911';
+        $accessTocken = '2dd520ba581a4db5a3fcbd074e19d618';
+        $appSecret = 'oBfoIUjgyTREH5c70qeAueUXgAoZT0AW';
+        $method = 'qianmi.elife.Air.stations.list';
+        $v = 1.1;
+        $format = 'json';
+        $signMethod = 'sha1';
+        $url = 'http://api.bm001.com/api';
+        $date = date("Y-m-d H:i:s");
 
+        //组装生成sign 参数
+        $signData = [
+            'appKey' => $appKey,
+            'format' => $format,
+            'method' => $method,
+            'v'      => $v
+        ];
+        $methodData = [
+            'accessTocken' => $accessTocken,
+            'appSecret'    => $appSecret,
+            'signMethod'   => $signMethod
+        ];
+
+        //生成sign
+        $sign = $this->setSign($signData, $methodData);
+        //$sign = '6436C15A53DB76E844D9288C1AA9D11459F28202';
+        //组装参数
+        $http = new GuzzleHttp\Client;
+        $query = $signData;
+        $query['sign'] = $sign;
+        $query['access_token'] = $accessTocken;
+        $query['timestamp'] = $date;
+        unset($query['appKey'], $query['format']);
+
+        //调用获取机场站点url
+        $response = $http->get($url, [
+            'query' => $query,
+        ]);
+
+        //返回数据
+        return json_decode($response->getBody(), 1);
+    }
+
+    /**生成sign
+     * @param array $params
+     * @param array $methodData
+     * @return mixed
+     * @throws
+     */
+    /*private function setSign(array $params, array $methodData)
+    {
+        //封装参数
+        if(empty($methodData['accessTocken']))
+        {
+            throw new Exception("Error:Invalid Arguments:the value of accessToken can not be null." , 41);
+            return;
+        } else
+        {
+            $params["access_token"] = $methodData['accessTocken'];
+        }
+
+        //排序
+        ksort($params);
+        $signString = "";
+        foreach ($params as $k => $v)
+        {
+            $signString .= $k . $v;
+        }
+        unset($k, $v);
+        $signString = $methodData['appSecret'] . $signString . $methodData['appSecret'];
+
+        //返回sign
+        return strtoupper(call_user_func($methodData['signMethod'], $signString));
+    }*/
+
+    /**
+     * 加密请求参数
+     * @param $params
+     * @return string
+     */
+    /*protected function generateSign($params)
+    {
+        ksort($params);
+
+        $sign_string = "";
+        foreach ($params as $k => $v)
+        {
+            $sign_string .= $k . $v;
+        }
+        unset($k, $v);
+        $appSecret = 'oBfoIUjgyTREH5c70qeAueUXgAoZT0AW';
+
+        $sign_string = $appSecret . $sign_string . $appSecret;
+        $sign_method = 'sha1';
+
+        return strtoupper(call_user_func($sign_method, $sign_string));
+    }*/
 
 }

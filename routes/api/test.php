@@ -1,11 +1,9 @@
 <?php
-use Illuminate\Support\Facades\Route;
 //test测试接口路由
 Route::post('test', 'Test\TestController@test');
 Route::post('test2', 'Test\TestController@test2');
 Route::post('test3', 'Test\TestController@test3');
 Route::any('orderTest', 'Test\TestController@orderTest');
-Route::any('pushOrder', 'Test\TestController@pushOrder');
 Route::any('yttest', 'Test\YuntongController@index');
 Route::post('yttest1', 'Test\YuntongController@pay');
 Route::post('yttest2', 'Test\YuntongController@order_status');
@@ -22,6 +20,6 @@ Route::any('bm-test4', 'Test\BmApiController@index');
 Route::any('bm-test5', 'Test\BmApiController@index');
 
 
-
-
-
+Route::any('air', 'Test\BmApiController@airList');
+Route::any('item', 'Test\BmApiController@itemsList');
+Route::any('lines', 'Test\BmApiController@linesList');

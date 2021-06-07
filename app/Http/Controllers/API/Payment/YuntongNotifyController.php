@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\Order\RechargeController;
+use App\Services\AirOrderService;
 
 class YuntongNotifyController extends Controller
 {
@@ -126,6 +127,13 @@ class YuntongNotifyController extends Controller
             }
             //发送录单消息通知
             (new Order())->orderMsg($data[ 'order_id' ]);
+
+            //机票订单
+            $airOrderNo = (new PayLogs())->payInfo($data[ 'order_id' ]);
+            if ($airOrderNo)
+            {
+                (new AirOrderService())->airOrder($airOrderNo);
+            }
         } catch (\LogicException $le) {
             throw $le;
         }

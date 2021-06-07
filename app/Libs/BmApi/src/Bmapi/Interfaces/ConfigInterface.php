@@ -1,6 +1,6 @@
 <?php
 
-namespace Bmapi\interfaces;
+namespace Bmapi\Interfaces;
 
 /**
  * 斑马力方 配置接口
@@ -21,14 +21,14 @@ interface ConfigInterface
     /**
      * 获取APP_SECRET
      *
-     * @return mixed
+     * @return string
      */
     public function getAppSecret();
 
     /**
      * 获取ACCESS_TOKEN
      *
-     * @return mixed
+     * @return string
      */
     public function getAccessToken();
 }
