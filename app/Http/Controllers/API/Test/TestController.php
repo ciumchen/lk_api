@@ -64,12 +64,6 @@ class TestController
 
     }
 
-    //订单回调测试
-    public function orderTest(Request $request){
-//        echo "测试积分添加";
-        //更新 order 表审核状态
-        $orderOn = $request->input('orderOn');
-        (new OrderService())->completeOrder($orderOn);
-    }
+
 
 }
