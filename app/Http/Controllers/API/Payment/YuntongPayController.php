@@ -132,7 +132,7 @@ class YuntongPayController extends Controller
     public function payRequest($data)
     {
 
-        return false;//TODO:屏蔽支付请求
+//        return false;//TODO:屏蔽支付请求
         $return_url = url('/api/yun-notify');
         if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
             $return_url = env('HTTP_URL') . '/api/yun-notify';
