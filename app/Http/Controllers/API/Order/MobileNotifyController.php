@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Order;
 
 use App\Http\Controllers\Controller;
+use App\Services\bmapi\MobileRechargeService;
 use Illuminate\Http\Request;
 use Log;
 
@@ -13,7 +14,7 @@ class MobileNotifyController extends Controller
     public function callback(Request $request)
     {
         $data = $request->all();
-        Log::debug('MobileNotify', [json_encode($data)]);
+//        Log::debug('MobileNotify', [json_encode($data)]);
         /*
         {
         "user_id": "A5626842",
@@ -24,5 +25,11 @@ class MobileNotifyController extends Controller
         "timestamp": "2021-06-05 21:05:12"
         }
         */
+        try {
+            $MobileRechargeService = new MobileRechargeService();
+            $MobileRechargeService->notify($data);
+        } catch (\Exception $e) {
+            Log::debug('MobileNotify', [json_encode($data)]);
+        }
     }
 }

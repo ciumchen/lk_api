@@ -3,6 +3,7 @@
 namespace App\Services\bmapi;
 
 use App\Exceptions\LogicException;
+use Bmapi\Core\Sign;
 use DB;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
@@ -10,6 +11,7 @@ use App\Models\TradeOrder;
 use Bmapi\Api\MobileRecharge\GetItemInfo;
 use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
+use Log;
 
 class MobileRechargeService
 {
@@ -40,14 +42,55 @@ class MobileRechargeService
         try {
             /* 生成 order 表数据 */
             $order_id = $Order->setOrder($order_data);
+            /* 生成 trade_order 表数据 */
+            $trade_order_date = $this->createTradeOrderParams($user, $money, $order_no, $mobile, $order_id);
+            $TradeOrder->setOrder($trade_order_date);
             /* 生成 order_mobile_recharge 表数据 */
             $this->setMobileOrder($order_id, $order_no, $user->id, $mobile, $money);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
         DB::commit();
         return $Order->find($order_id);
+    }
+    
+    /**
+     * TradeOrder 表数据组装
+     *
+     * @param $user
+     * @param $mobile
+     * @param $money
+     * @param $order_id
+     * @param $order_no
+     *
+     * @return array
+     */
+    public function createTradeOrderParams($user, $money, $order_no, $mobile, $order_id)
+    {
+        $date = date("Y-m-d H:i:s");
+        $profit_ratio = 0.05;
+        $profit_price = $money * $profit_ratio;
+        return [
+            'user_id'       => $user->id,
+            'title'         => '话费充值',
+            'price'         => $money,
+            'num'           => 1,
+            'numeric'       => $mobile,
+            'telecom'       => '话费',
+            'status'        => 'await',
+            'order_no'      => $order_no,
+            'need_fee'      => $money,
+            'profit_ratio'  => $profit_ratio,
+            'profit_price'  => $profit_price,
+            'integral'      => 0.00,
+            'description'   => 'HF',
+            'oid'           => $order_id,
+            'created_at'    => $date,
+            'pay_time'      => $date,
+            'modified_time' => $date,
+            'remarks'       => '',
+        ];
     }
     
     /**
@@ -106,12 +149,59 @@ class MobileRechargeService
     }
     
     /**
+     * 回调处理订单状态
+     *
+     * @param $data
+     *
+     * @throws \Exception
+     */
+    public function notify($data)
+    {
+        /*
+       {
+       "user_id": "A5626842",
+       "sign": "C0F9E3501C0DB8EBA781993D8268B073FBF9EE79",
+       "recharge_state": "1",
+       "outer_tid": "PY_20210605210408281427",
+       "tid": "S2106052397812",
+       "timestamp": "2021-06-05 21:05:12"
+       }
+       */
+        $MobileRecharge = new OrderMobileRecharge();
+        try {
+            if (empty($data)) {
+                throw new Exception('手机充值回调数据为空');
+            }
+            $PayBill = new PayBill();
+            if (!$PayBill->checkSign($data)) {
+                throw new Exception('验签不通过');
+            }
+            $rechargeInfo = $MobileRecharge->where('order_no', '=', $data[ 'outer_tid' ])
+                                           ->first();
+            if (empty($rechargeInfo)) {
+                throw new Exception('未查询到订单数据');
+            }
+            if ($rechargeInfo->status != 0) {
+                die('订单已处理');
+            }
+            $rechargeInfo->status = $data[ 'recharge_state' ];
+            $rechargeInfo->trade_no = $data[ 'tid' ];
+            $rechargeInfo->updated_at = $data[ 'timestamp' ];
+        } catch (Exception $e) {
+            Log::debug('banMaNotify-Error:' . $e->getMessage(), [json_encode($data)]);
+            throw $e;
+        }
+        die('success');
+    }
+    
+    /**
      * 订单充值
      * 付款成功后调用
      *
      * @param int    $order_id 订单ID
      * @param string $order_no 订单编号
      *
+     * @return bool
      * @throws \Exception
      */
     public function recharge($order_id, $order_no)
@@ -155,6 +245,7 @@ class MobileRechargeService
                     ->getResult();
             $bill = $PayBill->getBill();
         } catch (Exception $e) {
+            Log::debug('BanMaMobilePay-Error:' . $e->getMessage(), ['BILL:' . json_encode($PayBill->getBill())]);
             throw  $e;
         }
         return $bill;

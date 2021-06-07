@@ -26,6 +26,7 @@ class YuntongPayController extends Controller
      *
      * @return JsonResponse
      * @throws Exception
+     * @throws \Throwable
      */
     public function createPay(Request $request)
     {
@@ -85,11 +86,18 @@ class YuntongPayController extends Controller
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
-        $order_data = (array)$order_data;
-        $orderData = $this->createData(array_merge($data, $order_data));
-        $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
         try {
-            $this->createTradeOrder($orderData);
+            if (empty($order_data[ 'end_time' ])) {
+                $order_data->end_time = date('Y-m-d H:i:s');
+                $order_data->order_from = $this->getPayChannel($data[ 'payChannel' ]);
+                $order_data->save();
+                $orderData = (array)$order_data;
+            } else {
+                $order_data = (array)$order_data;
+                $orderData = $this->createData(array_merge($data, $order_data));
+                $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
+                $this->createTradeOrder($orderData);
+            }
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }

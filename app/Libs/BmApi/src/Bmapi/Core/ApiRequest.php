@@ -23,7 +23,6 @@ class ApiRequest implements RequestInterface
      */
 //    const API_HOST = 'https://api.bm001.com/api';
 //    const API_HOST = 'http://api.bm001.com/api';
-
     const API_HOST = 'http://test.api.bm001.com/api';
     
     /**
@@ -150,6 +149,28 @@ class ApiRequest implements RequestInterface
         $data[ 'sign' ] = Sign::generateSign($data, $this->app_secret);
         $this->allPostParams = $data;
         return $this;
+    }
+    
+    /**
+     * 回调数据验签
+     *
+     * @param array $data
+     *
+     * @return bool
+     */
+    public function checkSign(array $data)
+    {
+        try {
+            if (empty($data)) {
+                throw new Exception('验证数据为空');
+            }
+            if (!Sign::checkSign($data, $this->app_secret)) {
+                throw new Exception('验签失败');
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+        return true;
     }
     
     /**

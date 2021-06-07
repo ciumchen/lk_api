@@ -8,6 +8,7 @@ use App\Libs\Yuntong\YuntongPay;
 use App\Models\Order;
 use App\Models\PayLogs;
 use App\Models\TradeOrder;
+use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
 use Exception;
 use Illuminate\Http\Request;
@@ -118,7 +119,10 @@ class YuntongNotifyController extends Controller
             (new OrderService())->completeOrder($data[ 'order_id' ]);
             //自动充值
             if ($trade_order->description == "HF") {
+                /* 原手机充值*/
                 (new RechargeController())->setCall($callData);
+                /* 斑马力方手机充值*/
+                (new MobileRechargeService())->recharge($trade_order->oid, $data[ 'order_id' ]);
             } elseif ($trade_order->description == "YK") {
                 (new RechargeController())->setGas($gasData);
             } elseif ($trade_order->description == "ZL") {

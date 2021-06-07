@@ -51,7 +51,7 @@ class YuntongController extends Controller
             $bb = $aa
                 ->setGoodsTitle($goods_title)
                 ->setGoodsDesc($goods_desc)
-                ->setAmount(0.6)
+                ->setAmount(0.1)
                 ->setOrderId($order_id)
                 ->setNotifyUrl($return_url)
                 ->setType('alipay')
