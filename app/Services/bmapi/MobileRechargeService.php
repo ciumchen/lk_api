@@ -111,6 +111,7 @@ class MobileRechargeService
      */
     public function createOrderParams($user, $money, $order_no)
     {
+        $date = date("Y-m-d H:i:s");
         $profit_ratio = 5;
         $profit_price = $money * ($profit_ratio / 100);
         return [
@@ -120,6 +121,7 @@ class MobileRechargeService
             'price'        => $money,
             'profit_price' => $profit_price,
             'name'         => '话费',
+            'created_at'   => $date,
             'status'       => '1',
             'state'        => '1',
             'pay_status'   => 'await',
