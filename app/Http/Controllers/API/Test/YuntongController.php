@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Test;
+namespace App\Http\Controllers\API\Test;
 
 use App\Http\Controllers\api\Payment\YuntongPayController;
 use App\Http\Controllers\Controller;

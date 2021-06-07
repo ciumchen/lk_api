@@ -23,6 +23,7 @@ class MobileRechargeService
      *
      * @return mixed
      * @throws \Exception
+     * @throws \Throwable
      */
     public function setAllOrder($user, $mobile, $money)
     {

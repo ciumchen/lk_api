@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Test;
+namespace App\Http\Controllers\API\Test;
 
 use App\Http\Controllers\Controller;
 use Bmapi\Api\MobileRecharge\GetItemInfo;

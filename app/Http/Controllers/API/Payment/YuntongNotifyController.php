@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Payment;
+namespace App\Http\Controllers\API\Payment;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;

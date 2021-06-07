@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Order;
+namespace App\Http\Controllers\API\Order;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
