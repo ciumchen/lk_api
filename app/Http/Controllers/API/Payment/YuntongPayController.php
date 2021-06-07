@@ -432,4 +432,45 @@ class YuntongPayController extends Controller
         }
         return $profit_ratio;
     }
+
+    /**
+     * 机票再次请求支付
+     * @param Request $request
+     * @return JsonResponse
+     * @throws LogicException
+     * @throws Exception
+     */
+    public function airAgainPay(Request $request)
+    {
+        //获取数据
+        $data = $request->all();
+        $airOrder = new Order();
+        $airOrderData = json_decode($airOrder->getOrderInfo($data['order_no']), 1);
+        if (in_array($airOrderData['pay_status'], ['pending', 'succeeded']))
+        {
+            throw new LogicException('订单不属于未支付或支付失败状态');
+        }
+        $airOrderData = (array)$airOrderData;
+
+        //组装数据
+        $paramsData = [
+            'description' => 'AT',
+            'payChannel'  => $data['payChannel'],
+            'number'      => 1,
+            'numeric'     => '',
+            'telecom'     => '',
+            'goodsTitle'  => '机票订单',
+            'need_fee'    => $airOrderData['price']
+        ];
+        $orderData = array_merge($data, $paramsData);
+        $airOrderData['order_from'] = $this->getPayChannel($data['payChannel']);
+        try {
+            (new Order())->airOrder($data['order_no']);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+
+        //发起支付请求
+        return $this->payRequest(array_merge($orderData, $airOrderData));
+    }
 }

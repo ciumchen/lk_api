@@ -146,9 +146,51 @@ class Order extends Model
         (new UserMsgController())->setMsg($orderNo, 2);
     }
 
-    public function Trade_Order()
+    /**获取订单数据
+    * @param string $orderNo
+    * @return mixed
+    * @throws
+    */
+    public function getOrderInfo(string $orderNo)
     {
-        return $this->belongsTo(TradeOrder::class, 'id','oid');
+        $res = (new Order())::where('order_no', $orderNo)->exists();
+        if (!$res)
+        {
+            throw new LogicException('订单数据不存在');
+        }
+
+        return (new Order())::where('order_no', $orderNo)->get()->first();
+    }
+
+    /**机票再次支付
+    * @param string $orderNo
+    * @return mixed
+    * @throws
+    */
+    public function airOrder(string $orderNo)
+    {
+        $date = date('Y-m-d H:i:s');
+        //获取订单信息
+        $orderData = (new Order())::where('order_no', $orderNo)->get(['id', 'pay_status'])->first();
+        if (in_array($orderData['pay_status'], ['pending', 'succeeded']))
+        {
+            throw new LogicException('订单不属于未支付或支付失败状态');
+        }
+        $aidData = (new AirTradeLogs())::where('order_no', $orderNo)->get(['id'])->first();
+
+        $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
+
+        //更新order 表订单信息
+        $order = (new Order())->find($orderData['id']);
+        $order->order_no = $orderNo;
+        $order->updated_at = $date;
+        $order->save();
+
+        //更新air_trade_logs 表订单信息
+        $airTradeLogs = (new AirTradeLogs())->find($aidData->id);
+        $airTradeLogs->order_no = $orderNo;
+        $airTradeLogs->updated_at = $date;
+        $airTradeLogs->save();
     }
 
     /**
@@ -166,10 +208,6 @@ class Order extends Model
         'name',
     ];
 
-    public function getUpdatedDateAttribute($value)
-    {
-//        dd($value);
-        return date("Y-m-d H:i:s",strtotime($this->attributes['updated_at']));
-    }
+
 
 }

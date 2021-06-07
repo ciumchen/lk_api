@@ -14,3 +14,6 @@ Route::post('yun-pay', 'Payment\YuntongPayController@createPay');
 Route::post('yun-pay-again', 'Payment\YuntongPayController@againPay');
 //云通支付回调
 Route::post('yun-notify', 'Payment\YuntongNotifyController@callBack');
+
+//机票二次支付
+Route::post('air-again-pay', 'Payment\YuntongPayController@airAgainPay');
