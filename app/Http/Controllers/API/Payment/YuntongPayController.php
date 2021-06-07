@@ -90,13 +90,9 @@ class YuntongPayController extends Controller
         }
         try {
             if (empty($order_data->end_time)) {
-                $update_data = [
-                    'end_time'=>date('Y-m-d H:i:s'),
-                    'order_from'=>$this->getPayChannel($data[ 'payChannel' ]),
-                ];
-//                $order_data->end_time = date('Y-m-d H:i:s');
-//                $order_data->order_from = $this->getPayChannel($data[ 'payChannel' ]);
-                $order_data->update($update_data);
+                $order_data->end_time = date('Y-m-d H:i:s');
+                $order_data->order_from = $this->getPayChannel($data[ 'payChannel' ]);
+                $order_data->save();
                 $orderData = (array)$order_data;
             } else {
                 $order_data = (array)$order_data;
