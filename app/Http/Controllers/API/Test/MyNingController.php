@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Test;
+namespace App\Http\Controllers\Api\MyNing;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
