@@ -84,7 +84,6 @@ class YuntongPayController extends Controller
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->where('oid', '=', $data[ 'oid' ])
                                  ->first();
-//        $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
@@ -93,7 +92,7 @@ class YuntongPayController extends Controller
                 $order_data->end_time = date('Y-m-d H:i:s');
                 $order_data->order_from = $this->getPayChannel($data[ 'payChannel' ]);
                 $order_data->save();
-                $orderData = (array)$order_data;
+                $orderData = $order_data->toArray();
             } else {
                 $order_data = (array)$order_data;
                 $orderData = $this->createData(array_merge($data, $order_data));
