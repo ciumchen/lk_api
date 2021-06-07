@@ -115,6 +115,7 @@ class MobileRechargeService
             'profit_price' => $profit_price,
             'name'         => '话费',
             'status'       => '1',
+            'state'        => '1',
             'pay_status'   => 'await',
             'remark'       => '',
             'order_no'     => $order_no,
