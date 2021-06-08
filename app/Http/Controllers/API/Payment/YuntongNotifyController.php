@@ -121,13 +121,16 @@ class YuntongNotifyController extends Controller
             //自动充值
             if ($trade_order->description == "HF") {
                 /* 原手机充值*/
-//                (new RechargeController())->setCall($callData);
+                (new RechargeController())->setCall($callData);
                 /* 斑马力方手机充值*/
-                (new MobileRechargeService())->recharge($trade_order->oid, $data[ 'order_id' ]);
+//                (new MobileRechargeService())->recharge($trade_order->oid, $data[ 'order_id' ]);
             } elseif ($trade_order->description == "YK") {
                 (new RechargeController())->setGas($gasData);
             } elseif ($trade_order->description == "ZL") {
-                (new RechargeController())->callDefray($callData);
+                /* 原代充 */
+//                (new RechargeController())->callDefray($callData);
+                /* 斑马力方手机充值*/
+                (new MobileRechargeService())->recharge($trade_order->oid, $data[ 'order_id' ]);
             }
             //发送录单消息通知
             (new Order())->orderMsg($data[ 'order_id' ]);

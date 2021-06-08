@@ -148,7 +148,7 @@ class MobileRechargeService
             'profit_ratio'  => $profit_ratio,
             'profit_price'  => $profit_price,
             'integral'      => 0.00,
-            'description'   => 'DL',
+            'description'   => 'ZL',
             'oid'           => $order_id,
             'created_at'    => $date,
             'pay_time'      => $date,
