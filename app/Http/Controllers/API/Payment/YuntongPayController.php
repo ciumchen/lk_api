@@ -63,11 +63,11 @@ class YuntongPayController extends Controller
         $orderData = $this->createData($data);
 
         //机票充值订单
-        if ($data['description'] == 'AT')
+        /* if ($data['description'] == 'AT')
         {
             $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
             $orderData['order_no'] = $data['orderNo'] = $orderNo;
-        }
+        } */
 
         DB::beginTransaction();
         try {
@@ -77,14 +77,16 @@ class YuntongPayController extends Controller
             }
 
             //生成机票订单
-            if (in_array($data['description'], ['AT']))
+            /* if (in_array($data['description'], ['AT']))
             {
                (new AirTradeLogs())->setAitTrade($data);
             } else
             {
                 $orderData[ 'oid' ] = $oid;
                 $this->createTradeOrder($orderData);
-            }
+            } */
+            $orderData[ 'oid' ] = $oid;
+            $this->createTradeOrder($orderData);
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -129,12 +131,17 @@ class YuntongPayController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function payRequest($data)
+    public function payRequest($data, $return_url = '')
     {
-        $return_url = url('/api/yun-notify');
-        if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
-            $return_url = env('HTTP_URL') . '/api/yun-notify';
+        if (empty($return_url)) {
+            $return_url = url('/api/yun-notify');
         }
+
+        if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
+            //$return_url = env('HTTP_URL') . '/api/yun-notify';
+            $return_url = str_replace('http://', 'https://', $return_url);
+        }
+
         $YuntongPay = new YuntongPay();
         try {
             $res = $YuntongPay
@@ -431,6 +438,72 @@ class YuntongPayController extends Controller
         return $profit_ratio;
     }
 
+    /**机票支付
+     * @param Request $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function airPay(Request $request)
+    {
+        $data = $request->all();
+        return $this->airCreatePay($data);
+    }
+
+    /**机票发起支付请求
+     * @param array $data
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function airCreatePay(array $data)
+    {
+        $return_url = 'lkapi.com/api/air-notify';
+        //$return_url = url('/api/yun-notify');
+
+        $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
+        $data['need_fee'] = $data['money'] * $data['number'];
+        $data['order_no'] = $orderNo;
+        $data['order_from'] = $data['payChannel'];
+
+        $date = date('Y-m-d H:i:s');
+        $orderData = [
+            'uid'          => $data['uid'],
+            'business_uid' => 2,
+            'profit_ratio' => 0,
+            'price'        => $data['money'] * $data['number'],
+            'profit_price' => 0,
+            'status'       => 1,
+            'name'         => $this->getName($data[ 'description' ] ?? ''),
+            'remark'       => '',
+            'state'        => 1,
+            'pay_status'   => 'await',
+            'order_no'     => $orderNo,
+            'created_at'   => $date,
+            'updated_at'   => $date
+        ];
+
+        $airData = [
+            'seatCode'    => $data['seatCode'],
+            'passagers'   => $data['passagers'],
+            'itemId'      => $data['itemId'],
+            'contactName' => $data['contactName'],
+            'contactTel'  => $data['contactTel'],
+            'date'        => date('Y-m-d'),
+            'from'        => $data['from'],
+            'to'          => $data['to'],
+            'companyCode' => $data['companyCode'],
+            'flightNo'    => $data['flightNo'],
+            'orderNo'     => $orderNo,
+            'payChannel'  => $data['payChannel'],
+            'price'       => $data['money'] * $data['number'],
+        ];
+
+        (new Order())->setOrder($orderData);
+
+        (new AirTradeLogs())->setAitTrade($airData);
+
+        return $this->payRequest($data, $return_url);
+    }
+
     /**
      * 机票再次请求支付
      * @param Request $request
@@ -469,6 +542,6 @@ class YuntongPayController extends Controller
         }
 
         //发起支付请求
-        return $this->payRequest(array_merge($orderData, $airOrderData));
+        return $this->airCreatePay(array_merge($orderData, $airOrderData));
     }
 }

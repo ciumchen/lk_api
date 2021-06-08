@@ -146,6 +146,32 @@ class Order extends Model
         (new UserMsgController())->setMsg($orderNo, 2);
     }
 
+    /**机票消息通知
+     * @param string $orderNo
+     * @return mixed
+     * @throws
+     */
+    public function airOrderMsg(string $orderNo)
+    {
+        $orderDataInfo = (new Order())
+            ->join('air_trade_logs', function($join){
+                $join->on('order.order_no', 'air_trade_logs.order_no');
+            })
+            ->where(function($query) use ($orderNo){
+                $query->where('order.order_no', $orderNo)
+                    ->where('order.pay_status', 'succeeded')
+                    ->where('order.status', 2);
+            })
+            ->get(['order.*']);
+        if (!$orderDataInfo)
+        {
+            throw new LogicException('订单录单未通过');
+        }
+
+        //添加消息通知
+        (new UserMsgController())->setAirMsg($orderNo, 4);
+    }
+
     /**获取订单数据
     * @param string $orderNo
     * @return mixed
