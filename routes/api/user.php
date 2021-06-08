@@ -48,11 +48,6 @@ Route::any("getUserAssetsFxJf", "User\RecordsOfConsumptionController@getUserAsse
 //用户的公益贡献接口
 Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
 
-//添加用户积分和商家积分
-Route::any("addUserIntegral", "User\AddIntegralController@addUserIntegral");
-
-//获取用户待添加积分
-Route::any("getUserIntegral", "User\getIntegralController@getUserIntegral");
 
 
 
