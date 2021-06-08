@@ -5,6 +5,11 @@ Route::any('orderTest', 'Test\MyNingController@orderTest');
 Route::any('pushOrder', 'Test\MyNingController@pushOrder');
 
 
+//添加用户积分和商家积分
+Route::any("addUserIntegral", "User\AddIntegralController@addUserIntegral");
+
+//获取用户待添加积分
+Route::any("getUserIntegral", "User\getIntegralController@getUserIntegral");
 
 
 

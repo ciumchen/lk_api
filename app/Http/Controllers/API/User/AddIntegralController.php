@@ -21,6 +21,8 @@ class AddIntegralController extends Controller
 
     //添加用户积分和商家积分
     public function addUserIntegral(){
+        log::info('=================自动添加积分任务===================================');
+
         $setValue = Setting::where('key','consumer_integral')->value('value');
         if($setValue==1){
 //            $orderInfo = Order::where("status",2)->where('pay_status','succeeded')->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
@@ -28,6 +30,7 @@ class AddIntegralController extends Controller
             if ($orderInfo!=null){
                 $orderInfo = $orderInfo->toArray();
             }else{
+//                log::info('=================排队订单为空===================================');
                 return "排队订单为空";
             }
 
@@ -55,12 +58,15 @@ class AddIntegralController extends Controller
             //比较
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
             if($LkBlData['count_profit_price']!=0){
-                if (($addCountProfitPrice*0.675/$LkBlData['count_lk'])<100000.02){
+                $lk_unit_price = Setting::where('key','lk_unit_price')->value('value');
+                if (($addCountProfitPrice*0.675/$LkBlData['count_lk'])<$lk_unit_price){
                     $this->completeOrder($order_no);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
+//                    log::info('=================添加积分成功1===================================');
                     return "添加积分成功";
                 }else{
+//                    log::info('=================添加积分已达到上限数量1===================================');
                     return "添加积分已达到上限数量";
                 }
 
@@ -68,11 +74,13 @@ class AddIntegralController extends Controller
                 $this->completeOrder($order_no);
                 $LkBlData['count_profit_price'] = $addCountProfitPrice;
                 DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
+//                log::info('=================添加积分成功2===================================');
                 return "添加积分成功";
             }
 
         }else{
-            return "添加积分已达到上限数量";
+//            log::info('=================后台未开启控单===================================');
+            return "后台未开启控单";
         }
 
     }

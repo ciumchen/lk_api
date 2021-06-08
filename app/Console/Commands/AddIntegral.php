@@ -89,7 +89,8 @@ class AddIntegral extends Command
             //比较
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
             if($LkBlData['count_profit_price']!=0){
-                if (($addCountProfitPrice*0.675/$LkBlData['count_lk'])<1.02){
+                $lk_unit_price = Setting::where('key','lk_unit_price')->value('value');
+                if (($addCountProfitPrice*0.675/$LkBlData['count_lk'])<$lk_unit_price){
                     $this->completeOrder($order_no);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
@@ -109,8 +110,8 @@ class AddIntegral extends Command
             }
 
         }else{
-//            log::info('=================添加积分已达到上限数量2===================================');
-            return "添加积分已达到上限数量";
+//            log::info('=================后台未开启控单===================================');
+            return "后台未开启控单";
         }
 
     }
