@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Airticket;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Bmapi\Api\Air\OrderPayBill;
 use App\Models\OrderAirTrade;

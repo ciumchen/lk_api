@@ -136,26 +136,26 @@ class YuntongNotifyController extends Controller
     }
 
     /**机票支付回調
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      */
     public function airPayNotify(Request $request)
     {
         $Pay = new YuntongPay();
         $json = $request->getContent();
         try {
-            Log::debug('YunNotify入口数据', [$json]);
+            Log::debug('AirNotify入口数据', [$json]);
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
             if (!empty($res)) {
-                Log::debug('YunNotify数据', [$json]);
+                Log::debug('AirNotify数据', [$json]);
                 $this->updAirPay($res);
             } else {
-                Log::debug('YunNotify数据为空', [$json]);
+                Log::debug('AirNotify数据为空', [$json]);
                 throw new Exception('解析为空');
             }
             $Pay->Notify_success();
         } catch (Exception $e) {
-            Log::debug('YuntongNotify-验证不通过-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
+            Log::debug('AirNotify-验证不通过-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
             $Pay->Notify_failed();
         }
     }
@@ -164,7 +164,7 @@ class YuntongNotifyController extends Controller
      * @param $data
      * @throws
      */
-    public function airNotify($data)
+    public function updAirPay($data)
     {
         try {
             Log::debug('UpdateAirTrade订单数据$data', [json_encode($data)]);
@@ -205,9 +205,6 @@ class YuntongNotifyController extends Controller
 
             //机票订单
             (new AirOrderService())->airOrder($data[ 'order_id' ]);
-
-            //发送机票消息通知
-            (new Order())->airOrderMsg($data[ 'order_id' ]);
 
         } catch (\LogicException $le) {
             throw $le;

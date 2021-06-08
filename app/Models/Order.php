@@ -165,7 +165,7 @@ class Order extends Model
             ->get(['order.*']);
         if (!$orderDataInfo)
         {
-            throw new LogicException('订单录单未通过');
+            throw new LogicException('机票订单未支付或未审核通过');
         }
 
         //添加消息通知
@@ -217,6 +217,8 @@ class Order extends Model
         $airTradeLogs->order_no = $orderNo;
         $airTradeLogs->updated_at = $date;
         $airTradeLogs->save();
+
+        return $orderNo;
     }
 
     /**
