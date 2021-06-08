@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Payment;
+namespace App\Http\Controllers\API\Payment;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
@@ -8,6 +8,7 @@ use App\Libs\Yuntong\YuntongPay;
 use App\Models\Order;
 use App\Models\PayLogs;
 use App\Models\TradeOrder;
+use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
 use Exception;
 use Illuminate\Http\Request;
@@ -119,7 +120,10 @@ class YuntongNotifyController extends Controller
             (new OrderService())->completeOrder($data[ 'order_id' ]);
             //自动充值
             if ($trade_order->description == "HF") {
-                (new RechargeController())->setCall($callData);
+                /* 原手机充值*/
+//                (new RechargeController())->setCall($callData);
+                /* 斑马力方手机充值*/
+                (new MobileRechargeService())->recharge($trade_order->oid, $data[ 'order_id' ]);
             } elseif ($trade_order->description == "YK") {
                 (new RechargeController())->setGas($gasData);
             } elseif ($trade_order->description == "ZL") {
@@ -127,13 +131,6 @@ class YuntongNotifyController extends Controller
             }
             //发送录单消息通知
             (new Order())->orderMsg($data[ 'order_id' ]);
-
-            //机票订单
-            $airOrderNo = (new PayLogs())->payInfo($data[ 'order_id' ]);
-            if ($airOrderNo)
-            {
-                (new AirOrderService())->airOrder($airOrderNo);
-            }
         } catch (\LogicException $le) {
             throw $le;
         }

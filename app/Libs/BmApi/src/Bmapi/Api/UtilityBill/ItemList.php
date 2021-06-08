@@ -3,21 +3,26 @@
 namespace Bmapi\Api\UtilityBill;
 
 use Bmapi\core\ApiRequest;
+use Exception;
 
 /**
  * 查询水电煤类标准商品列表
+ *
+ * 查询上级对接的标准商品列表（信息只包含商品编号与名称），
+ * 以缩小标准商品选择范围，提高下单成功率。
+ * 注意：下单时该标准商品是否能正常使用仍限制于上级对于货源的策略控制及货源本身的实时状态。
  * Class ItemList
  *
  * @package Bmapi\Api\UtilityBill
  */
 class ItemList extends ApiRequest
 {
-
+    
     /**
      * @var string 接口名称
      */
     protected $method = 'bm.elife.directRecharge.waterCoal.item.list';
-
+    
     /**
      * @var array 接口参数
      */
@@ -31,48 +36,60 @@ class ItemList extends ApiRequest
         'city',
         'province',
     ];
-
+    
     /**
      * @var int 页码 从0开始
      */
     private $pageNo = 0;
-
+    
     /**
      * @var int 单页返回的记录数
      */
     private $pageSize = 10;
-
+    
     /**
      * @var string 省属性v编号
      */
     private $provinceVid;
-
+    
     /**
      * @var string 市属性v编号
      */
     private $cityVid;
-
+    
     /**
      * @var string 缴费项目编号，水费c2670，电费c2680，气费c2681；
      */
     private $projectId;
-
+    
     /**
      * @var string 标准商品名称,支持不带特殊字符的模糊匹配；
      */
     private $itemName;
-
+    
     /**
      * @var string 市名称(后面不带"市")
      */
     private $city;
-
+    
     /**
      * @var string 省名称 (后面不带"省")
      */
     private $province;
-
+    
     /**
+     * @var array 返回结果列表[二维数组]
+     */
+    private $list = [];
+    
+    /**
+     * @var int 返回结果总数
+     */
+    private $totalCount = 0;
+    
+    /**
+     * 接口业务参数
+     *
      * @return array
      */
     public function apiParams()
@@ -86,7 +103,25 @@ class ItemList extends ApiRequest
         };
         return array_merge(parent::apiParams(), $params);
     }
-
+    
+    /**
+     * @return $this|mixed|null
+     * @throws \Exception
+     */
+    public function fetchResult()
+    {
+        $result = json_decode($this->result, true);
+        if (!is_array($result)) {
+            return parent::fetchResult();
+        }
+        if (array_key_exists('errorToken', $result)) {
+            throw new Exception($this->result);
+        }
+        $this->list = $result[ 'admin_item_response' ][ 'items' ][ 'item' ];
+        $this->totalCount = $result[ 'admin_item_response' ][ 'totalCount' ];
+        return $this;
+    }
+    
     /**
      * 设置页码
      *
@@ -99,7 +134,7 @@ class ItemList extends ApiRequest
         $this->pageNo = $val;
         return $this;
     }
-
+    
     /**
      * 设置单页数据条数
      *
@@ -112,7 +147,7 @@ class ItemList extends ApiRequest
         $this->pageSize = $val;
         return $this;
     }
-
+    
     /**
      * 设置省属性v编号
      *
@@ -125,7 +160,7 @@ class ItemList extends ApiRequest
         $this->provinceVid = $val;
         return $this;
     }
-
+    
     /**
      * 设置市属性v编号
      *
@@ -138,7 +173,7 @@ class ItemList extends ApiRequest
         $this->cityVid = $val;
         return $this;
     }
-
+    
     /**
      * 设置缴费项目编号，水费c2670，电费c2680，气费c2681；
      *
@@ -151,7 +186,7 @@ class ItemList extends ApiRequest
         $this->projectId = $val;
         return $this;
     }
-
+    
     /**
      * 设置标准商品名称,支持不带特殊字符的模糊匹配
      *
@@ -164,7 +199,7 @@ class ItemList extends ApiRequest
         $this->itemName = $val;
         return $this;
     }
-
+    
     /**
      * 设置市名称(后面不带"市")
      *
@@ -177,7 +212,7 @@ class ItemList extends ApiRequest
         $this->city = $val;
         return $this;
     }
-
+    
     /**
      * 设置省名称(后面不带"省")
      *
@@ -190,7 +225,7 @@ class ItemList extends ApiRequest
         $this->province = $val;
         return $this;
     }
-
+    
     /**
      * @return int
      */
@@ -198,7 +233,7 @@ class ItemList extends ApiRequest
     {
         return $this->pageNo;
     }
-
+    
     /**
      * @return int
      */
@@ -206,7 +241,7 @@ class ItemList extends ApiRequest
     {
         return $this->pageSize;
     }
-
+    
     /**
      * @return string
      */
@@ -214,7 +249,7 @@ class ItemList extends ApiRequest
     {
         return $this->provinceVid;
     }
-
+    
     /**
      * @return string
      */
@@ -222,7 +257,7 @@ class ItemList extends ApiRequest
     {
         return $this->cityVid;
     }
-
+    
     /**
      * @return string
      */
@@ -230,7 +265,7 @@ class ItemList extends ApiRequest
     {
         return $this->projectId;
     }
-
+    
     /**
      * @return string
      */
@@ -238,7 +273,7 @@ class ItemList extends ApiRequest
     {
         return $this->itemName;
     }
-
+    
     /**
      * @return string
      */
@@ -246,12 +281,28 @@ class ItemList extends ApiRequest
     {
         return $this->city;
     }
-
+    
     /**
      * @return string
      */
     public function getProvince()
     {
         return $this->province;
+    }
+    
+    /**
+     * @return array 结果列表
+     */
+    public function getList()
+    {
+        return $this->list;
+    }
+    
+    /**
+     * @return int 列表总条数
+     */
+    public function getTotalCount()
+    {
+        return $this->totalCount;
     }
 }

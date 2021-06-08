@@ -17,9 +17,9 @@ use Log;
 
 class YuntongPayController extends Controller
 {
-
+    
     use AllowField;
-
+    
     /**
      * 创建支付
      *
@@ -27,61 +27,48 @@ class YuntongPayController extends Controller
      *
      * @return JsonResponse
      * @throws Exception
+     * @throws \Throwable
      */
     public function createPay(Request $request)
     {
         $data = $request->all();
-        $uid = $data['uid'] ?: 0;
+        $uid = $data[ 'uid' ] ?: 0;
         $tradeOrder = new TradeOrder();
-
         //判断支付金额
-        if (!in_array($data['money'], [50, 100, 200]) && in_array($data['description'], ['HF', 'ZL']))
-        {
+        if (!in_array($data[ 'money' ], [50, 100, 200]) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
             throw new LogicException('话费充值金额不在可选值范围内');
-        } elseif (!in_array($data['money'], [300, 500, 1000]) && $data['description'] == "MT")
-        {
+        } elseif (!in_array($data[ 'money' ], [300, 500, 1000]) && $data[ 'description' ] == "MT") {
             throw new LogicException('美团充值金额不在可选值范围内');
-        } elseif (!in_array($data['money'], [100, 200, 500, 1000]) && $data['description'] == "YK")
-        {
+        } elseif (!in_array($data[ 'money' ], [100, 200, 500, 1000]) && $data[ 'description' ] == "YK") {
             throw new LogicException('油卡充值金额不在可选值范围内');
         }
-
         //检查用户当月消费金额
         $sumData = [
-            'uid' => $uid,
-            'description' => $data['description']
+            'uid'         => $uid,
+            'description' => $data[ 'description' ],
         ];
         $totalPrice = $tradeOrder->getMonthSum($sumData);
-        if ($data['description'] == 'HF' && $totalPrice >= 500)
-        {
+        if ($data[ 'description' ] == 'HF' && $totalPrice >= 500) {
             throw new LogicException('本月话费充值金额已达上限');
-        } elseif ($data['description'] == 'YK' && $totalPrice >= 2000)
-        {
+        } elseif ($data[ 'description' ] == 'YK' && $totalPrice >= 2000) {
             throw new LogicException('本月油卡充值金额已达上限');
         }
-
         $orderData = $this->createData($data);
-
         //机票充值订单
-        if ($data['description'] == 'AT')
-        {
+        if ($data[ 'description' ] == 'AT') {
             $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
-            $orderData['order_no'] = $data['orderNo'] = $orderNo;
+            $orderData[ 'order_no' ] = $data[ 'orderNo' ] = $orderNo;
         }
-
         DB::beginTransaction();
         try {
             $oid = $this->createOrder($orderData);
             if (!is_numeric($oid)) {
                 throw new Exception('订单生成失败');
             }
-
             //生成机票订单
-            if (in_array($data['description'], ['AT']))
-            {
-               (new AirTradeLogs())->setAitTrade($data);
-            } else
-            {
+            if (in_array($data[ 'description' ], ['AT'])) {
+                (new AirTradeLogs())->setAitTrade($data);
+            } else {
                 $orderData[ 'oid' ] = $oid;
                 $this->createTradeOrder($orderData);
             }
@@ -92,7 +79,7 @@ class YuntongPayController extends Controller
         DB::commit();
         return $this->payRequest(array_merge($data, $orderData));
     }
-
+    
     /**
      * 再次请求支付
      *
@@ -106,21 +93,29 @@ class YuntongPayController extends Controller
     {
         $data = $request->all();
         $TradeOrder = new TradeOrder();
-        $order_data = $TradeOrder->getOrderInfo($data[ 'oid' ]);
+        $order_data = $TradeOrder->where('oid', '=', $data[ 'oid' ])
+                                 ->first();
         if (in_array($order_data->status, ['pending', 'succeeded'])) {
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
-        $order_data = (array)$order_data;
-        $orderData = $this->createData(array_merge($data, $order_data));
-        $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
         try {
-            $this->createTradeOrder($orderData);
+            if (empty($order_data->end_time)) {
+                $order_data->end_time = date('Y-m-d H:i:s');
+                $order_data->order_from = $this->getPayChannel($data[ 'payChannel' ]);
+                $order_data->save();
+                $orderData = $order_data->toArray();
+            } else {
+                $order_data = $order_data->toArray();
+                $orderData = $this->createData(array_merge($data, $order_data));
+                $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
+                $this->createTradeOrder($orderData);
+            }
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
         return $this->payRequest(array_merge($data, $orderData));
     }
-
+    
     /**
      * 发起支付请求
      *
@@ -131,8 +126,6 @@ class YuntongPayController extends Controller
      */
     public function payRequest($data)
     {
-
-//        return false;//TODO:屏蔽支付请求
         $return_url = url('/api/yun-notify');
         if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
             $return_url = env('HTTP_URL') . '/api/yun-notify';
@@ -160,7 +153,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-
+    
     /*******************************************************************/
     /**
      * 订单 trade_order 表插入数据
@@ -183,7 +176,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-
+    
     /**
      * 订单 order 表插入数据
      *
@@ -195,9 +188,8 @@ class YuntongPayController extends Controller
     public function createOrder($data = [])
     {
         //飞机票才有 order_no，其他充值类型不写入
-        if ($data['name'] != '飞机票')
-        {
-            $data['order_no'] = '';
+        if ($data[ 'name' ] != '飞机票') {
+            $data[ 'order_no' ] = '';
         }
         try {
             $Order = new Order();
@@ -217,7 +209,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-
+    
     /**
      * 组装订单数据
      *
@@ -272,7 +264,7 @@ class YuntongPayController extends Controller
             'modified_time' => $date,
         ];
     }
-
+    
     /**
      * @param string $url
      *
@@ -290,7 +282,7 @@ class YuntongPayController extends Controller
         }
         return $url;
     }
-
+    
     /**
      * 获取 order 表中 name 字段的值
      *
@@ -324,7 +316,7 @@ class YuntongPayController extends Controller
         }
         return $name;
     }
-
+    
     /**
      * 获取 trade_order 表 oid 字段
      *
@@ -344,7 +336,7 @@ class YuntongPayController extends Controller
         }
         return $oid;
     }
-
+    
     /**
      * 获取客户端IP
      *
@@ -366,7 +358,7 @@ class YuntongPayController extends Controller
         }
         return $ip;
     }
-
+    
     /**
      * 获取 trade_order 表中的 remarks 字段值
      *
@@ -386,7 +378,7 @@ class YuntongPayController extends Controller
         }
         return $remarks;
     }
-
+    
     /**
      * 获取支付通道标记
      *
@@ -411,7 +403,7 @@ class YuntongPayController extends Controller
         }
         return $payChannel;
     }
-
+    
     /**
      * 获取比例
      *
@@ -432,10 +424,12 @@ class YuntongPayController extends Controller
         }
         return $profit_ratio;
     }
-
+    
     /**
      * 机票再次请求支付
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      * @throws LogicException
      * @throws Exception
@@ -445,31 +439,28 @@ class YuntongPayController extends Controller
         //获取数据
         $data = $request->all();
         $airOrder = new Order();
-        $airOrderData = json_decode($airOrder->getOrderInfo($data['order_no']), 1);
-        if (in_array($airOrderData['pay_status'], ['pending', 'succeeded']))
-        {
+        $airOrderData = json_decode($airOrder->getOrderInfo($data[ 'order_no' ]), 1);
+        if (in_array($airOrderData[ 'pay_status' ], ['pending', 'succeeded'])) {
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
         $airOrderData = (array)$airOrderData;
-
         //组装数据
         $paramsData = [
             'description' => 'AT',
-            'payChannel'  => $data['payChannel'],
+            'payChannel'  => $data[ 'payChannel' ],
             'number'      => 1,
             'numeric'     => '',
             'telecom'     => '',
             'goodsTitle'  => '机票订单',
-            'need_fee'    => $airOrderData['price']
+            'need_fee'    => $airOrderData[ 'price' ],
         ];
         $orderData = array_merge($data, $paramsData);
-        $airOrderData['order_from'] = $this->getPayChannel($data['payChannel']);
+        $airOrderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
         try {
-            (new Order())->airOrder($data['order_no']);
+            (new Order())->airOrder($data[ 'order_no' ]);
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
-
         //发起支付请求
         return $this->payRequest(array_merge($orderData, $airOrderData));
     }

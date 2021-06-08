@@ -1,10 +1,10 @@
 <?php
 
-namespace Bmapi\core;
+namespace Bmapi\Core;
 
 ini_set('date.timezone', 'Etc/GMT-8');
 
-use Bmapi\conf\Config;
+use Bmapi\Conf\Config;
 use Bmapi\Interfaces\RequestInterface;
 use Exception;
 
@@ -22,9 +22,8 @@ class ApiRequest implements RequestInterface
      *
      */
 //    const API_HOST = 'https://api.bm001.com/api';
-    const API_HOST = 'http://api.bm001.com/api';
-
-//    const API_HOST = 'http://test.api.bm001.com/api';
+//    const API_HOST = 'http://api.bm001.com/api';
+    const API_HOST = 'http://test.api.bm001.com/api';
     
     /**
      * 注册之后从斑马力方客服处获取
@@ -75,11 +74,14 @@ class ApiRequest implements RequestInterface
     protected $allPostParams = [];
     
     /**
-     * API接口名称
-     *
-     * @var
+     * @var string API接口名称
      */
     protected $method;
+    
+    /**
+     * @var mixed 接口返回结果
+     */
+    protected $result;
     
     /**
      * ApiRequest constructor.
@@ -150,6 +152,41 @@ class ApiRequest implements RequestInterface
     }
     
     /**
+     * 回调数据验签
+     *
+     * @param array $data
+     *
+     * @return bool
+     */
+    public function checkSign(array $data)
+    {
+        try {
+            if (empty($data)) {
+                throw new Exception('验证数据为空');
+            }
+            if (!Sign::checkSign($data, $this->app_secret)) {
+                throw new Exception('验签失败');
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * 解析返回结果
+     *
+     * @return mixed|null
+     */
+    public function fetchResult()
+    {
+        if (empty($this->result)) {
+            return null;
+        }
+        return $this->result;
+    }
+    
+    /**
      * 获取返回结果
      *
      * @return bool|string
@@ -157,8 +194,14 @@ class ApiRequest implements RequestInterface
      */
     public function getResult()
     {
+        if (empty($this->allPostParams)) {
+            $this->postParams();
+        }
         $url = $this->generateRequestUrl($this->allPostParams);
-        return self::postRequest($url, $this->allPostParams);
+        $result = self::postRequest($url, $this->allPostParams);
+        $this->result = $result;
+        $this->fetchResult();
+        return $result;
     }
     
     /**
