@@ -10,6 +10,8 @@ Route::middleware(['auth:sanctum'])
          Route::post("del-order", "Order\OrderController@delOrder");
          //手机充值[斑马]
          Route::post('mobile-order', 'Order\MobileRechargeController@setOrder');
+         //手机代充[斑马]
+         Route::post('mobile-dl-order', 'Order\MobileRechargeController@setDlOrder');
      });
 //我的分享
 Route::any("consumer", "Order\MyShareController@Consumer");

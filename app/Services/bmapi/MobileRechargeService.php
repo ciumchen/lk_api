@@ -55,9 +55,107 @@ class MobileRechargeService
         return $Order->find($order_id);
     }
     
-    public function setAllOrderDl()
+    /**
+     * @param $user
+     * @param $mobile
+     * @param $money
+     *
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function setDlAllOrder($user, $mobile, $money)
     {
-        /*TODO:代充订单生成*/
+        try {
+            $this->bmMobileRechargeCheck($mobile, $money);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        $Order = new Order();
+        $TradeOrder = new TradeOrder();
+        $order_no = $TradeOrder->CreateOrderNo();
+        $dl_order_data = $this->createDlOrderParams($user, $money, $order_no);
+        DB::beginTransaction();
+        try {
+            /* 生成 order 表数据 */
+            $order_id = $Order->setOrder($dl_order_data);
+            /* 生成 trade_order 表数据 */
+            $dl_trade_order_data = $this->createDlTradeOrderParams($user, $money, $order_no, $mobile, $order_id);
+            $TradeOrder->setOrder($dl_trade_order_data);
+            /* 生成 order_mobile_recharge 表数据 */
+            (new OrderMobileRecharge)->setDlMobileOrder($order_id, $order_no, $user->id, $mobile, $money);
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        Db::commit();
+        return $Order->find($order_id);
+    }
+    
+    /**
+     * 话费代充订单数据创建
+     *
+     * @param $user
+     * @param $money
+     * @param $order_no
+     *
+     * @return array
+     */
+    public function createDlOrderParams($user, $money, $order_no)
+    {
+        $date = date("Y-m-d H:i:s");
+        $profit_ratio = 5;
+        $profit_price = $money * ($profit_ratio / 100);
+        return [
+            'uid'          => $user->id,
+            'business_uid' => 2,
+            'profit_ratio' => $profit_ratio,
+            'price'        => $money,
+            'profit_price' => $profit_price,
+            'name'         => '代充',
+            'created_at'   => $date,
+            'status'       => '1',
+            'state'        => '1',
+            'pay_status'   => 'await',
+            'remark'       => '',
+            'order_no'     => $order_no,
+        ];
+    }
+    
+    /**
+     * trade_order 表代充订单数据创建
+     *
+     * @param $user
+     * @param $money
+     * @param $order_no
+     *
+     * @return array
+     */
+    public function createDlTradeOrderParams($user, $money, $order_no, $mobile, $order_id)
+    {
+        $date = date("Y-m-d H:i:s");
+        $profit_ratio = 0.05;
+        $profit_price = $money * $profit_ratio;
+        return [
+            'user_id'       => $user->id,
+            'title'         => '话费代充',
+            'price'         => $money,
+            'num'           => 1,
+            'numeric'       => $mobile,
+            'telecom'       => '代充',
+            'status'        => 'await',
+            'order_no'      => $order_no,
+            'need_fee'      => $money,
+            'profit_ratio'  => $profit_ratio,
+            'profit_price'  => $profit_price,
+            'integral'      => 0.00,
+            'description'   => 'DL',
+            'oid'           => $order_id,
+            'created_at'    => $date,
+            'pay_time'      => $date,
+            'modified_time' => $date,
+            'remarks'       => '',
+            'order_from'    => '',
+        ];
     }
     
     /**
@@ -279,6 +377,7 @@ class MobileRechargeService
         try {
             $MobileOrder->mobile = $mobile;
             $MobileOrder->money = $money;
+            $MobileOrder->create_type = '1';
             $MobileOrder->order_id = $order_id;
             $MobileOrder->order_no = $order_no;
             $MobileOrder->created_at = $date;
