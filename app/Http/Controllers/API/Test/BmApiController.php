@@ -193,6 +193,59 @@ class BmApiController extends Controller
                      ->getResult();
         $data = $LIfeRecharge->getData();
         return response()->json($data);
+        /*
+        {
+            "orderCost": "10.000",
+            "orderProfit": "0.000",
+            "saleAmount": "10.000",
+            "cardPwdList": null,
+            "orderTime": "2021-06-09 13:35:17",
+            "operateTime": null,
+            "payState": "1",
+            "rechargeState": "0",
+            "supQq": null,
+            "classType": "2",
+            "itemCost": "1.000",
+            "facePrice": "",
+            "supId": "S020035",
+            "supNickName": null,
+            "supContactUser": null,
+            "supMobile": null,
+            "billId": "S2106092932693",
+            "itemId": "6434001",
+            "itemNum": "10.0",
+            "rechargeAccount": "0944010008010269",
+            "gameArea": null,
+            "gameServer": null,
+            "receiveMobile": null,
+            "actPrice": null,
+            "extPay": null,
+            "itemName": "广东深圳 深圳供电局 电费户号 直充任意充",
+            "isBatch": null,
+            "outerTid": null,
+            "userCode": "A5626842",
+            "battleAccount": null,
+            "openBank": null,
+            "cardNo": null,
+            "customerName": null,
+            "customerTel": null,
+            "purchaser": null,
+            "buyerTel": null,
+            "buyerAddress": null,
+            "buyerRemark": null,
+            "minConsume": null,
+            "packageName": null,
+            "preStore": null,
+            "idNo": null,
+            "idAddress": null,
+            "idFrontImage": null,
+            "idBackImage": null,
+            "remark": null,
+            "simCardId": null,
+            "mobileNo": null,
+            "tplId": "00040003"
+        }
+         */
     }
     
     /**
