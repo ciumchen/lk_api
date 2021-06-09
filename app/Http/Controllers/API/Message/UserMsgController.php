@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Message;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\UserMessage;
 
@@ -18,6 +19,16 @@ class UserMsgController extends Controller
     public function setMsg(string $orderNo, int $type)
     {
         (new UserMessage())->setMsg($orderNo, $type);
+    }
+
+    /**插入机票消息
+     * @param string $orderNo
+     * @param int $type
+     * @throws
+     */
+    public function setAirMsg(string $orderNo, int $type)
+    {
+        (new UserMessage())->setAirMsg($orderNo, $type);
     }
 
     /**获取消息

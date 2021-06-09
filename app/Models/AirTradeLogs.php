@@ -19,9 +19,10 @@ class AirTradeLogs extends Model
     public function setAitTrade(array $data)
     {
         $date = date('Y-m-d H:i:s');
-
         //组装数据
         $airTradeLogs = new AirTradeLogs();
+        $airTradeLogs->pay_channel = $data['payChannel'];
+        $airTradeLogs->price = $data['price'];
         $airTradeLogs->seat_code = $data['seatCode'];
         $airTradeLogs->passagers = $data['passagers'];
         $airTradeLogs->item_id = $data['itemId'];
@@ -51,6 +52,6 @@ class AirTradeLogs extends Model
             throw new LogicException('订单数据不存在');
         }
 
-        return (new AirTradeLogs())::where('order_no', $orderNo)->get();
+        return (new AirTradeLogs())::where('order_no', $orderNo)->get()->first();
     }
 }

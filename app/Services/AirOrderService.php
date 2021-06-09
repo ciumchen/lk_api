@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\API\Airticket\OrderPayBillController;
 use App\Models\AirTradeLogs;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Order;
 
 class AirOrderService
 {
@@ -133,5 +135,7 @@ class AirOrderService
 
         //生成机票订单
         (new OrderPayBillController())->setOrderPay($airTradeData);
+        //发送机票消息通知
+        (new Order())->airOrderMsg($orderNo);
     }
 }

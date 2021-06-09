@@ -27,6 +27,8 @@ class CreateAirTradeLogs extends Migration
             $table->string('company_code', 10)->nullable()->comment('航空公司编码');
             $table->string('flight_no', 10)->nullable()->comment('航班号');
             $table->string('order_no', 40)->nullable()->comment('order 表 -- order_no');
+            $table->string('pay_channel', 10)->nullable()->comment('支付方式');
+            $table->decimal('price', 10, 2)->nullable()->comment('支付金额');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
 
