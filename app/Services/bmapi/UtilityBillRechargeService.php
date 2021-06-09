@@ -48,9 +48,9 @@ class UtilityBillRechargeService
     /**
      * 水电煤查账
      *
-     * @param $item_id
-     * @param $account
-     * @param $project_id
+     * @param string $item_id
+     * @param string $account
+     * @param string $project_id
      *
      * @return array
      * @throws \Exception
@@ -70,6 +70,7 @@ class UtilityBillRechargeService
     
     /**
      * 账单充值
+     * 付款后
      *
      * @param string $account
      * @param string $itemId
@@ -89,9 +90,8 @@ class UtilityBillRechargeService
             $data = $LIfeRecharge->getData();
             $TradeOrder = new TradeOrder();
             $order_no = $TradeOrder->CreateOrderNo();
-            /* TODO:生成订单 */
-            
-            /* TODO:生成水电费订单 */
+            /* TODO:更新订单 */
+            /* TODO:更新水电费订单 */
         } catch (Exception $e) {
             throw $e;
         }
