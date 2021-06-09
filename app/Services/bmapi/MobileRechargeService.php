@@ -341,6 +341,10 @@ class MobileRechargeService
         if (empty($notify_url)) {
             $notify_url = url('/api/mobile-notify');
         }
+        if (strpos($notify_url, 'lk.catspawvideo.com') !== false) {
+            //$return_url = env('HTTP_URL') . '/api/yun-notify';
+            $notify_url = str_replace('http://', 'https://', $notify_url);
+        }
         $PayBill = new PayBill();
         try {
             $PayBill->setMobileNo($mobile)
