@@ -43,27 +43,73 @@ class UtilityBillRechargeService
         return $res;
     }
     
-    public function getInfo($data)
+    /**
+     * 水电煤查账
+     *
+     * @param $item_id
+     * @param $account
+     * @param $project_id
+     *
+     * @throws \Exception
+     */
+    public function checkBill($item_id, $account, $project_id)
     {
-        $paramsKey = [
-            ''=>'province',
-            'mode_id',
-            'city',
-            'city_id',
-            'unit_id',
-            'unit_name',
-        ];
-        $GetAccountInfo = new GetAccountInfo();
-        
         try {
-            foreach ($data as $key => $val) {
-//                $GetAccountInfo-
-            }
+            /* 商品属性查询 */
+            $next_params = $this->getGoodsList($item_id);
+            /* 查账单信息 */
+            $info = $this->getInfo($item_id, $account, $project_id, $next_params);
         } catch (Exception $e) {
+            throw $e;
         }
+        return $info;
     }
     
     /**
+     * 查询账单信息
+     *
+     * @param string $item_id    标准商品编号
+     * @param string $account    缴费单标识号
+     * @param string $project_id 缴费项目编号，水费c2670，电费c2680，气费c2681
+     * @param array  $data       [
+     *                           'province',
+     *                           'mode_id',
+     *                           'city',
+     *                           'city_id',
+     *                           'unit_id',
+     *                           'unit_name',
+     *                           ]
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getInfo($item_id, $account, $project_id, $data)
+    {
+        $GetAccountInfo = new GetAccountInfo();
+        try {
+            $GetAccountInfo->setItemId($item_id)           // 标准商品编号(页面选择)
+                           ->setAccount($account)          // 缴费单标识号（户号或条形码）
+                           ->setCity($data[ 'city' ])      // 市名称(后面不带"市"，属性查询接口中返回的参数itemProps-"type": "CITYIN"下的vname)
+                           ->setCityId($data[ 'city_id' ]) // 城市V编号(属性查询接口中返回的参数itemProps-"type": "CITYIN"下的vid)
+                           ->setModeId($data[ 'mode_id' ]) // 缴费方式V编号 (属性查询接口中返回的参数itemProps-"type": "SPECIAL"下的vid)
+                           ->setModeType(2)            // 缴费方式：1是条形码 2是户号
+                           ->setProjectId($project_id)        // 缴费项目编号，水费c2670，电费c2680，气费c2681，(属性查询接口中返回的参数cid)
+                           ->setProvince($data[ 'province' ]) //省名称 属性查询接口中返回的参数itemProps-"type":"PRVCIN"下的vname
+                           ->setUnitId($data[ 'unit_id' ])     // 缴费单位V编号(属性查询接口中返回的参数itemProps-"type": "BRAND"下的vid)
+                           ->setUnitName($data[ 'unit_name' ]) // 缴费单位名称(属性查询接口中返回的参数itemProps-"type": "BRAND"下的vname)
+                           ->getResult();
+            $res = $GetAccountInfo->getBill();
+//            $status = $GetAccountInfo->getStatus();
+//            $msg = $GetAccountInfo->getMessage();
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $res;
+    }
+    
+    /**
+     * 商品属性查询
+     *
      * @param $item_id
      *
      * @return array
