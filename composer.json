@@ -52,7 +52,7 @@
         ],
         "classmap": [
             "database",
-            "app/Libs/BmApi/src/Bmapi/Api/Air/StationsList.php"
+            "app/Libs/BmApi"
         ],
         "psr-4": {
             "App\\": "app/",
