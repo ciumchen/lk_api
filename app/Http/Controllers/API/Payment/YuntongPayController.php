@@ -54,33 +54,14 @@ class YuntongPayController extends Controller
             throw new LogicException('本月油卡充值金额已达上限');
         }
         $orderData = $this->createData($data);
-<<<<<<< HEAD
-        //机票充值订单
-        if ($data[ 'description' ] == 'AT') {
-            $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
-            $orderData[ 'order_no' ] = $data[ 'orderNo' ] = $orderNo;
-        }
-=======
-
->>>>>>> 05-28-airTicket
         DB::beginTransaction();
         try {
             $oid = $this->createOrder($orderData);
             if (!is_numeric($oid)) {
                 throw new Exception('订单生成失败');
             }
-<<<<<<< HEAD
-            //生成机票订单
-            if (in_array($data[ 'description' ], ['AT'])) {
-                (new AirTradeLogs())->setAitTrade($data);
-            } else {
-                $orderData[ 'oid' ] = $oid;
-                $this->createTradeOrder($orderData);
-            }
-=======
             $orderData[ 'oid' ] = $oid;
             $this->createTradeOrder($orderData);
->>>>>>> 05-28-airTicket
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -138,12 +119,10 @@ class YuntongPayController extends Controller
         if (empty($return_url)) {
             $return_url = url('/api/yun-notify');
         }
-
         if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
             //$return_url = env('HTTP_URL') . '/api/yun-notify';
             $return_url = str_replace('http://', 'https://', $return_url);
         }
-
         $YuntongPay = new YuntongPay();
         try {
             $res = $YuntongPay
@@ -438,12 +417,11 @@ class YuntongPayController extends Controller
         }
         return $profit_ratio;
     }
-<<<<<<< HEAD
     
-=======
-
     /**机票支付
+     *
      * @param Request $request
+     *
      * @return JsonResponse
      * @throws Exception
      */
@@ -452,10 +430,12 @@ class YuntongPayController extends Controller
         $data = $request->all();
         return $this->airCreatePay($data, 1);
     }
-
+    
     /**机票发起支付请求
-     * @param array $data
+     *
+     * @param array  $data
      * @param string $type
+     *
      * @return JsonResponse
      * @throws Exception
      */
@@ -463,56 +443,48 @@ class YuntongPayController extends Controller
     {
         $return_url = 'http://lkapi.com/api/air-notify';
         //$return_url = url('/api/yun-notify');
-        $data['need_fee'] = $data['money'] * $data['number'];
-        $data['order_from'] = $data['payChannel'];
-
+        $data[ 'need_fee' ] = $data[ 'money' ] * $data[ 'number' ];
+        $data[ 'order_from' ] = $data[ 'payChannel' ];
         $date = date('Y-m-d H:i:s');
-        $data['order_no'] = $type == 1 ? 'AT_' . date('YmdHis') . rand(100000, 999999) : $data['order_no'];
-
+        $data[ 'order_no' ] = $type == 1 ? 'AT_' . date('YmdHis') . rand(100000, 999999) : $data[ 'order_no' ];
         $orderData = [
-            'uid'          => $data['uid'],
+            'uid'          => $data[ 'uid' ],
             'business_uid' => 2,
             'profit_ratio' => 0,
-            'price'        => $data['money'] * $data['number'],
+            'price'        => $data[ 'money' ] * $data[ 'number' ],
             'profit_price' => 0,
             'status'       => 1,
             'name'         => $this->getName($data[ 'description' ] ?? ''),
             'remark'       => '',
             'state'        => 1,
             'pay_status'   => 'await',
-            'order_no'     => $data['order_no'],
+            'order_no'     => $data[ 'order_no' ],
             'created_at'   => $date,
-            'updated_at'   => $date
+            'updated_at'   => $date,
         ];
-
         $airData = [
-            'seatCode'    => $data['seatCode'],
-            'passagers'   => $data['passagers'],
-            'itemId'      => $data['itemId'],
-            'contactName' => $data['contactName'],
-            'contactTel'  => $data['contactTel'],
+            'seatCode'    => $data[ 'seatCode' ],
+            'passagers'   => $data[ 'passagers' ],
+            'itemId'      => $data[ 'itemId' ],
+            'contactName' => $data[ 'contactName' ],
+            'contactTel'  => $data[ 'contactTel' ],
             'date'        => date('Y-m-d'),
-            'from'        => $data['from'],
-            'to'          => $data['to'],
-            'companyCode' => $data['companyCode'],
-            'flightNo'    => $data['flightNo'],
-            'orderNo'     => $data['order_no'],
-            'payChannel'  => $data['payChannel'],
-            'price'       => $data['money'] * $data['number'],
+            'from'        => $data[ 'from' ],
+            'to'          => $data[ 'to' ],
+            'companyCode' => $data[ 'companyCode' ],
+            'flightNo'    => $data[ 'flightNo' ],
+            'orderNo'     => $data[ 'order_no' ],
+            'payChannel'  => $data[ 'payChannel' ],
+            'price'       => $data[ 'money' ] * $data[ 'number' ],
         ];
-
         //只有新增订单才生成新记录
-        if ($type == 1)
-        {
+        if ($type == 1) {
             (new Order())->setOrder($orderData);
-
             (new AirTradeLogs())->setAitTrade($airData);
         }
-
         return $this->payRequest($data, $return_url);
     }
-
->>>>>>> 05-28-airTicket
+    
     /**
      * 机票再次请求支付
      *
@@ -543,35 +515,27 @@ class YuntongPayController extends Controller
             'need_fee'    => $airOrderData[ 'price' ],
         ];
         $orderData = array_merge($data, $paramsData);
-<<<<<<< HEAD
-        $airOrderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
-        try {
-            (new Order())->airOrder($data[ 'order_no' ]);
-=======
-        $orderData['order_from'] = $this->getPayChannel($data['payChannel']);
-        $orderData['money'] = $airOrderData['price'];
-        $orderData['number'] = 1;
-
-        $airTradeData = json_decode((new AirTradeLogs())->getAirTradeInfo($data['order_no']), 1);
-
+        $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
+        $orderData[ 'money' ] = $airOrderData[ 'price' ];
+        $orderData[ 'number' ] = 1;
+        $airTradeData = json_decode((new AirTradeLogs())->getAirTradeInfo($data[ 'order_no' ]), 1);
         $airTrades = [
-            'seatCode'    => $airTradeData['seat_code'],
-            'passagers'   => $airTradeData['passagers'],
-            'itemId'      => $airTradeData['item_id'],
-            'contactName' => $airTradeData['contact_name'],
-            'contactTel'  => $airTradeData['contact_tel'],
-            'date'        => $airTradeData['date'],
-            'from'        => $airTradeData['from'],
-            'to'          => $airTradeData['to'],
-            'companyCode' => $airTradeData['company_code'],
-            'flightNo'    => $airTradeData['flight_no'],
-            'payChannel'  => $airTradeData['pay_channel'],
-            'price'       => $airTradeData['price'],
+            'seatCode'    => $airTradeData[ 'seat_code' ],
+            'passagers'   => $airTradeData[ 'passagers' ],
+            'itemId'      => $airTradeData[ 'item_id' ],
+            'contactName' => $airTradeData[ 'contact_name' ],
+            'contactTel'  => $airTradeData[ 'contact_tel' ],
+            'date'        => $airTradeData[ 'date' ],
+            'from'        => $airTradeData[ 'from' ],
+            'to'          => $airTradeData[ 'to' ],
+            'companyCode' => $airTradeData[ 'company_code' ],
+            'flightNo'    => $airTradeData[ 'flight_no' ],
+            'payChannel'  => $airTradeData[ 'pay_channel' ],
+            'price'       => $airTradeData[ 'price' ],
         ];
         try {
-            $orderNo = (new Order())->airOrder($data['order_no']);
-            $airOrderData['order_no'] = $orderNo;
->>>>>>> 05-28-airTicket
+            $orderNo = (new Order())->airOrder($data[ 'order_no' ]);
+            $airOrderData[ 'order_no' ] = $orderNo;
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
