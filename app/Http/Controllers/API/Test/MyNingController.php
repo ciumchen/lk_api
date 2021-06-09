@@ -86,8 +86,8 @@ class MyNingController extends Controller
                 ->where('order.status',"!=",2)
                 ->where('order.pay_status',"!=","ddyc")
                 ->leftJoin('trade_order','order.id','=','trade_order.oid')
-//                ->limit(20)->get()->toArray();
-                ->limit(1)->get()->toArray();
+                ->limit(20)->get()->toArray();
+//                ->limit(1)->get()->toArray();
 
 //            dd($orderInfo);
             foreach ($orderInfo as $k=>$v){
@@ -98,8 +98,8 @@ class MyNingController extends Controller
 
             }
 
-//            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
-            return "<h4>今次自动完成审核1条记录，总共还有<font color='red'>".($count-1)."</font>条订单还需要审核</h4>";
+            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
+//            return "<h4>今次自动完成审核1条记录，总共还有<font color='red'>".($count-1)."</font>条订单还需要审核</h4>";
 
         }else{
             return '<h4>所有订单审核完成</h4>';
