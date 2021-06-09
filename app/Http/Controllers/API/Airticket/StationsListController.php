@@ -25,13 +25,12 @@ class StationsListController extends Controller
         $items = [];
         foreach ($itemsData as $value)
         {
-            var_dump($value);
             foreach ($value as $val)
             {
                 var_dump($val);
-                $items[] = $val['item'];
             }
         }
+        dd($items);
 
         //组装数据
         $stationsData = json_decode($res, 1)['air_stations_list_response']['stations'];
