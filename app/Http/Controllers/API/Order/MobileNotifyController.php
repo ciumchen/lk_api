@@ -32,7 +32,8 @@ class MobileNotifyController extends Controller
             $MobileRechargeService->notify($data);
             if ($data[ 'recharge_state' ] == 1) {
                 $recharge = new RechargeLogs();
-                $recharge = $recharge->first();
+                $recharge = $recharge->where('reorder_id', '=', $data[ 'tid' ])
+                                     ->first();
                 if (!empty($recharge)) {
                     $recharge->created_at = date("Y-m-d H:i:s");
                     $recharge->updated_at = date("Y-m-d H:i:s");
