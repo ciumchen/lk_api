@@ -13,7 +13,7 @@ class OrderRefundController extends Controller
 {
     /**退订单
     * @param Request $request
-    * @return array
+    * @return mixed
     * @throws
     */
     public function airRefund(Request $request)
@@ -29,7 +29,7 @@ class OrderRefundController extends Controller
 
         $refundArr = json_decode($refundInfo, 1);
 
-        if ($refundArr['code'] == 9)
+        if ($refundArr['code'] && $refundArr['code'] == 9)
         {
             throw new LogicException('确认交易子单状态为出票成功，请勿重复操作');
         }
