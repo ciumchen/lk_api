@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Test;
 
 use App\Http\Controllers\Controller;
+use App\Models\RechargeLogs;
 use Bmapi\Api\MobileRecharge\GetItemInfo;
 use Bmapi\Api\MobileRecharge\PayBill;
 use Bmapi\Api\UtilityBill\GetAccountInfo;
@@ -26,7 +27,7 @@ use Bmapi\Api\Air\LinesList;
  */
 class BmApiController extends Controller
 {
-
+    
     /**
      * 水电煤商品列表查询测试
      *
@@ -193,7 +194,7 @@ class BmApiController extends Controller
         $data = $LIfeRecharge->getData();
         return response()->json($data);
     }
-
+    
     /**
      * 手机查话费
      *
@@ -293,34 +294,60 @@ class BmApiController extends Controller
         }
         */
     }
-
+    
     public function airList()
     {
         $ItemList = new StationsList();
         $res = $ItemList->setPageNo(0)
-            ->setPageSize(8)
-            ->postParams()
-            ->getResult();
-        var_dump(json_decode($res, 1)['air_stations_list_response']['stations']);die;
+                        ->setPageSize(8)
+                        ->postParams()
+                        ->getResult();
+        var_dump(json_decode($res, 1)[ 'air_stations_list_response' ][ 'stations' ]);
+        die;
     }
-
+    
     public function itemsList()
     {
         $ItemList = new ItemsList();
         return $ItemList->setPageNo(0)
-            ->setPageSize(8)
-            ->postParams()
-            ->getResult();
+                        ->setPageSize(8)
+                        ->postParams()
+                        ->getResult();
     }
-
+    
     public function linesList()
     {
         $LinesList = new LinesList();
         return $LinesList->setFrom('PEK')
-            ->setTo('CTU')
-            ->setDate('2021-05-30')
-            ->setItemId('5500301')
-            ->postParams()
-            ->getResult();
+                         ->setTo('CTU')
+                         ->setDate('2021-05-30')
+                         ->setItemId('5500301')
+                         ->postParams()
+                         ->getResult();
+    }
+    
+    public function demo(Request $request)
+    {
+        $reorder_id = $request->input('reorder_id');
+        $order_no = $request->input('order_no');
+        $recharge = new RechargeLogs();
+        $recharge = $recharge->where('order_no', '=', $order_no)
+                             ->first();
+//        dd(empty($recharge));
+        $res = (new RechargeLogs())->exRecharges($reorder_id);
+        if ($res) {
+            $recharge->created_at = date("Y-m-d H:i:s");
+            $recharge->updated_at = date("Y-m-d H:i:s");
+            $recharge->save();
+            echo '111';
+        }
+        $recharge->reorder_id = $reorder_id;
+        $recharge->order_no = $order_no;
+        $recharge->type = 'HF1222';
+        $recharge->status = 1;
+        $recharge->created_at = date("Y-m-d H:i:s");
+        $recharge->updated_at = date("Y-m-d H:i:s");
+        $recharge->save();
+        echo '222';
     }
 }

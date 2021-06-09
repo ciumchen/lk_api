@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API\Order;
 
+use App\Http\Controllers\API\Message\UserMsgController;
 use App\Http\Controllers\Controller;
+use App\Models\RechargeLogs;
 use App\Services\bmapi\MobileRechargeService;
 use Illuminate\Http\Request;
 use Log;
@@ -28,8 +30,27 @@ class MobileNotifyController extends Controller
         try {
             $MobileRechargeService = new MobileRechargeService();
             $MobileRechargeService->notify($data);
+            if ($data[ 'recharge_state' ] == 1) {
+                $recharge = new RechargeLogs();
+                $recharge = $recharge->first();
+                if (!empty($recharge)) {
+                    $recharge->created_at = date("Y-m-d H:i:s");
+                    $recharge->updated_at = date("Y-m-d H:i:s");
+                    $recharge->save();
+                } else {
+                    $recharge->reorder_id = $data[ 'tid' ];
+                    $recharge->order_no = $data[ 'outer_tid' ];
+                    $recharge->type = 'HF';
+                    $recharge->status = 1;
+                    $recharge->created_at = date("Y-m-d H:i:s");
+                    $recharge->updated_at = date("Y-m-d H:i:s");
+                    $recharge->save();
+                }
+            }
+            (new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
         } catch (\Exception $e) {
             Log::debug('MobileNotify', [json_encode($data)]);
         }
+        die('success');
     }
 }

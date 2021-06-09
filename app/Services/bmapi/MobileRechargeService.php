@@ -2,9 +2,6 @@
 
 namespace App\Services\bmapi;
 
-use App\Exceptions\LogicException;
-use App\Http\Controllers\API\Message\UserMsgController;
-use Bmapi\Core\Sign;
 use DB;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
@@ -296,12 +293,10 @@ class MobileRechargeService
             $rechargeInfo->trade_no = $data[ 'tid' ];
             $rechargeInfo->updated_at = $data[ 'timestamp' ];
             $rechargeInfo->save();
-            (new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
         } catch (Exception $e) {
             Log::debug('banMaNotify-Error:' . $e->getMessage(), [json_encode($data)]);
             throw $e;
         }
-        die('success');
     }
     
     /**
