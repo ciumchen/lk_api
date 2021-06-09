@@ -84,6 +84,18 @@ class BmApiController extends Controller
         $nex_params = $ItemPropsList->getNextParams();
         return response()->json($nex_params);
         /*
+         * $nex_params
+        {
+            "province": "广东",
+            "mode_id": "v2620",
+            "city": "深圳",
+            "city_id": "v2235",
+            "unit_id": "v18879",
+            "unit_name": "深圳供电局"
+        }
+        */
+        /*
+         * $res
         [
             {
                 "vid": "v0",

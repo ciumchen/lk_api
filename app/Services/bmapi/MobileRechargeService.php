@@ -287,7 +287,7 @@ class MobileRechargeService
                 throw new Exception('未查询到订单数据');
             }
             if ($rechargeInfo->status != 0) {
-                die('订单已处理');
+                throw new Exception('订单已处理');
             }
             $rechargeInfo->status = $data[ 'recharge_state' ];
             $rechargeInfo->trade_no = $data[ 'tid' ];

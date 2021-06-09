@@ -42,6 +42,23 @@ class UtilityBillRechargeService
         return $res;
     }
     
+    public function getInfo($data)
+    {
+        $paramsKey = [
+            'province',
+            'mode_id',
+            'city',
+            'city_id',
+            'unit_id',
+            'unit_name',
+        ];
+        try {
+            foreach ($data as $key => $val) {
+            }
+        } catch (Exception $e) {
+        }
+    }
+    
     /**
      * @param $item_id
      *

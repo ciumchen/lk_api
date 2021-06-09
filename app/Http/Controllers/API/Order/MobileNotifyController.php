@@ -27,6 +27,8 @@ class MobileNotifyController extends Controller
         "timestamp": "2021-06-05 21:05:12"
         }
         */
+        $str = "{\"user_id\":\"A5626842\",\"sign\":\"F9B8BEE18418C8896AD30490CF430FD1A5C8FE8C\",\"recharge_state\":\"1\",\"outer_tid\":\"PY_20210609140457478268\",\"tid\":\"S2106092934610\",\"timestamp\":\"2021-06-09 14:06:06\"}";
+        $data = json_decode($str, true);
         try {
             $MobileRechargeService = new MobileRechargeService();
             $MobileRechargeService->notify($data);
@@ -39,6 +41,7 @@ class MobileNotifyController extends Controller
                     $recharge->updated_at = date("Y-m-d H:i:s");
                     $recharge->save();
                 } else {
+                    $recharge = new RechargeLogs();
                     $recharge->reorder_id = $data[ 'tid' ];
                     $recharge->order_no = $data[ 'outer_tid' ];
                     $recharge->type = 'HF';
@@ -51,6 +54,7 @@ class MobileNotifyController extends Controller
             (new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
         } catch (\Exception $e) {
             Log::debug('MobileNotify', [json_encode($data)]);
+            die('failed');
         }
         die('success');
     }
