@@ -51,6 +51,7 @@ class OrderAirTrade extends Model
             })
             ->where('air_trade_logs.order_no', $orderNo)
             ->distinct('air_trade_logs.order_no')
-            ->get();
+            ->get()
+            ->first();
     }
 }
