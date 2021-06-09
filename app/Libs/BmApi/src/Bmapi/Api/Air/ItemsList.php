@@ -2,7 +2,7 @@
 
 namespace Bmapi\Api\Air;
 
-use Bmapi\core\ApiRequest;
+use Bmapi\Core\ApiRequest;
 
 /**
  * 查询飞机票标准商品列表
