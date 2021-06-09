@@ -5,6 +5,7 @@ namespace App\Services\bmapi;
 use Bmapi\Api\UtilityBill\GetAccountInfo;
 use Bmapi\Api\UtilityBill\ItemList;
 use Bmapi\Api\UtilityBill\ItemPropsList;
+use Bmapi\Api\UtilityBill\LifeRecharge;
 use Exception;
 
 /**
@@ -64,6 +65,26 @@ class UtilityBillRechargeService
             throw $e;
         }
         return $info;
+    }
+    
+    public function billRecharge($account, $itemId, $money)
+    {
+        /* TODO:账单充值 */
+        try {
+            $LIfeRecharge = new LifeRecharge();
+            $LIfeRecharge->setItemId($itemId)
+                         ->setItemNum($money)
+                         ->setRechargeAccount($account)
+                         ->getResult();
+            $data = $LIfeRecharge->getData();
+            /* TODO:生成订单 */
+        } catch (Exception $e) {
+        }
+    }
+    
+    public function createUtilityOrder()
+    {
+        //生成订单
     }
     
     /**
