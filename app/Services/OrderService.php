@@ -81,6 +81,8 @@ class OrderService
     public function completeOrder(string $orderNo)
     {
         $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
+//        $tradeOrderInfo = TradeOrder::where('order_no', $orderNo)->first();
+//        dd($tradeOrderInfo);
         $id = $tradeOrderInfo->oid;
         $consumer_uid = $tradeOrderInfo->user_id;
         $description = $tradeOrderInfo->description;
@@ -90,7 +92,7 @@ class OrderService
             if ($order->status != Order::STATUS_DEFAULT)
                 return false;
             $order->status = Order::STATUS_SUCCEED;
-            $order->pay_status = 'succeeded';
+            $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
@@ -127,7 +129,7 @@ class OrderService
 
             $business = User::find($order->business_uid);
             //返佣
-            $this->encourage($order, $customer, $business);
+            $this->encourage($order, $customer, $business,$orderNo);
             $order->save();
             DB::commit();
         } catch (\Exception $exception) {
@@ -186,7 +188,7 @@ class OrderService
 
             $business = User::find($order->business_uid);
             //返佣
-            $this->encourage($order, $customer, $business);
+            $this->encourage($order, $customer, $business,$orderNo);
             $order->save();
             DB::commit();
         } catch (\Exception $exception) {
@@ -202,7 +204,7 @@ class OrderService
      *
      * @throws \App\Exceptions\LogicException
      */
-    private function encourage($order, $user, $business)
+    private function encourage($order, $user, $business,$orderNo)
     {
         //获取资产类型
         $assets = AssetsType::where("assets_name", AssetsType::DEFAULT_ASSETS_ENCOURAGE)->first();
@@ -213,6 +215,7 @@ class OrderService
             $welfare = Setting::getSetting('welfare');
             $welfareAmount = bcmul($order->profit_price, bcdiv($welfare, 100, 6), 2);
             AssetsService::BalancesChange(
+                $orderNo,
                 $welfareUid,
                 $assets,
                 $assets->assets_name,
@@ -228,6 +231,7 @@ class OrderService
             $platform = Setting::getSetting('platform');
             $platformAmount = bcmul($order->profit_price, bcdiv($platform, 100, 6), 2);
             AssetsService::BalancesChange(
+                $orderNo,
                 $platformUid,
                 $assets,
                 $assets->assets_name,
@@ -248,6 +252,7 @@ class OrderService
         $shareScale = Setting::getSetting('share_scale');
         $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 2);
         AssetsService::BalancesChange(
+            $orderNo,
             $uid,
             $assets,
             $assets->assets_name,
@@ -277,6 +282,7 @@ class OrderService
             //市长分配比列0.25%
             $cityAmount = bcmul($order->profit_price, bcdiv($cityNodeRebate, 100, 6), 8);
             AssetsService::BalancesChange(
+                $orderNo,
                 $uid,
                 $assets,
                 $assets->assets_name,
@@ -307,6 +313,7 @@ class OrderService
             //区长分配0.45%
             $districtAmount = bcmul($order->profit_price, bcdiv($districtNodeRebate, 100, 6), 8);
             AssetsService::BalancesChange(
+                $orderNo,
                 $uid,
                 $assets,
                 $assets->assets_name,
@@ -349,30 +356,30 @@ class OrderService
                 $inviteAmount = bcadd($headAmount, $ordinaryAmount, 8);
                 //同级盟主奖励
                 $tes =
-                    $this->leaderRebate($memberHead->invite_uid, $sameAmount, $assets, '同级别盟主奖励', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 1);
+                    $this->leaderRebate($orderNo,$memberHead->invite_uid, $sameAmount, $assets, '同级别盟主奖励', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 1);
                 if ($tes == false)
                     $isSamePlat = true;
             } else {
                 //往上找2级 是否盟主
                 $res =
-                    $this->leaderRebate($memberHead->invite_uid, $headAmount, $assets, '邀请商家盟主分红', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 2);
+                    $this->leaderRebate($orderNo,$memberHead->invite_uid, $headAmount, $assets, '邀请商家盟主分红', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 2);
                 if ($res == false) {
                     if ($headAmount > 0)
-                        AssetsService::BalancesChange($platformUid, $assets, $assets->assets_name, $headAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, '没有盟主，分配到平台账户');
+                        AssetsService::BalancesChange($orderNo,$platformUid, $assets, $assets->assets_name, $headAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, '没有盟主，分配到平台账户');
                     $isSamePlat = true;
                 } else {
                     //同级盟主奖励
                     $res =
-                        $this->leaderRebate($res->invite_uid, $sameAmount, $assets, '同级别盟主奖励', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 1);
+                        $this->leaderRebate($orderNo,$res->invite_uid, $sameAmount, $assets, '同级别盟主奖励', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 1);
                     if ($res == false)
                         $isSamePlat = true;
                 }
             }
         }
         if ($sameAmount > 0 && $isSamePlat == true)
-            AssetsService::BalancesChange($platformUid, $assets, $assets->assets_name, $sameAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, '没有同级盟主，分配到平台账户');
+            AssetsService::BalancesChange($orderNo,$platformUid, $assets, $assets->assets_name, $sameAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, '没有同级盟主，分配到平台账户');
         if ($inviteAmount > 0)
-            AssetsService::BalancesChange($uid, $assets, $assets->assets_name, $inviteAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, $remark);
+            AssetsService::BalancesChange($orderNo,$uid, $assets, $assets->assets_name, $inviteAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, $remark);
         $market =
             bcadd($districtAmount, bcadd($cityAmount, bcadd(bcadd($sameAmount, $headAmount, 8), $ordinaryAmount, 8), 8), 8);
         $this->updateRebateData($welfareAmount, $shareAmount, $market, $platformAmount, $order->price, $user);
@@ -390,7 +397,7 @@ class OrderService
      * @return false
      * @throws \App\Exceptions\LogicException
      */
-    public function leaderRebate($invite_uid, $amount, $assets, $msg, $type, $level = 2)
+    public function leaderRebate($orderNo,$invite_uid, $amount, $assets, $msg, $type, $level = 2)
     {
         if ($level <= 0)
             return false;
@@ -398,11 +405,11 @@ class OrderService
         //如果是盟主,奖励0.3直接给与他
         if ($user && $user->member_head == 2 && $user->status == User::STATUS_NORMAL) {
             if ($amount > 0)
-                AssetsService::BalancesChange($user->id, $assets, $assets->assets_name, $amount, $type, $msg);
+                AssetsService::BalancesChange($orderNo,$user->id, $assets, $assets->assets_name, $amount, $type, $msg);
             return $user;
         } elseif ($user) {
             $level--;
-            return $this->leaderRebate($user->invite_uid, $amount, $assets, $msg, $type, $level);
+            return $this->leaderRebate($orderNo,$user->invite_uid, $amount, $assets, $msg, $type, $level);
         } else {
             return false;
         }

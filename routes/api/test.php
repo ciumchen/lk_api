@@ -21,8 +21,7 @@ Route::any('bm-test3', 'Test\BmApiController@utilityRecharge');
 Route::any('bm-test4', 'Test\BmApiController@mobileGetInfo');
 Route::any('bm-test5', 'Test\BmApiController@mobilePayBill');
 Route::any('bm-test6', 'Test\BmApiController@demo');
-//自动审核测试
-Route::any('pushOrder', 'Test\TestController@pushOrder');
+
 Route::any('air', 'Test\BmApiController@airList');
 Route::any('item', 'Test\BmApiController@itemsList');
 Route::any('lines', 'Test\BmApiController@linesList');

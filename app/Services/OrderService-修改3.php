@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\LogicException;
+use App\Models\AirTradeLogs;
 use App\Models\AssetsLogs;
 use App\Models\AssetsType;
 use App\Models\CityNode;
@@ -12,9 +13,10 @@ use App\Models\RebateData;
 use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class OrderService_test
+class OrderService
 {
 
     /**完成订单
@@ -78,9 +80,7 @@ class OrderService_test
      */
     public function completeOrder(string $orderNo)
     {
-//        $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
-        $tradeOrderInfo = TradeOrder::where('order_no', $orderNo)->first();
-//        dd($tradeOrderInfo);
+        $tradeOrderInfo = TradeOrder::where('status', 'succeeded')->where('order_no', $orderNo)->first();
         $id = $tradeOrderInfo->oid;
         $consumer_uid = $tradeOrderInfo->user_id;
         $description = $tradeOrderInfo->description;
@@ -90,7 +90,7 @@ class OrderService_test
             if ($order->status != Order::STATUS_DEFAULT)
                 return false;
             $order->status = Order::STATUS_SUCCEED;
-//            $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
+            $order->pay_status = 'succeeded';
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
