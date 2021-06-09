@@ -27,7 +27,7 @@ class StationsListController extends Controller
         {
             foreach ($value as $val)
             {
-                var_dump(array_values($val['item']));
+                var_dump($val['item'][0]);
                 $items[] = $val['item'];
             }
         }
