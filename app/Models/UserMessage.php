@@ -45,6 +45,29 @@ class UserMessage extends Model
         $message->save();
     }
 
+    /**插入机票消息
+     * @param string $orderNo
+     * @param int $type
+     * @return mixed
+     * @throws
+     */
+    public function setAirMsg(string $orderNo, int $type)
+    {
+        $date = date("Y-m-d H:i:s");
+        $userInfo = (new Order())->getOrderInfo($orderNo)->first();
+
+        $message = new UserMessage();
+        $message->user_id = $userInfo->uid;
+        $message->status = 1;
+        $message->type = $type;
+        $message->sys_mid = 0;
+        $message->is_del = 0;
+        $message->order_no = $orderNo;
+        $message->created_at = $date;
+        $message->updated_at = $date;
+        $message->save();
+    }
+
     /**获取消息内容
      * @param int $uid
      * @param int $page
