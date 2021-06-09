@@ -23,12 +23,14 @@ class StationsListController extends Controller
         //获取items
         $itemsData = $this->getItems();
         $items = [];
+        $itemData = [];
         foreach ($itemsData as $key => $value)
         {
-            foreach ($value as $k => $v)
-            {
-                $items[] = $v['item'][0];
-            }
+            $itemData = $value;
+        }
+        foreach ($itemData as $k => $v)
+        {
+            $items[] = $v['item'][0];
         }
 
         //组装数据
