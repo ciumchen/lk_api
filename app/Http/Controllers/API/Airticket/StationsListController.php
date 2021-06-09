@@ -23,6 +23,7 @@ class StationsListController extends Controller
         //获取items
         $itemsData = $this->getItems();
         $items = [];
+        /*$items = [];
         $itemData = [];
         foreach ($itemsData as $key => $value)
         {
@@ -31,11 +32,11 @@ class StationsListController extends Controller
         foreach ($itemData as $k => $v)
         {
             $items[] = $v['item'][0];
-        }
-
+        }*/
+        $items = $itemsData['air_items_list_response']['items']['item'][0];
         //组装数据
         $stationsData = json_decode($res, 1)['air_stations_list_response']['stations'];
-        $stationsData['itemId'] = $items[0]['itemId'];
+        $stationsData['itemId'] = $items['itemId'];
 
         //返回
         return $stationsData;
