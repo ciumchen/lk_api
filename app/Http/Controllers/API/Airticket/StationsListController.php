@@ -25,8 +25,10 @@ class StationsListController extends Controller
         $items = [];
         foreach ($itemsData as $value)
         {
+            var_dump('~' . $value);
             foreach ($value as $val)
             {
+                var_dump('-' . $val);
                 $items[] = $val['item'];
             }
         }
