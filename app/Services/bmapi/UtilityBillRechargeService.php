@@ -2,6 +2,7 @@
 
 namespace App\Services\bmapi;
 
+use Bmapi\Api\UtilityBill\GetAccountInfo;
 use Bmapi\Api\UtilityBill\ItemList;
 use Bmapi\Api\UtilityBill\ItemPropsList;
 use Exception;
@@ -45,15 +46,18 @@ class UtilityBillRechargeService
     public function getInfo($data)
     {
         $paramsKey = [
-            'province',
+            ''=>'province',
             'mode_id',
             'city',
             'city_id',
             'unit_id',
             'unit_name',
         ];
+        $GetAccountInfo = new GetAccountInfo();
+        
         try {
             foreach ($data as $key => $val) {
+//                $GetAccountInfo-
             }
         } catch (Exception $e) {
         }
