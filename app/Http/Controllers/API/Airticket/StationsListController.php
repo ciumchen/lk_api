@@ -23,6 +23,7 @@ class StationsListController extends Controller
         //获取items
         $itemsData = $this->getItems();
         $items = [];
+        dd($itemsData);
         foreach ($itemsData as $value)
         {
             foreach ($value as $val)
