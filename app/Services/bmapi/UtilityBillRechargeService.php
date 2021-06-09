@@ -50,6 +50,7 @@ class UtilityBillRechargeService
      * @param $account
      * @param $project_id
      *
+     * @return array
      * @throws \Exception
      */
     public function checkBill($item_id, $account, $project_id)
