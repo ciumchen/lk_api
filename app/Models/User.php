@@ -172,7 +172,7 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute($value)
     {
-        $value = $this->attributes[ 'avatar' ];
+        $value = $this->attributes[ 'avatar' ] ?? '';
         if (empty($value) || in_array($value, $this->avatar_default)) {
             return $value;
         } else {
@@ -189,7 +189,7 @@ class User extends Authenticatable
      */
     public function getSexTextAttribute($value)
     {
-        return $this->sex_status[ intval($this->attributes[ 'sex' ]) ];
+        return $this->sex_status[intval($this->attributes[ 'sex' ] ?? 0)];
     }
 
     public function getBirthAttribute($value)
