@@ -21,7 +21,7 @@ class TransferController extends Controller
     public function __invoke(Request $request)
     {
         $this->validate($request, [
-            'amount' => ['bail', 'required', 'numeric', 'regex:#\A(\d+)(.\d{0,8})?\z#', 'min:2', 'max:10000'],
+            'amount' => ['bail', 'required', 'numeric', 'regex:#\A(\d+)(.\d{0,8})?\z#', 'min:5', 'max:10000'],
             'address' => ['bail', 'required'],
             'verify_code' => ['bail', 'required'],
         ], [
