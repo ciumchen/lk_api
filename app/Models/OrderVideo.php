@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
 class OrderVideo extends Model
 {
     
+    protected $table = 'order_video';
+    
     /**
      * @var string[] 订单类型对应文字
      */
@@ -312,5 +314,18 @@ class OrderVideo extends Model
             throw  $e;
         }
         return $this;
+    }
+    
+    /**
+     * 通过订单号查询订单
+     *
+     * @param $order_no
+     *
+     * @return mixed
+     */
+    public function getOrderByOrderNo($order_no)
+    {
+        return $this->where('order_no', '=', $order_no)
+                    ->first();
     }
 }

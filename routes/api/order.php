@@ -13,7 +13,7 @@ Route::middleware(['auth:sanctum'])
          //手机代充[斑马]
          Route::post('mobile-dl-order', 'Order\MobileRechargeController@setDlOrder');
          /* 视频会员订单生成[斑马] */
-         Route::any('video-set-order', 'Order\VideoRechargeController@setOrder');
+         Route::post('video-set-order', 'Order\VideoRechargeController@setOrder');
      });
 //我的分享
 Route::any("consumer", "Order\MyShareController@Consumer");

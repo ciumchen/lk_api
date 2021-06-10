@@ -61,7 +61,7 @@ class VideoCardService
      * @param string           $item_id
      *
      * @return array
-     * @throws \Exception
+     * @throws \Exception|\Throwable
      */
     public function serAllOrder($user, $account, $money, $project_id, $item_id)
     {
@@ -115,6 +115,45 @@ class VideoCardService
         }
         DB::commit();
         return $Order->toArray();
+    }
+    
+    /**
+     * 订单充值
+     *
+     * @param $order_no
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function recharge($order_no)
+    {
+        try {
+            /* 视频订单查询 */
+            $OrderVideo = new OrderVideo();
+            $orderInfo = $OrderVideo->getOrderByOrderNo($order_no);
+            if (empty($orderInfo)) {
+                throw new Exception('订单信息不存在');
+            }
+            $bill = $this->billRequest($orderInfo->account, $orderInfo->item_id, $order_no);
+            /* 视频订单状态更新 */
+            $orderInfo->goods_title = $bill[ 'itemName' ];
+            $orderInfo->pay_status = $bill[ 'payState' ];
+            $orderInfo->status = $bill[ 'rechargeState' ];
+            $orderInfo->trade_no = $bill[ 'billId' ];
+            $orderInfo->updated_at = date('Y-m-d H:i:s');
+            $orderInfo->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $bill;
+    }
+    
+    /**
+     * TODO:更新视频订单
+     * 处理回调
+     */
+    public function notify()
+    {
     }
     
     /**
