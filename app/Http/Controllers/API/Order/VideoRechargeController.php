@@ -43,7 +43,7 @@ class VideoRechargeController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return string
-     * @throws \App\Exceptions\LogicException
+     * @throws \App\Exceptions\LogicException|\Throwable
      */
     public function setOrder(Request $request)
     {
