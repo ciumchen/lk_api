@@ -28,23 +28,55 @@ class VideoRechargeController extends Controller
         $itemName = $request->input('item_name', '');
         $pageNo = $request->input('page', '');
         $pageSize = $request->input('page_size', '');
-        $VideoServices = new VideoCardService();
+        $VideoService = new VideoCardService();
         try {
-            $list = $VideoServices->getList($projectId, $itemId, $itemName, $pageNo, $pageSize);
+            $list = $VideoService->getList($projectId, $itemId, $itemName, $pageNo, $pageSize);
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
         return apiSuccess($list);
     }
     
+    /**
+     * 视频会员订单
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     */
+    public function setOrder(Request $request)
+    {
+        $user = $request->user();
+        $account = $request->input('account');
+        $money = $request->input('money');
+        $project_id = $request->input('project_id');
+        $item_id = $request->input('item_id');
+        $VideService = new VideoCardService();
+        try {
+            $order = $VideService->serAllOrder($user, $account, $money, $project_id, $item_id);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($order);
+    }
+    
+    /**
+     * 视频充值测试
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     */
     public function rechargeTest(Request $request)
     {
-        $account = $request->input('');
-        $itemId = $request->input('');
-        $order_no = $request->input('');
-        $VideoServices = new VideoCardService();
+        $account = $request->input('account');
+        $itemId = $request->input('item_id');
+        $order_no = $request->input('order_no');
+        $VideoService = new VideoCardService();
         try {
-            $bill = $VideoServices->billRequest($account, $itemId, $order_no);
+            $bill = $VideoService->billRequest($account, $itemId, $order_no);
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }

@@ -55,6 +55,7 @@ class VideoCardService
      * 视频会员充值订单生成
      *
      * @param \App\Models\User $user
+     * @param string           $account
      * @param float            $money
      * @param string           $project_id
      * @param string           $item_id
@@ -62,47 +63,48 @@ class VideoCardService
      * @return array
      * @throws \Exception
      */
-    public function serAllOrder($user, $money, $project_id, $item_id)
+    public function serAllOrder($user, $account, $money, $project_id, $item_id)
     {
+        $uid = $user->id;
         $order_no = createOrderNo();
         DB::beginTransaction();
         try {
             /* 创建 order 表订单*/
             $Order = new Order();
-            $Order->setVideoOrder($user->id, $money, $order_no);
+            $Order->setVideoOrder($uid, $money, $order_no);
             $order_id = $Order->id;
             /* 创建 order_video 表订单*/
             $OrderVideo = new OrderVideo();
             switch ($project_id) {
                 case 'c7165':  //优酷
-                    $OrderVideo->setYouKuOrder('', '', '', '', '', $item_id);
+                    $OrderVideo->setYouKuOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7166':
-                    //迅雷
+                case 'c7166':  //迅雷
+                    $OrderVideo->setXunLeiOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7163':
-                    //土豆
+                case 'c7163':  //土豆
+                    $OrderVideo->setTuDouOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7164':
-                    //爱奇艺
+                case 'c7164':  //爱奇艺
+                    $OrderVideo->setIQYiOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7168':
-                    //乐视
+                case 'c7168':  //乐视
+                    $OrderVideo->setLeOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7189':
-                    //好莱坞
+                case 'c7189':  //好莱坞
+                    $OrderVideo->setHollyWoodOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7197':
-                    //芒果TV移动
+                case 'c7197':  //芒果TV移动
+                    $OrderVideo->setMgTVMobileOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7196':
-                    //芒果TV全屏
+                case 'c7196':  //芒果TV全屏
+                    $OrderVideo->setMgTVFullScreenOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7190':
-                    //搜狐
+                case 'c7190':  //搜狐
+                    $OrderVideo->setSoHuOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
-                case 'c7229':
-                    //腾讯
+                case 'c7229':  //腾讯
+                    $OrderVideo->setTencentOrder($account, $money, $order_no, $order_id, $uid, $item_id);
                     break;
                 default:
                     throw new Exception('非法提交的充值项目');

@@ -12,6 +12,8 @@ Route::middleware(['auth:sanctum'])
          Route::post('mobile-order', 'Order\MobileRechargeController@setOrder');
          //手机代充[斑马]
          Route::post('mobile-dl-order', 'Order\MobileRechargeController@setDlOrder');
+         /* 视频会员订单生成[斑马] */
+         Route::any('video-set-order', 'Order\VideoRechargeController@setOrder');
      });
 //我的分享
 Route::any("consumer", "Order\MyShareController@Consumer");
@@ -34,5 +36,7 @@ Route::any("getInvitePoints", "User\RecordsOfConsumptionController@getInvitePoin
 Route::any('mobile-notify', 'Order\MobileNotifyController@callback');
 //手机充值测试[斑马]
 Route::any('mobile-recharge', 'Order\MobileRechargeController@rechargeTest');
-/* 视频会员查询 */
+/* 视频会员查询[斑马] */
 Route::any('video-get-list', 'Order\VideoRechargeController@getVideoList');
+/* 视频会员充值测试[斑马] */
+Route::any('video-recharge', 'Order\VideoRechargeController@rechargeTest');
