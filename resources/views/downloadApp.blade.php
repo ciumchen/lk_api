@@ -26,7 +26,8 @@
     <div >
         <img src="/images/download-bg.png" alt="" width="100%">
         @if($android_app)
-        <div class="download-btn"><a href="{{env('OSS_URL').$android_app}}" target="_blank" ><img src="/images/android_app.png" alt="" ></a></div>
+        <!--<div class="download-btn"><a href="{{env('OSS_URL').$android_app}}" target="_blank" ><img src="/images/android_app.png" alt="" ></a></div>-->
+        <div class="download-btn"><a href="https://static.catspawvideo.com{{$android_app}}" target="_blank" ><img src="/images/android_app.png" alt="" ></a></div>
         @endif
 
     </div>
