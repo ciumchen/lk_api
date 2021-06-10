@@ -77,7 +77,7 @@ class Shop extends Model
             ->get(['order.name', 'order.to_be_added_integral', 'order.created_at'])
             ->toArray();
         return [
-            'total'        => $total,
+            'total'        => sprintf("%.2f",$total),
             'integralList' => $integralList
         ];
     }
