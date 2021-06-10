@@ -26,8 +26,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int    create_type
  * @property string created_at
  * @property string updated_at
- *
  * @package App\Models
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderUtilityBill newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderUtilityBill newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderUtilityBill query()
+ * @mixin \Eloquent
  */
 class OrderUtilityBill extends Model
 {

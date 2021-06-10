@@ -4,6 +4,43 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\AssetsLogs
+ *
+ * @property int $id
+ * @property int $assets_type_id 资产类型id
+ * @property string $assets_name 资产名称
+ * @property int $uid uid
+ * @property string $operate_type 操作类型
+ * @property string $amount 变动数量
+ * @property string $amount_before_change 变动前数量
+ * @property string|null $tx_hash 交易hash
+ * @property string|null $ip ip
+ * @property string $user_agent ua
+ * @property string|null $remark 备注
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $order_no 订单号
+ * @property-read mixed $updated_date
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereAmountBeforeChange($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereAssetsName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereAssetsTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereOperateType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereOrderNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereRemark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereTxHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AssetsLogs whereUserAgent($value)
+ * @mixin \Eloquent
+ */
 class AssetsLogs extends Model
 {
     protected $table = 'assets_logs';
