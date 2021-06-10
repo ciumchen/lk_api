@@ -2,6 +2,7 @@
 
 namespace App\Services\bmapi;
 
+use App\Models\TradeOrder;
 use Bmapi\Api\UtilityBill\GetAccountInfo;
 use Bmapi\Api\UtilityBill\ItemList;
 use Bmapi\Api\UtilityBill\ItemPropsList;
@@ -47,9 +48,9 @@ class UtilityBillRechargeService
     /**
      * 水电煤查账
      *
-     * @param $item_id
-     * @param $account
-     * @param $project_id
+     * @param string $item_id
+     * @param string $account
+     * @param string $project_id
      *
      * @return array
      * @throws \Exception
@@ -67,6 +68,16 @@ class UtilityBillRechargeService
         return $info;
     }
     
+    /**
+     * 账单充值
+     * 付款后
+     *
+     * @param string $account
+     * @param string $itemId
+     * @param string $money
+     *
+     * @throws \Exception
+     */
     public function billRecharge($account, $itemId, $money)
     {
         /* TODO:账单充值 */
@@ -77,8 +88,12 @@ class UtilityBillRechargeService
                          ->setRechargeAccount($account)
                          ->getResult();
             $data = $LIfeRecharge->getData();
-            /* TODO:生成订单 */
+            $TradeOrder = new TradeOrder();
+            $order_no = $TradeOrder->CreateOrderNo();
+            /* TODO:更新订单 */
+            /* TODO:更新水电费订单 */
         } catch (Exception $e) {
+            throw $e;
         }
     }
     
