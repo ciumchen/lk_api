@@ -100,9 +100,9 @@ class VideoItemList extends ApiRequest
             throw new Exception($this->result);
         }
         $this->lists = $result[ 'admin_item_response' ][ 'items' ][ 'item' ];
-        $this->totalCount = $result[ 'admin_item_response' ][ 'items' ][ 'totalCount' ];
-        $this->pageNo = $result[ 'admin_item_response' ][ 'items' ][ 'pageNo' ];
-        $this->pageSize = $result[ 'admin_item_response' ][ 'items' ][ 'pageSize' ];
+        $this->totalCount = $result[ 'admin_item_response' ][ 'totalCount' ];
+        $this->pageNo = $result[ 'admin_item_response' ][ 'pageNo' ];
+        $this->pageSize = $result[ 'admin_item_response' ][ 'pageSize' ];
         return $this;
     }
     
@@ -119,31 +119,31 @@ class VideoItemList extends ApiRequest
     /********************************************************************/
     public function setPageNo($val)
     {
-        $this->pageNo;
+        $this->pageNo = $val;
         return $this;
     }
     
     public function setPageSize($val)
     {
-        $this->pageSize;
+        $this->pageSize = $val;
         return $this;
     }
     
     public function setItemId($val)
     {
-        $this->itemId;
+        $this->itemId = $val;
         return $this;
     }
     
     public function setItemName($val)
     {
-        $this->itemName;
+        $this->itemName = $val;
         return $this;
     }
     
     public function setProjectId($val)
     {
-        $this->projectId;
+        $this->projectId = $val;
         return $this;
     }
     

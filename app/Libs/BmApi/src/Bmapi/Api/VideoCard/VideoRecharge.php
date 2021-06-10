@@ -101,25 +101,25 @@ class VideoRecharge extends ApiRequest
     /*********************************************/
     public function setAccount($val)
     {
-        $this->account;
+        $this->account = $val;
         return $this;
     }
     
     public function setItemId($val)
     {
-        $this->itemId;
+        $this->itemId = $val;
         return $this;
     }
     
     public function setOuterTid($val)
     {
-        $this->outerTid;
+        $this->outerTid = $val;
         return $this;
     }
     
     public function setCallback($val)
     {
-        $this->callback;
+        $this->callback = $val;
         return $this;
     }
     

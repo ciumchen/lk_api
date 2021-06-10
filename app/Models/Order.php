@@ -390,4 +390,37 @@ class Order extends Model
         }
         return $this;
     }
+    
+    /**
+     * 视频会员充值
+     *
+     * @param $uid
+     * @param $money
+     * @param $order_no
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setVideoOrder($uid, $money, $order_no)
+    {
+        $profit_ratio = 5;
+        $profit_price = $money * ($profit_ratio / 100);
+        try {
+            $this->uid = $uid;
+            $this->business_uid = '2';
+            $this->profit_ratio = $profit_ratio;
+            $this->price = $money;
+            $this->profit_price = $profit_price;
+            $this->status = '1';
+            $this->name = '视频会员';
+            $this->remark = '';
+            $this->state = '1';
+            $this->pay_status = 'await';
+            $this->order_no = $order_no;
+            $this->save();
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $this;
+    }
 }

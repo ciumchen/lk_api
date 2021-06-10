@@ -34,3 +34,5 @@ Route::any("getInvitePoints", "User\RecordsOfConsumptionController@getInvitePoin
 Route::any('mobile-notify', 'Order\MobileNotifyController@callback');
 //手机充值测试[斑马]
 Route::any('mobile-recharge', 'Order\MobileRechargeController@rechargeTest');
+/* 视频会员查询 */
+Route::any('video-get-list', 'Order\VideoRechargeController@getVideoList');
