@@ -21,7 +21,14 @@ use Illuminate\Support\Facades\Log;
 class BmNotifyController extends Controller
 {
     
-    //
+    /**
+     * Description:
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/11 0011
+     */
     public function videoNotify(Request $request)
     {
         $data = $request->all();
