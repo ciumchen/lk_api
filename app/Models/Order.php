@@ -449,4 +449,19 @@ class Order extends Model
         }
         return $this;
     }
+    
+    /**
+     * Description:通过订单号获取订单信息
+     *
+     * @param $order_no
+     *
+     * @return \App\Models\Order|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/11 0011
+     */
+    public function getOrderByOrderNo($order_no)
+    {
+        return $this->where('order_no', '=', $order_no)
+                    ->first();
+    }
 }

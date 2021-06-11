@@ -346,4 +346,17 @@ class OrderVideo extends Model
         return $this->where('order_no', '=', $order_no)
                     ->first();
     }
+    
+    /**
+     * 通过订单id查询订单
+     *
+     * @param $order_id
+     *
+     * @return mixed
+     */
+    public function getOrderByOrderId($order_id)
+    {
+        return $this->where('order_id', '=', $order_id)
+                    ->first();
+    }
 }

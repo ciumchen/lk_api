@@ -124,9 +124,46 @@ class VideoCardService extends BaseService
     }
     
     /**
+     * Description: 更新订单号
+     *
+     * @param $order_id
+     * @param $order_no
+     *
+     * @return bool
+     * @throws \Throwable
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/11 0011
+     */
+    public function orderUpdateOrderNo($order_id, $order_no)
+    {
+        $Order = new Order();
+        $OrderVideo = new OrderVideo();
+        DB::beginTransaction();
+        try {
+            /* 更新 order 表订单号 */
+            $orderInfo = $Order->find($order_id);
+            if (empty($orderInfo)) {
+                throw new Exception('未查询到订单数据');
+            }
+            /* 更新 order_video 订单号 */
+            $orderVideoInfo = $OrderVideo->getOrderByOrderId($order_id);
+            if (empty($orderVideoInfo)) {
+                throw new Exception('未查询到视频订单');
+            }
+            $orderVideoInfo->order_no = $order_no;
+            $orderVideoInfo->save();
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        DB::commit();
+        return true;
+    }
+    
+    /**
      * 订单充值
      *
-     * @param $order_no
+     * @param string $order_no
      *
      * @return array
      * @throws \Exception
@@ -134,20 +171,23 @@ class VideoCardService extends BaseService
     public function recharge($order_no)
     {
         try {
-            /* 视频订单查询 */
-            $OrderVideo = new OrderVideo();
-            $orderInfo = $OrderVideo->getOrderByOrderNo($order_no);
+            /* 查询订单信息 */
+            $Order = new Order();
+            $orderInfo = $Order->getOrderByOrderNo($order_no);
             if (empty($orderInfo)) {
                 throw new Exception('订单信息不存在');
             }
-            $bill = $this->billRequest($orderInfo->account, $orderInfo->item_id, $order_no);
+            /* 视频订单查询 */
+            $OrderVideo = new OrderVideo();
+            $orderVideoInfo = $OrderVideo->find($orderInfo->id);
+            $bill = $this->billRequest($orderVideoInfo->account, $orderVideoInfo->item_id, $order_no);
             /* 视频订单状态更新 */
-            $orderInfo->goods_title = $bill[ 'itemName' ];
-            $orderInfo->pay_status = $bill[ 'payState' ];
-            $orderInfo->status = $bill[ 'rechargeState' ];
-            $orderInfo->trade_no = $bill[ 'billId' ];
-            $orderInfo->updated_at = date('Y-m-d H:i:s');
-            $orderInfo->save();
+            $orderVideoInfo->goods_title = $bill[ 'itemName' ];
+            $orderVideoInfo->pay_status = $bill[ 'payState' ];
+            $orderVideoInfo->status = $bill[ 'rechargeState' ];
+            $orderVideoInfo->trade_no = $bill[ 'billId' ];
+            $orderVideoInfo->updated_at = date('Y-m-d H:i:s');
+            $orderVideoInfo->save();
         } catch (Exception $e) {
             throw $e;
         }

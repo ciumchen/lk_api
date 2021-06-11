@@ -14,11 +14,15 @@ Route::post('yun-pay', 'Payment\YuntongPayController@createPay');
 Route::post('yun-pay-again', 'Payment\YuntongPayController@againPay');
 //云通支付回调
 Route::post('yun-notify', 'Payment\YuntongNotifyController@callBack');
-
-
+/****** *******/
 //机票支付
 Route::post('air-pay', 'Payment\YuntongPayController@airPay');
 //机票回调支付
 Route::post('air-notify', 'Payment\YuntongPayController@airPayNotify');
 //机票二次支付
 Route::post('air-again-pay', 'Payment\YuntongPayController@airAgainPay');
+/****** *******/
+//斑马接口订单支付
+Route::post('bm-pay', 'Payment\YuntongPayController@bmPay');
+//斑马接口订单回调
+Route::any('bm-pay-notify', 'Payment\YuntongNotifyController@bmPayCallback');

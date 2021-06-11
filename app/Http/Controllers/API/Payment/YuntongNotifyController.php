@@ -212,4 +212,26 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
+    
+    public function bmPayCallback(Request $request)
+    {
+        $Pay = new YuntongPay();
+        $json = $request->getContent();
+        try {
+            $data = json_decode($json, true);
+            $res = $Pay->Notify($data);
+            if (!empty($res)) {
+                /* TODO:*/
+                /* 更新对应斑马订单表 */
+                
+                /* 更新订单表以及积分 */
+            } else {
+                throw new Exception('解析为空');
+            }
+            $Pay->Notify_success();
+        } catch (Exception $e) {
+            Log::debug('YuntongNotify-验证不通过-bmCallback-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
+            $Pay->Notify_failed();
+        }
+    }
 }

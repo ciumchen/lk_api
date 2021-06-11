@@ -183,3 +183,24 @@ if (!function_exists('createOrderNo')) {
         return "PY_" . date("YmdHis") . rand(100000, 999999);
     }
 }
+if (!function_exists('createOrderNo')) {
+    /**
+     * Description:获取异步通知地址
+     *
+     * @param $notify_url
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\UrlGenerator|string|string[]
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/11 0011
+     */
+    function createNotifyUrl($notify_url)
+    {
+        if (strpos('http://', $notify_url) === false && strpos('https://', $notify_url) === false) {
+            $notify_url = url($notify_url);
+        }
+        if (strpos($notify_url, 'lk.catspawvideo.com') !== false) {
+            $notify_url = str_replace('http://', 'https://', $notify_url);
+        }
+        return $notify_url;
+    }
+}

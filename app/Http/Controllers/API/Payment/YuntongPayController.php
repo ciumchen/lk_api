@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\TradeOrder;
 use App\Models\Traits\AllowField;
+use App\Services\bmapi\VideoCardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Libs\Yuntong\YuntongPay;
@@ -109,10 +110,20 @@ class YuntongPayController extends Controller
     /**
      * 发起支付请求
      *
-     * @param $data
+     * @param array  $data 支付请求数据[
+     *                     'goodsTitle'=>'',
+     *                     'goodsDesc'=>'',
+     *                     'need_fee'=>'',
+     *                     'order_no'=>'',
+     *                     'order_from'=>'',
+     *                     'ip'=>'',
+     *                     'return_url'=>'',
+     *                     ]
+     *
+     * @param string $return_url
      *
      * @return JsonResponse
-     * @throws Exception
+     * @throws \Exception
      */
     public function payRequest($data, $return_url = '')
     {
@@ -141,10 +152,10 @@ class YuntongPayController extends Controller
             }
             $res = $res->pay();
             $response = json_decode($res, true);
-            return response()->json(['url' => $response[ 'pay_url' ]]);
         } catch (Exception $e) {
             throw $e;
         }
+        return response()->json(['url' => $response[ 'pay_url' ]]);
     }
     
     /*******************************************************************/
@@ -543,8 +554,51 @@ class YuntongPayController extends Controller
         return $this->airCreatePay(array_merge($orderData, $airOrderData, $airTrades), 2);
     }
     
+    /**
+     * Description:斑马接口订单支付
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\LogicException
+     * @throws \Throwable
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/11 0011
+     */
     public function bmPay(Request $request)
     {
-        $order_id = $request->input('order_id');
+        $order_id = $request->input('oid');
+        $goodsDesc = $request->input('goodsDesc');
+        $deviceInfo = $request->input('deviceInfo');
+        $payChannel = $request->input('payChannel');
+        $return_url = $request->input('return_url');
+        try {
+            $Order = new Order();
+            $orderInfo = $Order->find($order_id);
+            $order_no = $orderInfo->order_no;
+            if (!empty($orderInfo->updated_at)) {
+                /* 更新订单号 */
+                $order_no = createOrderNo();
+                $VideoOrderService = new VideoCardService();
+                $VideoOrderService->orderUpdateOrderNo($order_id, $order_no);
+                $orderInfo->order_no = $order_no;
+            }
+            if (!is_array($deviceInfo)) {
+                $deviceInfo = json_decode($deviceInfo, true);
+            }
+            $ip = $deviceInfo[ 'device_ip' ] ?? '';
+            $data = [
+                'goodsTitle' => $orderInfo->name,
+                'goodsDesc'  => $goodsDesc,
+                'need_fee'   => $orderInfo->price,
+                'order_no'   => $order_no,
+                'order_from' => $payChannel,
+                'ip'         => $ip,
+                'return_url' => $return_url,
+            ];
+            return $this->payRequest($data, createNotifyUrl('api/bm-pay-notify'));
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
     }
 }

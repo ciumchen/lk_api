@@ -32,7 +32,7 @@ class BmNotifyController extends Controller
     public function videoNotify(Request $request)
     {
         $data = $request->all();
-        Log::debug('VideoNotify-data', [json_encode($data)]);
+        Log::debug('VideoNotify-data:', [json_encode($data)]);
         try {
             $VideoService = new VideoCardService();
             $VideoService->notify($data);
