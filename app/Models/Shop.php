@@ -76,6 +76,16 @@ class Shop extends Model
             ->distinct('order.id')
             ->get(['order.id', 'order.name', 'order.to_be_added_integral', 'order.created_at'])
             ->toArray();
+
+        //获取排队订单顺序
+        $oid = (new Order())::where('line_up', 1)->orderBy('id', 'asc')->get(['id'])->first();
+        $newId = $oid->id - 1;
+        foreach ($integralList as $key => $val)
+        {
+            $integralList[$key]['id'] = $val['id'] - $newId;
+            $integralList[$key]['created_at'] = date("Y-m-d H:i:s", strtotime($val[ 'created_at' ]));
+        }
+
         return [
             'total'        => sprintf("%.2f",$total),
             'integralList' => $integralList
