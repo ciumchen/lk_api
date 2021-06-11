@@ -14,7 +14,7 @@ use Exception;
  *
  * @package App\Services\bmapi
  */
-class UtilityBillRechargeService
+class UtilityBillRechargeService extends BaseService
 {
     
     /**

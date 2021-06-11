@@ -4,14 +4,20 @@ namespace App\Services\bmapi;
 
 use App\Models\Order;
 use App\Models\OrderVideo;
-use App\Models\TradeOrder;
 use Bmapi\Api\VideoCard\VideoItemList;
 use Bmapi\Api\VideoCard\VideoRecharge;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
-class VideoCardService
+class VideoCardService extends BaseService
 {
+    
+    public function updateRechargeLogs($data, $type = '')
+    {
+        $type = 'VC';
+        return parent::updateRechargeLogs($data, $type);
+    }
     
     /**
      * 查询可用商品
@@ -151,9 +157,38 @@ class VideoCardService
     /**
      * TODO:更新视频订单
      * 处理回调
+     *
+     * @param $data
+     *
+     * @throws \Exception
      */
-    public function notify()
+    public function notify($data)
     {
+        $OrderVideo = new OrderVideo();
+        try {
+            if (empty($data)) {
+                throw new Exception('视频会员回调数据为空');
+            }
+            $VideoRecharge = new VideoRecharge();
+            if (!$VideoRecharge->checkSign($data)) {
+                throw new Exception('签名校验失败');
+            }
+            $rechargeInfo = $OrderVideo->where('order_no', '=', $data[ 'outer_tid' ])
+                                       ->first();
+            if (empty($rechargeInfo)) {
+                throw new Exception('未查询到订单数据');
+            }
+            if ($rechargeInfo->status != 0) {
+                throw new Exception('订单已处理');
+            }
+            $rechargeInfo->status = $data[ 'recharge_state' ];
+            $rechargeInfo->trade_no = $data[ 'tid' ];
+            $rechargeInfo->updated_at = $data[ 'timestamp' ];
+            $rechargeInfo->save();
+        } catch (Exception $e) {
+            Log::debug('banMaNotify-Error:' . $e->getMessage(), [json_encode($data)]);
+            throw $e;
+        }
     }
     
     /**

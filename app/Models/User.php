@@ -12,28 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * Class User
  *
- * @method $id
- * @method $invite_uid
- * @method $role
- * @method $business_lk
- * @method $lk
- * @method $integral
- * @method $business_integral
- * @method $phone
- * @method $username
- * @method $avatar
- * @method $salt
- * @method $code_invite
- * @method $status
- * @method $is_auth
- * @method $created_at
- * @method $updated_at
- * @method $return_integral
- * @method $return_business_integral
- * @method $return_lk
- * @method $ban_reason
- * @method $member_head
- * @package App\Models
+
  * @property int $id
  * @property int|null $invite_uid 邀请人id
  * @property int $role 1普通用户，2商家
@@ -100,6 +79,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUsername($value)
  * @mixin \Eloquent
+ * @package App\Models
  */
 class User extends Authenticatable
 {

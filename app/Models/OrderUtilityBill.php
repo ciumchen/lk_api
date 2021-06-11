@@ -37,6 +37,8 @@ class OrderUtilityBill extends Model
     
     use HasFactory;
     
+    protected $table = 'order_utility';
+    
     /**
      * 生成水费账单
      *

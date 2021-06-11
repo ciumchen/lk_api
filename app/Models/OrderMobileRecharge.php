@@ -9,33 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class OrderMobileRecharge
  *
- * @property int    id
- * @property string mobile
- * @property float  money
- * @property int    order_id
- * @property int    create_type
- * @property string order_no
- * @property string created_at
- * @property string updated_at
- * @property string trade_no
- * @property string status
- * @property string pay_status
- * @property string goods_title
- * @property int    uid
- * @package App\Models
- * @property int $id
- * @property string $order_no 订单号
- * @property string $mobile 充值手机号
- * @property int $order_id 订单(order)表ID
- * @property \Illuminate\Support\Carbon|null $created_at 创建时间
- * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
- * @property string $money 充值金额
- * @property string $trade_no 接口方返回单号
- * @property int $status 充值状态:0充值中,1成功,9撤销
- * @property int $pay_status 平台订单付款状态:0未付款,1已付款
- * @property string $goods_title 商品名称
- * @property int $uid 充值用户ID
- * @property int $create_type 订单类型:1充值订单,代充订单
+ * @property int                             $id
+ * @property string                          $order_no    订单号
+ * @property string                          $mobile      充值手机号
+ * @property int                             $order_id    订单(order)表ID
+ * @property \Illuminate\Support\Carbon|null $created_at  创建时间
+ * @property \Illuminate\Support\Carbon|null $updated_at  更新时间
+ * @property string                          $money       充值金额
+ * @property string                          $trade_no    接口方返回单号
+ * @property int                             $status      充值状态:0充值中,1成功,9撤销
+ * @property int                             $pay_status  平台订单付款状态:0未付款,1已付款
+ * @property string                          $goods_title 商品名称
+ * @property int                             $uid         充值用户ID
+ * @property int                             $create_type 订单类型:1充值订单,代充订单
  * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge query()
@@ -53,6 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereUid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @package App\Models
  */
 class OrderMobileRecharge extends Model
 {

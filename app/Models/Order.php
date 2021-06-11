@@ -11,45 +11,28 @@ use App\Exceptions\LogicException;
 /**
  * Class Order
  *
- * @property int    id
- * @property int    uid
- * @property int    business_uid
- * @property int    profit_ratio
- * @property float  price
- * @property float  profit_price
- * @property int    status
- * @property string name
- * @property string remark
- * @property string created_at
- * @property string updated_at
- * @property string state
- * @property string pay_status
- * @property string to_be_added_integral
- * @property string to_status
- * @property string line_up
- * @property string order_no
- * @package App\Models
- * @property int $id
- * @property int $uid 消费者UID
- * @property int $business_uid 商家UID
- * @property string $profit_ratio 让利比列(%)
- * @property string $price 消费金额
- * @property string $profit_price 实际让利金额
- * @property int $status 1审核中，2审核通过，3审核失败
- * @property string $name 消费商品名
- * @property string|null $remark 备注
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property int $state 盟主订单标识,1非盟主订单，2盟主订单
- * @property string|null $pay_status 支付状态：await 待支付；pending 支付处理中； succeeded 支付成功；failed 支付失败,ddyc订单异常
- * @property string|null $to_be_added_integral 用户待加积分
- * @property int|null $to_status 订单处理状态：默认0,1表示待处理,2表示已处理
- * @property int|null $line_up 排队状态,默认0不排队,1表示排队
- * @property string $order_no 斑马充值订单号
- * @property-read \App\Models\TradeOrder $Trade_Order
+ * @property int                                $id
+ * @property int                                $uid                  消费者UID
+ * @property int                                $business_uid         商家UID
+ * @property string                             $profit_ratio         让利比列(%)
+ * @property string                             $price                消费金额
+ * @property string                             $profit_price         实际让利金额
+ * @property int                                $status               1审核中，2审核通过，3审核失败
+ * @property string                             $name                 消费商品名
+ * @property string|null                        $remark               备注
+ * @property \Illuminate\Support\Carbon|null    $created_at
+ * @property \Illuminate\Support\Carbon|null    $updated_at
+ * @property int                                $state                盟主订单标识,1非盟主订单，2盟主订单
+ * @property string|null                        $pay_status           支付状态：await 待支付；pending 支付处理中； succeeded
+ *           支付成功；failed 支付失败,ddyc订单异常
+ * @property string|null                        $to_be_added_integral 用户待加积分
+ * @property int|null                           $to_status            订单处理状态：默认0,1表示待处理,2表示已处理
+ * @property int|null                           $line_up              排队状态,默认0不排队,1表示排队
+ * @property string                             $order_no             斑马充值订单号
+ * @property-read \App\Models\TradeOrder        $Trade_Order
  * @property-read \App\Models\BusinessData|null $business
- * @property-read mixed $updated_date
- * @property-read \App\Models\User|null $user
+ * @property-read mixed                         $updated_date
+ * @property-read \App\Models\User|null         $user
  * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Order query()
@@ -71,6 +54,7 @@ use App\Exceptions\LogicException;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @package App\Models
  */
 class Order extends Model
 {

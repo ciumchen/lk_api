@@ -11,7 +11,7 @@ use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
 use Log;
 
-class MobileRechargeService
+class MobileRechargeService extends BaseService
 {
     
     /**
