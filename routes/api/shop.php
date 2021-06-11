@@ -9,5 +9,3 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //获取排队积分记录
     Route::get('line-list', 'Shop\GetIntegralController@lineList');
 });
-
-

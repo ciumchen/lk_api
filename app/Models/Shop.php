@@ -21,10 +21,10 @@ class Shop extends Model
     {
         $uid = $data['uid'];
 
-        $res = (new User())::where(['id' => $uid, 'status' => 1])->exists();
+        $res = (new User())::where(['id' => $uid, 'status' => 1, 'role' => 2])->exists();
         if (!$res)
         {
-            throw new LogicException('该用户信息不存在');
+            throw new LogicException('该用户不是商家');
         }
 
         return (new User())
@@ -36,8 +36,8 @@ class Shop extends Model
             })
             ->orderBy('integral_log.created_at', 'desc')
             ->forPage($data['page'], $data['pageSize'])
-            ->distinct('users.id')
-            ->get(['integral_log.operate_type', 'integral_log.amount', 'integral_log.remark', 'integral_log.created_at'])
+            ->distinct('integral_log.id')
+            ->get(['integral_log.id', 'integral_log.operate_type', 'integral_log.amount', 'integral_log.remark', 'integral_log.created_at'])
             ->toArray();
     }
 
@@ -50,10 +50,10 @@ class Shop extends Model
     {
         $uid = $data['uid'];
 
-        $res = (new User())::where(['id' => $uid, 'status' => 1])->exists();
+        $res = (new User())::where(['id' => $uid, 'status' => 1, 'role' => 2])->exists();
         if (!$res)
         {
-            throw new LogicException('该用户信息不存在');
+            throw new LogicException('该用户不是商家');
         }
 
         $total = (new User())
@@ -73,8 +73,8 @@ class Shop extends Model
             })
             ->orderBy('order.created_at', 'desc')
             ->forPage($data['page'], $data['pageSize'])
-            ->distinct('users.id')
-            ->get(['order.name', 'order.to_be_added_integral', 'order.created_at'])
+            ->distinct('order.id')
+            ->get(['order.id', 'order.name', 'order.to_be_added_integral', 'order.created_at'])
             ->toArray();
         return [
             'total'        => sprintf("%.2f",$total),
