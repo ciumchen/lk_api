@@ -72,7 +72,7 @@ class Shop extends Model
             ->sum('order.to_be_added_integral');
         $integralList = (new User())
             ->join('order', function($join){
-                $join->on('users.id', 'order.uid');
+                $join->on('users.id', 'order.business_uid');
             })
             ->where(function($query) use ($uid){
                 $query->where(['users.id' => $uid, 'users.status' => 1, 'users.role' => 2, 'order.status' => 2, 'order.line_up' => 1]);
