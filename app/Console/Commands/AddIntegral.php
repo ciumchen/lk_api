@@ -88,9 +88,10 @@ class AddIntegral extends Command
 
             //比较
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
+            $old_addCountProfitPrice = $LkBlData['count_profit_price'];
             if($LkBlData['count_profit_price']!=0){
                 $lk_unit_price = Setting::where('key','lk_unit_price')->value('value');
-                if (($addCountProfitPrice*0.675/$LkBlData['count_lk'])<$lk_unit_price){
+                if (($old_addCountProfitPrice*0.675/$LkBlData['count_lk'])<$lk_unit_price){
                     $this->completeOrder($order_no);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
