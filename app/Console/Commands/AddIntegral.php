@@ -86,7 +86,15 @@ class AddIntegral extends Command
             $lddata = $orderldModer::where('day',$todaytime)->first();
             $id = $lddata->id;
 
-            //比较
+            $profit_ratio = array(
+                5=>'price_5',
+                10=>'price_10',
+                20=>'price_20',
+            );
+            $field = $profit_ratio[floor($orderInfo->profit_ratio)];
+            $LkBlData[$field]=bcadd($lddata->$field,$orderInfo->price,2);//累计消费金额
+
+            //控制添加积分
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
             $old_addCountProfitPrice = $LkBlData['count_profit_price'];
             if($LkBlData['count_profit_price']!=0){

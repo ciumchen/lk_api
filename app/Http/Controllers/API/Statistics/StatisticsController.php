@@ -152,5 +152,17 @@ class StatisticsController extends Controller
         return $Data;
     }
 
+    //获取今日排队和昨日排队订单的消费金额的让利比例的统计（5%-10%-20%）
+    public function getGiveOderPrice(){
+        //获取今日所有添加积分的订单的消费金额
+
+
+
+
+
+
+
+    }
+
 
 }
