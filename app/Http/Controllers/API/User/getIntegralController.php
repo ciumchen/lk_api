@@ -13,10 +13,10 @@ class getIntegralController extends Controller
         $uid = $request->input('uid');
         //待添加积分总数
         $data['countJf'] = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->sum('to_be_added_integral');
-        $oneOrder = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->first();
+        $oneOrder = Order::where('status',2)->where('line_up',1)->first();
 
         $orderData = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->get()->append(['updated_date'])->toArray();
-//dd($orderData);
+//dd($oneOrder);
         foreach ($orderData as $k=>$v){
             $data['integralJl'][$k]['id'] = $v['id']-($oneOrder->id-1);
             $data['integralJl'][$k]['name'] = $v['name'];

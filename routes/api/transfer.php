@@ -8,4 +8,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('bind-address', 'Transfer\TransferController@bindAddress');
     //提现
     Route::post('transfer', 'Transfer\TransferController');
+
+    //赠送
+    Route::any('giveTransfer', 'Transfer\GiveTransferController');
+
+
 });
