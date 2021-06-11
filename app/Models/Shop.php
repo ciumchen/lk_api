@@ -80,7 +80,7 @@ class Shop extends Model
             ->orderBy('order.created_at', 'asc')
             ->forPage($data['page'], $data['pageSize'])
             ->distinct('order.id')
-            ->get(['order.id', 'order.name', 'order.profit_price', 'order.created_at'])
+            ->get(['order.id', 'order.name', 'order.profit_price as to_be_added_integral', 'order.created_at'])
             ->toArray();
 
         //获取排队订单顺序
