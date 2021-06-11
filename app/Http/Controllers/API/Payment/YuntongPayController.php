@@ -542,4 +542,9 @@ class YuntongPayController extends Controller
         //发起支付请求
         return $this->airCreatePay(array_merge($orderData, $airOrderData, $airTrades), 2);
     }
+    
+    public function bmPay(Request $request)
+    {
+        $order_id = $request->input('order_id');
+    }
 }

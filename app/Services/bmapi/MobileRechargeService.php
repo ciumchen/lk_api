@@ -245,7 +245,7 @@ class MobileRechargeService extends BaseService
                         ->getResult();
             $info = $GetItemInfo->getItemInfo();
             if (empty($info) || intval($info[ 'numberChoice' ]) < 1) {
-                throw new Exception('手机号不支持此金额充值，请选择其它金额');
+                throw new Exception('请选择其它充值金额');
             }
         } catch (Exception $e) {
             throw $e;
