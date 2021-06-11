@@ -21,7 +21,9 @@ Route::any('bm-test3', 'Test\BmApiController@utilityRecharge');
 Route::any('bm-test4', 'Test\BmApiController@mobileGetInfo');
 Route::any('bm-test5', 'Test\BmApiController@mobilePayBill');
 Route::any('bm-test6', 'Test\BmApiController@demo');
-
 Route::any('air', 'Test\BmApiController@airList');
 Route::any('item', 'Test\BmApiController@itemsList');
 Route::any('lines', 'Test\BmApiController@linesList');
+Route::any('dong/{action}', function (Illuminate\Http\Request $request, \App\Http\Controllers\API\Test\DongController $index, $action) {
+    return $index->$action($request);
+});

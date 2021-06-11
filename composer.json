@@ -23,7 +23,8 @@
         "simplesoftwareio/simple-qrcode": "^4.2",
         "ext-pdo": "*",
         "ext-curl": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+      "ext-bcmath": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.10",
