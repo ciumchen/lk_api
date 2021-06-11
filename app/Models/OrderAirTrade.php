@@ -37,4 +37,21 @@ class OrderAirTrade extends Model
 
         (new OrderAirTrade())::where('trade_no', $tradeNo)->whereIn('order_no', $data)->update(['state' => 9, 'order_state' => 10, 'utime' => date('Y-m-d H:i:s')]);
     }
+
+    /**获取机票订单数据
+     * @param string $orderNo
+     * @return mixed
+     * @throws
+     */
+    public function airOrderInfo(string $orderNo)
+    {
+        return (new AirTradeLogs())
+            ->join('order_air_trade', function($join){
+                $join->on('air_trade_logs.id', 'order_air_trade.aid');
+            })
+            ->where('air_trade_logs.order_no', $orderNo)
+            ->distinct('air_trade_logs.order_no')
+            ->get()
+            ->first();
+    }
 }

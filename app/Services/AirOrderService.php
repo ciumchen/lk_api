@@ -5,8 +5,9 @@ namespace App\Services;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\API\Airticket\OrderPayBillController;
 use App\Models\AirTradeLogs;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
+use App\Models\OrderAirTrade;
+use App\Models\RechargeLogs;
 
 class AirOrderService
 {
@@ -135,6 +136,24 @@ class AirOrderService
 
         //生成机票订单
         (new OrderPayBillController())->setOrderPay($airTradeData);
+
+        //充值成功插入数据到数据库
+        $airOrderInfo = (new OrderAirTrade())->airOrderInfo($orderNo);
+        $recharge = new RechargeLogs();
+        $res = (new RechargeLogs())->exRecharges($airOrderInfo->trade_no);
+        if ($res)
+        {
+            throw new LogicException('消息已发送');
+        }
+
+        $recharge->reorder_id = $airOrderInfo->trade_no;
+        $recharge->order_no = $orderNo;
+        $recharge->type = 'AT';
+        $recharge->status = 1;
+        $recharge->created_at = date("Y-m-d H:i:s");
+        $recharge->updated_at = date("Y-m-d H:i:s");
+        $recharge->save();
+
         //发送机票消息通知
         (new Order())->airOrderMsg($orderNo);
     }
