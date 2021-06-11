@@ -27,7 +27,7 @@ class Shop extends Model
             throw new LogicException('该用户不是商家');
         }
 
-        return (new User())
+        $integralArr = (new User())
             ->join('integral_log', function($join){
                 $join->on('users.id', 'integral_log.uid');
             })
@@ -39,6 +39,12 @@ class Shop extends Model
             ->distinct('integral_log.id')
             ->get(['integral_log.id', 'integral_log.operate_type', 'integral_log.amount', 'integral_log.remark', 'integral_log.created_at'])
             ->toArray();
+        foreach ($integralArr as $key => $val)
+        {
+            $integralArr[$key]['created_at'] = date("Y-m-d H:i:s", strtotime($val[ 'created_at' ]));
+        }
+
+        return $integralArr;
     }
 
     /**获取商家排队积分记录
