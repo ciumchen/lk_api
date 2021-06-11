@@ -92,7 +92,7 @@ class AddIntegral extends Command
                 20=>'price_20',
             );
             $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
-            $LkBlData[$field]=bcadd($lddata->$field,$orderInfo->price,2);//累计消费金额
+            $LkBlData[$field]=bcadd($lddata->$field,$orderInfo['price'],2);//累计消费金额
 
             //控制添加积分
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
