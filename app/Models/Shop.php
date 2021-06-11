@@ -32,7 +32,7 @@ class Shop extends Model
                 $join->on('users.id', 'integral_log.uid');
             })
             ->where(function($query) use ($uid){
-                $query->where(['users.id' => $uid, 'users.status' => 1, 'users.role' => 2]);
+                $query->where(['users.id' => $uid, 'users.status' => 1, 'users.role' => 2, 'integral_log.role' => 2]);
             })
             ->orderBy('integral_log.created_at', 'desc')
             ->forPage($data['page'], $data['pageSize'])
