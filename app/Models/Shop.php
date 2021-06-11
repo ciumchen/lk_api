@@ -77,7 +77,7 @@ class Shop extends Model
             ->where(function($query) use ($uid){
                 $query->where(['users.id' => $uid, 'users.status' => 1, 'users.role' => 2, 'order.status' => 2, 'order.line_up' => 1]);
             })
-            ->orderBy('order.created_at', 'desc')
+            ->orderBy('order.created_at', 'asc')
             ->forPage($data['page'], $data['pageSize'])
             ->distinct('order.id')
             ->get(['order.id', 'order.name', 'order.to_be_added_integral', 'order.created_at'])
