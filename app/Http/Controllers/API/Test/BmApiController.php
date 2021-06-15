@@ -191,6 +191,32 @@ class BmApiController extends Controller
         $status = $GetAccountInfo->getStatus();
         $msg = $GetAccountInfo->getMessage();
         return response()->json(['res' => $res, 'status' => $status, 'msg' => $msg]);
+        /*
+         * 燃气费账单
+        {
+            "res": [
+                {
+                    "customerName": "*健辉",
+                    "accountNo": null,
+                    "month": null,
+                    "customerAddress": null,
+                    "payAmount": "0.00",
+                    "penalty": null,
+                    "balance": null,
+                    "billCycle": null,
+                    "beginDate": null,
+                    "endDate": null,
+                    "contractNo": null,
+                    "filed1": null,
+                    "contentId": null,
+                    "item4": null,
+                    "prepaidFlag": "2"
+                }
+            ],
+            "status": "1",
+            "msg": "查询成功"
+        }
+        */
     }
     
     public function utilityRecharge(Request $request)

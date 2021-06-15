@@ -22,3 +22,4 @@ _ide_helper_models.php
 nginx.htaccess
 /common/log/prod
 /common/logs/prod
+.phpstorm.meta.php

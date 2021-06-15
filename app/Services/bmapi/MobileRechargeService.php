@@ -11,7 +11,7 @@ use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
 use Log;
 
-class MobileRechargeService
+class MobileRechargeService extends BaseService
 {
     
     /**
@@ -245,7 +245,7 @@ class MobileRechargeService
                         ->getResult();
             $info = $GetItemInfo->getItemInfo();
             if (empty($info) || intval($info[ 'numberChoice' ]) < 1) {
-                throw new Exception('手机号不支持此金额充值，请选择其它金额');
+                throw new Exception('请选择其它充值金额');
             }
         } catch (Exception $e) {
             throw $e;
@@ -342,7 +342,6 @@ class MobileRechargeService
             $notify_url = url('/api/mobile-notify');
         }
         if (strpos($notify_url, 'lk.catspawvideo.com') !== false) {
-            //$return_url = env('HTTP_URL') . '/api/yun-notify';
             $notify_url = str_replace('http://', 'https://', $notify_url);
         }
         $PayBill = new PayBill();

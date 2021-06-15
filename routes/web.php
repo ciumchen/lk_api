@@ -17,3 +17,13 @@ Route::get('/', function () {
 });
 Route::get('register', 'User\RegisterController');
 Route::get('download-app', 'User\RegisterController@downloadApp');
+Route::any('clear', function () {
+    Artisan::call('cache:clear');
+    echo '缓存文件已清理' . '<br/>';
+    Artisan::call('config:clear');
+    echo '配置缓存已清理' . '<br/>';
+    Artisan::call('route:clear');
+    echo '路由缓存已清理' . '<br/>';
+    Artisan::call('view:clear');
+    echo '视图缓存已清理' . '<br/>';
+});

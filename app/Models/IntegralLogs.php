@@ -4,6 +4,46 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\IntegralLogs
+ *
+ * @property int $id
+ * @property int $uid uid
+ * @property string $operate_type 操作类型
+ * @property string $amount 变动数量
+ * @property string $amount_before_change 变动前数量
+ * @property int $role 1普通用户，2商家
+ * @property string|null $ip ip
+ * @property string|null $user_agent ua
+ * @property string|null $remark 备注
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $order_no trade_order表 -- order_no
+ * @property int|null $activityState 积分活动状态,0表示关闭,1标识开启
+ * @property int|null $consumer_uid 贡献积分的消费者uid
+ * @property string|null $description 订单类型
+ * @property-read mixed $updated_date
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs query()
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereActivityState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereAmountBeforeChange($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereConsumerUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereOperateType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereOrderNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereRemark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|IntegralLogs whereUserAgent($value)
+ * @mixin \Eloquent
+ */
 class IntegralLogs extends Model
 {
     protected $table = 'integral_log';

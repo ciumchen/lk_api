@@ -7,6 +7,7 @@ use App\Http\Resources\RebateDataResources;
 use App\Models\BusinessApply;
 use App\Models\BusinessData;
 use App\Models\Order;
+use App\Models\OrderIntegralLkDistribution;
 use App\Models\RebateData;
 use App\Models\Setting;
 use App\Models\User;
@@ -155,12 +156,18 @@ class StatisticsController extends Controller
     //获取今日排队和昨日排队订单的消费金额的让利比例的统计（5%-10%-20%）
     public function getGiveOderPrice(){
         //获取今日所有添加积分的订单的消费金额
-
-
-
-
-
-
+        $todaytime=strtotime(date("Y-m-d"),time());
+        $todayData = OrderIntegralLkDistribution::where('day',$todaytime)->first()->toArray();
+        $data['todayData']['price_5'] = $todayData['price_5'];
+        $data['todayData']['price_10'] = $todayData['price_10'];
+        $data['todayData']['price_20'] = $todayData['price_20'];
+        //获取昨日所有添加积分的订单的消费金额
+        $yesterdaytime=strtotime(date('Y-m-d',strtotime("-1 day")));
+        $yesterdayData = OrderIntegralLkDistribution::where('day',$yesterdaytime)->first()->toArray();
+        $data['yesterdayData']['price_5'] = $yesterdayData['price_5'];
+        $data['yesterdayData']['price_10'] = $yesterdayData['price_10'];
+        $data['yesterdayData']['price_20'] = $yesterdayData['price_20'];
+        return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
     }
 

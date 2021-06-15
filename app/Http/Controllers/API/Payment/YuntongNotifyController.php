@@ -212,4 +212,47 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
+    
+    /**
+     * Description:
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @throws \Throwable
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/11 0011
+     */
+    public function bmPayCallback(Request $request)
+    {
+        $Pay = new YuntongPay();
+        $json = $request->getContent();
+        DB::beginTransaction();
+        try {
+            $data = json_decode($json, true);
+            $res = $Pay->Notify($data);
+            if (!empty($res)) {
+                $Order = new Order();
+                $orderInfo = $Order->getOrderByOrderNo($data[ 'order_id' ]);
+                if ($orderInfo->price != $data[ 'amount' ]) {
+                    throw new Exception('付款金额与应付金额不一致');
+                }
+                /* 更新订单表以及积分 */
+                $OrderService = new OrderService();
+                $description = $OrderService->getDescription($orderInfo->id);
+                $OrderService->completeOrderTable($orderInfo->id, $orderInfo->uid, $description, $orderInfo->order_no);
+                /* 更新对应斑马订单表 */
+                $OrderService->updateSubOrder($orderInfo->id, $res, $description);
+            } else {
+                DB::rollBack();
+                throw new Exception('解析为空');
+            }
+            DB::commit();
+            /* 订单完成后续充值 */
+            $OrderService->afterCompletedOrder($orderInfo->id, $description, $orderInfo);
+            $Pay->Notify_success();
+        } catch (Exception $e) {
+            Log::debug('YuntongNotify-验证不通过-bmCallback-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
+            $Pay->Notify_failed();
+        }
+    }
 }

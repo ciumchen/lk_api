@@ -8,6 +8,30 @@ use Illuminate\Support\Facades\Cache;
 use Overtrue\EasySms\EasySms;
 use Overtrue\EasySms\Exceptions\NoGatewayAvailableException;
 
+/**
+ * App\Models\VerifyCode
+ *
+ * @property int $id
+ * @property string $phone 手机号
+ * @property string $code 验证码
+ * @property int $type 类型: 1 登录，2 注册，3 修改密码
+ * @property int $used 是否使用
+ * @property string|null $expires_at 过期时间
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode query()
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|VerifyCode whereUsed($value)
+ * @mixin \Eloquent
+ */
 class VerifyCode extends Model
 {
     //验证码类型

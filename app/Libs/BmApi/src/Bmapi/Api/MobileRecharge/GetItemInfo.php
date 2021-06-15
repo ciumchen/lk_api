@@ -53,7 +53,7 @@ class GetItemInfo extends ApiRequest
             if (isset($this->$k)) {
                 $params[ $k ] = $this->$k;
             }
-        };
+        }
         return array_merge(parent::apiParams(), $params);
     }
     

@@ -4,6 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Assets
+ *
+ * @property int $id
+ * @property int $uid uid
+ * @property int $assets_type_id 资产类型ID
+ * @property string $assets_name 资产名称
+ * @property string $amount 数量
+ * @property string $freeze_amount 冻结数量
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Assets $assetsType
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereAssetsName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereAssetsTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereFreezeAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Assets extends Model
 {
     protected $table = 'assets';

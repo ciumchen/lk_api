@@ -64,15 +64,15 @@ class Shop extends Model
 
         $total = (new User())
             ->join('order', function($join){
-                $join->on('users.id', 'order.uid');
+                $join->on('users.id', 'order.business_uid');
             })
             ->where(function($query) use ($uid){
                 $query->where(['users.id' => $uid, 'users.status' => 1, 'users.role' => 2, 'order.status' => 2, 'order.line_up' => 1]);
             })
-            ->sum('order.to_be_added_integral');
+            ->sum('order.profit_price');
         $integralList = (new User())
             ->join('order', function($join){
-                $join->on('users.id', 'order.uid');
+                $join->on('users.id', 'order.business_uid');
             })
             ->where(function($query) use ($uid){
                 $query->where(['users.id' => $uid, 'users.status' => 1, 'users.role' => 2, 'order.status' => 2, 'order.line_up' => 1]);
@@ -80,7 +80,7 @@ class Shop extends Model
             ->orderBy('order.created_at', 'asc')
             ->forPage($data['page'], $data['pageSize'])
             ->distinct('order.id')
-            ->get(['order.id', 'order.name', 'order.to_be_added_integral', 'order.created_at'])
+            ->get(['order.id', 'order.name', 'order.profit_price as to_be_added_integral', 'order.created_at'])
             ->toArray();
 
         //获取排队订单顺序

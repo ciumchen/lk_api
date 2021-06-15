@@ -46,7 +46,7 @@ class CountUserController extends Controller
 
     public function consumerCount(){
         //消费者-待激励统计
-       $data['consumerLk'] = DB::table('users')->sum('lk');
+       $data['consumerLk'] = DB::table('users')->sum('lk');//实时lk总数
 
     //消费者-今日分配
 //        $re = DB::table('rebate_data')->where('day',date('Y-m-d'),time())->first();
@@ -56,7 +56,7 @@ class CountUserController extends Controller
 //        $data['consumerTodayFfNum'] = round($countProfitPrice*0.675/DB::table('users')->sum('lk'),2);
 
         $dataInfo = DB::table('order_integral_lk_distribution')->where('day',strtotime(date('Y-m-d',time())))->first();
-        $data['consumerTodayFfNum'] = round(($dataInfo->count_profit_price*0.675)/$dataInfo->count_lk,2);
+        $data['consumerTodayFfNum'] = round(($dataInfo->count_profit_price*0.675)/$data['consumerLk'],2);
 
     //消费者-昨日lk总数
         $re = DB::table('rebate_data')->where('day',date("Y-m-d",strtotime("-1 day")))->first();

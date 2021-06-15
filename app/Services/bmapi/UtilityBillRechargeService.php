@@ -14,7 +14,7 @@ use Exception;
  *
  * @package App\Services\bmapi
  */
-class UtilityBillRechargeService
+class UtilityBillRechargeService extends BaseService
 {
     
     /**
@@ -33,8 +33,8 @@ class UtilityBillRechargeService
         $city = trim($city, '市');
         try {
             $ItemList = new ItemList();
-            $ItemList->setPageNo(0)
-                     ->setPageSize(10)
+            $ItemList->setPageNo($page)
+                     ->setPageSize($page_size)
                      ->setCity($city)
                      ->setProjectId($project_id)
                      ->getResult();
@@ -136,6 +136,14 @@ class UtilityBillRechargeService
                            ->setUnitName($data[ 'unit_name' ]) // 缴费单位名称(属性查询接口中返回的参数itemProps-"type": "BRAND"下的vname)
                            ->getResult();
             $res = $GetAccountInfo->getBill();
+            /* TODO:处理异常情况 */
+            /*
+             {
+                "res": null,
+                "status": "0",
+                "msg": "1144980524：暂不支持该地区"
+            }
+             */
 //            $status = $GetAccountInfo->getStatus();
 //            $msg = $GetAccountInfo->getMessage();
         } catch (Exception $e) {
