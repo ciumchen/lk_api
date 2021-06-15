@@ -468,7 +468,7 @@ class YuntongPayController extends Controller
             'itemId'      => $data[ 'itemId' ],
             'contactName' => $data[ 'contactName' ],
             'contactTel'  => $data[ 'contactTel' ],
-            'date'        => date('Y-m-d'),
+            'date'        => $data['date'],
             'from'        => $data[ 'from' ],
             'to'          => $data[ 'to' ],
             'companyCode' => $data[ 'companyCode' ],
