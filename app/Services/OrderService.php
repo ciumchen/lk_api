@@ -632,6 +632,7 @@ class OrderService
      *
      * @param string $description
      *
+     * @throws \Exception
      * @author lidong<947714443@qq.com>
      * @date   2021/6/11 0011
      */
@@ -648,6 +649,7 @@ class OrderService
                     $orderInfo->video->money = $data[ 'amount' ];
                     $orderInfo->video->status = 0;
                     $orderInfo->video->updated_at = $data[ 'pay_time' ];
+                    $orderInfo->video->save();
                     break;
                 default:
                     throw new Exception('订单类型未知');
@@ -659,6 +661,10 @@ class OrderService
     
     /**
      * Description:完成订单后的后续操作[充值等]
+     *
+     * @param int                    $order_id
+     * @param string                 $description
+     * @param \App\Models\Order|null $Order
      *
      * @author lidong<947714443@qq.com>
      * @date   2021/6/15 0015

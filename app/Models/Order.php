@@ -33,6 +33,7 @@ use App\Exceptions\LogicException;
  * @property-read \App\Models\OrderVideo          $video
  * @property-read \App\Models\OrderMobileRecharge $mobile
  * @property-read \App\Models\TradeOrder          $trade
+ * @property-read \App\Models\OrderUtilityBill    $utility
  * @property-read \App\Models\BusinessData|null   $business
  * @property-read mixed                           $updated_date
  * @property-read \App\Models\User|null           $user
@@ -58,6 +59,7 @@ use App\Exceptions\LogicException;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
  * @mixin \Eloquent
  * @package App\Models
+ * @property-read \App\Models\OrderAirTrade|null $air
  */
 class Order extends Model
 {
@@ -506,7 +508,7 @@ class Order extends Model
     }
     
     /**
-     * Description:
+     * Description:斑马手机充值
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      * @author lidong<947714443@qq.com>
@@ -515,5 +517,17 @@ class Order extends Model
     public function mobile()
     {
         return $this->hasOne(OrderMobileRecharge::class, 'order_id', 'id');
+    }
+    
+    /**
+     * Description:斑马生活缴费
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/15 0015
+     */
+    public function utility()
+    {
+        return $this->hasOne(OrderUtilityBill::class, 'order_id', 'id');
     }
 }

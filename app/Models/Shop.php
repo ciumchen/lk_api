@@ -6,6 +6,48 @@ use App\Exceptions\LogicException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Shop
+ *
+ * @property int $id
+ * @property int $uid 消费者UID
+ * @property int $business_uid 商家UID
+ * @property string $profit_ratio 让利比列(%)
+ * @property string $price 消费金额
+ * @property string $profit_price 实际让利金额
+ * @property int $status 1审核中，2审核通过，3审核失败
+ * @property string $name 消费商品名
+ * @property string|null $remark 备注
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $state 盟主订单标识,1非盟主订单，2盟主订单
+ * @property string|null $pay_status 支付状态：await 待支付；pending 支付处理中； succeeded 支付成功；failed 支付失败,ddyc订单异常
+ * @property string|null $to_be_added_integral 用户待加积分
+ * @property int|null $to_status 订单处理状态：默认0,1表示待处理,2表示已处理
+ * @property int|null $line_up 排队状态,默认0不排队,1表示排队
+ * @property string $order_no 斑马充值订单号
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereBusinessUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereLineUp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereOrderNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop wherePayStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereProfitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereProfitRatio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereRemark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereToBeAddedIntegral($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereToStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Shop extends Model
 {
     use HasFactory;
