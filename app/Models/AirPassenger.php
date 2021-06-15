@@ -45,6 +45,10 @@ class AirPassenger extends Model
      */
     public function getPassenger(string $uid)
     {
+        $users = (new AirPassenger())::where('uid', $uid)->exists();
+        if (!$users)
+            throw new LogicException('该用户不存在');
+
         return (new AirPassenger())::where('uid', $uid)->get(['id', 'pname', 'pidcard', 'pphone'])->toArray();
     }
 
@@ -55,7 +59,18 @@ class AirPassenger extends Model
      */
     public function delPassenger(string $id)
     {
-        return (new AirPassenger())::where('id', $id)->delete();
+        $users = (new AirPassenger())::where('id', $id)->exists();
+        if (!$users)
+            throw new LogicException('该用户不存在');
+
+        $res = (new AirPassenger())::where('id', $id)->delete();
+        if ($res)
+        {
+            return json_encode(['code' => 200, 'msg' => '删除成功']);
+        } else
+        {
+            return json_encode(['code' => 1000, 'msg' => '删除失败']);
+        }
     }
 
     /**更新乘客信息
@@ -65,11 +80,23 @@ class AirPassenger extends Model
      */
     public function savePassenger(array $data)
     {
+        $users = (new AirPassenger())::where('id', $data['id'])->exists();
+        if (!$users)
+            throw new LogicException('该用户不存在');
+
         $passengerData = (new AirPassenger())::find($data['id']);
         $passengerData->pname = $data['pname'];
         $passengerData->pidcard = $data['pidcard'];
         $passengerData->pphone = $data['pphone'];
         $passengerData->updated_at = date('Y-m-d H:i:s');
-        $passengerData->save();
+        $res = $passengerData->save();
+
+        if ($res)
+        {
+            return json_encode(['code' => 200, 'msg' => '保存成功']);
+        } else
+        {
+            return json_encode(['code' => 1000, 'msg' => '保存失败']);
+        }
     }
 }

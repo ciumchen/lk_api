@@ -38,7 +38,7 @@ class PassengerController extends Controller
      */
     public function delPassenger(Request $request)
     {
-        (new AirPassenger())->delPassenger($request->id);
+        return (new AirPassenger())->delPassenger($request->id);
     }
 
     /** 更新乘客信息
@@ -49,6 +49,6 @@ class PassengerController extends Controller
     public function savePassenger(Request $request)
     {
         $data = $request->all();
-        (new AirPassenger())->savePassenger($data);
+        return (new AirPassenger())->savePassenger($data);
     }
 }
