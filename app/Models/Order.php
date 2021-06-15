@@ -31,6 +31,7 @@ use App\Exceptions\LogicException;
  * @property string                               $order_no             斑马充值订单号
  * @property-read \App\Models\TradeOrder          $Trade_Order
  * @property-read \App\Models\OrderVideo          $video
+ * @property-read \App\Models\OrderAirTrade       $air
  * @property-read \App\Models\OrderMobileRecharge $mobile
  * @property-read \App\Models\TradeOrder          $trade
  * @property-read \App\Models\BusinessData|null   $business
@@ -419,7 +420,7 @@ class Order extends Model
         }
         return $this;
     }
-    
+
     /**
      * 视频会员充值
      *
@@ -452,7 +453,7 @@ class Order extends Model
         }
         return $this;
     }
-    
+
     /**
      * Description:通过订单号获取订单信息
      *
@@ -467,7 +468,7 @@ class Order extends Model
         return $this->where('order_no', '=', $order_no)
                     ->first();
     }
-    
+
     /**
      * Description:TradeOrder表关联
      *
@@ -479,7 +480,7 @@ class Order extends Model
     {
         return $this->hasOne(TradeOrder::class, 'oid', 'id');
     }
-    
+
     /**
      * Description:视频会员订单关联模型
      *
@@ -491,7 +492,7 @@ class Order extends Model
     {
         return $this->hasOne(OrderVideo::class, 'order_id', 'id');
     }
-    
+
     /**
      * Description:
      * TODO:机票订单关联模型
@@ -502,9 +503,9 @@ class Order extends Model
      */
     public function air()
     {
-        return $this->hasOne(OrderAirTrade::class);
+        return $this->hasOne(OrderAirTrade::class, 'oid', 'id');
     }
-    
+
     /**
      * Description:
      *

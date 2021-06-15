@@ -13,6 +13,7 @@ use App\Models\RebateData;
 use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
+use App\Services\AirOrderService;
 use App\Services\bmapi\VideoCardService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    
+
     /**完成订单
      *
      * @param string $orderNo
@@ -78,7 +79,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-    
+
     /**完成订单
      *
      * @param string $orderNo
@@ -146,7 +147,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-    
+
     /**完成订单
      *
      * @param string $orderNo
@@ -219,7 +220,7 @@ class OrderService
             DB::rollBack();
         }
     }
-    
+
     /**返佣
      *
      * @param $order
@@ -412,7 +413,7 @@ class OrderService
             bcadd($districtAmount, bcadd($cityAmount, bcadd(bcadd($sameAmount, $headAmount, 8), $ordinaryAmount, 8), 8), 8);
         $this->updateRebateData($welfareAmount, $shareAmount, $market, $platformAmount, $order->price, $user);
     }
-    
+
     /**找盟主
      *
      * @param     $invite_uid
@@ -443,7 +444,7 @@ class OrderService
             return false;
         }
     }
-    
+
     /**更新返佣统计
      *
      * @param $welfare
@@ -467,7 +468,7 @@ class OrderService
         $rebateData->total_consumption = bcadd($price, $rebateData->total_consumption, 8);
         $rebateData->save();
     }
-    
+
     //邀请补贴和邀请人积分添加
     //商户uid,实际让利比例，订单分类 HF YK MT,消费者uid
     public function addInvitePoints($order_business_uid, $order_profit_price, $description, $uid, $orderNo)
@@ -514,7 +515,7 @@ class OrderService
         $business->save();
         IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单', $orderNo, $activityState, $uid, $description);
     }
-    
+
     /**
      * Description:
      *
@@ -580,7 +581,7 @@ class OrderService
             DB::rollBack();
         }
     }
-    
+
     /**
      * Description:
      * TODO:判断订单类型
@@ -622,7 +623,7 @@ class OrderService
         }
         return $description;
     }
-    
+
     /**
      * Description:更新对应子订单
      *
@@ -648,6 +649,13 @@ class OrderService
                     $orderInfo->video->money = $data[ 'amount' ];
                     $orderInfo->video->status = 0;
                     $orderInfo->video->updated_at = $data[ 'pay_time' ];
+                    $orderInfo->save();
+                    break;
+                case 'AT': /* 机票订单处理 */
+                    $orderInfo->air->money = $data[ 'amount' ];
+                    $orderInfo->air->status = 0;
+                    $orderInfo->air->updated_at = $data[ 'pay_time' ];
+                    $orderInfo->save();
                     break;
                 default:
                     throw new Exception('订单类型未知');
@@ -656,7 +664,7 @@ class OrderService
             throw $e;
         }
     }
-    
+
     /**
      * Description:完成订单后的后续操作[充值等]
      *
@@ -673,6 +681,9 @@ class OrderService
                 case 'VC': /* 视频会员充值 */
                     $VideoService = new VideoCardService();
                     $VideoService->recharge($Order->order_no);
+                    break;
+                case 'AT': /* 机票充值 */
+                    (new AirOrderService())->airOrder($order_id);
                     break;
                 default:/* 订单无需处理 */
                     ;

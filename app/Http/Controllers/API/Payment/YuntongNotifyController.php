@@ -22,7 +22,7 @@ use App\Services\AirOrderService;
 
 class YuntongNotifyController extends Controller
 {
-    
+
     /**
      * 雲通支付回調
      *
@@ -49,7 +49,7 @@ class YuntongNotifyController extends Controller
             $Pay->Notify_failed();
         }
     }
-    
+
     /**
      * 更新订单为已支付
      *
@@ -142,12 +142,12 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
-    
+
     /**机票支付回調
      *
      * @param Request $request
      */
-    public function airPayNotify(Request $request)
+    /*public function airPayNotify(Request $request)
     {
         $Pay = new YuntongPay();
         $json = $request->getContent();
@@ -167,15 +167,15 @@ class YuntongNotifyController extends Controller
             Log::debug('AirNotify-验证不通过-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
             $Pay->Notify_failed();
         }
-    }
-    
+    }*/
+
     /**更新机票信息
      *
      * @param $data
      *
      * @throws
      */
-    public function updAirPay($data)
+    /*public function updAirPay($data)
     {
         try {
             Log::debug('UpdateAirTrade订单数据$data', [json_encode($data)]);
@@ -211,8 +211,8 @@ class YuntongNotifyController extends Controller
         } catch (\LogicException $le) {
             throw $le;
         }
-    }
-    
+    }*/
+
     /**
      * Description:
      *
