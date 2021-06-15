@@ -221,6 +221,15 @@ class RecordsOfConsumptionController extends Controller
     }
 
 
+    //获取用户分红积分变动
+    public function getUserIntegralLogs(Request $request){
+        $uid = $request->input('uid');
+        $data = IntegralLogs::where('uid',$uid)->where('operate_type','rebate')->get(['id','operate_type','amount','remark','updated_at']);
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+    }
+
+
 
 }
 

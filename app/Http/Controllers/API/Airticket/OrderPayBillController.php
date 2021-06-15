@@ -39,11 +39,11 @@ class OrderPayBillController extends Controller
         $orderArr = json_decode($orderInfo, 1);
 
         //组装机票订单数据
-        $ticketTrade = $orderArr['air_order_pay_response']['ticketTrade'];
-        $orderTradeArr = (new AirOrderService())->ticketOrder($ticketTrade);
+        //$ticketTrade = $orderArr['air_order_pay_response']['ticketTrade'];
+        //$orderTradeArr = (new AirOrderService())->ticketOrder($ticketTrade);
 
         //写入机票订单数据
-        (new OrderAirTrade())->setAirTrade($orderTradeArr);
+        //(new OrderAirTrade())->setAirTrade($orderTradeArr);
     }
 
     /**新增机票订单数据

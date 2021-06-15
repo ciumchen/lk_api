@@ -247,15 +247,12 @@ class YuntongNotifyController extends Controller
                 throw new Exception('解析为空');
             }
             DB::commit();
-            
             /* 订单完成后续充值 */
-            
-            
+            $OrderService->afterCompletedOrder($orderInfo->id, $description, $orderInfo);
             $Pay->Notify_success();
         } catch (Exception $e) {
             Log::debug('YuntongNotify-验证不通过-bmCallback-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
             $Pay->Notify_failed();
         }
     }
-    
 }

@@ -32,6 +32,10 @@ Route::any("get-gas", "Order\MergeNotifyController@getGas");
 Route::any("get-call-defray", "Order\MergeNotifyController@getCallDefray");
 //查询当前用户是邀请人所获得的商家积分记录
 Route::any("getInvitePoints", "User\RecordsOfConsumptionController@getInvitePoints");
+
+//获取用户分红积分变动
+Route::any("getUserIntegralLogs", "User\RecordsOfConsumptionController@getUserIntegralLogs");
+
 //手机充值回调[斑马]
 Route::any('mobile-notify', 'Order\MobileNotifyController@callback');
 //手机充值测试[斑马]
