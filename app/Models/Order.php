@@ -32,20 +32,20 @@ use App\Exceptions\LogicException;
  */
 class Order extends Model
 {
-    
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'order';
-    
+
     const STATUS_DEFAULT = 1;//审核中
-    
+
     const STATUS_SUCCEED = 2;//审核通过
-    
+
     const STATUS_FAILED  = 3;//审核不通过
-    
+
     /**
      * 类型文本.
      *
@@ -56,7 +56,7 @@ class Order extends Model
         self::STATUS_SUCCEED => '审核通过',
         self::STATUS_FAILED  => '审核不通过',
     ];
-    
+
     /**店铺关联
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -65,7 +65,7 @@ class Order extends Model
     {
         return $this->hasOne(BusinessData::class, 'uid', 'business_uid');
     }
-    
+
     /**用户关联
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -74,7 +74,7 @@ class Order extends Model
     {
         return $this->hasOne(User::class, 'id', 'uid');
     }
-    
+
     /**获取商家信息
      *
      * @param string $orderNo
@@ -93,7 +93,7 @@ class Order extends Model
                        ->first();
         return get_object_vars($orderData);
     }
-    
+
     /**插入用户积分流水记录
      *
      * @param array  $usersData
@@ -119,7 +119,7 @@ class Order extends Model
         DB::table('integral_log')
           ->insert($integralData);
     }
-    
+
     /**插入美团、油卡、话费记录
      *
      * @param array $data
@@ -132,7 +132,7 @@ class Order extends Model
         return DB::table($this->table)
                  ->insertGetId($data);
     }
-    
+
     /**获取当天未支付订单
      *
      * @param array $data
@@ -160,7 +160,7 @@ class Order extends Model
             ->get()
             ->toArray();
     }
-    
+
     /**录单消息通知
      *
      * @param string $orderNo
@@ -186,7 +186,7 @@ class Order extends Model
         //添加消息通知
         (new UserMsgController())->setMsg($orderNo, 2);
     }
-    
+
     /**机票消息通知
      *
      * @param string $orderNo
@@ -212,7 +212,7 @@ class Order extends Model
         //添加消息通知
         (new UserMsgController())->setAirMsg($orderNo, 4);
     }
-    
+
     /**获取订单数据
      *
      * @param string $orderNo
@@ -231,7 +231,7 @@ class Order extends Model
                             ->get()
                             ->first();
     }
-    
+
     /**机票再次支付
      *
      * @param string $orderNo
@@ -252,7 +252,7 @@ class Order extends Model
         $aidData = (new AirTradeLogs())::where('order_no', $orderNo)
                                        ->get(['id'])
                                        ->first();
-        $orderNo = 'AT_' . date('YmdHis') . rand(100000, 999999);
+        $orderNo = 'PY_' . date('YmdHis') . rand(100000, 999999);
         //更新order 表订单信息
         $order = (new Order())->find($orderData[ 'id' ]);
         $order->order_no = $orderNo;
@@ -265,7 +265,7 @@ class Order extends Model
         $airTradeLogs->save();
         return $orderNo;
     }
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -280,18 +280,18 @@ class Order extends Model
         'status',
         'name',
     ];
-    
+
     public function Trade_Order()
     {
         return $this->belongsTo(TradeOrder::class, 'id', 'oid');
     }
-    
+
     public function getUpdatedDateAttribute($value)
     {
 //        dd($value);
         return date("Y-m-d H:i:s", strtotime($this->attributes[ 'updated_at' ]));
     }
-    
+
     /**
      * 生成水费订单
      *
@@ -324,7 +324,7 @@ class Order extends Model
         }
         return $this;
     }
-    
+
     /**
      * 生成水费订单
      *
@@ -357,7 +357,7 @@ class Order extends Model
         }
         return $this;
     }
-    
+
     /**
      * 生成燃气费订单
      *

@@ -16,7 +16,7 @@ class OrderPayBillController extends Controller
     * @param Request $request
     * @throws
     */
-    public function orderPay(Request $request)
+    /*public function orderPay(Request $request)
     {
         $data = $request->all();
         (new AirOrderService())->checkParams($data);
@@ -44,7 +44,7 @@ class OrderPayBillController extends Controller
 
         //写入机票订单数据
         //(new OrderAirTrade())->setAirTrade($orderTradeArr);
-    }
+    }*/
 
     /**新增机票订单数据
     * @param array $data
@@ -76,6 +76,7 @@ class OrderPayBillController extends Controller
         //组装机票订单数据
         $ticketTrade = $orderArr['air_order_pay_response']['ticketTrade'];
         $ticketTrade['aid'] = $data['aid'];
+        $ticketTrade['oid'] = $data['oid'];
         $orderTradeArr = (new AirOrderService())->ticketOrder($ticketTrade);
 
         //写入机票订单数据
