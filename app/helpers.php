@@ -183,7 +183,7 @@ if (!function_exists('createOrderNo')) {
         return "PY_" . date("YmdHis") . rand(100000, 999999);
     }
 }
-if (!function_exists('createOrderNo')) {
+if (!function_exists('createNotifyUrl')) {
     /**
      * Description:获取异步通知地址
      *

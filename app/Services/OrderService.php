@@ -13,6 +13,7 @@ use App\Models\RebateData;
 use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
+use App\Services\bmapi\VideoCardService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -613,8 +614,8 @@ class OrderService
     }
     
     /**
-     * Description:
-     * TODO:更新对应子订单
+     * Description:更新对应子订单
+     *
      *
      * @param int    $order_id
      * @param array  $data
@@ -626,6 +627,48 @@ class OrderService
      */
     public function updateSubOrder($order_id, $data, $description)
     {
+        $Order = new Order();
+        try {
+            $orderInfo = $Order->find($order_id);
+            if (empty($orderInfo)) {
+                throw new Exception('订单不存在');
+            }
+            switch ($description) {
+                case 'VC': /* 视频会员充值订单处理 */
+                    $orderInfo->video->money = $data[ 'amount' ];
+                    $orderInfo->video->status = 0;
+                    $orderInfo->video->updated_at = $data[ 'pay_time' ];
+                    break;
+                default:
+                    throw new Exception('订单类型未知');
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
     
+    /**
+     * Description:完成订单后的后续操作[充值等]
+     *
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/15 0015
+     */
+    public function afterCompletedOrder(int $order_id, string $description, Order $Order = null)
+    {
+        if (empty($Order)) {
+            $Order = Order::find($order_id);
+        }
+        try {
+            switch ($description) {
+                case 'VC': /* 视频会员充值 */
+                    $VideoService = new VideoCardService();
+                    $VideoService->recharge($Order->order_no);
+                    break;
+                default:/* 订单无需处理 */
+                    ;
+            }
+        } catch (Exception $e) {
+            \Log::debug('afterCompletedOrder:Error:' . $e->getMessage(), [json_encode($e) . '' . json_encode($Order)]);
+        }
     }
 }

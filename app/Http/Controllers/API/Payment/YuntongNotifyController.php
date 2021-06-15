@@ -240,7 +240,6 @@ class YuntongNotifyController extends Controller
                 $OrderService = new OrderService();
                 $description = $OrderService->getDescription($orderInfo->id);
                 $OrderService->completeOrderTable($orderInfo->id, $orderInfo->uid, $description, $orderInfo->order_no);
-                /* TODO:*/
                 /* 更新对应斑马订单表 */
                 $OrderService->updateSubOrder($orderInfo->id, $res, $description);
             } else {
@@ -248,10 +247,15 @@ class YuntongNotifyController extends Controller
                 throw new Exception('解析为空');
             }
             DB::commit();
+            
+            /* 订单完成后续充值 */
+            
+            
             $Pay->Notify_success();
         } catch (Exception $e) {
             Log::debug('YuntongNotify-验证不通过-bmCallback-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
             $Pay->Notify_failed();
         }
     }
+    
 }
