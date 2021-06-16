@@ -14,7 +14,6 @@ use App\Services\AddressService;
 use App\Services\AssetsService;
 use App\Services\TransferService;
 use App\Services\GiveTransferService;
-use Illuminate\Support\Facades\Log;
 class GiveTransferController extends Controller
 {
     /**赠送
@@ -67,12 +66,50 @@ class GiveTransferController extends Controller
             'user_agent' => (string) $request->userAgent(),
         ];
 
-        Log::info("打印赠送日志===0000==========");
         //执行
         (new GiveTransferService())->transfer($user, $request->amount, $phone, $options);
-        Log::info("打印赠送日志===1111111==========");
+
         return response()->json(['code'=>1, 'msg'=>'赠送成功，大额赠送请等待审核']);
     }
 
+//    /**获取转账信息
+//     * @param Request $request
+//     * @return \Illuminate\Http\JsonResponse
+//     */
+//    public function getTransferInfo(Request $request)
+//    {
+//        $user = $request->user();
+//
+//        //地址
+//        $data['address'] = Address::where("uid",$user->id)->value("address") ?? "";
+//
+//        //余额
+//        $user = User::find($user->id);
+//        $assetsType = AssetsType::where("assets_name", AssetsType::DEFAULT_ASSETS_NAME)->first();
+//        $balance = AssetsService::getBalanceData($user, $assetsType);
+//        $data['amount'] = rtrim_zero($balance->amount ?? 0);
+//        $data['freeze_amount'] = rtrim_zero($balance->freeze_amount ?? 0);
+//
+//        //手机号
+//        $data['phone'] = $user->phone;
+//
+//        return response()->json(['code'=>0, 'data'=> $data]);
+//
+//    }
+//
+//    /**绑定地址
+//     * @param Request $request
+//     * @return \Illuminate\Http\JsonResponse
+//     * @throws \App\Exceptions\LogicException
+//     */
+//    public function bindAddress(Request $request)
+//    {
+//        $address = strtolower($request->input('address'));
+//        $user = $request->user();
+//
+//        (new AddressService())->bindAddress($address, $user->id);
+//
+//        return response()->json(['code'=>0, 'msg'=> "绑定成功"]);
+//    }
 
 }

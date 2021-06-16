@@ -51,7 +51,7 @@ class GiveTransferService
 //        if ($lastWithdrawLog && now()->subHours(1)->lt($lastWithdrawLog->created_at)) {
 //            throw new LogicException('赠送间隔时间不低于 1 小时');
 //        }
-        Log::info("打印赠送日志===aaaaa==========");
+
         $todayWithdrawAmount = WithdrawLogs::where('created_at', '>=', Carbon::now()->startOfDay()->toDateTimeString())
             ->where('status', WithdrawLogs::STATUS_DONE)
             ->where('uid', $user->id)
@@ -59,12 +59,12 @@ class GiveTransferService
         if (bccomp(bcadd($amount, $todayWithdrawAmount ?? 0, 8), 1000, 8) > 0) {
             throw new LogicException('每天最多赠送1000','1004');
         }
-        Log::info("打印赠送日志===bbbbb==========");
+
         $asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
         $userBalance = AssetsService::getBalanceData($user, $asset);//获取资产
 //dd($asset);
         //比较两个数相等返回0，不相等返回1或-1
-        Log::info("打印赠送日志===cccccc==========");
+
 //        $re1 = $userBalance->amount;
 //        $re2 = AssetsLogs::where('assets_type_id', $asset->id)->where('uid', $user->id)->sum('amount');
 //dd($re1,$re2);
@@ -84,7 +84,7 @@ class GiveTransferService
             throw new LogicException('账户已禁用，原因：'.$banlist->reason,'1005');
         }
 
-        Log::info("打印赠送日志===dddddddd11==========");
+
         //开启事物
 //        dd($userBalance);
         DB::beginTransaction();
@@ -95,7 +95,6 @@ class GiveTransferService
             if (null === $fromBalance || bccomp($fromBalance->amount, $amount, 8) < 0) {
                 throw new LogicException('余额不足','1006');
             }
-            Log::info("打印赠送日志===aaa1d11111==========");
 //            dd($amount);
 //            dd($asset);
             $fee = $this->calculateFee($amount, $asset);//扣手续费数量
@@ -118,7 +117,7 @@ class GiveTransferService
                 '获得用户赠送',
                 $options
             );
-            Log::info("打印赠送日志===ttttt==========");
+
             if ($fee > 0) {
                 $feeUser = User::find(2);
                 $feeBalance = AssetsService::getBalanceData($feeUser, $asset, true);
@@ -145,7 +144,7 @@ class GiveTransferService
                 $withdrawLog->status = 3; //3为待审核
             }
             $withdrawLog->save();
-            Log::info("打印赠送日志===hhhhh==========");
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -175,6 +174,6 @@ class GiveTransferService
         }else{
             return false;
         }
-        Log::info("打印赠送日志===uuuu==========");
+
     }
 }
