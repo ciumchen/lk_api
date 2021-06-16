@@ -35,16 +35,15 @@ class GiveTransferService
     {
 
         if (bccomp($amount, 0, 8) <= 0) {
-            return response()->json(['code'=>2001, 'msg'=>'赠送数量异常']);
-//            throw new LogicException('赠送数量异常');
+            throw new LogicException('赠送数量异常','1001');
         }
 
         if (bccomp($amount, 2, 8) < 0) {
-            return response()->json(['code'=>2002, 'msg'=>'最低赠送2个']);
+            throw new LogicException('最低赠送2个','1002');
         }
 
         if (bccomp($amount, 100, 8) > 0) {
-            return response()->json(['code'=>2003, 'msg'=>'单笔最多赠送100']);
+            throw new LogicException('单笔最多赠送100','1003');
         }
 
         //一小时只能划转1次
@@ -58,7 +57,7 @@ class GiveTransferService
             ->where('uid', $user->id)
             ->sum(DB::raw('amount+fee'));
         if (bccomp(bcadd($amount, $todayWithdrawAmount ?? 0, 8), 1000, 8) > 0) {
-            return response()->json(['code'=>2004, 'msg'=>'每天最多赠送1000']);
+            throw new LogicException('每天最多赠送1000','1004');
         }
 
         $asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
@@ -81,7 +80,8 @@ class GiveTransferService
                 'status' => 2,
                 'ban_reason' => $banlist->reason,
             ]);
-            return response()->json(['code'=>2005, 'msg'=>'账户已禁用，原因：'.$banlist->reason]);
+
+            throw new LogicException('账户已禁用，原因：'.$banlist->reason,'1005');
         }
 
 
@@ -93,7 +93,7 @@ class GiveTransferService
 //dd($fromBalance);
 //            Log::info("打印赠送日志===0000==========".$fromBalance);
             if (null === $fromBalance || bccomp($fromBalance->amount, $amount, 8) < 0) {
-                return response()->json(['code'=>2006, 'msg'=>'余额不足']);
+                throw new LogicException('余额不足','1006');
             }
 //            dd($amount);
 //            dd($asset);
@@ -152,7 +152,7 @@ class GiveTransferService
             if ($e instanceof LogicException) {
                 throw $e;
             }
-            return response()->json(['code'=>2007, 'msg'=>'赠送失败，请稍后再试']);
+            throw new LogicException('赠送失败，请稍后再试','1007');
         }
 
         return true;
