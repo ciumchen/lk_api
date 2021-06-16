@@ -452,8 +452,8 @@ class YuntongPayController extends Controller
      */
     public function airCreatePay(array $data, string $type)
     {
-        $return_url = 'http://lkapi.com/api/air-notify';
-        //$return_url = url('/api/yun-notify');
+        //$return_url = 'http://lkapi.com/api/air-notify';
+        $return_url = url('/api/yun-notify');
         $data[ 'need_fee' ] = $data[ 'money' ] * $data[ 'number' ];
         $data[ 'order_from' ] = $data[ 'payChannel' ];
         $date = date('Y-m-d H:i:s');
@@ -553,7 +553,7 @@ class YuntongPayController extends Controller
         //发起支付请求
         return $this->airCreatePay(array_merge($orderData, $airOrderData, $airTrades), 2);
     }
-    
+
     /**
      * Description:斑马接口订单支付
      *

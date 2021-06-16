@@ -59,6 +59,7 @@ class AirTradeLogs extends Model
     public function setAitTrade(array $data)
     {
         $date = date('Y-m-d H:i:s');
+        dd($data);
         //组装数据
         $airTradeLogs = new AirTradeLogs();
         $airTradeLogs->pay_channel = $data['payChannel'];
