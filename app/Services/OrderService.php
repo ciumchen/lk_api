@@ -13,6 +13,7 @@ use App\Models\RebateData;
 use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
+use App\Services\bmapi\UtilityBillRechargeService;
 use App\Services\bmapi\VideoCardService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -848,10 +849,17 @@ class OrderService
             $Order = Order::find($order_id);
         }
         try {
+            if (empty($Order)) {
+                throw new  Exception('订单数据不存在');
+            }
             switch ($description) {
                 case 'VC': /* 视频会员充值 */
                     $VideoService = new VideoCardService();
-                    $VideoService->recharge($Order->order_no);
+                    $VideoService->recharge($order_id);
+                    break;
+                case 'UB': /* 生活缴费 */
+                    $UtilityService = new UtilityBillRechargeService();
+                    $UtilityService->recharge($order_id);
                     break;
                 default:/* 订单无需处理 */
                     ;

@@ -163,31 +163,33 @@ class VideoCardService extends BaseService
     /**
      * 订单充值
      *
-     * @param string $order_no
+     * @param string                 $order_id
+     *
+     * @param \App\Models\Order|null $Order
      *
      * @return array
      * @throws \Exception
      */
-    public function recharge($order_no)
+    public function recharge($order_id, Order $Order = null)
     {
+        if (empty($Order)) {
+            $Order = Order::find($order_id);
+        }
         try {
-            /* 查询订单信息 */
-            $Order = new Order();
-            $orderInfo = $Order->getOrderByOrderNo($order_no);
-            if (empty($orderInfo)) {
+            if (empty($Order)) {
                 throw new Exception('订单信息不存在');
             }
-            /* 视频订单查询 */
-            $OrderVideo = new OrderVideo();
-            $orderVideoInfo = $OrderVideo->find($orderInfo->id);
-            $bill = $this->billRequest($orderVideoInfo->account, $orderVideoInfo->item_id, $order_no);
+            if ($Order->video->pay_status != '0') {
+                throw new Exception('订单 ' . $Order->order_no . ' 无法充值');
+            }
+            $bill = $this->billRequest($Order->video->account, $Order->video->item_id, $Order->order_no);
             /* 视频订单状态更新 */
-            $orderVideoInfo->goods_title = $bill[ 'itemName' ];
-            $orderVideoInfo->pay_status = $bill[ 'payState' ];
-            $orderVideoInfo->status = $bill[ 'rechargeState' ];
-            $orderVideoInfo->trade_no = $bill[ 'billId' ];
-            $orderVideoInfo->updated_at = date('Y-m-d H:i:s');
-            $orderVideoInfo->save();
+            $Order->video->goods_title = $bill[ 'itemName' ];
+            $Order->video->pay_status = $bill[ 'payState' ];
+            $Order->video->status = $bill[ 'rechargeState' ];
+            $Order->video->trade_no = $bill[ 'billId' ];
+            $Order->video->updated_at = date('Y-m-d H:i:s');
+            $Order->video->save();
         } catch (Exception $e) {
             throw $e;
         }

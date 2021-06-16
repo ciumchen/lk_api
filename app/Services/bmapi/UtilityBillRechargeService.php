@@ -94,6 +94,9 @@ class UtilityBillRechargeService extends BaseService
             if (empty($Order->utility)) {
                 throw new Exception('生活缴费数据不存在');
             }
+            if ($Order->utility->pay_status != '0') {
+                throw new Exception('订单 ' . $Order->order_no . ' 无法充值');
+            }
             $bill = $this->billRecharge(
                 $Order->utility->account,
                 $Order->utility->item_id,
