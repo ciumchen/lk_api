@@ -39,6 +39,9 @@ class GiveTransferController extends Controller
 
 //        $userInfo = User::where('phone',$phone)->value('market_business');
         $userInfo = User::where('phone',$phone)->first();
+        if ($userInfo==null){
+            throw new LogicException('这个手机号的用户不存在');
+        }
         if ($userInfo->market_business!=1){
             throw new LogicException('这个手机号的用户不是市商');
         }
@@ -66,8 +69,7 @@ class GiveTransferController extends Controller
         //执行
         (new GiveTransferService())->transfer($user, $request->amount, $phone, $options);
 
-
-        return response()->json(['code'=>0, 'msg'=>'提现成功，大额提现请等待审核']);
+        return response()->json(['code'=>1, 'msg'=>'赠送成功，大额赠送请等待审核']);
     }
 
 //    /**获取转账信息
