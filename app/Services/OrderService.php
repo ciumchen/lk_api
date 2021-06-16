@@ -782,6 +782,12 @@ class OrderService
                     $orderInfo->video->updated_at = $data[ 'pay_time' ];
                     $orderInfo->video->save();
                     break;
+                case 'UB':
+                    $orderInfo->utility->money = $data[ 'amount' ];
+                    $orderInfo->utility->status = 0;
+                    $orderInfo->utility->updated_at = $data[ 'pay_time' ];
+                    $orderInfo->utility->save();
+                    break;
                 default:
                     throw new Exception('订单类型未知');
             }

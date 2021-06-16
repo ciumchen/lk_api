@@ -51,4 +51,3 @@ Route::any('video-recharge', 'Order\VideoRechargeController@rechargeTest');
 Route::any('utility-search', 'Order\UtilityController@getItemList');
 //生活缴费账单查询[斑马]
 Route::any('utility-bill', 'Order\UtilityController@checkBill');
-
