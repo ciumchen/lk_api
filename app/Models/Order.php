@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Controllers\API\Message\UserMsgController;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +60,7 @@ use App\Exceptions\LogicException;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
  * @mixin \Eloquent
  * @package App\Models
- * @property-read \App\Models\OrderAirTrade|null $air
+ * @property-read \App\Models\OrderAirTrade|null  $air
  */
 class Order extends Model
 {
@@ -184,10 +185,12 @@ class Order extends Model
         $data[ 'end' ] = $end;
         //返回
         return (new Order())
-            ->where(function ($query) use ($data) {
-                $query->where('pay_status', 'await')
-                      ->whereBetween('created_at', [$data[ 'start' ], $data[ 'end' ]]);
-            })
+            ->where(
+                function ($query) use ($data) {
+                    $query->where('pay_status', 'await')
+                          ->whereBetween('created_at', [$data[ 'start' ], $data[ 'end' ]]);
+                }
+            )
             ->get()
             ->toArray();
     }
@@ -202,14 +205,19 @@ class Order extends Model
     public function orderMsg(string $orderNo)
     {
         $orderDataInfo = (new Order())
-            ->join('trade_order', function ($join) {
-                $join->on('order.id', 'trade_order.oid');
-            })
-            ->where(function ($query) use ($orderNo) {
-                $query->where('trade_order.order_no', $orderNo)
-                      ->where('order.pay_status', 'succeeded')
-                      ->where('order.status', 2);
-            })
+            ->join(
+                'trade_order',
+                function ($join) {
+                    $join->on('order.id', 'trade_order.oid');
+                }
+            )
+            ->where(
+                function ($query) use ($orderNo) {
+                    $query->where('trade_order.order_no', $orderNo)
+                          ->where('order.pay_status', 'succeeded')
+                          ->where('order.status', 2);
+                }
+            )
             ->get(['order.*', 'trade_order.numeric']);
         if (!$orderDataInfo) {
             throw new LogicException('订单录单未通过');
@@ -228,14 +236,19 @@ class Order extends Model
     public function airOrderMsg(string $orderNo)
     {
         $orderDataInfo = (new Order())
-            ->join('air_trade_logs', function ($join) {
-                $join->on('order.order_no', 'air_trade_logs.order_no');
-            })
-            ->where(function ($query) use ($orderNo) {
-                $query->where('order.order_no', $orderNo)
-                      ->where('order.pay_status', 'succeeded')
-                      ->where('order.status', 2);
-            })
+            ->join(
+                'air_trade_logs',
+                function ($join) {
+                    $join->on('order.order_no', 'air_trade_logs.order_no');
+                }
+            )
+            ->where(
+                function ($query) use ($orderNo) {
+                    $query->where('order.order_no', $orderNo)
+                          ->where('order.pay_status', 'succeeded')
+                          ->where('order.status', 2);
+                }
+            )
             ->get(['order.*']);
         if (!$orderDataInfo) {
             throw new LogicException('机票订单未支付或未审核通过');
@@ -529,5 +542,17 @@ class Order extends Model
     public function utility()
     {
         return $this->hasOne(OrderUtilityBill::class, 'order_id', 'id');
+    }
+    
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::createFromFormat('Y-m-d\TH:i:s.vv\Z', $value)
+                     ->format('Y-m-d H:i:s');
+    }
+    
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::createFromFormat('Y-m-d\TH:i:s.vv\Z', $value)
+                     ->format('Y-m-d');
     }
 }
