@@ -517,7 +517,7 @@ class Order extends Model
      */
     public function air()
     {
-        return $this->hasOne(OrderAirTrade::class);
+        return $this->hasOne(OrderAirTrade::class, 'id', 'id');
     }
     
     /**
@@ -546,13 +546,25 @@ class Order extends Model
     
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::createFromFormat('Y-m-d\TH:i:s.vv\Z', $value)
-                     ->format('Y-m-d H:i:s');
+        if ($value) {
+            $value = Carbon::createFromFormat(
+                'Y-m-d\TH:i:s.vv\Z',
+                date('Y-m-d\TH:i:s.vv\Z', strtotime($value))
+            )
+                           ->format('Y-m-d H:i:s');
+        }
+        return $value;
     }
     
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::createFromFormat('Y-m-d\TH:i:s.vv\Z', $value)
-                     ->format('Y-m-d');
+        if ($value) {
+            $value = Carbon::createFromFormat(
+                'Y-m-d\TH:i:s.vv\Z',
+                date('Y-m-d\TH:i:s.vv\Z', strtotime($value))
+            )
+                           ->format('Y-m-d H:i:s');
+        }
+        return $value;
     }
 }
