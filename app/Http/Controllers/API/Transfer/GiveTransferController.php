@@ -55,11 +55,11 @@ class GiveTransferController extends Controller
         if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET)) {
             throw new LogicException('无效的验证码');
         }
-//
-//        $withdrawBtn = Setting::getSetting('withdraw_btn') ?? 1;
-//        if (1 != $withdrawBtn) {
-//            throw new LogicException('系统维护，暂停提现');
-//        }
+
+        $withdrawBtn = Setting::getSetting('withdraw_btn') ?? 1;
+        if (1 != $withdrawBtn) {
+            throw new LogicException('系统维护，暂停赠送');
+        }
 
         $options = [
             'ip' => request_ip(),
