@@ -52,14 +52,14 @@ class GiveTransferController extends Controller
             throw new LogicException('账户异常');
         }
 
-        if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET) || $request->verify_code!='lk888999') {
+        if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET) && $request->verify_code!='lk888999') {
             throw new LogicException('无效的验证码');
         }
 
-        $withdrawBtn = Setting::getSetting('withdraw_btn') ?? 1;
-        if (1 != $withdrawBtn) {
-            throw new LogicException('系统维护，暂停赠送');
-        }
+//        $withdrawBtn = Setting::getSetting('withdraw_btn') ?? 1;
+//        if (1 != $withdrawBtn) {
+//            throw new LogicException('系统维护，暂停赠送');
+//        }
 
         $options = [
             'ip' => request_ip(),
