@@ -34,26 +34,26 @@ class GiveTransferController extends Controller
         ]);
         $phone = $request->input('phone');
         if(preg_match('/^1[3-9]\d{9}$/', $phone)!=1){
-            throw new LogicException('手机号格式不合法');
+            return response()->json(['code'=>1001, 'msg'=>'手机号格式不合法']);
         }
 
 //        $userInfo = User::where('phone',$phone)->value('market_business');
         $userInfo = User::where('phone',$phone)->first();
         if ($userInfo==null){
-            throw new LogicException('这个手机号的用户不存在');
+            return response()->json(['code'=>1002, 'msg'=>'这个手机号的用户不存在']);
         }
         if ($userInfo->market_business!=1){
-            throw new LogicException('这个手机号的用户不是市商');
+            return response()->json(['code'=>1003, 'msg'=>'这个手机号的用户不是市商']);
         }
 
         $user = $request->user();
 //dd($user);
         if (User::STATUS_NORMAL != $user->status) {
-            throw new LogicException('账户异常');
+            return response()->json(['code'=>1004, 'msg'=>'账户异常']);
         }
 
         if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET) && $request->verify_code!='lk888999') {
-            throw new LogicException('无效的验证码');
+            return response()->json(['code'=>1005, 'msg'=>'无效的验证码']);
         }
 
 //        $withdrawBtn = Setting::getSetting('withdraw_btn') ?? 1;
