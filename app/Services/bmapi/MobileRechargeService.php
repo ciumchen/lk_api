@@ -2,6 +2,7 @@
 
 namespace App\Services\bmapi;
 
+use App\Models\Setting;
 use DB;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
@@ -13,7 +14,7 @@ use Log;
 
 class MobileRechargeService extends BaseService
 {
-    
+
     /**
      * 生成充值订单
      *
@@ -52,7 +53,7 @@ class MobileRechargeService extends BaseService
         DB::commit();
         return $Order->find($order_id);
     }
-    
+
     /**
      * @param $user
      * @param $mobile
@@ -88,7 +89,7 @@ class MobileRechargeService extends BaseService
         Db::commit();
         return $Order->find($order_id);
     }
-    
+
     /**
      * 话费代充订单数据创建
      *
@@ -101,7 +102,7 @@ class MobileRechargeService extends BaseService
     public function createDlOrderParams($user, $money, $order_no)
     {
         $date = date("Y-m-d H:i:s");
-        $profit_ratio = 5;
+        $profit_ratio = Setting::where('key','set_business_rebate_scale_zl')->value('value');
         $profit_price = $money * ($profit_ratio / 100);
         return [
             'uid'          => $user->id,
@@ -118,7 +119,7 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-    
+
     /**
      * trade_order 表代充订单数据创建
      *
@@ -131,7 +132,7 @@ class MobileRechargeService extends BaseService
     public function createDlTradeOrderParams($user, $money, $order_no, $mobile, $order_id)
     {
         $date = date("Y-m-d H:i:s");
-        $profit_ratio = 0.05;
+        $profit_ratio = (Setting::where('key','set_business_rebate_scale_zl')->value('value'))/100;
         $profit_price = $money * $profit_ratio;
         return [
             'user_id'       => $user->id,
@@ -155,7 +156,7 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-    
+
     /**
      * TradeOrder 表数据组装
      *
@@ -194,7 +195,7 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-    
+
     /**
      * Order 表数据组装
      *
@@ -225,7 +226,7 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-    
+
     /**
      * 斑马手机充值检查
      * 订单生成前调用
@@ -252,7 +253,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 回调处理订单状态
      *
@@ -298,7 +299,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**
      * 订单充值
      * 付款成功后调用
@@ -324,7 +325,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 手机充值
      *
@@ -358,7 +359,7 @@ class MobileRechargeService extends BaseService
         }
         return $bill;
     }
-    
+
     /**
      * 生成手机充值订单
      *
@@ -390,7 +391,7 @@ class MobileRechargeService extends BaseService
         }
         return $MobileOrder;
     }
-    
+
     /**
      * 手机充值订单表更新
      *
