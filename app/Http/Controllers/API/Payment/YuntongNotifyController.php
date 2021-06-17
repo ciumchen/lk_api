@@ -205,7 +205,7 @@ class YuntongNotifyController extends Controller
             $payLogs = new PayLogs();
             $payLogs->setPay($payData);
             //更新 order 表审核状态
-            (new OrderService())->completeBmOrder($data[ 'order_id' ]);
+            //(new OrderService())->completeBmOrder($data[ 'order_id' ]);
             //机票订单
             (new AirOrderService())->airOrder($data[ 'order_id' ]);
         } catch (\LogicException $le) {
