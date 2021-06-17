@@ -517,4 +517,13 @@ class Order extends Model
     {
         return $this->hasOne(OrderMobileRecharge::class, 'order_id', 'id');
     }
+
+    /**机票更新支付状态
+     * @param string $order_no
+     * @throws
+     */
+    public function updPay(string $order_no)
+    {
+        Order::where('order_no', $order_no)->update(['pay_status' => 'succeeded']);
+    }
 }

@@ -204,6 +204,9 @@ class YuntongNotifyController extends Controller
             Log::debug('airTrade订单数据$payData', [json_encode($payData)]);
             $payLogs = new PayLogs();
             $payLogs->setPay($payData);
+            //更新 order 表支付状态
+            (new Order())->updPay($data[ 'order_id' ]);
+
             //更新 order 表审核状态
             //(new OrderService())->completeBmOrder($data[ 'order_id' ]);
             //机票订单
