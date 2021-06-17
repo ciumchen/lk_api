@@ -89,6 +89,8 @@ class OrderAirTrade extends Model
 {
     use HasFactory;
 
+    const UPDATED_AT = 'utime';
+
     protected $table = 'order_air_trade';
 
     /**新增机票订单数据
