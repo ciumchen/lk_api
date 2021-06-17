@@ -42,9 +42,9 @@ class GiveTransferService
             throw new LogicException('最低赠送2个','1002');
         }
 
-        if (bccomp($amount, 100, 8) > 0) {
-            throw new LogicException('单笔最多赠送100','1003');
-        }
+//        if (bccomp($amount, 100, 8) > 0) {
+//            throw new LogicException('单笔最多赠送100','1003');
+//        }
 
         //一小时只能划转1次
 //        $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::DEFAULT_ASSETS_NAME)->latest('id')->first();
@@ -52,13 +52,13 @@ class GiveTransferService
 //            throw new LogicException('赠送间隔时间不低于 1 小时');
 //        }
 
-        $todayWithdrawAmount = WithdrawLogs::where('created_at', '>=', Carbon::now()->startOfDay()->toDateTimeString())
-            ->where('status', WithdrawLogs::STATUS_DONE)
-            ->where('uid', $user->id)
-            ->sum(DB::raw('amount+fee'));
-        if (bccomp(bcadd($amount, $todayWithdrawAmount ?? 0, 8), 1000, 8) > 0) {
-            throw new LogicException('每天最多赠送1000','1004');
-        }
+//        $todayWithdrawAmount = WithdrawLogs::where('created_at', '>=', Carbon::now()->startOfDay()->toDateTimeString())
+//            ->where('status', WithdrawLogs::STATUS_DONE)
+//            ->where('uid', $user->id)
+//            ->sum(DB::raw('amount+fee'));
+//        if (bccomp(bcadd($amount, $todayWithdrawAmount ?? 0, 8), 1000, 8) > 0) {
+//            throw new LogicException('每天最多赠送1000','1004');
+//        }
 
         $asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
         $userBalance = AssetsService::getBalanceData($user, $asset);//获取资产

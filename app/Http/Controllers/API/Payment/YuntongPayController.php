@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Payment;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\Traits\AllowField;
 use App\Services\bmapi\VideoCardService;
@@ -18,9 +19,9 @@ use Log;
 
 class YuntongPayController extends Controller
 {
-    
+
     use AllowField;
-    
+
     /**
      * 创建支付
      *
@@ -70,7 +71,7 @@ class YuntongPayController extends Controller
         DB::commit();
         return $this->payRequest(array_merge($data, $orderData));
     }
-    
+
     /**
      * 再次请求支付
      *
@@ -106,7 +107,7 @@ class YuntongPayController extends Controller
         }
         return $this->payRequest(array_merge($data, $orderData));
     }
-    
+
     /**
      * 发起支付请求
      *
@@ -157,7 +158,7 @@ class YuntongPayController extends Controller
         }
         return response()->json(['url' => $response[ 'pay_url' ]]);
     }
-    
+
     /*******************************************************************/
     /**
      * 订单 trade_order 表插入数据
@@ -180,7 +181,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-    
+
     /**
      * 订单 order 表插入数据
      *
@@ -213,7 +214,7 @@ class YuntongPayController extends Controller
             throw $e;
         }
     }
-    
+
     /**
      * 组装订单数据
      *
@@ -268,7 +269,7 @@ class YuntongPayController extends Controller
             'modified_time' => $date,
         ];
     }
-    
+
     /**
      * @param string $url
      *
@@ -286,7 +287,7 @@ class YuntongPayController extends Controller
         }
         return $url;
     }
-    
+
     /**
      * 获取 order 表中 name 字段的值
      *
@@ -320,7 +321,7 @@ class YuntongPayController extends Controller
         }
         return $name;
     }
-    
+
     /**
      * 获取 trade_order 表 oid 字段
      *
@@ -340,7 +341,7 @@ class YuntongPayController extends Controller
         }
         return $oid;
     }
-    
+
     /**
      * 获取客户端IP
      *
@@ -362,7 +363,7 @@ class YuntongPayController extends Controller
         }
         return $ip;
     }
-    
+
     /**
      * 获取 trade_order 表中的 remarks 字段值
      *
@@ -382,7 +383,7 @@ class YuntongPayController extends Controller
         }
         return $remarks;
     }
-    
+
     /**
      * 获取支付通道标记
      *
@@ -407,7 +408,7 @@ class YuntongPayController extends Controller
         }
         return $payChannel;
     }
-    
+
     /**
      * 获取比例
      *
@@ -417,18 +418,24 @@ class YuntongPayController extends Controller
      */
     public function getProfitRatio(string $type)
     {
-        switch ($type) {
-            case 'HF':
-            case 'ZL':
-            case 'YK':
-                $profit_ratio = 5;
-                break;
-            default:
-                $profit_ratio = 10;
+        $typeArr = array(
+            'HF'=>'hf',
+            'YK'=>'yk',
+            'MT'=>'mt',
+            'DD'=>'dd',
+            'ZL'=>'zl',
+            'AT'=>'at',
+        );
+        if ($type != 'LR' && isset($typeArr[$type])){
+            $typeStr = "set_business_rebate_scale_".$typeArr[$type];
+            $profit_ratio = Setting::where('key',$typeStr)->value('value');
+        }else{
+            $profit_ratio = 10;
         }
+
         return $profit_ratio;
     }
-    
+
     /**机票支付
      *
      * @param Request $request
@@ -441,7 +448,7 @@ class YuntongPayController extends Controller
         $data = $request->all();
         return $this->airCreatePay($data, 1);
     }
-    
+
     /**机票发起支付请求
      *
      * @param array  $data
@@ -495,7 +502,7 @@ class YuntongPayController extends Controller
         }
         return $this->payRequest($data, $return_url);
     }
-    
+
     /**
      * 机票再次请求支付
      *
@@ -553,7 +560,7 @@ class YuntongPayController extends Controller
         //发起支付请求
         return $this->airCreatePay(array_merge($orderData, $airOrderData, $airTrades), 2);
     }
-    
+
     /**
      * Description:斑马接口订单支付
      *
