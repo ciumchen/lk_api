@@ -115,7 +115,7 @@ class UserMessage extends Model
         }
 
         //获取充值数据
-        $orderData = (new RechargeLogs())
+        $tradeArr = (new RechargeLogs())
             ->join('trade_order', function($join){
                 $join->on('recharge_logs.order_no', 'trade_order.order_no');
             })
@@ -131,6 +131,25 @@ class UserMessage extends Model
             ->distinct('recharge_logs.order_no')
             ->get(['user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price', 'trade_order.numeric'])
             ->toArray();
+
+        //机票订单
+        $orderArr = (new RechargeLogs())
+            ->join('order', function($join){
+                $join->on('recharge_logs.order_no', 'order.order_no');
+            })
+            ->join('user_message', function($join){
+                $join->on('order.order_no', 'user_message.order_no');
+            })
+            ->where(function($query) use ($uid) {
+                $query->where('recharge_logs.status', 1)
+                    ->where('order.uid', $uid)
+                    ->where('order.status', 2)
+                    ->where('user_message.is_del', 0);
+            })
+            ->distinct('recharge_logs.order_no')
+            ->get(['user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'order.price'])
+            ->toArray();
+        $orderData = array_merge($tradeArr, $orderArr);
         foreach ($orderData as $key => $value)
         {
             $orderData[$key]['title'] = '';
@@ -194,15 +213,30 @@ class UserMessage extends Model
                 case 'LR':
                     $name = '录单';
                     break;
+                case 'AT':
+                    $name = '飞机票';
+                    break;
             }
 
             //组装返回数据
-            $msgList[] = [
-                'id'      => $val['id'],
-                'title'   => $val['title'] ?: $name . '充值',
-                'time'    => $val['created_at'],
-                'content' => $val['content'] ?: '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
-            ];
+            if (in_array($name, ['话费', '油卡', '录单']))
+            {
+                $msgList[] = [
+                    'id'      => $val['id'],
+                    'title'   => $val['title'] ?: $name . '充值',
+                    'time'    => $val['created_at'],
+                    'content' => $val['content'] ?: '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
+                ];
+            } else
+            {
+                $msgList[] = [
+                    'id'      => $val['id'],
+                    'title'   => $val['title'] ?: $name . '购买',
+                    'time'    => $val['created_at'],
+                    'content' => $val['content'] ?: '本次购买机票 ' . $val['price'] . ' 元出票成功，请留意航班短信通知',
+                ];
+            }
+
         }
 
         //分页
