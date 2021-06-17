@@ -420,6 +420,7 @@ class YuntongPayController extends Controller
         switch ($type) {
             case 'HF':
             case 'ZL':
+            case 'AT':
             case 'YK':
                 $profit_ratio = 5;
                 break;
@@ -461,9 +462,9 @@ class YuntongPayController extends Controller
         $orderData = [
             'uid'          => $data[ 'uid' ],
             'business_uid' => 2,
-            'profit_ratio' => 0,
+            'profit_ratio' => 5,
             'price'        => $data[ 'money' ] * $data[ 'number' ],
-            'profit_price' => 0,
+            'profit_price' => $data[ 'money' ] * 0.05,
             'status'       => 1,
             'name'         => $this->getName($data[ 'description' ] ?? ''),
             'remark'       => '',

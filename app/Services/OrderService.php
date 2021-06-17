@@ -157,14 +157,14 @@ class OrderService
      */
     public function completeBmOrder(string $orderNo)
     {
-        $airOrderInfo = Order::where('pay_status', 'succeeded')
+        $airOrderInfo = Order::where('pay_status', 'await')
                              ->where('order_no', $orderNo)
                              ->first();
         $type = '';
         if (!$airOrderInfo) {
             throw new LogicException('订单信息不存在');
         }
-        if (strpos($airOrderInfo->order_no, 'AT')) {
+        if ($airOrderInfo->name == '飞机票') {
             $type = 'AT';
         }
         $id = $airOrderInfo->id;

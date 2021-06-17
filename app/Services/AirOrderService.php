@@ -123,16 +123,16 @@ class AirOrderService
 
         //组装机票订单数据
         $airTradeData = [
-            'seatCode' => $airTradeLogs->seatCode,
+            'seatCode' => $airTradeLogs->seat_code,
             'passagers' => $airTradeLogs->passagers,
-            'itemId' => $airTradeLogs->itemId,
-            'contactName' => $airTradeLogs->contactName,
-            'contactTel' => $airTradeLogs->contactTel,
+            'itemId' => $airTradeLogs->item_id,
+            'contactName' => $airTradeLogs->contact_name,
+            'contactTel' => $airTradeLogs->contact_tel,
             'date' => $airTradeLogs->date,
             'from' => $airTradeLogs->from,
             'to' => $airTradeLogs->to,
-            'companyCode' => $airTradeLogs->companyCode,
-            'flightNo' => $airTradeLogs->flightNo,
+            'companyCode' => $airTradeLogs->company_code,
+            'flightNo' => $airTradeLogs->flight_no,
             'aid' => $airTradeLogs->id,
             'oid' => $orderInfo->id
         ];

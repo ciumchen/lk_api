@@ -21,6 +21,9 @@ Route::post('air-pay', 'Payment\YuntongPayController@airPay');
 Route::post('air-notify', 'Payment\YuntongNotifyController@airPayNotify');
 //机票二次支付
 Route::post('air-again-pay', 'Payment\YuntongPayController@airAgainPay');
+
+//Route::post('upd-air', 'Payment\YuntongNotifyController@updAirPay');
+
 /****** *******/
 //斑马接口订单支付
 Route::post('bm-pay', 'Payment\YuntongPayController@bmPay');
