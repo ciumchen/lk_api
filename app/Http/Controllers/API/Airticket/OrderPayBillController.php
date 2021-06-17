@@ -77,6 +77,7 @@ class OrderPayBillController extends Controller
         $ticketTrade = $orderArr['air_order_pay_response']['ticketTrade'];
         $ticketTrade['aid'] = $data['aid'];
         $ticketTrade['oid'] = $data['oid'];
+        $ticketTrade['etime'] = date('Y-m-d H:i:s');
         $orderTradeArr = (new AirOrderService())->ticketOrder($ticketTrade);
 
         //写入机票订单数据
