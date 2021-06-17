@@ -22,7 +22,7 @@ use App\Services\AirOrderService;
 
 class YuntongNotifyController extends Controller
 {
-    
+
     /**
      * 雲通支付回調
      *
@@ -49,7 +49,7 @@ class YuntongNotifyController extends Controller
             $Pay->Notify_failed();
         }
     }
-    
+
     /**
      * 更新订单为已支付
      *
@@ -142,7 +142,7 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
-    
+
     /**机票支付回調
      *
      * @param Request $request
@@ -168,7 +168,7 @@ class YuntongNotifyController extends Controller
             $Pay->Notify_failed();
         }
     }
-    
+
     /**更新机票信息
      *
      * @param $data
@@ -212,7 +212,7 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
-    
+
     /**
      * Description:
      *

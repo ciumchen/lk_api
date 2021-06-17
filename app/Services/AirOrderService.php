@@ -92,6 +92,7 @@ class AirOrderService
              $airTradeArr[$key]['utime']            = $date;
              $airTradeArr[$key]['remark']           = $ticketTrade['remark'];
              $airTradeArr[$key]['aid']              = $ticketTrade['aid'];
+             $airTradeArr[$key]['oid']              = $ticketTrade['oid'];
              $airTradeArr[$key]['order_no']         = $value['orderNo'];
              $airTradeArr[$key]['order_state']      = $value['state'];
              $airTradeArr[$key]['item_id']          = $value['itemId'];
@@ -118,20 +119,22 @@ class AirOrderService
     {
         //获取机票信息
         $airTradeLogs = (new AirTradeLogs())->getAirTradeInfo($orderNo);
+        $orderInfo = (new Order())->getOrderInfo($orderNo);
 
         //组装机票订单数据
         $airTradeData = [
-            'seatCode' => $airTradeLogs->seatCode,
+            'seatCode' => $airTradeLogs->seat_code,
             'passagers' => $airTradeLogs->passagers,
-            'itemId' => $airTradeLogs->itemId,
-            'contactName' => $airTradeLogs->contactName,
-            'contactTel' => $airTradeLogs->contactTel,
+            'itemId' => $airTradeLogs->item_id,
+            'contactName' => $airTradeLogs->contact_name,
+            'contactTel' => $airTradeLogs->contact_tel,
             'date' => $airTradeLogs->date,
             'from' => $airTradeLogs->from,
             'to' => $airTradeLogs->to,
-            'companyCode' => $airTradeLogs->companyCode,
-            'flightNo' => $airTradeLogs->flightNo,
-            'aid' => $airTradeLogs->id
+            'companyCode' => $airTradeLogs->company_code,
+            'flightNo' => $airTradeLogs->flight_no,
+            'aid' => $airTradeLogs->id,
+            'oid' => $orderInfo->id
         ];
 
         //生成机票订单
