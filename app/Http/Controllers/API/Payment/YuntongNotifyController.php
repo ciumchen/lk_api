@@ -147,7 +147,7 @@ class YuntongNotifyController extends Controller
      *
      * @param Request $request
      */
-    /*public function airPayNotify(Request $request)
+    public function airPayNotify(Request $request)
     {
         $Pay = new YuntongPay();
         $json = $request->getContent();
@@ -167,7 +167,7 @@ class YuntongNotifyController extends Controller
             Log::debug('AirNotify-验证不通过-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
             $Pay->Notify_failed();
         }
-    }*/
+    }
 
     /**更新机票信息
      *
@@ -175,7 +175,7 @@ class YuntongNotifyController extends Controller
      *
      * @throws
      */
-    /*public function updAirPay($data)
+    public function updAirPay($data)
     {
         try {
             Log::debug('UpdateAirTrade订单数据$data', [json_encode($data)]);
@@ -211,7 +211,7 @@ class YuntongNotifyController extends Controller
         } catch (\LogicException $le) {
             throw $le;
         }
-    }*/
+    }
 
     /**
      * Description:
