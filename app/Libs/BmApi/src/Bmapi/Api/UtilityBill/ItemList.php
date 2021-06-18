@@ -2,7 +2,7 @@
 
 namespace Bmapi\Api\UtilityBill;
 
-use Bmapi\core\ApiRequest;
+use Bmapi\Core\ApiRequest;
 use Exception;
 
 /**
