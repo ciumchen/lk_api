@@ -12,7 +12,6 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * Class User
  *
-
  * @property int $id
  * @property int|null $invite_uid 邀请人id
  * @property int $role 1普通用户，2商家

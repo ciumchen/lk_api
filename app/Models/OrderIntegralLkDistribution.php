@@ -29,6 +29,12 @@ use App\Exceptions\LogicException;
  * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution whereSwitch($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $price_5 订单消费金额5%让利比例的累计
+ * @property string|null $price_10 订单消费金额10%让利比例的累计
+ * @property string|null $price_20 订单消费金额20%让利比例的累计
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution wherePrice10($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution wherePrice20($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution wherePrice5($value)
  */
 class OrderIntegralLkDistribution extends Model
 {

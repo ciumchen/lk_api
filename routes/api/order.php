@@ -14,6 +14,8 @@ Route::middleware(['auth:sanctum'])
          Route::post('mobile-dl-order', 'Order\MobileRechargeController@setDlOrder');
          /* 视频会员订单生成[斑马] */
          Route::post('video-set-order', 'Order\VideoRechargeController@setOrder');
+         //生活缴费生成订单[斑马]
+         Route::any('utility-set-order', 'Order\UtilityController@setOrder');
      });
 //我的分享
 Route::any("consumer", "Order\MyShareController@Consumer");
@@ -32,15 +34,20 @@ Route::any("get-gas", "Order\MergeNotifyController@getGas");
 Route::any("get-call-defray", "Order\MergeNotifyController@getCallDefray");
 //查询当前用户是邀请人所获得的商家积分记录
 Route::any("getInvitePoints", "User\RecordsOfConsumptionController@getInvitePoints");
-
 //获取用户分红积分变动
 Route::any("getUserIntegralLogs", "User\RecordsOfConsumptionController@getUserIntegralLogs");
-
+/*********** 手机充值 ************/
 //手机充值回调[斑马]
 Route::any('mobile-notify', 'Order\MobileNotifyController@callback');
 //手机充值测试[斑马]
 Route::any('mobile-recharge', 'Order\MobileRechargeController@rechargeTest');
+/*********** 视频会员 ************/
 /* 视频会员查询[斑马] */
 Route::any('video-get-list', 'Order\VideoRechargeController@getVideoList');
 /* 视频会员充值测试[斑马] */
 Route::any('video-recharge', 'Order\VideoRechargeController@rechargeTest');
+/*********** 生活缴费 ************/
+//生活缴费查询[斑马]
+Route::any('utility-search', 'Order\UtilityController@getItemList');
+//生活缴费账单查询[斑马]
+Route::any('utility-bill', 'Order\UtilityController@checkBill');

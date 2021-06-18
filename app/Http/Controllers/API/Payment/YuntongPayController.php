@@ -9,6 +9,7 @@ use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\Traits\AllowField;
 use App\Services\bmapi\VideoCardService;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Libs\Yuntong\YuntongPay;
@@ -577,15 +578,18 @@ class YuntongPayController extends Controller
         $return_url = $request->input('return_url');
         try {
             $Order = new Order();
+            $OrderService = new OrderService();
             $orderInfo = $Order->find($order_id);
             $order_no = $orderInfo->order_no;
+            $description = $OrderService->getDescription($order_id, $orderInfo);
             if (!empty($orderInfo->updated_at)) {
                 /* 更新订单号 */
                 $order_no = createOrderNo();
-                $VideoOrderService = new VideoCardService();
-                $VideoOrderService->orderUpdateOrderNo($order_id, $order_no);
+                $OrderService->updateOrderNoSubOrder($order_id, $order_no, $description, $orderInfo);
                 $orderInfo->order_no = $order_no;
             }
+            $orderInfo->updated_at = time();
+            $orderInfo->save();
             if (!is_array($deviceInfo)) {
                 $deviceInfo = json_decode($deviceInfo, true);
             }

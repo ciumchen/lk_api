@@ -14,6 +14,7 @@ use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
 use App\Services\AirOrderService;
+use App\Services\bmapi\UtilityBillRechargeService;
 use App\Services\bmapi\VideoCardService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-
+    
     /**完成订单
      *
      * @param string $orderNo
@@ -59,7 +60,14 @@ class OrderService
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
             $customer->save();
-            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单');
+            IntegralLogs::addLog(
+                $customer->id,
+                $customerIntegral,
+                IntegralLogs::TYPE_SPEND,
+                $amountBeforeChange,
+                1,
+                '消费者完成订单'
+            );
             //给商家加积分，更新LK
             $business = User::lockForUpdate()
                             ->find($order->business_uid);
@@ -69,7 +77,14 @@ class OrderService
             //更新LK
             $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
             $business->save();
-            IntegralLogs::addLog($business->id, $order->profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单');
+            IntegralLogs::addLog(
+                $business->id,
+                $order->profit_price,
+                IntegralLogs::TYPE_SPEND,
+                $amountBeforeChange,
+                2,
+                '商家完成订单'
+            );
             //返佣
             $this->encourage($order, $customer, $business);
             $order->save();
@@ -79,7 +94,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-
+    
     /**完成订单
      *
      * @param string $orderNo
@@ -133,9 +148,26 @@ class OrderService
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer, 0);
                 $customer->save();
-                IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
+                IntegralLogs::addLog(
+                    $customer->id,
+                    $customerIntegral,
+                    IntegralLogs::TYPE_SPEND,
+                    $amountBeforeChange,
+                    1,
+                    '消费者完成订单',
+                    $orderNo,
+                    0,
+                    $consumer_uid,
+                    $description
+                );
                 //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-                $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+                $this->addInvitePoints(
+                    $order->business_uid,
+                    $order->profit_price,
+                    $description,
+                    $consumer_uid,
+                    $orderNo
+                );
             }
             $business = User::find($order->business_uid);
             //返佣
@@ -147,7 +179,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-
+    
     /**完成订单
      *
      * @param string $orderNo
@@ -207,9 +239,26 @@ class OrderService
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer, 0);
                 $customer->save();
-                IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
+                IntegralLogs::addLog(
+                    $customer->id,
+                    $customerIntegral,
+                    IntegralLogs::TYPE_SPEND,
+                    $amountBeforeChange,
+                    1,
+                    '消费者完成订单',
+                    $orderNo,
+                    0,
+                    $consumer_uid,
+                    $description
+                );
                 //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-                $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+                $this->addInvitePoints(
+                    $order->business_uid,
+                    $order->profit_price,
+                    $description,
+                    $consumer_uid,
+                    $orderNo
+                );
             }
             $business = User::find($order->business_uid);
             //返佣
@@ -220,7 +269,7 @@ class OrderService
             DB::rollBack();
         }
     }
-
+    
     /**返佣
      *
      * @param $order
@@ -385,35 +434,87 @@ class OrderService
                 $inviteAmount = bcadd($headAmount, $ordinaryAmount, 8);
                 //同级盟主奖励
                 $tes =
-                    $this->leaderRebate($orderNo, $memberHead->invite_uid, $sameAmount, $assets, '同级别盟主奖励', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 1);
+                    $this->leaderRebate(
+                        $orderNo,
+                        $memberHead->invite_uid,
+                        $sameAmount,
+                        $assets,
+                        '同级别盟主奖励',
+                        AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
+                        1
+                    );
                 if ($tes == false)
                     $isSamePlat = true;
             } else {
                 //往上找2级 是否盟主
                 $res =
-                    $this->leaderRebate($orderNo, $memberHead->invite_uid, $headAmount, $assets, '邀请商家盟主分红', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 2);
+                    $this->leaderRebate(
+                        $orderNo,
+                        $memberHead->invite_uid,
+                        $headAmount,
+                        $assets,
+                        '邀请商家盟主分红',
+                        AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
+                        2
+                    );
                 if ($res == false) {
                     if ($headAmount > 0)
-                        AssetsService::BalancesChange($orderNo, $platformUid, $assets, $assets->assets_name, $headAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, '没有盟主，分配到平台账户');
+                        AssetsService::BalancesChange(
+                            $orderNo,
+                            $platformUid,
+                            $assets,
+                            $assets->assets_name,
+                            $headAmount,
+                            AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
+                            '没有盟主，分配到平台账户'
+                        );
                     $isSamePlat = true;
                 } else {
                     //同级盟主奖励
                     $res =
-                        $this->leaderRebate($orderNo, $res->invite_uid, $sameAmount, $assets, '同级别盟主奖励', AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, 1);
+                        $this->leaderRebate(
+                            $orderNo,
+                            $res->invite_uid,
+                            $sameAmount,
+                            $assets,
+                            '同级别盟主奖励',
+                            AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
+                            1
+                        );
                     if ($res == false)
                         $isSamePlat = true;
                 }
             }
         }
         if ($sameAmount > 0 && $isSamePlat == true)
-            AssetsService::BalancesChange($orderNo, $platformUid, $assets, $assets->assets_name, $sameAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, '没有同级盟主，分配到平台账户');
+            AssetsService::BalancesChange(
+                $orderNo,
+                $platformUid,
+                $assets,
+                $assets->assets_name,
+                $sameAmount,
+                AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
+                '没有同级盟主，分配到平台账户'
+            );
         if ($inviteAmount > 0)
-            AssetsService::BalancesChange($orderNo, $uid, $assets, $assets->assets_name, $inviteAmount, AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE, $remark);
+            AssetsService::BalancesChange(
+                $orderNo,
+                $uid,
+                $assets,
+                $assets->assets_name,
+                $inviteAmount,
+                AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
+                $remark
+            );
         $market =
-            bcadd($districtAmount, bcadd($cityAmount, bcadd(bcadd($sameAmount, $headAmount, 8), $ordinaryAmount, 8), 8), 8);
+            bcadd(
+                $districtAmount,
+                bcadd($cityAmount, bcadd(bcadd($sameAmount, $headAmount, 8), $ordinaryAmount, 8), 8),
+                8
+            );
         $this->updateRebateData($welfareAmount, $shareAmount, $market, $platformAmount, $order->price, $user);
     }
-
+    
     /**找盟主
      *
      * @param     $invite_uid
@@ -444,7 +545,7 @@ class OrderService
             return false;
         }
     }
-
+    
     /**更新返佣统计
      *
      * @param $welfare
@@ -468,7 +569,7 @@ class OrderService
         $rebateData->total_consumption = bcadd($price, $rebateData->total_consumption, 8);
         $rebateData->save();
     }
-
+    
     //邀请补贴和邀请人积分添加
     //商户uid,实际让利比例，订单分类 HF YK MT,消费者uid
     public function addInvitePoints($order_business_uid, $order_profit_price, $description, $uid, $orderNo)
@@ -513,9 +614,20 @@ class OrderService
         //更新LK
         $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
         $business->save();
-        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单', $orderNo, $activityState, $uid, $description);
+        IntegralLogs::addLog(
+            $business->id,
+            $order_profit_price,
+            IntegralLogs::TYPE_SPEND,
+            $amountBeforeChange,
+            2,
+            '商家完成订单',
+            $orderNo,
+            $activityState,
+            $uid,
+            $description
+        );
     }
-
+    
     /**
      * Description:
      *
@@ -568,9 +680,26 @@ class OrderService
                 //更新LK
                 $customer->lk = bcdiv($customer->integral, $lkPer, 0);
                 $customer->save();
-                IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
+                IntegralLogs::addLog(
+                    $customer->id,
+                    $customerIntegral,
+                    IntegralLogs::TYPE_SPEND,
+                    $amountBeforeChange,
+                    1,
+                    '消费者完成订单',
+                    $orderNo,
+                    0,
+                    $consumer_uid,
+                    $description
+                );
                 //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-                $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+                $this->addInvitePoints(
+                    $order->business_uid,
+                    $order->profit_price,
+                    $description,
+                    $consumer_uid,
+                    $orderNo
+                );
             }
             $business = User::find($order->business_uid);
             //返佣
@@ -581,7 +710,7 @@ class OrderService
             DB::rollBack();
         }
     }
-
+    
     /**
      * Description:
      * TODO:判断订单类型
@@ -614,6 +743,9 @@ class OrderService
             if (!empty($orderInfo->air)) { /* 机票订单 */
                 $description = 'AT';
             }
+            if (!empty($orderInfo->utility)) { /* 生活缴费 */
+                $description = 'UB';
+            }
             /* 判断 是否已经获取到对应类型的订单*/
             if (empty($description)) {
                 throw new Exception('没有对应类型的订单');
@@ -623,7 +755,7 @@ class OrderService
         }
         return $description;
     }
-
+    
     /**
      * Description:更新对应子订单
      *
@@ -633,6 +765,7 @@ class OrderService
      *
      * @param string $description
      *
+     * @throws \Exception
      * @author lidong<947714443@qq.com>
      * @date   2021/6/11 0011
      */
@@ -649,13 +782,19 @@ class OrderService
                     $orderInfo->video->money = $data[ 'amount' ];
                     $orderInfo->video->status = 0;
                     $orderInfo->video->updated_at = $data[ 'pay_time' ];
-                    $orderInfo->save();
+                    $orderInfo->video->save();
                     break;
                 case 'AT': /* 机票订单处理 */
                     $orderInfo->air->money = $data[ 'amount' ];
                     $orderInfo->air->status = 0;
                     $orderInfo->air->updated_at = $data[ 'pay_time' ];
                     $orderInfo->save();
+                    break;
+                case 'UB':
+                    $orderInfo->utility->money = $data[ 'amount' ];
+                    $orderInfo->utility->status = 0;
+                    $orderInfo->utility->updated_at = $data[ 'pay_time' ];
+                    $orderInfo->utility->save();
                     break;
                 default:
                     throw new Exception('订单类型未知');
@@ -664,9 +803,49 @@ class OrderService
             throw $e;
         }
     }
-
+    
+    /**
+     * Description:支付前更新子订单
+     *
+     * @param int                    $order_id
+     * @param string                 $order_no
+     *
+     * @param string                 $description
+     * @param \App\Models\Order|null $Order
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/16 0016
+     */
+    public function updateOrderNoSubOrder($order_id, $order_no, $description, Order $Order = null)
+    {
+        if (empty($Order)) {
+            $Order = Order::find($order_id);
+        }
+        try {
+            switch ($description) {
+                case 'VC':
+                    $Order->video->order_no = $order_no;
+                    $Order->video->save();
+                    break;
+                case 'UB':
+                    $Order->utility->order_no = $order_no;
+                    $Order->utility->save();
+                    break;
+                default:
+                    throw new Exception('子订单类型未知');
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
     /**
      * Description:完成订单后的后续操作[充值等]
+     *
+     * @param int                    $order_id
+     * @param string                 $description
+     * @param \App\Models\Order|null $Order
      *
      * @author lidong<947714443@qq.com>
      * @date   2021/6/15 0015
@@ -677,10 +856,17 @@ class OrderService
             $Order = Order::find($order_id);
         }
         try {
+            if (empty($Order)) {
+                throw new  Exception('订单数据不存在');
+            }
             switch ($description) {
                 case 'VC': /* 视频会员充值 */
                     $VideoService = new VideoCardService();
-                    $VideoService->recharge($Order->order_no);
+                    $VideoService->recharge($order_id);
+                    break;
+                case 'UB': /* 生活缴费 */
+                    $UtilityService = new UtilityBillRechargeService();
+                    $UtilityService->recharge($order_id);
                     break;
                 case 'AT': /* 机票充值 */
                     (new AirOrderService())->airOrder($order_id);
