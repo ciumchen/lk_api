@@ -25,7 +25,8 @@ class Sign
                     'return_url',
                     'scene',
                     'merchant_id',
-                    'ip'
+                    'ip',
+                    'open_id'
                 ];
                 foreach ($exclude as $key) { /*去除不参与签名的字段*/
                     if (array_key_exists($key, $data)) {
