@@ -229,7 +229,7 @@ class UserMessage extends Model
                 ];
             } else
             {
-                $notes = $name == '飞机票' ? '出票成功，请留意航班短信通知' : '';
+                $notes = $name == '飞机票' ? '订单已完成' : '';
                 $msgList[] = [
                     'id'      => $val['id'],
                     'title'   => $val['title'] ?: $name . '购买',
