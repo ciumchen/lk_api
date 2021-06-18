@@ -192,10 +192,6 @@ class YuntongPayController extends Controller
      */
     public function createOrder($data = [])
     {
-        //飞机票才有 order_no，其他充值类型不写入
-        if ($data[ 'name' ] != '飞机票') {
-            $data[ 'order_no' ] = '';
-        }
         try {
             $Order = new Order();
             $oid = intval($data[ 'oid' ]);
