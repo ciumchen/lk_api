@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Test;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -105,6 +106,25 @@ class MyNingController extends Controller
             return '<h4>所有订单审核完成</h4>';
         }
 
+
+    }
+
+    //修改用户手机号
+    public function updateUserPhone(Request $request){
+        $uid = $request->input('uid');
+        $phone = $request->input('phone');
+        $userInfo = User::where('id',$uid)->first();
+        if($userInfo){
+            $userInfo->phone = $phone;
+            $re = $userInfo->save();
+            if ($re){
+                return "<h4>用户uid=".$uid."的手机号修改成功</h4>";
+            }else{
+                return "<h4>用户uid=".$uid."的手机号修改失败</h4>";
+            }
+        }else{
+            return "<h4>这个uid=".$uid."的用户不存在</h4>";
+        }
 
     }
 
