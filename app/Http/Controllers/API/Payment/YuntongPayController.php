@@ -85,7 +85,6 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
-       
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->where('oid', '=', $data[ 'oid' ])
                                  ->first();
@@ -104,7 +103,6 @@ class YuntongPayController extends Controller
                 $orderData[ 'order_from' ] = $this->getPayChannel($data[ 'payChannel' ]);
                 $this->createTradeOrder($orderData);
             }
-            throw  new LogicException(json_encode(array_merge($data, $orderData)));
             return $this->payRequest(array_merge($data, $orderData));
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
@@ -154,6 +152,7 @@ class YuntongPayController extends Controller
             if (isset($data[ 'return_url' ])) {
                 $res = $res->setReturnUrl($data[ 'return_url' ]);
             }
+            throw  new LogicException(json_encode($res));
             $res = $res->pay();
             $response = json_decode($res, true);
         } catch (Exception $e) {
