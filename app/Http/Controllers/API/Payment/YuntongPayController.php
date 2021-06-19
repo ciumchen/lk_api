@@ -85,6 +85,9 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
+        if (array_key_exists('deviceInfo', $data)) {
+            $data[ 'ip' ] = $data[ 'deviceInfo' ][ 'device_ip' ];
+        }
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->where('oid', '=', $data[ 'oid' ])
                                  ->first();
@@ -152,7 +155,6 @@ class YuntongPayController extends Controller
             if (isset($data[ 'return_url' ])) {
                 $res = $res->setReturnUrl($data[ 'return_url' ]);
             }
-            throw  new LogicException(json_encode($res));
             $res = $res->pay();
             $response = json_decode($res, true);
         } catch (Exception $e) {
