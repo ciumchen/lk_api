@@ -26,7 +26,7 @@ class OrdersResources extends JsonResource
             'profit_ratio' => rtrim_zero($this->profit_ratio),
             'price' => rtrim_zero($this->price),
             'name' => $this->name,
-            'created_at' => $this->created_at->format("Y-m-d H:i:s"),
+            'created_at' => $this->created_at,
             'pay_status' => $this->pay_status,
             'numeric' => $this->numeric
         ];
