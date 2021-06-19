@@ -85,6 +85,7 @@ class YuntongPayController extends Controller
     public function againPay(Request $request)
     {
         $data = $request->all();
+        throw  new LogicException(json_encode($data));
         $TradeOrder = new TradeOrder();
         $order_data = $TradeOrder->where('oid', '=', $data[ 'oid' ])
                                  ->first();
