@@ -3,83 +3,90 @@
 namespace App\Libs\Yuntong;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class YuntongPay extends Config
 {
-
+    
     use Api;
-
+    
     /**
      * [必须]
+     *
      * @var string 订单标题
      */
     private $goods_title;
-
+    
     /**
      * [必须]
+     *
      * @var string 订单明细
      */
     private $goods_desc;
-
+    
     /**
      * [必须]
+     *
      * @var string 商户订单号
      */
     private $order_id;
-
+    
     /**
      * [必须]
+     *
      * @var float 支付金额
      */
     private $amount;
-
+    
     /**
      * [必须]
+     *
      * @var string 支付类型 固定值：alipay|wx|unionpay
      */
     private $type;
-
+    
     /**
      * [必须]
+     *
      * @var  支付方式 固定值：app|wap|qr|mini|pub
      */
     private $method;
-
+    
     /**
      * [必须]
+     *
      * @var string 异步通知地址
      */
     private $notify_url;
-
-
+    
     /**
      * @var string 同步返回地址 仅支持app和wap渠道
      */
     protected $return_url = '';
-
+    
     /**
      * @var string 场景 固定值[ios|android]
      */
     protected $scene = '';
-
+    
     /**
      * @var string 商户id 特定场景传递，默认不传
      */
     protected $merchant_id = '';
-
+    
     /**
      * 用户端IP
      * 在type为wx，method为wap时必填（微信H5）
      */
     protected $ip = '';
-
-
+    
     /**
      * 可选参数
+     *
      * @var array
      */
     private $optional_param = ['return_url', 'scene', 'merchant_id', 'ip'];
-
+    
     /**
      * @return bool|string
      * @throws Exception
@@ -106,8 +113,11 @@ class YuntongPay extends Config
             $res = json_decode($res, true);
             if (is_array($res) && $res[ 'code' ] == '000001') {
                 return $res[ 'data' ][ 'pay_info' ];
-            } else if (is_array($res)) {
-                throw new Exception('请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]);
+            } elseif (is_array($res)) {
+                Log::debug('提交数据', [json_encode($data)]);
+                throw new Exception(
+                    '请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]
+                );
             } else {
                 throw new Exception('返回结果解析异常');
             }
@@ -115,11 +125,12 @@ class YuntongPay extends Config
             throw $e;
         }
     }
-
-
+    
     /**
      * 查询
+     *
      * @param $order_id
+     *
      * @return mixed|string
      * @throws Exception
      */
@@ -136,8 +147,10 @@ class YuntongPay extends Config
             $res = json_decode($res, true);
             if (is_array($res) && $res[ 'code' ] == '000003') {
                 return $res[ 'data' ][ 'order_info' ];
-            } else if (is_array($res)) {
-                throw new Exception('请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]);
+            } elseif (is_array($res)) {
+                throw new Exception(
+                    '请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]
+                );
             } else {
                 throw new Exception('返回结果解析异常');
             }
@@ -145,10 +158,12 @@ class YuntongPay extends Config
             throw $e;
         }
     }
-
+    
     /**
      * 退款
+     *
      * @param string $order_id
+     *
      * @return bool|mixed
      * @throws Exception
      */
@@ -166,7 +181,9 @@ class YuntongPay extends Config
             if (is_array($res) && $res[ 'code' ] == '000002') {
                 return $res[ 'data' ][ 'refund_info' ];
             } elseif (is_array($res)) {
-                throw new Exception('请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]);
+                throw new Exception(
+                    '请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]
+                );
             } else {
                 throw new Exception('返回结果解析异常');
             }
@@ -174,10 +191,12 @@ class YuntongPay extends Config
             throw $e;
         }
     }
-
+    
     /**
      * 异步通知接收
+     *
      * @param array $data
+     *
      * @return array|bool
      * @throws Exception
      */
@@ -196,7 +215,7 @@ class YuntongPay extends Config
             throw $e;
         }
     }
-
+    
     /**
      * 异步通知处理成功返回;
      */
@@ -204,16 +223,18 @@ class YuntongPay extends Config
     {
         die('success');
     }
-
+    
     public function Notify_failed()
     {
         exit('failed');
     }
-
+    
     /********************************************************************************/
     /**
      * 设置商品名称
+     *
      * @param $val
+     *
      * @return $this
      */
     public function setGoodsTitle($val)
@@ -221,10 +242,12 @@ class YuntongPay extends Config
         $this->goods_title = $val;
         return $this;
     }
-
+    
     /**
      * 设置商品描述
+     *
      * @param $val
+     *
      * @return $this
      */
     public function setGoodsDesc($val)
@@ -232,10 +255,12 @@ class YuntongPay extends Config
         $this->goods_desc = $val;
         return $this;
     }
-
+    
     /**
      * 设置商户订单号
+     *
      * @param $val
+     *
      * @return $this
      */
     public function setOrderId($val)
@@ -243,10 +268,12 @@ class YuntongPay extends Config
         $this->order_id = $val;
         return $this;
     }
-
+    
     /**
      * 设置价格 [单位/元]
+     *
      * @param $val
+     *
      * @return $this
      */
     public function setAmount($val)
@@ -254,9 +281,10 @@ class YuntongPay extends Config
         $this->amount = $val;
         return $this;
     }
-
+    
     /**
      * @param $val
+     *
      * @return $this
      */
     public function setType($val)
@@ -264,9 +292,10 @@ class YuntongPay extends Config
         $this->type = $val;
         return $this;
     }
-
+    
     /**
      * @param $val
+     *
      * @return $this
      */
     public function setMethod($val)
@@ -274,9 +303,10 @@ class YuntongPay extends Config
         $this->method = $val;
         return $this;
     }
-
+    
     /**
      * @param $val
+     *
      * @return $this
      */
     public function setNotifyUrl($val)
@@ -284,9 +314,10 @@ class YuntongPay extends Config
         $this->notify_url = $val;
         return $this;
     }
-
+    
     /**
      * @param $val
+     *
      * @return $this
      */
     public function setReturnUrl($val)
@@ -294,9 +325,10 @@ class YuntongPay extends Config
         $this->return_url = $val;
         return $this;
     }
-
+    
     /**
      * @param $val
+     *
      * @return $this
      */
     public function setScene($val)
@@ -304,9 +336,10 @@ class YuntongPay extends Config
         $this->scene = $val;
         return $this;
     }
-
+    
     /**
      * @param $val
+     *
      * @return $this
      */
     public function setMerchantId($val)
@@ -314,9 +347,10 @@ class YuntongPay extends Config
         $this->merchant_id = $val;
         return $this;
     }
-
+    
     /**
      * @param $val
+     *
      * @return $this
      */
     public function setIp($val)
@@ -324,6 +358,4 @@ class YuntongPay extends Config
         $this->ip = $val;
         return $this;
     }
-
-
 }
