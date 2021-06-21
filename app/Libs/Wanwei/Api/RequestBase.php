@@ -10,6 +10,8 @@ class RequestBase
     
     protected $config;
     
+    protected $result;
+    
     public function __construct(Config $config = null)
     {
         if (empty($config)) {
@@ -27,5 +29,21 @@ class RequestBase
         $showapi_appid = $this->config->getAppId();
         $showapi_sign = $this->config->getAppSign();
         return new ShowapiRequest($url, $showapi_appid, $showapi_sign);
+    }
+    
+    public function fetchResult($result)
+    {
+        $this->result = $result;
+        try {
+            $res = json_decode($result, true);
+            if ($res == false) {
+                throw new \Exception('结果解析失败-' . $result);
+            }
+            if ($res[ 'showapi_res_code' ] != '0') {
+                throw new \Exception($res[ 'showapi_res_error' ] . ' showapi_res_id:' . $res[ 'showapi_res_id' ]);
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 }
