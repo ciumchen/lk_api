@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API\Test;
 
+use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Wanwei\Api\RequestBase;
 use Wanwei\Api\VideoCard;
@@ -30,10 +32,12 @@ class WanweiController extends Controller
     
     public function test3(Request $request)
     {
-        $VideoCard = new VideoCard();
-        $res = $VideoCard->getList();
-        echo $res;
-        die();
-        dd($res);
+        try {
+            $VideoCard = new VideoCard();
+            $res = $VideoCard->getList();
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($res);
     }
 }
