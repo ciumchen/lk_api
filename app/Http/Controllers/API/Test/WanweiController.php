@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Test;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Wanwei\Api\RequestBase;
+use Wanwei\Api\VideoCard;
 use Wanwei\Http\ShowapiRequest;
 
 class WanweiController extends Controller
@@ -20,10 +21,19 @@ class WanweiController extends Controller
         dd($req);
     }
     
-    public function test2()
+    public function test2(Request $request)
     {
         $RequestBase = new RequestBase();
         $res = $RequestBase->getShowApi('');
+        dd($res);
+    }
+    
+    public function test3(Request $request)
+    {
+        $VideoCard = new VideoCard();
+        $res = $VideoCard->getList();
+        echo $res;
+        die();
         dd($res);
     }
 }

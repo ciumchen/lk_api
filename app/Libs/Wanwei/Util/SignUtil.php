@@ -22,6 +22,7 @@ namespace Wanwei\Util;
 
 use Wanwei\Constant\Constants;
 use Wanwei\Constant\HttpHeader;
+use Wanwei\Constant\SystemHeader;
 
 /**
  *签名处理
@@ -133,10 +134,10 @@ class SignUtil
     /**
      * 构建待签名Http头
      *
-     * @param headers              请求中所有的Http头
-     * @param signHeaderPrefixList 自定义参与签名Header前缀
+     * @param $headers              array 请求中所有的Http头
+     * @param $signHeaderPrefixList array 自定义参与签名Header前缀
      *
-     * @return 待签名Http头
+     * @return string 待签名Http头
      */
     private static function BuildHeaders(&$headers, $signHeaderPrefixList)
     {

@@ -14,9 +14,11 @@ namespace Wanwei\Conf;
 class Config
 {
     
-    const APP_ID   = '';
+    const APP_ID   = '681142';
+//    const APP_ID   = '682548';
     
-    const APP_SIGN = '';
+    const APP_SIGN = '3caeab0540a94f8995f6e40ac70395de';
+//    const APP_SIGN = 'b834612ee91548f6adbdc4f7f3b465b8';
     
     const API_URL  = 'https://route.showapi.com';
     

@@ -3,6 +3,7 @@
 namespace Wanwei\Http;
 
 use Wanwei\Constant\HttpMethod;
+use CURLFile;
 
 class ShowapiRequest
 {
@@ -75,6 +76,13 @@ class ShowapiRequest
     /**
      *method=POST且是表单提交，请求示例
      */
+    /**
+     * Description:
+     *
+     * @return mixed
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/21 0021
+     */
     public function post()
     {
         $request = new HttpRequest($this->url, HttpMethod::POST);
@@ -89,7 +97,7 @@ class ShowapiRequest
     /**
      * 文件转base64
      *
-     * @param str
+     * @param string
      *
      * @return
      */

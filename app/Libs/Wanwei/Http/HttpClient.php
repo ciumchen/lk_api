@@ -20,6 +20,8 @@
 
 namespace Wanwei\Http;
 
+use Wanwei\Util\HttpUtil;
+
 /**
  *httpClient对象
  */
@@ -30,6 +32,15 @@ class HttpClient
     
     private static $readTimeout = 80000;   //80 second
     
+    /**
+     * Description:
+     *
+     * @param $request
+     *
+     * @return mixed
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/21 0021
+     */
     public static function execute($request)
     {
         return HttpUtil::send($request, self::$readTimeout, self::$connectTimeout);

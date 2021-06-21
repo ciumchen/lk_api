@@ -20,6 +20,8 @@
 
 namespace Wanwei\Util;
 
+use Exception;
+
 class MessageDigestUtil
 {
     

@@ -17,14 +17,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 namespace Wanwei\Constant;
+
 /**
  * HTTP Schema常量
  */
-class HttpSchema {
+class HttpSchema
+{
+    
     //HTTP
     const HTTP = "http://";
+    
     //HTTPS
     const HTTPS = "https://";
-
 }

@@ -19,67 +19,68 @@
  */
 
 namespace Wanwei\Util;
+
+use Wanwei\Http\HttpResponse;
+use Wanwei\Constant\HttpSchema;
+
 /**
-*http请求处理
-*/
-class HttpUtil 
+ *http请求处理
+ */
+class HttpUtil
 {
-	public static function send($request, $readtimeout, $connectTimeout)
+    
+    public static function send($request, $readtimeout, $connectTimeout)
     {
-		return self::DoHttp($request->getUrl(), 
-							$request->getMethod(), 
-							$readtimeout, 
-							$connectTimeout,
-							$request->getHeaders(), 
-							$request->getQuerys()
-							);
-	}
-
-	/**
-	 *请求Request
-	 */
-	private static function DoHttp($url , $method,   $readtimeout, $connectTimeout, $headers, $querys )
-    {
-		$response = new HttpResponse();
-        $curl = self::InitHttpRequest($url,   $method, $readtimeout, $connectTimeout, $headers, $querys);
-
-		
-		$response->setContent(curl_exec($curl));
-		$response->setHttpStatusCode(curl_getinfo($curl, CURLINFO_HTTP_CODE));
-		$response->setContentType(curl_getinfo($curl, CURLINFO_CONTENT_TYPE));
-		$response->setHeaderSize(curl_getinfo($curl, CURLINFO_HEADER_SIZE));	
-		curl_close($curl);
-		return $response;
+        return self::DoHttp(
+            $request->getUrl(),
+            $request->getMethod(),
+            $readtimeout,
+            $connectTimeout,
+            $request->getHeaders(),
+            $request->getQuerys()
+        );
     }
-
-	/**
-	 *准备请求Request
-	 */
-	private static function InitHttpRequest($url , $method, $readtimeout, $connectTimeout, $headers, $querys)
-	{ 
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($curl, CURLOPT_FAILONERROR, false);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_TIMEOUT, $readtimeout);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $connectTimeout);
-		if (strtoupper($method)=="GET") {
-			$sb =http_build_query($querys);
-			$url .= "?";
-			$url .= $sb;
-		}else{
-			curl_setopt($curl, CURLOPT_POST, 1);
-			curl_setopt($curl, CURLOPT_POSTFIELDS, $querys);
-		}
-		curl_setopt($curl, CURLOPT_URL, $url);
-		if (1 == strpos("$".$url, HttpSchema::HTTPS))
-		{
+    
+    /**
+     *请求Request
+     */
+    private static function DoHttp($url, $method, $readtimeout, $connectTimeout, $headers, $querys)
+    {
+        $response = new HttpResponse();
+        $curl = self::InitHttpRequest($url, $method, $readtimeout, $connectTimeout, $headers, $querys);
+        $response->setContent(curl_exec($curl));
+        $response->setHttpStatusCode(curl_getinfo($curl, CURLINFO_HTTP_CODE));
+        $response->setContentType(curl_getinfo($curl, CURLINFO_CONTENT_TYPE));
+        $response->setHeaderSize(curl_getinfo($curl, CURLINFO_HEADER_SIZE));
+        curl_close($curl);
+        return $response;
+    }
+    
+    /**
+     *准备请求Request
+     */
+    private static function InitHttpRequest($url, $method, $readtimeout, $connectTimeout, $headers, $querys)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_FAILONERROR, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $readtimeout);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $connectTimeout);
+        if (strtoupper($method) == "GET") {
+            $sb = http_build_query($querys);
+            $url .= "?";
+            $url .= $sb;
+        } else {
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $querys);
+        }
+        curl_setopt($curl, CURLOPT_URL, $url);
+        if (1 == strpos("$" . $url, HttpSchema::HTTPS)) {
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         }
         return $curl;
-	}
-  
- 
+    }
 }

@@ -20,6 +20,9 @@
 
 namespace Wanwei\Http;
 
+use Wanwei\Constant\HttpHeader;
+use Wanwei\Constant\ContentType;
+
 class HttpRequest
 {
     
