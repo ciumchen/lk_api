@@ -40,4 +40,29 @@ class WanweiController extends Controller
         }
         return apiSuccess($res);
     }
+    
+    public function test4(Request $request)
+    {
+        $genusId = $request->input('genus_id');
+        $order_no = $request->input('order_no');
+        try {
+            $VideoCard = new VideoCard();
+            $res = $VideoCard->getVideoCard($genusId, $order_no);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($res);
+    }
+    
+    public function test5(Request $request)
+    {
+        $order_no = $request->input('order_no');
+        try {
+            $VideoCard = new VideoCard();
+            $res = $VideoCard->getVideoOrder($order_no);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($res);
+    }
 }

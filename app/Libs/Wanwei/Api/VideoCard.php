@@ -61,7 +61,10 @@ class VideoCard extends RequestBase
             $response = $ShowApi->post();
             $result = $this->fetchResult($response->getContent());
             if (!array_key_exists('cardList', $result)) {
-                throw  new Exception('列表遗失：' . json_encode($result));
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ] . '--' . json_encode($result));
+                }
+                throw  new Exception('卡密获取失败：' . json_encode($result));
             }
             return $result[ 'cardList' ];
         } catch (Exception $e) {
@@ -79,7 +82,7 @@ class VideoCard extends RequestBase
      * @author lidong<947714443@qq.com>
      * @date   2021/6/21 0021
      */
-    public function orderInfo($order_no)
+    public function getVideoOrder($order_no)
     {
         $apiMethod = '1715-3';/* 接口标识 */
         $params = [
