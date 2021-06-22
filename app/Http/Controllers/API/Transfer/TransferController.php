@@ -61,7 +61,7 @@ class TransferController extends Controller
         (new TransferService())->transfer($user, $request->amount, $request->address, $options);
 
 
-        return response()->json(['code'=>0, 'msg'=>'提现成功，大额提现请等待审核']);
+        return response()->json(['code'=>1, 'msg'=>'usdt提现成功']);
     }
 
     /**获取转账信息
