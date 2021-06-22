@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Order;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Services\bmapi\VideoCardService;
+use App\Services\ShowApi\VideoOrderService;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class VideoRechargeController extends Controller
     /**
      * 查询可重置项
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return string
      * @throws \App\Exceptions\LogicException
@@ -40,7 +41,7 @@ class VideoRechargeController extends Controller
     /**
      * 视频会员订单
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return string
      * @throws \App\Exceptions\LogicException|\Throwable
@@ -64,7 +65,7 @@ class VideoRechargeController extends Controller
     /**
      * 视频充值测试
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return string
      * @throws \App\Exceptions\LogicException
@@ -81,5 +82,74 @@ class VideoRechargeController extends Controller
             throw new LogicException($e->getMessage());
         }
         return apiSuccess($bill);
+    }
+    
+    /**
+     * Description:万维视频列表接口
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/22 0022
+     */
+    public function getShowApiVideoList(Request $request)
+    {
+        try {
+            $VideoService = new VideoOrderService();
+            $list = $VideoService->getList();
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($list);
+    }
+    
+    /**
+     * Description:万维视频卡密获取[充值下单]
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/22 0022
+     */
+    public function rechargeWanWeiTest(Request $request)
+    {
+        $genusId = $request->input('genus_id');
+        $order_no = $request->input('order_no');
+        try {
+            $VideoService = new VideoOrderService();
+            $card_list = $VideoService->getVideoCard($genusId, $order_no);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($card_list);
+    }
+    
+    /**
+     * Description:万维视频订单生成
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @throws \Throwable
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/22 0022
+     */
+    public function setWanWeiVideoOrder(Request $request)
+    {
+        $genusId = $request->input('genus_id');
+        $money = $request->input('money');
+        $user = $request->user();
+        try {
+            $VideoService = new VideoOrderService();
+            $info = $VideoService->setOrder($user, $money, $genusId);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($info);
     }
 }

@@ -8,6 +8,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
+/**
+ * App\Models\AirPassenger
+ *
+ * @property int $id
+ * @property int|null $uid users 表 id
+ * @property string|null $pname 乘客姓名
+ * @property string|null $pidcard 乘客身份证号码
+ * @property string|null $pphone 乘客手机号码
+ * @property \Illuminate\Support\Carbon|null $created_at 创建时间
+ * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger wherePidcard($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger wherePname($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger wherePphone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger whereUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AirPassenger whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AirPassenger extends Model
 {
     use HasFactory;

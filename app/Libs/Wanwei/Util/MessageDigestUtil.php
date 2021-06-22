@@ -1,4 +1,7 @@
-﻿<?php
+<?php
+
+namespace Wanwei\Util;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,8 +20,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-namespace Wanwei\Util;
 
 use Exception;
 
@@ -43,7 +44,7 @@ class MessageDigestUtil
     /**
      * UTF-8编码转换为ISO-9959-1
      *
-     * @param str
+     * @param  str
      *
      * @return
      */

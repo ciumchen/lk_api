@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class OrderUtilityBill
  *
- *
  * @property int                             $id
  * @property string                          $order_no     订单号
  * @property int                             $user_id      充值用户ID
@@ -59,8 +58,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|OrderUtilityBill query()
  * @mixin \Eloquent
  * @package App\Models
- * @author  lidong<947714443@qq.com>
- * @date    2021/6/15 0015
+ * @author lidong<947714443@qq.com>
+ * @date 2021/6/15 0015
  */
 class OrderUtilityBill extends Model
 {
