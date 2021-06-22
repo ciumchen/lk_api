@@ -118,6 +118,7 @@ class VideoOrderService
             }
         } catch (Exception $e) {
             DB::rollBack();
+            throw $e;
         }
         DB::commit();
         return $Order->toArray();

@@ -141,8 +141,14 @@ class VideoRechargeController extends Controller
      */
     public function setWanWeiVideoOrder(Request $request)
     {
-        $genusId = $request->input('genus_id');
-        $money = $request->input('money');
+        $genusId = $request->input('genus_id', '');
+        $money = $request->input('money', 0);
+        if (empty($genusId)) {
+            throw new LogicException('请选择需要购买的会员');
+        }
+        if ($money <= 0) {
+            throw new LogicException('支付金额异常');
+        }
         $user = $request->user();
         try {
             $VideoService = new VideoOrderService();

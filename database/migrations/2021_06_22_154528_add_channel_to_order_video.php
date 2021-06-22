@@ -21,6 +21,7 @@ class AddChannelToOrderVideo extends Migration
             $table->text('card_list')
                   ->nullable()
                   ->comment('订单卡密信息');
+            $table->string('item_id', 50)->change();
         });
     }
     
