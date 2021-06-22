@@ -94,7 +94,7 @@ class VideoRechargeController extends Controller
      * @author lidong<947714443@qq.com>
      * @date   2021/6/22 0022
      */
-    public function getShowApiVideoList(Request $request)
+    public function getWanWeiVideoList(Request $request)
     {
         try {
             $VideoService = new VideoOrderService();

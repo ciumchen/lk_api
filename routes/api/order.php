@@ -14,6 +14,8 @@ Route::middleware(['auth:sanctum'])
          Route::post('mobile-dl-order', 'Order\MobileRechargeController@setDlOrder');
          /* 视频会员订单生成[斑马] */
          Route::post('video-set-order', 'Order\VideoRechargeController@setOrder');
+         /* 视频会员订单生成[万维] */
+         Route::post('ww-video-set-order', 'Order\VideoRechargeController@setWanWeiVideoOrder');
          //生活缴费生成订单[斑马]
          Route::any('utility-set-order', 'Order\UtilityController@setOrder');
      });
@@ -44,8 +46,12 @@ Route::any('mobile-recharge', 'Order\MobileRechargeController@rechargeTest');
 /*********** 视频会员 ************/
 /* 视频会员查询[斑马] */
 Route::any('video-get-list', 'Order\VideoRechargeController@getVideoList');
+/* 视频会员查询[万维] */
+Route::any('ww-video-get-list', 'Order\VideoRechargeController@getWanWeiVideoList');
 /* 视频会员充值测试[斑马] */
 Route::any('video-recharge', 'Order\VideoRechargeController@rechargeTest');
+/* 视频会员充值测试[万维] */
+Route::any('video-recharge', 'Order\VideoRechargeController@rechargeWanWeiTest');
 /*********** 生活缴费 ************/
 //生活缴费查询[斑马]
 Route::any('utility-search', 'Order\UtilityController@getItemList');
