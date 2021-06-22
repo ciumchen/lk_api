@@ -124,6 +124,17 @@ class VideoOrderService
         return $Order->toArray();
     }
     
+    /**
+     * Description: 万维订单充值
+     *
+     * @param  int                $order_id
+     * @param  \App\Models\Order  $Order
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/22 0022
+     */
     public function recharge($order_id, Order $Order)
     {
         if (empty($Order)) {
@@ -144,6 +155,6 @@ class VideoOrderService
         } catch (Exception $e) {
             throw $e;
         }
-        return $bill;
+        return $card_list;
     }
 }

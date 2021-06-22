@@ -26,7 +26,7 @@ class YuntongPayController extends Controller
     /**
      * 创建支付
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      * @throws Exception
@@ -76,7 +76,7 @@ class YuntongPayController extends Controller
     /**
      * 再次请求支付
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      * @throws LogicException
@@ -115,17 +115,17 @@ class YuntongPayController extends Controller
     /**
      * 发起支付请求
      *
-     * @param array  $data 支付请求数据[
-     *                     'goodsTitle'=>'',
-     *                     'goodsDesc'=>'',
-     *                     'need_fee'=>'',
-     *                     'order_no'=>'',
-     *                     'order_from'=>'',
-     *                     'ip'=>'',
-     *                     'return_url'=>'',
-     *                     ]
+     * @param  array   $data  支付请求数据[
+     *                        'goodsTitle'=>'',
+     *                        'goodsDesc'=>'',
+     *                        'need_fee'=>'',
+     *                        'order_no'=>'',
+     *                        'order_from'=>'',
+     *                        'ip'=>'',
+     *                        'return_url'=>'',
+     *                        ]
      *
-     * @param string $return_url
+     * @param  string  $return_url
      *
      * @return JsonResponse
      * @throws \Exception
@@ -167,7 +167,7 @@ class YuntongPayController extends Controller
     /**
      * 订单 trade_order 表插入数据
      *
-     * @param array $data 已经组装好的订单数据
+     * @param  array  $data  已经组装好的订单数据
      *
      * @return bool
      * @throws Exception
@@ -189,7 +189,7 @@ class YuntongPayController extends Controller
     /**
      * 订单 order 表插入数据
      *
-     * @param array $data
+     * @param  array  $data
      *
      * @return int
      * @throws Exception
@@ -218,8 +218,8 @@ class YuntongPayController extends Controller
     /**
      * 组装订单数据
      *
-     * @param                 $data
-     * @param TradeOrder|null $TradeOrder
+     * @param                   $data
+     * @param  TradeOrder|null  $TradeOrder
      *
      * @return array
      */
@@ -271,7 +271,7 @@ class YuntongPayController extends Controller
     }
     
     /**
-     * @param string $url
+     * @param  string  $url
      *
      * @return string
      */
@@ -283,7 +283,7 @@ class YuntongPayController extends Controller
             case (empty($url)):
                 break;
             default:
-                $url = url('') . '/' . $url;
+                $url = url('').'/'.$url;
         }
         return $url;
     }
@@ -325,8 +325,8 @@ class YuntongPayController extends Controller
     /**
      * 获取 trade_order 表 oid 字段
      *
-     * @param       $type
-     * @param array $data
+     * @param         $type
+     * @param  array  $data
      *
      * @return mixed|string
      */
@@ -367,8 +367,8 @@ class YuntongPayController extends Controller
     /**
      * 获取 trade_order 表中的 remarks 字段值
      *
-     * @param       $type
-     * @param array $data
+     * @param         $type
+     * @param  array  $data
      *
      * @return string
      */
@@ -387,7 +387,7 @@ class YuntongPayController extends Controller
     /**
      * 获取支付通道标记
      *
-     * @param string $type 支付类型
+     * @param  string  $type  支付类型
      *
      * @return string
      */
@@ -412,7 +412,7 @@ class YuntongPayController extends Controller
     /**
      * 获取比例
      *
-     * @param string $type
+     * @param  string  $type
      *
      * @return int
      */
@@ -427,7 +427,7 @@ class YuntongPayController extends Controller
             'AT' => 'at',
         ];
         if ($type != 'LR' && isset($typeArr[ $type ])) {
-            $typeStr = "set_business_rebate_scale_" . $typeArr[ $type ];
+            $typeStr = "set_business_rebate_scale_".$typeArr[ $type ];
             $profit_ratio = Setting::where('key', $typeStr)->value('value');
         } else {
             $profit_ratio = 10;
@@ -437,7 +437,7 @@ class YuntongPayController extends Controller
     
     /**机票支付
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      * @throws Exception
@@ -450,8 +450,8 @@ class YuntongPayController extends Controller
     
     /**机票发起支付请求
      *
-     * @param array  $data
-     * @param string $type
+     * @param  array   $data
+     * @param  string  $type
      *
      * @return JsonResponse
      * @throws Exception
@@ -463,7 +463,7 @@ class YuntongPayController extends Controller
         $data[ 'need_fee' ] = $data[ 'money' ] * $data[ 'number' ];
         $data[ 'order_from' ] = $data[ 'payChannel' ];
         $date = date('Y-m-d H:i:s');
-        $data[ 'order_no' ] = $type == 1 ? 'PY_' . date('YmdHis') . rand(100000, 999999) : $data[ 'order_no' ];
+        $data[ 'order_no' ] = $type == 1 ? 'PY_'.date('YmdHis').rand(100000, 999999) : $data[ 'order_no' ];
         $orderData = [
             'uid'          => $data[ 'uid' ],
             'business_uid' => 2,
@@ -505,7 +505,7 @@ class YuntongPayController extends Controller
     /**
      * 机票再次请求支付
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return JsonResponse
      * @throws LogicException
@@ -520,7 +520,7 @@ class YuntongPayController extends Controller
         if (in_array($airOrderData[ 'pay_status' ], ['pending', 'succeeded'])) {
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
-        $airOrderData = (array)$airOrderData;
+        $airOrderData = (array) $airOrderData;
         //组装数据
         $paramsData = [
             'description' => 'AT',
@@ -563,7 +563,7 @@ class YuntongPayController extends Controller
     /**
      * Description:斑马接口订单支付
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\LogicException
@@ -582,6 +582,9 @@ class YuntongPayController extends Controller
             $Order = new Order();
             $OrderService = new OrderService();
             $orderInfo = $Order->find($order_id);
+            if ($orderInfo->pay_status != 'await') {
+                throw new Exception('订单不属于待支付状态');
+            }
             $order_no = $orderInfo->order_no;
             $description = $OrderService->getDescription($order_id, $orderInfo);
             if (!empty($orderInfo->updated_at)) {
