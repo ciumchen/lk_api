@@ -17,7 +17,7 @@ class VideoCard extends RequestBase
      */
     public function getList()
     {
-        $apiMethod = '1715-1';
+        $apiMethod = '1715-1'; /* 接口标识 */
         try {
             $ShowApi = $this->getShowApi($apiMethod);
             $response = $ShowApi->post();
