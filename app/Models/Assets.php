@@ -69,4 +69,32 @@ class Assets extends Model
         $this->amount = bcadd($this->getRawOriginal('amount'), $assetsLog->amount, 8);
         $this->save();
     }
+
+    //usdt兑换iets
+    public function usdt_to_iets_change($uid,$assetType,$amount,$amount_before_change, $operateType, $remark = '', array $options = [])
+    {
+        if($assetType=='iets'){
+            $tpyeID = 2;
+        }elseif($assetType=='usdt'){
+            $tpyeID = 3;
+        }
+//        $assets = AssetsType::find($this->assets_type_id);
+        $assets = AssetsType::where('id',$tpyeID)->first();
+        $userAssetsInfo =
+//        dd($assets);
+        $assetsLog = AssetsLogs::create([
+            'assets_type_id' => $tpyeID,
+            'assets_name' => $assets->assets_name,
+            'uid' => $uid,
+            'operate_type' => $operateType,
+            'amount' => $amount,
+            'amount_before_change' => $amount_before_change,
+            'ip' => $options['ip'] ?? '',
+            'user_agent' => $options['user_agent'] ?? '',
+            'remark' => $remark,
+        ]);
+
+        $this->amount = bcadd($amount,$amount_before_change, 8);
+        $this->save();
+    }
 }

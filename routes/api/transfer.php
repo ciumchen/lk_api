@@ -12,5 +12,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //赠送
     Route::any('giveTransfer', 'Transfer\GiveTransferController');
 
+    //usdt兑换iets
+    Route::any('AssetConversion', 'Transfer\AssetConversionController');
+
+    //获取用户的资产
+    Route::any('getUserAssetsInfo', 'Transfer\UserAssetsInfoController@getUserAssetsInfo');
+
 
 });
