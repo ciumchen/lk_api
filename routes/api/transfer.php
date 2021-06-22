@@ -19,6 +19,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::any('getUserAssetsInfo', 'Transfer\UserAssetsInfoController@getUserAssetsInfo');
     //iets提现
     Route::any('ietsWithdrawal', 'Transfer\IetsWithdrawalController');
+    //iets赠送
+    Route::any('giveIets', 'Transfer\GiveIetsController');
 
 
 });

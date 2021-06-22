@@ -41,6 +41,28 @@ class AssetsService
         return $assets;
     }
 
+
+    public static function give_iets_getBalanceData(User $user, AssetsType $assetType, bool $isLock = false)
+    {
+        $assets = Assets::where('uid', $user->id)
+            ->where('assets_type_id', $assetType->id)
+            ->when($isLock, function ($query) {
+                return $query->lockForUpdate();
+            })
+            ->first();
+        if (null === $assets) {
+            $assets = new Assets();
+            $assets->uid = $user->id;
+            $assets->assets_type_id = 2;
+            $assets->assets_name = 'iets';
+            $assets->amount = 0;
+            $assets->freeze_amount = 0;
+            $assets->save();
+        }
+
+        return $assets;
+    }
+
     /**
      * @param int $uid
      * @param AssetsType $assetType
