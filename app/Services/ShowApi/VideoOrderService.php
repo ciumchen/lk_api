@@ -19,7 +19,7 @@ use Wanwei\Api\VideoCard;
  * @author  lidong<947714443@qq.com>
  * @date    2021/6/22 0022
  */
-class VideoOrderService
+class VideoOrderService extends CommonService
 {
     
     /**
@@ -63,6 +63,16 @@ class VideoOrderService
         return $res;
     }
     
+    /**
+     * Description:获取万维订单信息
+     *
+     * @param $order_no
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/23 0023
+     */
     public function getWanWeiOrder($order_no)
     {
         try {

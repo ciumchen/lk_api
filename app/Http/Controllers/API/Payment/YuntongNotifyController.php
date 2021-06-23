@@ -22,11 +22,11 @@ use App\Services\AirOrderService;
 
 class YuntongNotifyController extends Controller
 {
-
+    
     /**
      * 雲通支付回調
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      */
     public function callBack(Request $request)
     {
@@ -45,11 +45,11 @@ class YuntongNotifyController extends Controller
             }
             $Pay->Notify_success();
         } catch (Exception $e) {
-            Log::debug('YuntongNotify-验证不通过-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
+            Log::debug('YuntongNotify-验证不通过-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
             $Pay->Notify_failed();
         }
     }
-
+    
     /**
      * 更新订单为已支付
      *
@@ -142,10 +142,10 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
-
+    
     /**机票支付回調
      *
-     * @param Request $request
+     * @param  Request  $request
      */
     public function airPayNotify(Request $request)
     {
@@ -164,11 +164,11 @@ class YuntongNotifyController extends Controller
             }
             $Pay->Notify_success();
         } catch (Exception $e) {
-            Log::debug('AirNotify-验证不通过-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
+            Log::debug('AirNotify-验证不通过-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
             $Pay->Notify_failed();
         }
     }
-
+    
     /**更新机票信息
      *
      * @param $data
@@ -206,7 +206,6 @@ class YuntongNotifyController extends Controller
             $payLogs->setPay($payData);
             //更新 order 表支付状态
             (new Order())->updPay($data[ 'order_id' ]);
-
             //更新 order 表审核状态
             //(new OrderService())->completeBmOrder($data[ 'order_id' ]);
             //机票订单
@@ -215,11 +214,11 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
-
+    
     /**
      * Description:
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @throws \Throwable
      * @author lidong<947714443@qq.com>
@@ -251,10 +250,10 @@ class YuntongNotifyController extends Controller
             }
             DB::commit();
             /* 订单完成后续充值 */
-            $OrderService->afterCompletedOrder($orderInfo->id, $description, $orderInfo);
+            $OrderService->afterCompletedOrder($orderInfo->id, $res, $description, $orderInfo);
             $Pay->Notify_success();
         } catch (Exception $e) {
-            Log::debug('YuntongNotify-验证不通过-bmCallback-' . $e->getMessage(), [$json . '---------' . json_encode($e)]);
+            Log::debug('YuntongNotify-验证不通过-bmCallback-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
             $Pay->Notify_failed();
         }
     }

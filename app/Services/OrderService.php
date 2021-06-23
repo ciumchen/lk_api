@@ -858,14 +858,15 @@ class OrderService
     /**
      * Description:完成订单后的后续操作[充值等]
      *
-     * @param  int                     $order_id
-     * @param  string                  $description
-     * @param  \App\Models\Order|null  $Order
+     * @param  int                     $order_id     订单ID
+     * @param  array                   $data         云通支付信息
+     * @param  string                  $description  类型
+     * @param  \App\Models\Order|null  $Order        需要操作的数据
      *
      * @author lidong<947714443@qq.com>
      * @date   2021/6/15 0015
      */
-    public function afterCompletedOrder(int $order_id, string $description, Order $Order = null)
+    public function afterCompletedOrder(int $order_id, $data, string $description, Order $Order = null)
     {
         if (empty($Order)) {
             $Order = Order::find($order_id);
@@ -880,8 +881,12 @@ class OrderService
                         $VideoService = new VideoCardService();
                         $VideoService->recharge($order_id, $Order);
                     } elseif ($Order->video->channel == 'ww') {
+                        /* 获取卡密 */
                         $WanWeiVideoService = new VideoOrderService();
                         $WanWeiVideoService->recharge($order_id, $Order);
+                        /* 发送消息 */
+                        $UserMsgService = new UserMsgService();
+                        $UserMsgService->sendWanWeiVideoMsg($order_id, $data, $Order);
                     }
                     break;
                 case 'UB': /* 生活缴费 */

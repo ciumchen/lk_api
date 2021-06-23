@@ -12,16 +12,16 @@ use App\Models\TradeOrder;
 /**
  * App\Models\UserMessage
  *
- * @property int $id
- * @property int|null $user_id users表 -- id
- * @property int|null $type 消息类型：1 充值；2 录单；8 系统
- * @property int $status 消息状态：1 成功；0 失败
- * @property int $sys_mid sys_message表 -- id
+ * @property int                             $id
+ * @property int|null                        $user_id    users表 -- id
+ * @property int|null                        $type       消息类型：1 充值；2 录单；8 系统
+ * @property int                             $status     消息状态：1 成功；0 失败
+ * @property int                             $sys_mid    sys_message表 -- id
  * @property \Illuminate\Support\Carbon|null $created_at 创建时间
  * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
  * @property \Illuminate\Support\Carbon|null $deleted_at 删除时间
- * @property int $is_del 是否删除：0 否；1 是
- * @property string|null $order_no trade_order表 -- order_no
+ * @property int                             $is_del     是否删除：0 否；1 是
+ * @property string|null                     $order_no   trade_order表 -- order_no
  * @method static \Illuminate\Database\Eloquent\Builder|UserMessage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserMessage newQuery()
  * @method static \Illuminate\Database\Query\Builder|UserMessage onlyTrashed()
@@ -42,14 +42,17 @@ use App\Models\TradeOrder;
  */
 class UserMessage extends Model
 {
+    
     use HasFactory;
     use SoftDeletes;
-
+    
     protected $table = 'user_message';
-
+    
     /**插入消息
-     * @param string $orderNo
-     * @param int $type
+     *
+     * @param  string  $orderNo
+     * @param  int     $type
+     *
      * @return mixed
      * @throws
      */
@@ -57,7 +60,7 @@ class UserMessage extends Model
     {
         $date = date("Y-m-d H:i:s");
         $userInfo = (new Order())
-            ->join('trade_order', function($join){
+            ->join('trade_order', function ($join) {
                 $join->on('order.id', 'trade_order.oid');
             })
             ->where(['trade_order.order_no' => $orderNo])
@@ -75,10 +78,12 @@ class UserMessage extends Model
         $message->updated_at = $date;
         $message->save();
     }
-
+    
     /**插入机票消息
-     * @param string $orderNo
-     * @param int $type
+     *
+     * @param  string  $orderNo
+     * @param  int     $type
+     *
      * @return mixed
      * @throws
      */
@@ -86,7 +91,6 @@ class UserMessage extends Model
     {
         $date = date("Y-m-d H:i:s");
         $userInfo = (new Order())->getOrderInfo($orderNo)->first();
-
         $message = new UserMessage();
         $message->user_id = $userInfo->uid;
         $message->status = 1;
@@ -98,88 +102,144 @@ class UserMessage extends Model
         $message->updated_at = $date;
         $message->save();
     }
-
+    
+    /**
+     * Description:
+     *
+     * @param  int                     $order_id
+     * @param  \App\Models\Order|null  $Order
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/23 0023
+     */
+    public function setVideoMsg($order_id, Order $Order = null)
+    {
+        if (empty($Order)) {
+            $Order = Order::find($order_id);
+        }
+        $date = date("Y-m-d H:i:s");
+        try {
+            $this->user_id = $Order->uid;
+            $this->status = 1;
+            $this->type = 5;
+            $this->sys_mid = 0;
+            $this->is_del = 0;
+            $this->order_no = $Order->order_no;
+            $this->created_at = $date;
+            $this->updated_at = $date;
+            $this->save();
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+    
     /**获取消息内容
-     * @param int $uid
-     * @param int $page
-     * @param int $perpage
+     *
+     * @param  int  $uid
+     * @param  int  $page
+     * @param  int  $perpage
+     *
      * @return mixed
      * @throws
      */
     public function getMsg(int $uid, int $page, int $perpage)
     {
-        $res = (new UserMessage())::withTrashed()->where(['user_id' =>  $uid, 'is_del' => 0])->exists();
-        if (!$res)
-        {
+        $res = (new UserMessage())::withTrashed()->where(['user_id' => $uid, 'is_del' => 0])->exists();
+        if (!$res) {
             throw new LogicException('用户消息不存在');
         }
-
         //获取充值数据
         $tradeArr = (new RechargeLogs())
-            ->join('trade_order', function($join){
+            ->join('trade_order', function ($join) {
                 $join->on('recharge_logs.order_no', 'trade_order.order_no');
             })
-            ->join('user_message', function($join){
+            ->join('user_message', function ($join) {
                 $join->on('trade_order.order_no', 'user_message.order_no');
             })
-            ->where(function($query) use ($uid) {
+            ->where(function ($query) use ($uid) {
                 $query->where('recharge_logs.status', 1)
-                    ->where('trade_order.user_id', $uid)
-                    ->where('trade_order.status', 'succeeded')
-                    ->where('user_message.is_del', 0);
+                      ->where('trade_order.user_id', $uid)
+                      ->where('trade_order.status', 'succeeded')
+                      ->where('user_message.is_del', 0);
             })
             ->distinct('recharge_logs.order_no')
-            ->get(['user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price', 'trade_order.numeric'])
+            ->get([
+                'user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price',
+                'trade_order.numeric',
+            ])
             ->toArray();
-
         //机票订单
         $orderArr = (new RechargeLogs())
-            ->join('order', function($join){
+            ->join('order', function ($join) {
                 $join->on('recharge_logs.order_no', 'order.order_no');
             })
-            ->join('user_message', function($join){
+            ->join('user_message', function ($join) {
                 $join->on('order.order_no', 'user_message.order_no');
             })
-            ->where(function($query) use ($uid) {
+            ->where(function ($query) use ($uid) {
                 $query->where('recharge_logs.status', 1)
-                    ->where('order.uid', $uid)
-                    ->where('order.status', 2)
-                    ->where('user_message.is_del', 0);
+                      ->where('recharge_logs.type', 'AT')
+                      ->where('order.uid', $uid)
+                      ->where('order.status', 2)
+                      ->where('user_message.is_del', 0);
             })
             ->distinct('recharge_logs.order_no')
             ->get(['user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'order.price'])
             ->toArray();
-        $orderData = array_merge($tradeArr, $orderArr);
-        foreach ($orderData as $key => $value)
-        {
-            $orderData[$key]['title'] = '';
-            $orderData[$key]['content'] = '';
+        // 视频会员订单
+        $videoArr = (new RechargeLogs())
+            ->join('order', function ($join) {
+                $join->on('recharge_logs.order_no', 'order.order_no');
+            })
+            ->join('user_message', function ($join) {
+                $join->on('order.order_no', 'user_message.order_no');
+            })
+            ->join('order_video', function ($join) {
+                $join->on('order.id', 'order_video.order_id');
+            })
+            ->where(function ($query) use ($uid) {
+                $query->where('recharge_logs.status', 1)
+                      ->where('recharge_logs.type', 'VC')
+                      ->where('order.uid', $uid)
+                      ->where('order.status', 2)
+                      ->where('user_message.is_del', 0);
+            })
+            ->distinct('recharge_logs.order_no')
+            ->get([
+                'user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'order.price',
+                'order_video.card_list', 'order_video.goods_title',
+            ])
+            ->toArray();
+        $orderData = array_merge($tradeArr, $orderArr, $videoArr);
+        foreach ($orderData as $key => $value) {
+            $orderData[ $key ][ 'title' ] = '';
+            $orderData[ $key ][ 'content' ] = '';
         }
-
         //录单审核通过
         $userOrder = (new Order())
-            ->join('trade_order', function($join){
+            ->join('trade_order', function ($join) {
                 $join->on('order.id', 'trade_order.oid');
             })
-            ->join('user_message', function($join){
+            ->join('user_message', function ($join) {
                 $join->on('trade_order.order_no', 'user_message.order_no');
             })
-            ->where(['order.uid' => $uid, 'order.name' => '录单', 'order.status' => 2, 'order.pay_status' => 'succeeded', 'user_message.is_del' => 0])
+            ->where([
+                'order.uid'        => $uid, 'order.name' => '录单', 'order.status' => 2,
+                'order.pay_status' => 'succeeded', 'user_message.is_del' => 0,
+            ])
             ->distinct('order.id')
             ->get(['user_message.id', 'order.created_at', 'order.price', 'trade_order.numeric'])
             ->toArray();
-        foreach ($userOrder as $key => $value)
-        {
-            $userOrder[$key]['type'] = 'LR';
-            $userOrder[$key]['title'] = '';
-            $userOrder[$key]['content'] = '';
+        foreach ($userOrder as $key => $value) {
+            $userOrder[ $key ][ 'type' ] = 'LR';
+            $userOrder[ $key ][ 'title' ] = '';
+            $userOrder[ $key ][ 'content' ] = '';
         }
-
         $magDatas = array_merge($orderData, $userOrder);
-
         //美团、滴滴等自营消息
         $selfMessage = (new UserMessage())
-            ->join('sys_message', function($join){
+            ->join('sys_message', function ($join) {
                 $join->on('user_message.sys_mid', 'sys_message.id');
             })
             ->withTrashed()
@@ -187,23 +247,18 @@ class UserMessage extends Model
             ->distinct('sys_message.id')
             ->get(['user_message.id', 'sys_message.title', 'sys_message.content', 'sys_message.created_at'])
             ->toArray();
-        foreach ($selfMessage as $k => $v)
-        {
-            $selfMessage[$k]['type'] = '';
+        foreach ($selfMessage as $k => $v) {
+            $selfMessage[ $k ][ 'type' ] = '';
         }
         $magArr = array_merge($magDatas, $selfMessage);
-
         //按创建时间排序
         array_multisort(array_column($magArr, 'created_at'), SORT_DESC, $magArr);
         $key = 'id';
-        $magArr = $this->assoc_unique($magArr , $key);
-
+        $magArr = $this->assoc_unique($magArr, $key);
         $msgList = [];
         $name = '';
-        foreach ($magArr as $key => $val)
-        {
-            switch ($val['type'])
-            {
+        foreach ($magArr as $key => $val) {
+            switch ($val[ 'type' ]) {
                 case 'HF':
                     $name = '话费';
                     break;
@@ -216,56 +271,77 @@ class UserMessage extends Model
                 case 'AT':
                     $name = '飞机票';
                     break;
+                case 'VC':
+                    $name = '视频会员';
+                    break;
             }
-
             //组装返回数据
-            if (in_array($name, ['话费', '油卡', '录单']))
-            {
+            if (in_array($name, ['话费', '油卡', '录单'])) {
                 $msgList[] = [
-                    'id'      => $val['id'],
-                    'title'   => $val['title'] ?: $name . '充值',
-                    'time'    => $val['created_at'],
-                    'content' => $val['content'] ?: '本次 '. $val['numeric'] . ' ' . $name . '充值 ' . $val['price'] . ' 元成功',
+                    'id'      => $val[ 'id' ],
+                    'title'   => $val[ 'title' ] ?: $name.'充值',
+                    'time'    => $val[ 'created_at' ],
+                    'content' => $val[ 'content' ] ?: '本次 '.$val[ 'numeric' ].' '.$name.'充值 '.$val[ 'price' ].' 元成功',
                 ];
-            } else
-            {
+            } elseif ($val[ 'type' ] == 'VC') {
+                $goods_title = $val[ 'goods_title' ] ?? '';
+                $content = '';
+                if (isset($val[ 'card_list' ])) {
+                    $card_list = json_decode($val[ 'card_list' ], true);
+                    $content = '您购买的卡密信息为：'.$goods_title.' ';
+                    foreach ($card_list as $_k => $_val) {
+                        if (array_key_exists('cardNum', $_val)) {
+                            $content .= '卡号：'.$_val[ 'cardNum' ].' ';
+                        }
+                        if (array_key_exists('cardSign', $_val)) {
+                            $content .= '卡密：'.$_val[ 'cardSign' ].' ';
+                        }
+                        if (array_key_exists('cardExpDate', $_val)) {
+                            $content .= '过期时间：'.$_val[ 'cardExpDate' ].' ';
+                        }
+                    }
+                }
+                $msgList[] = [
+                    'id'      => $val[ 'id' ],
+                    'title'   => $val[ 'title' ] ?: $name.'购买',
+                    'time'    => $val[ 'created_at' ],
+                    'content' => $val[ 'content' ] ?: '本次购买'.$name.' '.$val[ 'price' ].' 元'.','.$content,
+                ];
+            } else {
                 $notes = $name == '飞机票' ? '订单已完成' : '';
                 $msgList[] = [
-                    'id'      => $val['id'],
-                    'title'   => $val['title'] ?: $name . '购买',
-                    'time'    => $val['created_at'],
-                    'content' => $val['content'] ?: '本次购买' . $name . ' ' . $val['price'] . ' 元' . $notes,
+                    'id'      => $val[ 'id' ],
+                    'title'   => $val[ 'title' ] ?: $name.'购买',
+                    'time'    => $val[ 'created_at' ],
+                    'content' => $val[ 'content' ] ?: '本次购买'.$name.' '.$val[ 'price' ].' 元'.$notes,
                 ];
             }
-
         }
-
         //分页
         $start = ($page - 1) * $perpage;
         $length = $perpage;
-
         //返回
         return array_slice($msgList, $start, $length);
     }
-
+    
     /**获取系统消息内容
-     * @param int $uid
-     * @param int $page
-     * @param int $perpage
+     *
+     * @param  int  $uid
+     * @param  int  $page
+     * @param  int  $perpage
+     *
      * @return mixed
      * @throws
      */
     public function getSysMsg(int $uid, int $page, int $perpage)
     {
         $res = (new UserMessage())::withTrashed()->where(['user_id' => $uid, 'is_del' => 0])->exists();
-        if (!$res)
-        {
+        if (!$res) {
             throw new LogicException('用户消息不存在');
         }
-
         //系统消息
         $sysMessage = (new UserMessage())
-            ->join('sys_message', function($join){
+            ->join('sys_message', function ($join) {
                 $join->on('user_message.sys_mid', 'sys_message.id');
             })
             ->withTrashed()
@@ -273,39 +349,35 @@ class UserMessage extends Model
             ->distinct('sys_message.id')
             ->get(['user_message.id', 'sys_message.title', 'sys_message.content', 'sys_message.created_at'])
             ->toArray();
-
         //合并数据并按创建时间倒序
         array_multisort(array_column($sysMessage, 'created_at'), SORT_DESC, $sysMessage);
         $key = 'id';
-        $sysMessage = $this->assoc_unique($sysMessage , $key);
-
+        $sysMessage = $this->assoc_unique($sysMessage, $key);
         $msgList = [];
-        foreach ($sysMessage as $key => $val)
-        {
+        foreach ($sysMessage as $key => $val) {
             //组装返回数据
             $msgList[] = [
-                'id'      => $val['id'],
-                'title'   => $val['title'],
-                'time'    => $val['created_at'],
-                'content' => $val['content'],
+                'id'      => $val[ 'id' ],
+                'title'   => $val[ 'title' ],
+                'time'    => $val[ 'created_at' ],
+                'content' => $val[ 'content' ],
             ];
         }
-
         //分页
         $start = ($page - 1) * $perpage;
         $length = $perpage;
-
         //返回
         $msgRes = array_slice($msgList, $start, $length);
-        if (!$msgRes)
-        {
+        if (!$msgRes) {
             return json_encode(['code' => 10000, 'msg' => '暂无系统消息']);
         }
         return $msgRes;
     }
-
+    
     /**获取消息小红点
-     * @param int $uid
+     *
+     * @param  int  $uid
+     *
      * @return mixed
      * @throws
      */
@@ -313,122 +385,122 @@ class UserMessage extends Model
     {
         return (new UserMessage())::where(['user_id' => $uid, 'deleted_at' => null, 'is_del' => 0])->exists();
     }
-
+    
     /**删除消息小红点
-     * @param int $uid
+     *
+     * @param  int  $uid
+     *
      * @throws
      */
     public function delReddot(int $uid)
     {
         (new UserMessage())
-            ->where(function($query) use ($uid){
-            $query->where('user_id', $uid)
-                ->where('deleted_at', null)
-                ->whereIn('type', [1, 2, 3]);
-        })
-        ->delete();
+            ->where(function ($query) use ($uid) {
+                $query->where('user_id', $uid)
+                      ->where('deleted_at', null)
+                      ->whereIn('type', [1, 2, 3]);
+            })
+            ->delete();
     }
-
+    
     /**获取系统消息小红点
-     * @param int $uid
+     *
+     * @param  int  $uid
+     *
      * @return mixed
      * @throws
      */
     public function getSysReddot(int $uid)
     {
-        return (new UserMessage())::where(['user_id' => $uid, 'type' => 8, 'deleted_at' => null, 'is_del' => 0])->exists();
+        return (new UserMessage())::where(['user_id' => $uid, 'type' => 8, 'deleted_at' => null, 'is_del' => 0])
+                                  ->exists();
     }
-
+    
     /**删除系统消息小红点
-     * @param int $uid
+     *
+     * @param  int  $uid
+     *
      * @throws
      */
     public function delSysReddot(int $uid)
     {
         (new UserMessage())
-            ->where(function($query) use ($uid){
+            ->where(function ($query) use ($uid) {
                 $query->where('user_id', $uid)
-                    ->where('type', 8)
-                    ->where('deleted_at', null);
+                      ->where('type', 8)
+                      ->where('deleted_at', null);
             })
             ->delete();
     }
-
+    
     /**删除单条消息
-     * @param int $id
+     *
+     * @param  int  $id
+     *
      * @return mixed
      * @throws
      */
     public function delMsg(int $id)
     {
         $res = (new UserMessage())::withTrashed()->where(['id' => $id, 'is_del' => 0])->exists();
-        if (!$res)
-        {
+        if (!$res) {
             throw new LogicException('用户消息不存在');
         }
-
         $userMessage = (new UserMessage())::withTrashed()->find($id);
         $userMessage->is_del = 1;
         $userMessage->updated_at = date("Y-m-d H:i:s");
         $data = $userMessage->save();
-        if ($data)
-        {
+        if ($data) {
             return json_encode(['code' => 1, 'msg' => '删除消息成功']);
-        } else
-        {
+        } else {
             return json_encode(['code' => 0, 'msg' => '删除消息失败']);
         }
     }
-
+    
     /**删除所有消息
-     * @param int $uid
+     *
+     * @param  int  $uid
+     *
      * @return mixed
      * @throws
      */
     public function delAllMsg(int $uid)
     {
         $res = (new UserMessage())::withTrashed()->where(['user_id' => $uid, 'is_del' => 0])->exists();
-        if (!$res)
-        {
+        if (!$res) {
             throw new LogicException('用户消息不存在');
         }
-
         $msgData = [
-            'is_del' => 1,
-            'updated_at' => date("Y-m-d H:i:s")
+            'is_del'     => 1,
+            'updated_at' => date("Y-m-d H:i:s"),
         ];
         $data = (new UserMessage())::withTrashed()->where('user_id', $uid)->update($msgData);
-
-        if ($data)
-        {
+        if ($data) {
             return json_encode(['code' => 1, 'msg' => '删除消息成功']);
-        } else
-        {
+        } else {
             return json_encode(['code' => 0, 'msg' => '删除消息失败']);
         }
     }
-
+    
     /**删除所有消息
-     * @param array $arr
-     * @param string $key
+     *
+     * @param  array   $arr
+     * @param  string  $key
+     *
      * @return mixed
      * @throws
      */
     public function assoc_unique(array $arr, string $key)
     {
-        $tmp_arr = array();
-        foreach ($arr as $k => $v)
-        {
-            if (in_array($v[$key], $tmp_arr))
-            {
+        $tmp_arr = [];
+        foreach ($arr as $k => $v) {
+            if (in_array($v[ $key ], $tmp_arr)) {
                 //搜索$v[$key]是否在$tmp_arr数组中存在，若存在返回true
-                unset($arr[$k]);
-            } else
-            {
-                $tmp_arr[] = $v[$key];
+                unset($arr[ $k ]);
+            } else {
+                $tmp_arr[] = $v[ $key ];
             }
         }
-
         return $arr;
     }
 }
