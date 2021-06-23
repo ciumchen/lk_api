@@ -175,7 +175,7 @@ class AssetConversionService
             $withdrawLog->assets_type = AssetsType::ASSETS_NAME_USDT_TO_IETS;
             $withdrawLog->status = 2; //2为提现成功
             $withdrawLog->amount = $amount;
-            $withdrawLog->fee = 0;
+            $withdrawLog->fee = 0.00000000;
             $withdrawLog->address = '0x00000000000000000';
             $withdrawLog->ip = $options['ip'] ?? '';
             $withdrawLog->remark = 'usdt转换iets';
