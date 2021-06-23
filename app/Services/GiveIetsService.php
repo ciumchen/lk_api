@@ -91,8 +91,8 @@ class GiveIetsService
         try {
 
 
-            $asset = AssetsType::where('assets_name','iets')->first();
-            $fromBalance = AssetsService::getBalanceData($user, $asset, true);//获取用户资产
+
+            $fromBalance = AssetsService::give_iets_getBalanceData($user, $asset, true);//获取用户资产
 //dd($fromBalance);
 //            Log::info("打印赠送日志===0000==========".$fromBalance);
             if (null === $fromBalance || bccomp($fromBalance->amount, $amount, 8) < 0) {
@@ -112,7 +112,7 @@ class GiveIetsService
             );
             //赠送给市商
             $userInfo = User::where('phone',$phone)->first();
-            $giveAssetInfo = AssetsService::getBalanceData($userInfo, $asset, true);
+            $giveAssetInfo = AssetsService::give_iets_getBalanceData($userInfo, $asset, true);
 //            dd($userInfo);
             $giveAssetInfo->change(//变更余额
                 +$toAmount,
@@ -123,7 +123,7 @@ class GiveIetsService
 
             if ($fee > 0) {
                 $feeUser = User::find(2);
-                $feeBalance = AssetsService::getBalanceData($feeUser, $asset, true);
+                $feeBalance = AssetsService::give_iets_getBalanceData($feeUser, $asset, true);
                 $feeBalance->change(
                     $fee,
                     AssetsLogs::OPERATE_TYPE_MARKET_BUSINESS,
