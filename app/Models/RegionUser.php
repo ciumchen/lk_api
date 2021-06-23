@@ -82,7 +82,7 @@ class RegionUser extends Model
         }
 
         //获取区级代理数据
-        $districtInfo = CityNode::where('district', $code)->get()->first();
+        $districtInfo = CityNode::where('district', $code)->first();
 
         //获取数据
         $assetsData = (new RegionUserService())->getAssets($districtInfo, $page, $perPage);
