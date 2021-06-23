@@ -162,11 +162,11 @@ class StatisticsController extends Controller
         $data['todayData']['price_10'] = $todayData['price_10'];
         $data['todayData']['price_20'] = $todayData['price_20'];
         //获取昨日所有添加积分的订单的消费金额
-//        $yesterdaytime=strtotime(date('Y-m-d',strtotime("-1 day")));
-//        $yesterdayData = OrderIntegralLkDistribution::where('day',$yesterdaytime)->first()->toArray();
-//        $data['yesterdayData']['price_5'] = $yesterdayData['price_5'];
-//        $data['yesterdayData']['price_10'] = $yesterdayData['price_10'];
-//        $data['yesterdayData']['price_20'] = $yesterdayData['price_20'];
+        $yesterdaytime=strtotime(date('Y-m-d',strtotime("-1 day")));
+        $yesterdayData = OrderIntegralLkDistribution::where('day',$yesterdaytime)->first()->toArray();
+        $data['yesterdayData']['price_5'] = $yesterdayData['price_5'];
+        $data['yesterdayData']['price_10'] = $yesterdayData['price_10'];
+        $data['yesterdayData']['price_20'] = $yesterdayData['price_20'];
 
         //剩余订单统计 surplus
         $data['sypddd']['price_5'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',5)->sum('price');
