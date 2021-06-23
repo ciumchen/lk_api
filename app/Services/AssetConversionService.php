@@ -47,7 +47,7 @@ class AssetConversionService
 //        }
 
         //一小时只能划转1次
-        $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::DEFAULT_ASSETS_NAME)->latest('id')->first();
+        $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::ASSETS_NAME_USDT_TO_IETS)->latest('id')->first();
         if ($lastWithdrawLog && now()->subHours(2)->lt($lastWithdrawLog->created_at)) {
             throw new LogicException('赠送间隔时间不低于 2 小时');
         }
@@ -172,11 +172,11 @@ class AssetConversionService
             $withdrawLog = new WithdrawLogs();
             $withdrawLog->uid = $user->id;
             $withdrawLog->assets_type_id = 0;
-            $withdrawLog->assets_type = 'usdt_to_iets';
+            $withdrawLog->assets_type = AssetsType::ASSETS_NAME_USDT_TO_IETS;
             $withdrawLog->status = 2; //2为提现成功
             $withdrawLog->amount = $amount;
-            $withdrawLog->fee = '';
-            $withdrawLog->address = '';
+            $withdrawLog->fee = 0;
+            $withdrawLog->address = '0x00000000000000000';
             $withdrawLog->ip = $options['ip'] ?? '';
             $withdrawLog->remark = 'usdt转换iets';
             $withdrawLog->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 255, 'utf-8') : '';
