@@ -119,7 +119,7 @@ class YuntongPay extends Config
                     '请求错误：' . $res[ 'code' ] . '-' . $res[ 'result' ] . '-' . $res[ 'data' ][ 'error_info' ]
                 );
             } else {
-                throw new Exception('返回结果解析异常');
+                throw new Exception('返回结果解析异常'.$res);
             }
         } catch (Exception $e) {
             throw $e;

@@ -610,6 +610,7 @@ class YuntongPayController extends Controller
             ];
             return $this->payRequest($data, createNotifyUrl('api/bm-pay-notify'));
         } catch (Exception $e) {
+            throw $e;
             throw new LogicException($e->getMessage());
         }
     }
