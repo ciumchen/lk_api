@@ -169,21 +169,22 @@ class AssetConversionService
 
 
 //            //添加赠送记录
-//            $withdrawLog = new WithdrawLogs();
-//            $withdrawLog->uid = $user->id;
-//            $withdrawLog->assets_type_id = $asset->id;
-//            $withdrawLog->assets_type = $assetData['transformation'];
-//            $withdrawLog->status = 2; //2为提现成功
-//            $withdrawLog->amount = $toAmount;
-//            $withdrawLog->fee = $fee;
-//            $withdrawLog->address = $phone;
-//            $withdrawLog->ip = $options['ip'] ?? '';
-//            $withdrawLog->remark = '赠送给市商';
-//            $withdrawLog->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 255, 'utf-8') : '';
+            $withdrawLog = new WithdrawLogs();
+            $withdrawLog->uid = $user->id;
+            $withdrawLog->assets_type_id = 0;
+            $withdrawLog->assets_type = 'usdt_to_iets';
+            $withdrawLog->status = 2; //2为提现成功
+            $withdrawLog->amount = $amount;
+            $withdrawLog->fee = '';
+            $withdrawLog->address = '';
+            $withdrawLog->ip = $options['ip'] ?? '';
+            $withdrawLog->remark = 'usdt转换iets';
+            $withdrawLog->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 255, 'utf-8') : '';
+            $withdrawLog->status = 2;
 //            if (bccomp($asset->large_withdraw_amount, 0, 8) && bccomp($amount, $asset->large_withdraw_amount, 8) >= 0) {
 //                $withdrawLog->status = 3; //3为待审核
 //            }
-//            $withdrawLog->save();
+            $withdrawLog->save();
 
 
             DB::commit();
