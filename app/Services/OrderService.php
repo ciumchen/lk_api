@@ -742,23 +742,22 @@ class OrderService
     public function getDescription($order_id, Order $Order = null)
     {
         if (empty($Order)) {
-            $Order = new Order();
+            $Order = Order::find($order_id);
         }
         try {
-            $orderInfo = $Order->find($order_id);
-            if (empty($orderInfo)) {
+            if (empty($Order)) {
                 throw new Exception('订单数据为空');
             }
-            if (!empty($orderInfo->trade)) { /* 兼容trade_order */
-                $description = $orderInfo->trade->description;
+            if (!empty($Order->trade)) { /* 兼容trade_order */
+                $description = $Order->trade->description;
             }
-            if (!empty($orderInfo->video)) { /* 视频会员订单 */
+            if (!empty($Order->video)) { /* 视频会员订单 */
                 $description = 'VC';
             }
-            if (!empty($orderInfo->air)) { /* 机票订单 */
+            if (!empty($Order->air)) { /* 机票订单 */
                 $description = 'AT';
             }
-            if (!empty($orderInfo->utility)) { /* 生活缴费 */
+            if (!empty($Order->utility)) { /* 生活缴费 */
                 $description = 'UB';
             }
             /* 判断 是否已经获取到对应类型的订单*/

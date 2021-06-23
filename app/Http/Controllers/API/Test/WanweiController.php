@@ -137,7 +137,6 @@ class WanweiController extends Controller
         $UserMsgService = new UserMsgService();
         $str = "{\"amount\":100.00,\"sys_order_id\":\"202106231518194782BCFB7F89B\",\"create_time\":\"2021-06-23 15:18:19\",\"open_id\":\"2088202878747694\",\"sign\":\"E332F01B705972EBBDC09CCE83479701\",\"type\":\"payment.success\",\"order_id\":\"PY_20210623151818936352\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-06-23 15:18:40\"}";
         $data = json_decode($str, true);
-//        dd($data);
         $data['order_id'] = 'PY_20210623104713910854';
         try {
             $UserMsgService->sendWanWeiVideoMsg($order_id, $data, $Order);

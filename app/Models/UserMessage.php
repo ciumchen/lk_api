@@ -290,9 +290,9 @@ class UserMessage extends Model
                     $card_list = json_decode($val[ 'card_list' ], true);
                     $content = '您购买的卡密信息为：'.$goods_title.' ';
                     foreach ($card_list as $_k => $_val) {
-                        if (array_key_exists('cardNum', $_val)) {
+                       /* if (array_key_exists('cardNum', $_val)) {
                             $content .= '卡号：'.$_val[ 'cardNum' ].' ';
-                        }
+                        }*/
                         if (array_key_exists('cardSign', $_val)) {
                             $content .= '卡密：'.$_val[ 'cardSign' ].' ';
                         }
