@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\Test;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Services\OrderService;
 use Exception;
 use Illuminate\Http\Request;
 use Wanwei\Api\HotelOrder;
@@ -105,5 +107,26 @@ class WanweiController extends Controller
             throw new Exception($e->getMessage());
         }
         return apiSuccess($res);
+    }
+    
+    public function test6(Request $request)
+    {
+        $order_id = $request->input('order_id');
+        $OrderSSS = Order::find($order_id);
+        
+        $OrderService = new OrderService();
+        $des = $OrderService->getDescription($order_id, $OrderSSS);
+        dump($des);
+        switch ($des) {
+            case 'HF':
+                $info = $OrderSSS->trade->toArray();
+                break;
+            case 'VC':
+                $info = $OrderSSS->video->toArray();
+                break;
+            default:
+                $info = [];
+        }
+        dump($info);
     }
 }
