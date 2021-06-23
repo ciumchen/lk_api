@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 class AssetConversionService
 {
     /**
-     * 提现
+     * 转换
      * @param User $user
      * @param $amount
      * @param $address
@@ -38,8 +38,8 @@ class AssetConversionService
             throw new LogicException('转换数量异常','1001');
         }
 
-        if (bccomp($amount, 2, 8) < 0) {
-            throw new LogicException('最低转换2个','1002');
+        if (bccomp($amount, 1, 8) < 0) {
+            throw new LogicException('最低转换1个','1002');
         }
 
 //        if (bccomp($amount, 100, 8) > 0) {

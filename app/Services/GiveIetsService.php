@@ -38,8 +38,8 @@ class GiveIetsService
             throw new LogicException('赠送数量异常','1001');
         }
 
-        if (bccomp($amount, 2, 8) < 0) {
-            throw new LogicException('最低赠送2个','1002');
+        if (bccomp($amount, 1, 8) < 0) {
+            throw new LogicException('最低赠送1个','1002');
         }
 
 //        if (bccomp($amount, 100, 8) > 0) {
