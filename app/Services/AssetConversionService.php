@@ -49,7 +49,7 @@ class AssetConversionService
         //一小时只能划转1次
         $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::ASSETS_NAME_USDT_TO_IETS)->latest('id')->first();
         if ($lastWithdrawLog && now()->subHours(2)->lt($lastWithdrawLog->created_at)) {
-            throw new LogicException('赠送间隔时间不低于 2 小时');
+            throw new LogicException('转换间隔时间不低于 2 小时');
         }
 
 //        $todayWithdrawAmount = WithdrawLogs::where('created_at', '>=', Carbon::now()->startOfDay()->toDateTimeString())
