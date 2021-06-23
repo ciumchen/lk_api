@@ -172,7 +172,7 @@ class StatisticsController extends Controller
         $data['sypddd']['price_5'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',5)->sum('price');
         $data['sypddd']['price_10'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',10)->sum('price');
         $data['sypddd']['price_20'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',20)->sum('price');
-        
+
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
     }
