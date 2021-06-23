@@ -21,8 +21,10 @@ class UserAssetsInfoController extends Controller
             throw new LogicException('usdt兑换iets的比例参数错误');
         }
 
-        $assData['data'] = Assets::where('uid',$uid)->get(['uid','assets_type_id','assets_name','amount'])->toArray();
-
+        $assre = Assets::where('uid',$uid)->get(['uid','assets_type_id','assets_name','amount']);
+        if($assre){
+            $assData['data'] = $assre->toArray();
+        }
         return response()->json(['code'=>1, 'msg'=>$assData]);
     }
 }
