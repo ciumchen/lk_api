@@ -38,19 +38,19 @@ class AssetConversionService
             throw new LogicException('转换数量异常','1001');
         }
 
-//        if (bccomp($amount, 2, 8) < 0) {
-//            throw new LogicException('最低转换2个','1002');
-//        }
+        if (bccomp($amount, 2, 8) < 0) {
+            throw new LogicException('最低转换2个','1002');
+        }
 
 //        if (bccomp($amount, 100, 8) > 0) {
 //            throw new LogicException('单笔最多赠送100','1003');
 //        }
 
         //一小时只能划转1次
-//        $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::DEFAULT_ASSETS_NAME)->latest('id')->first();
-//        if ($lastWithdrawLog && now()->subHours(1)->lt($lastWithdrawLog->created_at)) {
-//            throw new LogicException('赠送间隔时间不低于 1 小时');
-//        }
+        $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::DEFAULT_ASSETS_NAME)->latest('id')->first();
+        if ($lastWithdrawLog && now()->subHours(2)->lt($lastWithdrawLog->created_at)) {
+            throw new LogicException('赠送间隔时间不低于 2 小时');
+        }
 
 //        $todayWithdrawAmount = WithdrawLogs::where('created_at', '>=', Carbon::now()->startOfDay()->toDateTimeString())
 //            ->where('status', WithdrawLogs::STATUS_DONE)
