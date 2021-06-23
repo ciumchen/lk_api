@@ -63,6 +63,7 @@ class AssetsLogs extends Model
     /**
      * 类型.
      */
+    const OPERATE_TYPE_USDT_TO_IETS = 'usdt_to_iets';
     const OPERATE_TYPE_WITHDRAW_TO_WALLET = 'withdraw_to_wallet';
     const OPERATE_TYPE_MARKET_BUSINESS = 'give_market_business';
     const OPERATE_TYPE_WITHDRAW_TO_WALLET_FEE = 'withdraw_to_wallet_fee';
@@ -84,6 +85,7 @@ class AssetsLogs extends Model
      * @var array
      */
     public static $operateTypeTexts = [
+        self::OPERATE_TYPE_USDT_TO_IETS => 'usdt兑换iets',
         self::OPERATE_TYPE_WITHDRAW_TO_WALLET => '提现到钱包',
         self::OPERATE_TYPE_MARKET_BUSINESS => '赠送给市商',
         self::OPERATE_TYPE_WITHDRAW_TO_WALLET_FEE => '提现到钱包手续费',

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Transfer;
+namespace App\Http\Controllers\Api\Transfer;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
@@ -11,17 +11,17 @@ use App\Models\User;
 use App\Models\VerifyCode;
 use App\Services\AddressService;
 use App\Services\AssetsService;
-use App\Services\TransferService;
+use App\Services\IetsWithdrawalService;
 use Illuminate\Http\Request;
 
-class TransferController extends Controller
+class IetsWithdrawalController extends Controller
 {
-    /**提现
+    /**iets提现
      */
     public function __invoke(Request $request)
     {
         $this->validate($request, [
-            'amount' => ['bail', 'required', 'numeric', 'regex:#\A(\d+)(.\d{0,8})?\z#', 'min:5', 'max:10000'],
+            'amount' => ['bail', 'required', 'numeric', 'regex:#\A(\d+)(.\d{0,8})?\z#'],
             'address' => ['bail', 'required'],
             'verify_code' => ['bail', 'required'],
         ], [
@@ -43,25 +43,25 @@ class TransferController extends Controller
             throw new LogicException('账户异常');
         }
 
-        if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET)) {
-            throw new LogicException('无效的验证码');
-        }
-
-        $withdrawBtn = Setting::getSetting('withdraw_btn') ?? 1;
-        if (1 != $withdrawBtn) {
-            throw new LogicException('系统维护，暂停提现');
-        }
+//        if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET)) {
+//            throw new LogicException('无效的验证码');
+//        }
+//
+//        $withdrawBtn = Setting::getSetting('withdraw_btn') ?? 1;
+//        if (1 != $withdrawBtn) {
+//            throw new LogicException('系统维护，暂停提现');
+//        }
 
         $options = [
             'ip' => request_ip(),
             'user_agent' => (string) $request->userAgent(),
         ];
-
+//dd(time());
         //执行
-        (new TransferService())->transfer($user, $request->amount, $request->address, $options);
+        (new IetsWithdrawalService())->transfer($user, $request->amount, $request->address, $options);
 
 
-        return response()->json(['code'=>1, 'msg'=>'usdt提现成功']);
+        return response()->json(['code'=>1, 'msg'=>'iets提现成功']);
     }
 
     /**获取转账信息

@@ -13,10 +13,10 @@ use App\Models\VerifyCode;
 use App\Services\AddressService;
 use App\Services\AssetsService;
 use App\Services\TransferService;
-use App\Services\GiveTransferService;
-class GiveTransferController extends Controller
+use App\Services\GiveIetsService;
+class GiveIetsController extends Controller
 {
-    /**赠送
+    /**赠送iets
      */
     public function __invoke(Request $request)
     {
@@ -47,7 +47,7 @@ class GiveTransferController extends Controller
         }
 
         $user = $request->user();
-//dd($user);
+
         if (User::STATUS_NORMAL != $user->status) {
             throw new LogicException('账户异常','2004');
         }
@@ -67,9 +67,9 @@ class GiveTransferController extends Controller
         ];
 
         //执行
-        (new GiveTransferService())->transfer($user, $request->amount, $phone, $options);
+        (new GiveIetsService())->transfer($user, $request->amount, $phone, $options);
 
-        return response()->json(['code'=>1, 'msg'=>'usdt赠送成功']);
+        return response()->json(['code'=>1, 'msg'=>'iets赠送成功']);
     }
 
 //    /**获取转账信息

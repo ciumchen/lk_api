@@ -35,6 +35,7 @@ class AssetsType extends Model
     protected $table = 'assets_type';
 
     const DEFAULT_ASSETS_NAME = 'usdt';
+    const ASSETS_NAME_USDT_TO_IETS = 'usdt_to_iets';
     const DEFAULT_ASSETS_ENCOURAGE = 'encourage';
 
     const CAN_WITHDRAW = 1;

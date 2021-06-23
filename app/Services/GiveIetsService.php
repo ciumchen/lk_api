@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Log;
-class GiveTransferService
+class GiveIetsService
 {
     /**
      * 提现
@@ -60,9 +60,9 @@ class GiveTransferService
 //            throw new LogicException('每天最多赠送1000','1004');
 //        }
 
-        $asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
+        $asset = AssetsType::where('assets_name','iets')->first();
         $userBalance = AssetsService::getBalanceData($user, $asset);//获取资产
-//dd($asset);
+//dd($userBalance);
         //比较两个数相等返回0，不相等返回1或-1
 
 //        $re1 = $userBalance->amount;
@@ -89,7 +89,10 @@ class GiveTransferService
 //        dd($userBalance);
         DB::beginTransaction();
         try {
-            $fromBalance = AssetsService::getBalanceData($user, $asset, true);//获取用户资产
+
+
+
+            $fromBalance = AssetsService::give_iets_getBalanceData($user, $asset, true);//获取用户资产
 //dd($fromBalance);
 //            Log::info("打印赠送日志===0000==========".$fromBalance);
             if (null === $fromBalance || bccomp($fromBalance->amount, $amount, 8) < 0) {
@@ -109,7 +112,7 @@ class GiveTransferService
             );
             //赠送给市商
             $userInfo = User::where('phone',$phone)->first();
-            $giveAssetInfo = AssetsService::getBalanceData($userInfo, $asset, true);
+            $giveAssetInfo = AssetsService::give_iets_getBalanceData($userInfo, $asset, true);
 //            dd($userInfo);
             $giveAssetInfo->change(//变更余额
                 +$toAmount,
@@ -120,7 +123,7 @@ class GiveTransferService
 
             if ($fee > 0) {
                 $feeUser = User::find(2);
-                $feeBalance = AssetsService::getBalanceData($feeUser, $asset, true);
+                $feeBalance = AssetsService::give_iets_getBalanceData($feeUser, $asset, true);
                 $feeBalance->change(
                     $fee,
                     AssetsLogs::OPERATE_TYPE_MARKET_BUSINESS,
@@ -132,7 +135,7 @@ class GiveTransferService
 //            $withdrawLog = new WithdrawLogs();
 //            $withdrawLog->uid = $user->id;
 //            $withdrawLog->assets_type_id = $asset->id;
-//            $withdrawLog->assets_type = AssetsType::DEFAULT_ASSETS_NAME;
+//            $withdrawLog->assets_type = 'iets';
 //            $withdrawLog->status = 2; //2为提现成功
 //            $withdrawLog->amount = $toAmount;
 //            $withdrawLog->fee = $fee;

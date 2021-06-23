@@ -28,4 +28,5 @@ class BanList extends Model
 {
     protected $table = 'ban_list';
 
+    protected $fillable = ['uid','reason','ip'];
 }
