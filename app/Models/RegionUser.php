@@ -6,7 +6,6 @@ use App\Exceptions\LogicException;
 use App\Services\RegionUserService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class RegionUser extends Model
 {
@@ -31,10 +30,12 @@ class RegionUser extends Model
 
     /**获取市级代理信息
      * @param string $code
+     * @param int $page
+     * @param int $perPage
      * @return mixed
      * @throws
      */
-    public function getCityNode(string $code)
+    public function getCityNode(string $code, int $page, int $perPage)
     {
         $res = BusinessData::where('city', $code)->whereRaw('district is not null')->exists();
         if (!$res)
@@ -43,7 +44,7 @@ class RegionUser extends Model
         }
 
         //返回
-        return (new RegionUserService())->getCityNode($code);
+        return (new RegionUserService())->getCityNode($code, $page, $perPage);
     }
 
     /**获取区级代理信息
@@ -63,5 +64,31 @@ class RegionUser extends Model
 
         //返回
         return (new RegionUserService())->getDistrictNode($code, $page, $perPage);
+    }
+
+    /**获取区级代理积分记录
+     * @param string $code
+     * @param int $page
+     * @param int $perPage
+     * @return mixed
+     * @throws
+     */
+    public function getAssets(string $code, int $page, int $perPage)
+    {
+        $res = CityNode::where('district', $code)->exists();
+        if (!$res)
+        {
+            throw new LogicException('该区级代理不存在');
+        }
+
+        //获取区级代理数据
+        $districtInfo = CityNode::where('district', $code)->get()->first();
+
+        //获取数据
+        $assetsData = (new RegionUserService())->getAssets($districtInfo, $page, $perPage);
+        $assetsData['distName'] = $districtInfo->name;
+
+        //返回
+        return $assetsData;
     }
 }

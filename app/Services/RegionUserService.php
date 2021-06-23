@@ -3,14 +3,11 @@
 namespace App\Services;
 
 use App\Exceptions\LogicException;
-use App\Http\Controllers\API\Airticket\OrderPayBillController;
-use App\Models\AirTradeLogs;
+use App\Models\AssetsLogs;
 use App\Models\BusinessData;
 use App\Models\CityData;
 use App\Models\CityNode;
 use App\Models\Order;
-use App\Models\OrderAirTrade;
-use App\Models\RechargeLogs;
 use Illuminate\Support\Facades\DB;
 
 class RegionUserService
@@ -50,10 +47,12 @@ class RegionUserService
 
     /**获取市级区域代理信息
      * @param string $code
+     * @param int $page
+     * @param int $perPage
      * @return mixed
      * @throws
      */
-    public function getCityNode(string $code)
+    public function getCityNode(string $code, int $page, int $perPage)
     {
         //市级区域信息
         $cityInfo = CityNode::where('city', $code)
@@ -109,8 +108,12 @@ class RegionUserService
             $districtArr[$key]['priceTotal'] = $integralSum[$val['district']]['priceTotal'];
         }
 
-        //组装最后返回数据
-        $cityArr['businessList'] = $districtArr;
+        //分页
+        $start = ($page - 1) * $perPage;
+        $length = $perPage;
+
+        //组装数据
+        $cityArr['businessList'] = array_slice($districtArr, $start, $length);
         $cityArr['inteTotal'] = sprintf('%.2f',array_sum(array_column($districtArr, 'priceTotal')) * 0.0125);
         $cityArr['region'] = $cityInfo->name;
         $cityArr['businessSum'] = $businessSum;
@@ -121,8 +124,8 @@ class RegionUserService
 
     /**获取市级区域代理信息
      * @param string $code
-     * @param string $page
-     * @param string $perPage
+     * @param int $page
+     * @param int $perPage
      * @return mixed
      * @throws
      */
@@ -154,7 +157,7 @@ class RegionUserService
 
         foreach ($businessData as $key => $val)
         {
-            $businessData[$key]['integralTotal'] = $priceData[$val['uid']]['total'] ?? 0;
+            $businessData[$key]['priceTotal'] = $priceData[$val['uid']]['total'] ?? 0;
         }
 
         //分页
@@ -164,10 +167,49 @@ class RegionUserService
         $businessArr['businessList'] = array_slice($businessData, $start, $length);
         $businessArr['region'] = $districtInfo->name;
         $businessArr['businessSum'] = $businessSum;
-        $businessArr['priceTotal'] = sprintf('%.2f',array_sum(array_column($businessData, 'integralTotal')) * 0.0175);
+        $businessArr['inteTotal'] = sprintf('%.2f',array_sum(array_column($businessData, 'priceTotal')) * 0.0175);
 
         //返回
         return $businessArr;
     }
 
+    /**获取市级区域代理信息
+     * @param $districtInfo
+     * @param int $page
+     * @param int $perPage
+     * @return mixed
+     * @throws
+     */
+    public function getAssets($districtInfo, int $page, int $perPage)
+    {
+        $uid = $districtInfo->uid;
+        $time = $districtInfo->created_at;
+        $res = AssetsLogs::where('uid', $uid)->exists();
+        if (!$res)
+        {
+            throw new LogicException('该区级代理资产记录不存在');
+        }
+
+        //获取资产列表
+        $assetsList = DB::table('assets_logs')
+            ->where(['uid' => $uid, 'operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
+            ->where('created_at', '>=', $time)
+            ->orderBy('created_at', 'desc')
+            ->forPage($page, $perPage)
+            ->get(['amount','created_at']);
+
+        $assetsData = json_decode($assetsList, 1);
+        $amountSum = array_sum(array_column($assetsData, 'amount'));
+
+        //组装数据
+        foreach ($assetsData as $key => $val)
+        {
+            $assetsData[$key]['name'] = '录单';
+        }
+        $assetsArr['assetsData'] = $assetsData;
+        $assetsArr['amountSum'] = sprintf('%.2f',$amountSum);
+
+        //返回
+        return $assetsArr;
+    }
 }

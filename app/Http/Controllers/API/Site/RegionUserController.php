@@ -27,7 +27,7 @@ class RegionUserController extends Controller
      */
     public function getCity(Request $request)
     {
-        return (new RegionUser())->getCityNode($request->code);
+        return (new RegionUser())->getCityNode($request->code, $request->page, $request->perPage);
     }
 
     /**获取区级代理信息
@@ -37,6 +37,16 @@ class RegionUserController extends Controller
      */
     public function getDistrict(Request $request)
     {
-        return (new RegionUser())->getDistrictNode($request->district, $request->page, $request->perPage);
+        return (new RegionUser())->getDistrictNode($request->code, $request->page, $request->perPage);
+    }
+
+    /**获取区级代理资产积分记录
+     * @param Request $request
+     * @return mixed
+     * @throws
+     */
+    public function getAssets(Request $request)
+    {
+        return (new RegionUser())->getAssets($request->code, $request->page, $request->perPage);
     }
 }
