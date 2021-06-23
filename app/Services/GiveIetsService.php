@@ -91,7 +91,7 @@ class GiveIetsService
         try {
 
 
-
+            $asset = AssetsType::where('assets_name','iets')->first();
             $fromBalance = AssetsService::getBalanceData($user, $asset, true);//获取用户资产
 //dd($fromBalance);
 //            Log::info("打印赠送日志===0000==========".$fromBalance);
