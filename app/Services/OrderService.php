@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Services\AirOrderService;
 use App\Services\bmapi\UtilityBillRechargeService;
 use App\Services\bmapi\VideoCardService;
+use App\Services\ShowApi\VideoOrderService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class OrderService
     
     /**完成订单
      *
-     * @param string $orderNo
+     * @param  string  $orderNo
      *
      * @return mixed
      */
@@ -39,8 +40,9 @@ class OrderService
         try {
             $order = Order::lockForUpdate()
                           ->find($id);
-            if ($order->status != Order::STATUS_DEFAULT)
+            if ($order->status != Order::STATUS_DEFAULT) {
                 return false;
+            }
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';
             //用户应返还几分比例
@@ -97,7 +99,7 @@ class OrderService
     
     /**完成订单
      *
-     * @param string $orderNo
+     * @param  string  $orderNo
      *
      * @return mixed
      */
@@ -115,8 +117,9 @@ class OrderService
         try {
             $order = Order::lockForUpdate()
                           ->find($id);
-            if ($order->status != Order::STATUS_DEFAULT)
+            if ($order->status != Order::STATUS_DEFAULT) {
                 return false;
+            }
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
@@ -182,7 +185,7 @@ class OrderService
     
     /**完成订单
      *
-     * @param string $orderNo
+     * @param  string  $orderNo
      *
      * @return mixed
      * @throws
@@ -206,8 +209,9 @@ class OrderService
         try {
             $order = Order::lockForUpdate()
                           ->find($id);
-            if ($order->status != Order::STATUS_DEFAULT)
+            if ($order->status != Order::STATUS_DEFAULT) {
                 return false;
+            }
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
@@ -403,21 +407,24 @@ class OrderService
         $sameLeader = Setting::getSetting('same_leader') ?? 0;
         $sameAmount = 0;
         //同级别分配比列0.1%
-        if ($sameLeader > 0)
+        if ($sameLeader > 0) {
             $sameAmount = bcmul($order->profit_price, bcdiv($sameLeader, 100, 6), 8);
+        }
         //盟主返佣
         $leaderShare = Setting::getSetting('leader_share') ?? 0;
         $headAmount = 0;
         //盟主分配0.7%
-        if ($leaderShare > 0)
+        if ($leaderShare > 0) {
             $headAmount = bcmul($order->profit_price, bcdiv($leaderShare, 100, 6), 8);
+        }
         $memberHead = User::whereId($business->invite_uid)
                           ->first();
         //普通用户邀请商家返佣
         $userBRebate = Setting::getSetting('user_b_rebate') ?? 0;
         $ordinaryAmount = 0;
-        if ($userBRebate > 0)
+        if ($userBRebate > 0) {
             $ordinaryAmount = bcmul($order->profit_price, bcdiv($userBRebate, 100, 6), 8);
+        }
         //同级奖励是否给平台
         $isSamePlat = false;
         if ($memberHead->status != User::STATUS_NORMAL) {
@@ -443,8 +450,9 @@ class OrderService
                         AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
                         1
                     );
-                if ($tes == false)
+                if ($tes == false) {
                     $isSamePlat = true;
+                }
             } else {
                 //往上找2级 是否盟主
                 $res =
@@ -458,7 +466,7 @@ class OrderService
                         2
                     );
                 if ($res == false) {
-                    if ($headAmount > 0)
+                    if ($headAmount > 0) {
                         AssetsService::BalancesChange(
                             $orderNo,
                             $platformUid,
@@ -468,6 +476,7 @@ class OrderService
                             AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
                             '没有盟主，分配到平台账户'
                         );
+                    }
                     $isSamePlat = true;
                 } else {
                     //同级盟主奖励
@@ -481,12 +490,13 @@ class OrderService
                             AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
                             1
                         );
-                    if ($res == false)
+                    if ($res == false) {
                         $isSamePlat = true;
+                    }
                 }
             }
         }
-        if ($sameAmount > 0 && $isSamePlat == true)
+        if ($sameAmount > 0 && $isSamePlat == true) {
             AssetsService::BalancesChange(
                 $orderNo,
                 $platformUid,
@@ -496,7 +506,8 @@ class OrderService
                 AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
                 '没有同级盟主，分配到平台账户'
             );
-        if ($inviteAmount > 0)
+        }
+        if ($inviteAmount > 0) {
             AssetsService::BalancesChange(
                 $orderNo,
                 $uid,
@@ -506,6 +517,7 @@ class OrderService
                 AssetsLogs::OPERATE_TYPE_SHARE_B_REBATE,
                 $remark
             );
+        }
         $market =
             bcadd(
                 $districtAmount,
@@ -517,26 +529,28 @@ class OrderService
     
     /**找盟主
      *
-     * @param     $invite_uid
-     * @param     $amount
-     * @param     $assets
-     * @param     $msg
-     * @param     $type
-     * @param int $level
+     * @param       $invite_uid
+     * @param       $amount
+     * @param       $assets
+     * @param       $msg
+     * @param       $type
+     * @param  int  $level
      *
      * @return false
      * @throws \App\Exceptions\LogicException
      */
     public function leaderRebate($orderNo, $invite_uid, $amount, $assets, $msg, $type, $level = 2)
     {
-        if ($level <= 0)
+        if ($level <= 0) {
             return false;
+        }
         $user = User::whereId($invite_uid)
                     ->first();
         //如果是盟主,奖励0.3直接给与他
         if ($user && $user->member_head == 2 && $user->status == User::STATUS_NORMAL) {
-            if ($amount > 0)
+            if ($amount > 0) {
                 AssetsService::BalancesChange($orderNo, $user->id, $assets, $assets->assets_name, $amount, $type, $msg);
+            }
             return $user;
         } elseif ($user) {
             $level--;
@@ -631,10 +645,10 @@ class OrderService
     /**
      * Description:
      *
-     * @param int    $id           order表ID
-     * @param int    $consumer_uid 用户ID
-     * @param string $description  订单类型
-     * @param string $orderNo      订单号
+     * @param  int     $id            order表ID
+     * @param  int     $consumer_uid  用户ID
+     * @param  string  $description   订单类型
+     * @param  string  $orderNo       订单号
      *
      * @return bool
      * @throws \Throwable
@@ -647,8 +661,9 @@ class OrderService
         try {
             $order = Order::lockForUpdate()
                           ->find($id);
-            if ($order->status != Order::STATUS_DEFAULT)
+            if ($order->status != Order::STATUS_DEFAULT) {
                 return false;
+            }
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
@@ -715,9 +730,9 @@ class OrderService
      * Description:
      * TODO:判断订单类型
      *
-     * @param                        $order_id
+     * @param                          $order_id
      *
-     * @param \App\Models\Order|null $Order
+     * @param  \App\Models\Order|null  $Order
      *
      * @return mixed|string
      * @throws \Exception
@@ -760,10 +775,10 @@ class OrderService
      * Description:更新对应子订单
      *
      *
-     * @param int    $order_id
-     * @param array  $data
+     * @param  int     $order_id
+     * @param  array   $data
      *
-     * @param string $description
+     * @param  string  $description
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -807,11 +822,11 @@ class OrderService
     /**
      * Description:支付前更新子订单
      *
-     * @param int                    $order_id
-     * @param string                 $order_no
+     * @param  int                     $order_id
+     * @param  string                  $order_no
      *
-     * @param string                 $description
-     * @param \App\Models\Order|null $Order
+     * @param  string                  $description
+     * @param  \App\Models\Order|null  $Order
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -843,9 +858,9 @@ class OrderService
     /**
      * Description:完成订单后的后续操作[充值等]
      *
-     * @param int                    $order_id
-     * @param string                 $description
-     * @param \App\Models\Order|null $Order
+     * @param  int                     $order_id
+     * @param  string                  $description
+     * @param  \App\Models\Order|null  $Order
      *
      * @author lidong<947714443@qq.com>
      * @date   2021/6/15 0015
@@ -861,8 +876,13 @@ class OrderService
             }
             switch ($description) {
                 case 'VC': /* 视频会员充值 */
-                    $VideoService = new VideoCardService();
-                    $VideoService->recharge($order_id);
+                    if ($Order->video->channel == 'bm') {
+                        $VideoService = new VideoCardService();
+                        $VideoService->recharge($order_id, $Order);
+                    } elseif ($Order->video->channel == 'ww') {
+                        $WanWeiVideoService = new VideoOrderService();
+                        $WanWeiVideoService->recharge($order_id, $Order);
+                    }
                     break;
                 case 'UB': /* 生活缴费 */
                     $UtilityService = new UtilityBillRechargeService();
@@ -875,7 +895,7 @@ class OrderService
                     ;
             }
         } catch (Exception $e) {
-            \Log::debug('afterCompletedOrder:Error:' . $e->getMessage(), [json_encode($e) . '' . json_encode($Order)]);
+            \Log::debug('afterCompletedOrder:Error:'.$e->getMessage(), [json_encode($e).''.json_encode($Order)]);
         }
     }
 }
