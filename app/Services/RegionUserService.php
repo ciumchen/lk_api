@@ -204,6 +204,7 @@ class RegionUserService
         //组装数据
         foreach ($assetsData as $key => $val)
         {
+            $assetsData[$key]['amount'] = sprintf('%.2f',$val['amount']);
             $assetsData[$key]['name'] = '录单';
         }
         $assetsArr['assetsData'] = $assetsData;
