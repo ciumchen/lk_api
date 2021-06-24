@@ -56,7 +56,7 @@ class AddIntegral extends Command
      */
     public function handle()
     {
-//        log::info('=================自动添加积分任务===================================');
+        log::info('=================自动添加积分任务===================================');
 
         $setValue = Setting::where('key','consumer_integral')->value('value');
         if($setValue==1){
@@ -109,10 +109,10 @@ class AddIntegral extends Command
                     $this->completeOrder($orderId);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
-//                    log::info('=================添加积分成功1===================================');
+                    log::info('=================添加积分成功1===================================');
                     return "添加积分成功";
                 }else{
-//                    log::info('=================添加积分已达到上限数量===================================');
+                    log::info('=================添加积分已达到上限数量===================================');
                     return "添加积分已达到上限数量";
                 }
 
@@ -120,12 +120,12 @@ class AddIntegral extends Command
                 $this->completeOrder($orderId);
                 $LkBlData['count_profit_price'] = $addCountProfitPrice;
                 DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
-//                log::info('=================添加积分成功2===================================');
+                log::info('=================添加积分成功2===================================');
                 return "添加积分成功";
             }
 
         }else{
-//            log::info('=================后台未开启控单===================================');
+            log::info('=================后台未开启控单===================================');
             return "后台未开启控单";
         }
 
