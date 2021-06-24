@@ -152,10 +152,11 @@ class AddIntegral extends Command
             } elseif ($orderType == 'UB') {
                 $dataInfo = $orderData->utility;
             } else {
+                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
             }
         } catch (\Exception $e) {
-            log::debug("=================打印订单信息3-000==================================".$e);
+            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
 //        dd($orderType);
