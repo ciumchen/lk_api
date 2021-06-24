@@ -58,15 +58,15 @@ class AddIntegral extends Command
     {
 //        log::info('=================自动添加积分任务===================================');
 
-        $setValue = Setting::where('key','consumer_integral')->value('value');
-        if($setValue==1){
+        $setValue = Setting::where('key', 'consumer_integral')->value('value');
+        if ($setValue == 1) {
 //            $orderInfo = Order::where("status",2)->where('pay_status','succeeded')->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
 //            $orderInfo = Order::where("status",2)->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
 //            $orderInfo = Order::where("status",2)->where("line_up",1)->where('id','!=',27353)->with(['Trade_Order'])->orderBy('id','asc')->first();
-            $orderInfo = Order::where("status",2)->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
-            if ($orderInfo!=null){
+            $orderInfo = Order::where("status", 2)->where("line_up", 1)->with(['Trade_Order'])->orderBy('id', 'asc')->first();
+            if ($orderInfo != null) {
                 $orderInfo = $orderInfo->toArray();
-            }else{
+            } else {
 //                log::info('=================排队订单为空===================================');
                 return "排队订单为空";
             }
@@ -74,58 +74,58 @@ class AddIntegral extends Command
             $orderId = $orderInfo['id'];
 //            $order_no = $orderInfo['trade__order']['order_no'];
             $orderldModer = new OrderIntegralLkDistribution();
-            $todaytime=strtotime(date("Y-m-d"),time());
-            $lddata = $orderldModer::where('day',$todaytime)->first();
+            $todaytime = strtotime(date("Y-m-d"), time());
+            $lddata = $orderldModer::where('day', $todaytime)->first();
             $LkBlData = array();
             //统计lk总数
             $countLk = User::sum('lk');
             $LkBlData['count_lk'] = $countLk;
-            if ($lddata==''){
+            if ($lddata == '') {
                 $orderldModer->day = $todaytime;
                 $orderldModer->count_lk = $countLk;
                 $orderldModer->save();
                 $LkBlData['count_profit_price'] = 0;
-            }else{
-                $redata = $orderldModer::where('day',$todaytime)->first();
+            } else {
+                $redata = $orderldModer::where('day', $todaytime)->first();
                 $LkBlData['count_profit_price'] = $redata->count_profit_price;
             }
 
-            $lddata = $orderldModer::where('day',$todaytime)->first();
+            $lddata = $orderldModer::where('day', $todaytime)->first();
             $id = $lddata->id;
 
             $profit_ratio = array(
-                5=>'price_5',
-                10=>'price_10',
-                20=>'price_20',
+                5 => 'price_5',
+                10 => 'price_10',
+                20 => 'price_20',
             );
             $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
-            $LkBlData[$field]=bcadd($lddata->$field,$orderInfo['price'],2);//累计消费金额
+            $LkBlData[$field] = bcadd($lddata->$field, $orderInfo['price'], 2);//累计消费金额
 
             //控制添加积分
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
             $old_addCountProfitPrice = $LkBlData['count_profit_price'];
-            if($LkBlData['count_profit_price']!=0){
-                $lk_unit_price = Setting::where('key','lk_unit_price')->value('value');
-                if (($old_addCountProfitPrice*0.675/$LkBlData['count_lk'])<$lk_unit_price){
+            if ($LkBlData['count_profit_price'] != 0) {
+                $lk_unit_price = Setting::where('key', 'lk_unit_price')->value('value');
+                if (($old_addCountProfitPrice * 0.675 / $LkBlData['count_lk']) < $lk_unit_price) {
                     $this->completeOrder($orderId);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
-                    DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
+                    DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
 //                    log::info('=================添加积分成功1===================================');
                     return "添加积分成功";
-                }else{
+                } else {
 //                    log::info('=================添加积分已达到上限数量===================================');
                     return "添加积分已达到上限数量";
                 }
 
-            }else{
+            } else {
                 $this->completeOrder($orderId);
                 $LkBlData['count_profit_price'] = $addCountProfitPrice;
-                DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
+                DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
 //                log::info('=================添加积分成功2===================================');
                 return "添加积分成功";
             }
 
-        }else{
+        } else {
 //            log::info('=================后台未开启控单===================================');
             return "后台未开启控单";
         }
@@ -136,25 +136,26 @@ class AddIntegral extends Command
     public function completeOrder(string $orderId)
     {
         try {
-        $orderData = Order::find($orderId);
-        $orderService = new OrderService();
-        $orderType = $orderService->getDescription($orderId,$orderData);//订单类型
+            $orderData = Order::find($orderId);
+            $orderService = new OrderService();
+            $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
 //        dd($orderInfo,$orderData);
-        }catch (\Exception $e){}
+            if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT') {
+                $dataInfo = $orderData->trade;
+            } elseif ($orderType == 'VC') {
+                $dataInfo = $orderData->video;
+            } elseif ($orderType == 'AT') {
+                $dataInfo = $orderData->air;
+            } elseif ($orderType == 'UB') {
+                $dataInfo = $orderData->utility;
+            } else {
+                return $orderType;
+            }
+        } catch (\Exception $e) {
+        }
 
 //        dd($orderType);
-        if ($orderType=='LR' || $orderType=='HF' || $orderType=='YK' || $orderType=='MT'){
-            $dataInfo = $orderData->trade;
-        }elseif ($orderType=='VC'){
-            $dataInfo = $orderData->video;
-        }elseif ($orderType=='AT'){
-            $dataInfo = $orderData->air;
-        }elseif ($orderType=='UB'){
-//            $dataInfo = $orderData->video;
-            return false;
-        }else{
-            return $orderType;
-        }
+
 
 //        dd($dataInfo);
         $consumer_uid = $dataInfo->user_id;
@@ -176,7 +177,7 @@ class AddIntegral extends Command
             $customer = User::lockForUpdate()->find($order->uid);
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
-            $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
+            $profit_ratio = bcdiv($rebateScale[intval($profit_ratio_offset)], 100, 4);
             $customerIntegral = bcmul($order->price, $profit_ratio, 2);
             $amountBeforeChange = $customer->integral;
             $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
@@ -184,7 +185,7 @@ class AddIntegral extends Command
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
             $customer->save();
-            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid,$description);
+            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
             $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
 
@@ -448,12 +449,12 @@ class AddIntegral extends Command
         ];
         $activityState = 0;
         if ($description != 'LR' && isset($InvitePointsArr[$description])) {
-            $key = $InvitePointsArr[ $description ];
+            $key = $InvitePointsArr[$description];
             //判断活动是否开启
             $setValue = Setting::where('key', $key)->value('value');
-            if ($setValue != 0 && strstr($setValue,'|') != false) {
+            if ($setValue != 0 && strstr($setValue, '|') != false) {
                 $dateArr = explode('|', $setValue);
-                if (strtotime($dateArr[ 0 ]) < time() && time() < strtotime($dateArr[ 1 ])) {
+                if (strtotime($dateArr[0]) < time() && time() < strtotime($dateArr[1])) {
                     $invite_uid = User::where('id', $uid)->value('invite_uid');//邀请人uid
                     $activityState = 1;
                 } else {
@@ -476,7 +477,7 @@ class AddIntegral extends Command
         //更新LK
         $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
         $business->save();
-        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单', $orderNo, $activityState, $uid,$description);
+        IntegralLogs::addLog($business->id, $order_profit_price, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 2, '商家完成订单', $orderNo, $activityState, $uid, $description);
     }
 
 
