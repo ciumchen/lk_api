@@ -5,6 +5,9 @@ namespace App\Console\Commands;
 use App\Models\AssetsLogs;
 use App\Models\IntegralLogs;
 use App\Models\OrderIntegralLkDistribution;
+use App\Models\OrderUtilityBill;
+use App\Models\OrderVideo;
+use App\Services\OrderService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -18,6 +21,7 @@ use App\Models\RebateData;
 use App\Models\TradeOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Matrix\Exception;
 
 class AddIntegral extends Command
 {
@@ -66,7 +70,8 @@ class AddIntegral extends Command
                 return "排队订单为空";
             }
 
-            $order_no = $orderInfo['trade__order']['order_no'];
+            $orderId = $orderInfo['id'];
+//            $order_no = $orderInfo['trade__order']['order_no'];
             $orderldModer = new OrderIntegralLkDistribution();
             $todaytime=strtotime(date("Y-m-d"),time());
             $lddata = $orderldModer::where('day',$todaytime)->first();
@@ -101,7 +106,7 @@ class AddIntegral extends Command
             if($LkBlData['count_profit_price']!=0){
                 $lk_unit_price = Setting::where('key','lk_unit_price')->value('value');
                 if (($old_addCountProfitPrice*0.675/$LkBlData['count_lk'])<$lk_unit_price){
-                    $this->completeOrder($order_no);
+                    $this->completeOrder($orderId);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
 //                    log::info('=================添加积分成功1===================================');
@@ -112,7 +117,7 @@ class AddIntegral extends Command
                 }
 
             }else{
-                $this->completeOrder($order_no);
+                $this->completeOrder($orderId);
                 $LkBlData['count_profit_price'] = $addCountProfitPrice;
                 DB::table('order_integral_lk_distribution')->where('id',$id)->update($LkBlData);
 //                log::info('=================添加积分成功2===================================');
@@ -127,15 +132,37 @@ class AddIntegral extends Command
     }
 
 
-    public function completeOrder(string $orderNo)
+    public function completeOrder(string $orderId)
     {
-        $tradeOrderInfo = TradeOrder::where('order_no', $orderNo)->first();
-        $id = $tradeOrderInfo->oid;
-        $consumer_uid = $tradeOrderInfo->user_id;
-        $description = $tradeOrderInfo->description;
+        try {
+        $orderData = Order::find($orderId);
+        $orderService = new OrderService();
+        $orderType = $orderService->getDescription($orderId,$orderData);//订单类型
+//        dd($orderInfo,$orderData);
+        }catch (\Exception $e){}
+
+//        dd($orderType);
+        if ($orderType=='LR' || $orderType=='HF' || $orderType=='YK' || $orderType=='MT'){
+            $dataInfo = $orderData->trade;
+        }elseif ($orderType=='VC'){
+            $dataInfo = $orderData->video;
+        }elseif ($orderType=='AT'){
+            $dataInfo = $orderData->air;
+        }elseif ($orderType=='UB'){
+//            $dataInfo = $orderData->video;
+            return false;
+        }else{
+            return $orderType;
+        }
+
+//        dd($dataInfo);
+        $consumer_uid = $dataInfo->user_id;
+        $description = $dataInfo->description;
+        $orderNo = $dataInfo->order_no;
+
         DB::beginTransaction();
         try {
-            $order = Order::lockForUpdate()->find($id);
+            $order = Order::lockForUpdate()->find($orderId);
             if ($order->line_up != 1)
                 return false;
             $order->line_up = 0;
@@ -416,6 +443,7 @@ class AddIntegral extends Command
             'YK' => 'Invite_points_yk',
             'MT' => 'Invite_points_mt',
             'ZL' => 'Invite_points_zl',
+            'VC' => 'Invite_points_vc',
         ];
         $activityState = 0;
         if ($description != 'LR' && isset($InvitePointsArr[$description])) {
