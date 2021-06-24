@@ -143,7 +143,7 @@ class AddIntegral extends Command
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
             log::debug("=================打印订单信息2==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
-            if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT') {
+            if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
                 $dataInfo = $orderData->trade;
             } elseif ($orderType == 'VC') {
                 $dataInfo = $orderData->video;
