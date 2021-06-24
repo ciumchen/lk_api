@@ -17,6 +17,9 @@ Route::any("updateUserPhone", 'Test\MyNingController@updateUserPhone');
 //获取用户资产
 Route::any("getUserAssetInfo", 'Test\MyNingController@getUserAssetInfo');
 
+//解封用户资产账号
+Route::any("xfUserAssetFH", 'Test\MyNingController@xfUserAssetFH');
+
 
 
 

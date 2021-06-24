@@ -237,6 +237,21 @@ class MyNingController extends Controller
 
     }
 
+    //解封用户资产账号
+    public function xfUserAssetFH(){
+        $uid = 8;
+        $amount = 74.02995161;
+
+        $assData = Assets::where('uid',$uid)->first();
+        $assData->amount = $amount;
+        if($assData->save()){
+            return "账号解封成功";
+        }else{
+            return "账号解封失败";
+        }
+
+    }
+
 
 }
 
