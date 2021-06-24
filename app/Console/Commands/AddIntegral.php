@@ -166,10 +166,10 @@ class AddIntegral extends Command
         $consumer_uid = $dataInfo->user_id;
         $description = $dataInfo->description;
         $orderNo = $dataInfo->order_no;
-        log::debug("=================打印订单信息4==================================",$consumer_uid);
-        log::debug("=================打印订单信息5==================================",$description);
-        log::debug("=================打印订单信息6==================================",$orderNo);
-        log::debug("=================打印订单信息7==================================",$orderId);
+        log::debug("=================打印订单信息4==================================".$consumer_uid);
+        log::debug("=================打印订单信息5==================================".$description);
+        log::debug("=================打印订单信息6==================================".$orderNo);
+        log::debug("=================打印订单信息7==================================".$orderId);
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($orderId);
