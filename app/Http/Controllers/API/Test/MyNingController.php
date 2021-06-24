@@ -241,7 +241,7 @@ class MyNingController extends Controller
     public function xfUserAssetFH(){
         $uid = 8;
         $amount = 74.02995161;
-        $assType = usdt;
+        $assType = 'usdt';
         $assData = Assets::where('uid',$uid)->where('assets_name',$assType)->first();
         $assData->amount = $amount;
         if($assData->save()){
