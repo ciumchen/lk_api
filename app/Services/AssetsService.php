@@ -196,4 +196,34 @@ class AssetsService
 
         return false;
     }
+
+    //iets提现
+    public function AssetsTransfer($amount, $address,$assetsTypeNmae)
+    {
+        //合约地址
+        $asset = AssetsType::where('assets_name', $assetsTypeNmae)->first();
+        $contract = $asset->contract_address;
+        $urlArr = parse_url(env('WITHDRAW_RPC_HOST'));
+
+        //实例化节点对象
+        $qkNode = new QkNodeRPC($urlArr['host'], $urlArr['port']);
+        $erc = new ERC20($qkNode);
+        $token = $erc->token($contract);
+        //托管地址（发送方）
+        $payer = env('WITHDRAW_ADDRESS');
+        //转账
+        $data = $token->encodedTransferData($address, $amount);
+        $transaction = $qkNode->personal()->transaction($payer, $contract)
+            ->amount('0')
+            ->data($data);
+        $transaction->gas(90000, '0.0000001');
+        $txId = $transaction->send(env('WITHDRAW_PASSWORD'));
+
+        if ($txId && 66 == strlen($txId)) {
+            //返回交易hashco
+            return $txId;
+        }
+
+        return false;
+    }
 }

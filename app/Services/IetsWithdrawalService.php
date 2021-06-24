@@ -154,24 +154,24 @@ class IetsWithdrawalService
             throw new LogicException('提现失败，请稍后再试');
         }
 
-//        if (3 != $withdrawLog->status) {
-//            try {
-//                $address = $address;
-//                $txHash = (new AssetsService())->transfer($toAmount, $address);
-//                if (!$txHash) {
-//                    throw new LogicException('提现失败', 108);
-//                }
-//                $withdrawLog->tx_hash = $txHash;
-//                $withdrawLog->save();
-//            } catch (Exception $e) {
-//                report($e);
-//
-//                if ($e instanceof LogicException) {
-//                    throw $e;
-//                }
-//                throw new LogicException('提现失败，请联系客服');
-//            }
-//        }
+        if (3 != $withdrawLog->status) {
+            try {
+                $address = $address;
+                $txHash = (new AssetsService())->AssetsTransfer($toAmount, $address,'iets');
+                if (!$txHash) {
+                    throw new LogicException('提现失败', 108);
+                }
+                $withdrawLog->tx_hash = $txHash;
+                $withdrawLog->save();
+            } catch (Exception $e) {
+                report($e);
+
+                if ($e instanceof LogicException) {
+                    throw $e;
+                }
+                throw new LogicException('提现失败，请联系客服');
+            }
+        }
 
         return true;
     }
