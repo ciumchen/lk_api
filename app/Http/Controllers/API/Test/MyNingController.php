@@ -241,12 +241,10 @@ class MyNingController extends Controller
     public function xfUserAssetFH(){
         $uid = 8;
         $amount = 74.02995161;
-
-        $assData = Assets::where('uid',$uid)->first();
+        $assType = usdt;
+        $assData = Assets::where('uid',$uid)->where('assets_name',$assType)->first();
         $assData->amount = $amount;
-        $re = $assData->save();
-        dd($re);
-        if($re){
+        if($assData->save()){
             return "账号解封成功";
         }else{
             return "账号解封失败";
