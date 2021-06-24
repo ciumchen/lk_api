@@ -73,7 +73,7 @@ class AddIntegral extends Command
             }
 
             $orderId = $orderInfo['id'];
-            log::info("=================打印订单信息1==================================",$orderInfo);
+//            log::info("=================打印订单信息1==================================",$orderInfo);
 //            $order_no = $orderInfo['trade__order']['order_no'];
             $orderldModer = new OrderIntegralLkDistribution();
             $todaytime = strtotime(date("Y-m-d"), time());
@@ -141,7 +141,7 @@ class AddIntegral extends Command
             $orderData = Order::find($orderId);
             $orderService = new OrderService();
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
-            log::debug("=================打印订单信息2==================================",$orderData->toArray());
+//            log::debug("=================打印订单信息2==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
                 $dataInfo = $orderData->trade;
@@ -152,24 +152,24 @@ class AddIntegral extends Command
             } elseif ($orderType == 'UB') {
                 $dataInfo = $orderData->utility;
             } else {
-                log::debug("=================打印订单信息3-000000==================================".$orderType);
+//                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
             }
         } catch (\Exception $e) {
-            log::debug("=================打印订单信息3-111111==================================".$e);
+//            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
 //        dd($orderType);
 
-        log::debug("=================打印订单信息3==================================",$dataInfo->toArray());
+//        log::debug("=================打印订单信息3==================================",$dataInfo->toArray());
 //        dd($dataInfo);
         $consumer_uid = $dataInfo->user_id;
         $description = $dataInfo->description;
         $orderNo = $dataInfo->order_no;
-        log::debug("=================打印订单信息4==================================".$consumer_uid);
-        log::debug("=================打印订单信息5==================================".$description);
-        log::debug("=================打印订单信息6==================================".$orderNo);
-        log::debug("=================打印订单信息7==================================".$orderId);
+//        log::debug("=================打印订单信息4==================================".$consumer_uid);
+//        log::debug("=================打印订单信息5==================================".$description);
+//        log::debug("=================打印订单信息6==================================".$orderNo);
+//        log::debug("=================打印订单信息7==================================".$orderId);
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($orderId);
