@@ -155,6 +155,7 @@ class AddIntegral extends Command
                 return $orderType;
             }
         } catch (\Exception $e) {
+            log::debug("=================打印订单信息3-000==================================".$e);
         }
 
 //        dd($orderType);
