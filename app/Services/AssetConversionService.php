@@ -129,7 +129,7 @@ class AssetConversionService
             $assetData['converted']='iets';
             $assetData['amount_before_change'] = $fromBalance->amount;//a兑换的变动前数量
             $assetData['to_amount_before_change'] = $toBalance->amount;//b被兑换类型资产的变动前数量
-            $assetData['converted_to_amount_before_change'] = ($amount*$blArr['ietsBl'])/$blArr['usdtBl'];//b被兑换类型资产实际转换数量
+            $assetData['converted_to_amount_before_change'] = bcdiv(($amount*$blArr['ietsBl']),$blArr['usdtBl'],8);//b被兑换类型资产实际转换数量
         }elseif ($transformation=='iets'){
             $fromBalance = $userBalance_iets;
             $toBalance = $userBalance_usdt;
@@ -137,7 +137,7 @@ class AssetConversionService
             $assetData['converted']='usdt';
             $assetData['amount_before_change'] = $fromBalance->amount;//a兑换的变动前数量
             $assetData['to_amount_before_change'] = $toBalance->amount;//b被兑换类型资产的变动前数量
-            $assetData['converted_to_amount_before_change'] = ($amount*$blArr['usdtBl'])/$blArr['ietsBl'];//b被兑换类型资产实际转换数量
+            $assetData['converted_to_amount_before_change'] = bcdiv(($amount*$blArr['usdtBl']),$blArr['ietsBl'],8);//b被兑换类型资产实际转换数量
         }
 //dd($assetData);
             if (null === $fromBalance || bccomp($fromBalance->amount, $amount, 8) < 0) {
