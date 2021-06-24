@@ -75,7 +75,7 @@ class MyNingController extends Controller
     //自动审核测试
 //https://ceshi.catspawvideo.com/api/pushOrder
 //http://localhost:8081/api/pushOrder
-    public function pushOrder(){
+    public function pushOrder2(){
         set_time_limit(0);
         ini_set('max_execution_time', '0');
 //        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
@@ -110,6 +110,79 @@ class MyNingController extends Controller
 
 
     }
+
+
+    //自动审核测试
+//https://ceshi.catspawvideo.com/api/pushOrder
+//http://localhost:8081/api/pushOrder
+    public function pushOrder(){
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
+//        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
+        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
+//        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
+//dd($count);
+        if ($count){
+            $orderInfo = DB::table('order')
+                ->where('status',"!=",2)
+                ->where('pay_status',"!=","ddyc")
+                ->limit(20)->get()->toArray();
+
+//            dd($orderInfo);
+            foreach ($orderInfo as $k=>$v){
+//                dd($v->order_no);
+//                dd($v);
+
+            try {
+                $orderData = Order::find($v->id);
+                $orderService = new OrderService();
+                $orderType = $orderService->getDescription($v->id,$orderData);//订单类型
+//        dd($orderData);
+            }catch (\Exception $e){}
+
+//        dd($orderType);
+            if ($orderType=='LR' || $orderType=='HF' || $orderType=='YK' || $orderType=='MT'){
+                $dataInfo = $orderData->trade;
+            }elseif ($orderType=='VC'){
+                $dataInfo = $orderData->video;
+            }elseif ($orderType=='AT'){
+                $dataInfo = $orderData->air;
+            }elseif ($orderType=='UB'){
+//            $dataInfo = $orderData->video;
+                return false;
+            }else{
+                return $orderType;
+            }
+
+
+//dd($orderData->order_no);
+
+                if($orderData->order_no){
+                    (new OrderService_test())->completeOrder($v->order_no);
+                }
+
+            }
+
+            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
+//            return "<h4>今次自动完成审核1条记录，总共还有<font color='red'>".($count-1)."</font>条订单还需要审核</h4>";
+
+        }else{
+            return '<h4>所有订单审核完成</h4>';
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     //修改用户手机号
     public function updateUserPhone(Request $request){
