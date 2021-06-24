@@ -69,7 +69,7 @@ class GiveIetsController extends Controller
         //执行
         (new GiveIetsService())->transfer($user, $request->amount, $phone, $options);
 
-        return response()->json(['code'=>1, 'msg'=>'iets赠送成功']);
+        return response()->json(['code'=>1, 'msg'=>'赠送成功']);
     }
 
 //    /**获取转账信息

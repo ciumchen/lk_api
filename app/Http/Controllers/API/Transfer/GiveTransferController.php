@@ -69,7 +69,7 @@ class GiveTransferController extends Controller
         //执行
         (new GiveTransferService())->transfer($user, $request->amount, $phone, $options);
 
-        return response()->json(['code'=>1, 'msg'=>'usdt赠送成功']);
+        return response()->json(['code'=>1, 'msg'=>'赠送成功']);
     }
 
 //    /**获取转账信息
