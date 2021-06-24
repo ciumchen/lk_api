@@ -17,6 +17,7 @@ class UserAssetsInfoController extends Controller
             $bldateArr = explode('|', $zhbl);
             $assData['usdtBl'] = $bldateArr[0];
             $assData['ietsBl'] = $bldateArr[1];
+            $assData['zhkg'] = Setting::where('key','set_zh_stite')->value('value');
         }else{
             throw new LogicException('usdt兑换iets的比例参数错误');
         }
