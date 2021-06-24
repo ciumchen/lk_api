@@ -73,7 +73,7 @@ class AddIntegral extends Command
             }
 
             $orderId = $orderInfo['id'];
-            log::info("=================打印订单信息========".$orderInfo."==========================");
+            log::info("=================打印订单信息==================================",$orderInfo);
 //            $order_no = $orderInfo['trade__order']['order_no'];
             $orderldModer = new OrderIntegralLkDistribution();
             $todaytime = strtotime(date("Y-m-d"), time());
