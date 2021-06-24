@@ -244,7 +244,9 @@ class MyNingController extends Controller
 
         $assData = Assets::where('uid',$uid)->first();
         $assData->amount = $amount;
-        if($assData->save()){
+        $re = $assData->save();
+        dd($re);
+        if($re){
             return "账号解封成功";
         }else{
             return "账号解封失败";
