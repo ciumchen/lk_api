@@ -73,7 +73,7 @@ class AddIntegral extends Command
             }
 
             $orderId = $orderInfo['id'];
-            log::info("=================打印订单信息==================================",$orderInfo);
+            log::info("=================打印订单信息1==================================",$orderInfo);
 //            $order_no = $orderInfo['trade__order']['order_no'];
             $orderldModer = new OrderIntegralLkDistribution();
             $todaytime = strtotime(date("Y-m-d"), time());
@@ -141,6 +141,7 @@ class AddIntegral extends Command
             $orderData = Order::find($orderId);
             $orderService = new OrderService();
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
+            log::info("=================打印订单信息2==================================",$orderData);
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT') {
                 $dataInfo = $orderData->trade;
@@ -158,7 +159,7 @@ class AddIntegral extends Command
 
 //        dd($orderType);
 
-
+        log::info("=================打印订单信息3==================================",$dataInfo);
 //        dd($dataInfo);
         $consumer_uid = $dataInfo->user_id;
         $description = $dataInfo->description;
