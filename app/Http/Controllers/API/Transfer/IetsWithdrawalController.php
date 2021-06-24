@@ -61,7 +61,7 @@ class IetsWithdrawalController extends Controller
         (new IetsWithdrawalService())->transfer($user, $request->amount, $request->address, $options);
 
 
-        return response()->json(['code'=>1, 'msg'=>'提现成功']);
+        return response()->json(['code'=>1, 'msg'=>'划转成功']);
     }
 
     /**获取转账信息
