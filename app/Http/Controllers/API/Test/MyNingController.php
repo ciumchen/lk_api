@@ -78,11 +78,13 @@ class MyNingController extends Controller
     public function pushOrder(){
         set_time_limit(0);
         ini_set('max_execution_time', '0');
-        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
+//        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
+        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
 //        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
 //dd($count);
         if ($count){
-            $orderInfo = DB::table('order')->where('order.id','>','23314')
+            $orderInfo = DB::table('order')
+//                ->where('order.id','>','23314')
 //            $orderInfo = DB::table('order')
                 ->where('order.status',"!=",2)
                 ->where('order.pay_status',"!=","ddyc")
