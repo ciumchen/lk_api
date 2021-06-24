@@ -47,10 +47,10 @@ class AssetConversionService
 //        }
 
         //一小时只能划转1次
-        $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::ASSETS_NAME_USDT_TO_IETS)->latest('id')->first();
-        if ($lastWithdrawLog && now()->subHours(1)->lt($lastWithdrawLog->created_at)) {
-            throw new LogicException('一小时之内只能转换一次');
-        }
+//        $lastWithdrawLog = WithdrawLogs::where('uid', $user->id)->where('assets_type', AssetsType::ASSETS_NAME_USDT_TO_IETS)->latest('id')->first();
+//        if ($lastWithdrawLog && now()->subHours(1)->lt($lastWithdrawLog->created_at)) {
+//            throw new LogicException('一小时之内只能转换一次');
+//        }
 
 //        $todayWithdrawAmount = WithdrawLogs::where('created_at', '>=', Carbon::now()->startOfDay()->toDateTimeString())
 //            ->where('status', WithdrawLogs::STATUS_DONE)
