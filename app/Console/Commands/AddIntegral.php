@@ -62,7 +62,8 @@ class AddIntegral extends Command
         if($setValue==1){
 //            $orderInfo = Order::where("status",2)->where('pay_status','succeeded')->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
 //            $orderInfo = Order::where("status",2)->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
-            $orderInfo = Order::where("status",2)->where("line_up",1)->where('id','!=',27353)->with(['Trade_Order'])->orderBy('id','asc')->first();
+//            $orderInfo = Order::where("status",2)->where("line_up",1)->where('id','!=',27353)->with(['Trade_Order'])->orderBy('id','asc')->first();
+            $orderInfo = Order::where("status",2)->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
             if ($orderInfo!=null){
                 $orderInfo = $orderInfo->toArray();
             }else{
