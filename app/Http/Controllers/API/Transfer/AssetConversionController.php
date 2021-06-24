@@ -60,7 +60,8 @@ class AssetConversionController extends Controller
         //执行
         (new AssetConversionService())->transfer($user, $amount, $transformation,$converted, $options);
 
-        return response()->json(['code'=>1, 'msg'=>$transformation.'转换'.$converted.'成功']);
+//        return response()->json(['code'=>1, 'msg'=>$transformation.'转换'.$converted.'成功']);
+        return response()->json(['code'=>1, 'msg'=>'转换成功']);
     }
 
 }
