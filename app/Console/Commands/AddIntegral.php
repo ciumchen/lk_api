@@ -141,7 +141,7 @@ class AddIntegral extends Command
             $orderData = Order::find($orderId);
             $orderService = new OrderService();
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
-            log::info("=================打印订单信息2==================================",$orderData);
+            log::info("=================打印订单信息2==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT') {
                 $dataInfo = $orderData->trade;
@@ -159,7 +159,7 @@ class AddIntegral extends Command
 
 //        dd($orderType);
 
-        log::info("=================打印订单信息3==================================",$dataInfo);
+        log::info("=================打印订单信息3==================================",$dataInfo->toArray());
 //        dd($dataInfo);
         $consumer_uid = $dataInfo->user_id;
         $description = $dataInfo->description;
