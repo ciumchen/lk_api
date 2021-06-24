@@ -14,6 +14,9 @@ Route::any("getUserIntegral", "User\getIntegralController@getUserIntegral");
 //修改手机号
 Route::any("updateUserPhone", 'Test\MyNingController@updateUserPhone');
 
+//获取用户资产
+Route::any("getUserAssetInfo", 'Test\MyNingController@getUserAssetInfo');
+
 
 
 

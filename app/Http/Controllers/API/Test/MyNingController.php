@@ -10,10 +10,27 @@ use App\Services\OssService;
 use App\Models\Order;
 use App\Services\OrderService_test;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\LogicException;
+use App\Models\Address;
+use App\Models\Assets;
+use App\Models\AssetsLogs;
+use App\Models\AssetsType;
+use App\Models\BanList;
+use App\Models\Setting;
+use App\Models\WithdrawLogs;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use App\Models\VerifyCode;
+use App\Services\AddressService;
+use App\Services\AssetsService;
+use App\Services\TransferService;
+use App\Services\AssetConversionService;
 class MyNingController extends Controller
 {
     //test测试
-    public function test(){
+    public function test()
+    {
 //        $re = DB::select("select * form users");
         //查询当前用户的邀请人
 //        $invite_uid = DB::table("users")->where('id',1)->pluck('invite_uid')->toArray();
@@ -50,7 +67,8 @@ class MyNingController extends Controller
     }
 
     //图片上传oss测试
-    public function test2(Request $request){
+    public function test2(Request $request)
+    {
 //        echo 'test22222';
 //        var_dump($request->img);
 //        var_dump($request->file('img'));
@@ -65,7 +83,8 @@ class MyNingController extends Controller
     }
 
     //订单回调测试
-    public function orderTest(Request $request){
+    public function orderTest(Request $request)
+    {
 //        echo "测试积分添加";
         //更新 order 表审核状态
         $orderOn = $request->input('orderOn');
@@ -75,36 +94,37 @@ class MyNingController extends Controller
     //自动审核测试
 //https://ceshi.catspawvideo.com/api/pushOrder
 //http://localhost:8081/api/pushOrder
-    public function pushOrder2(){
+    public function pushOrder2()
+    {
         set_time_limit(0);
         ini_set('max_execution_time', '0');
 //        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
-        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
+        $count = Order::where('status', "!=", 2)->where('pay_status', "!=", "ddyc")->count();
 //        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
 //dd($count);
-        if ($count){
+        if ($count) {
             $orderInfo = DB::table('order')
 //                ->where('order.id','>','23314')
 //            $orderInfo = DB::table('order')
-                ->where('order.status',"!=",2)
-                ->where('order.pay_status',"!=","ddyc")
-                ->leftJoin('trade_order','order.id','=','trade_order.oid')
+                ->where('order.status', "!=", 2)
+                ->where('order.pay_status', "!=", "ddyc")
+                ->leftJoin('trade_order', 'order.id', '=', 'trade_order.oid')
                 ->limit(20)->get()->toArray();
 //                ->limit(1)->get()->toArray();
 
 //            dd($orderInfo);
-            foreach ($orderInfo as $k=>$v){
+            foreach ($orderInfo as $k => $v) {
 //                dd($v->order_no);
-                if($v->order_no){
+                if ($v->order_no) {
                     (new OrderService_test())->completeOrder($v->order_no);
                 }
 
             }
 
-            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
+            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>" . ($count - 20) . "</font>条订单还需要审核</h4>";
 //            return "<h4>今次自动完成审核1条记录，总共还有<font color='red'>".($count-1)."</font>条订单还需要审核</h4>";
 
-        }else{
+        } else {
             return '<h4>所有订单审核完成</h4>';
         }
 
@@ -115,94 +135,114 @@ class MyNingController extends Controller
     //自动审核测试
 //https://ceshi.catspawvideo.com/api/pushOrder
 //http://localhost:8081/api/pushOrder
-    public function pushOrder(){
+    public function pushOrder()
+    {
         set_time_limit(0);
         ini_set('max_execution_time', '0');
 //        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
-        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
+        $count = Order::where('status', "!=", 2)->where('pay_status', "!=", "ddyc")->count();
 //        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
 //dd($count);
-        if ($count){
+        if ($count) {
             $orderInfo = DB::table('order')
-                ->where('status',"!=",2)
-                ->where('pay_status',"!=","ddyc")
+                ->where('status', "!=", 2)
+                ->where('pay_status', "!=", "ddyc")
                 ->limit(20)->get()->toArray();
 
 //            dd($orderInfo);
-            foreach ($orderInfo as $k=>$v){
+            foreach ($orderInfo as $k => $v) {
 //                dd($v->order_no);
 //                dd($v);
 
-            try {
-                $orderData = Order::find($v->id);
-                $orderService = new OrderService();
-                $orderType = $orderService->getDescription($v->id,$orderData);//订单类型
+                try {
+                    $orderData = Order::find($v->id);
+                    $orderService = new OrderService();
+                    $orderType = $orderService->getDescription($v->id, $orderData);//订单类型
 //        dd($orderData);
-            }catch (\Exception $e){}
+                } catch (\Exception $e) {
+                }
 
 //        dd($orderType);
-            if ($orderType=='LR' || $orderType=='HF' || $orderType=='YK' || $orderType=='MT'){
-                $dataInfo = $orderData->trade;
-            }elseif ($orderType=='VC'){
-                $dataInfo = $orderData->video;
-            }elseif ($orderType=='AT'){
-                $dataInfo = $orderData->air;
-            }elseif ($orderType=='UB'){
+                if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT') {
+                    $dataInfo = $orderData->trade;
+                } elseif ($orderType == 'VC') {
+                    $dataInfo = $orderData->video;
+                } elseif ($orderType == 'AT') {
+                    $dataInfo = $orderData->air;
+                } elseif ($orderType == 'UB') {
 //            $dataInfo = $orderData->video;
-                return false;
-            }else{
-                return $orderType;
-            }
+                    return false;
+                } else {
+                    return $orderType;
+                }
 
 
 //dd($orderData->order_no);
 
-                if($orderData->order_no){
+                if ($orderData->order_no) {
                     (new OrderService_test())->completeOrder($v->order_no);
                 }
 
             }
 
-            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>".($count-20)."</font>条订单还需要审核</h4>";
+            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>" . ($count - 20) . "</font>条订单还需要审核</h4>";
 //            return "<h4>今次自动完成审核1条记录，总共还有<font color='red'>".($count-1)."</font>条订单还需要审核</h4>";
 
-        }else{
+        } else {
             return '<h4>所有订单审核完成</h4>';
         }
 
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
     //修改用户手机号
-    public function updateUserPhone(Request $request){
+    public function updateUserPhone(Request $request)
+    {
         $uid = $request->input('uid');
         $phone = $request->input('phone');
-        $userInfo = User::where('id',$uid)->first();
-        if($userInfo){
+        $userInfo = User::where('id', $uid)->first();
+        if ($userInfo) {
             $userInfo->phone = $phone;
             $re = $userInfo->save();
-            if ($re){
-                return "<h4>用户uid=".$uid."的手机号修改成功</h4>";
-            }else{
-                return "<h4>用户uid=".$uid."的手机号修改失败</h4>";
+            if ($re) {
+                return "<h4>用户uid=" . $uid . "的手机号修改成功</h4>";
+            } else {
+                return "<h4>用户uid=" . $uid . "的手机号修改失败</h4>";
             }
-        }else{
-            return "<h4>这个uid=".$uid."的用户不存在</h4>";
+        } else {
+            return "<h4>这个uid=" . $uid . "的用户不存在</h4>";
         }
 
     }
 
 
+    //对比用户资产和记录
+    public function getUserAssetInfo(Request $request)
+    {
+        $uid = $request->input('uid');
+        $user = User::where('id',$uid)->first();
+//        dd($user);
+        $iets_asset = AssetsType::where('assets_name', 'iets')->first();
+        $usdt_asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
+        $userBalance_iets = AssetsService::getBalanceData($user, $iets_asset);//获取资产
+        $userBalance_usdt = AssetsService::getBalanceData($user, $usdt_asset);//获取资产
+
+        $data['iets'] = $userBalance_iets->amount;
+        $data['iets_log'] = AssetsLogs::where('assets_type_id', $iets_asset->id)->where('uid', $user->id)->sum('amount');
+
+        $data['usdt'] = $userBalance_usdt->amount;//错
+        $data['usdt_log'] = AssetsLogs::where('assets_type_id', $usdt_asset->id)->where('uid', $user->id)->sum('amount');//对
+        dd($data);
+
+
+    }
+
 
 }
+
+
+
+
+
+
+
