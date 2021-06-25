@@ -171,17 +171,17 @@ class HotelOrder extends RequestBase
      * @param  string  $hotelId     酒店ID
      * @param  string  $inDate      入住时间，格式为：YYYY-MM-DD（默认2天后）
      * @param  string  $outDate     离开时间，格式为：YYYY-MM-DD（默认3天后）
-     * @param  bool    $excludeOta  排除禁止OTA裸售的数据，默认true
+     * @param  string  $excludeOta  排除禁止OTA裸售的数据，默认true
      *
      * @return mixed
      * @throws \Exception
      * @author lidong<947714443@qq.com>
      * @date   2021/6/25 0025
      */
-    public function getHotelRooms($hotelId, $inDate = '', $outDate = '', $excludeOta = '')
+    public function getHotelRooms($hotelId, $inDate = '', $outDate = '', $excludeOta = 'true')
     {
         $apiMethod = '1653-4';/* 接口标识 */
-        $excludeOta = empty($excludeOta) || $excludeOta != 'false';
+        $excludeOta = (empty($excludeOta) || $excludeOta != 'false') ? 'true' : 'false';
         $params = [
             'hotelId'    => $hotelId,
             'inDate'     => $inDate,
@@ -195,7 +195,6 @@ class HotelOrder extends RequestBase
                     $ShowApi->addTextPara($key, $val);
                 }
             }
-            dump($ShowApi);
             $response = $ShowApi->post();
             $result = $this->fetchResult($response->getContent());
             if (!array_key_exists('roomInfo', $result)) {
@@ -205,6 +204,57 @@ class HotelOrder extends RequestBase
                 throw  new Exception('房间信息获取失败：'.json_encode($result));
             }
             return $result[ 'roomInfo' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:
+     *
+     * @param  string  $hotelId        酒店ID
+     * @param  string  $roomId         价格计划id
+     * @param  string  $numberOfRooms  预订房间数
+     * @param  string  $inDate         入店时间
+     * @param  string  $outDate        离店时间
+     * @param  string  $child          入住儿童数
+     * @param  string  $man            成人数
+     * @param  string  $childAges      入住儿童的年龄数，注意如果有多名儿童的年龄请用,分隔
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/25 0025
+     */
+    public function getRoomPrice($hotelId, $roomId, $numberOfRooms, $inDate, $outDate, $child, $man, $childAges = '')
+    {
+        $apiMethod = '1653-5';/* 接口标识 */
+        $params = [
+            'hotelId'       => $hotelId,
+            'roomId'        => $roomId,
+            'numberOfRooms' => $numberOfRooms,
+            'inDate'        => $inDate,
+            'outDate'       => $outDate,
+            'child'         => $child,
+            'man'           => $man,
+            'childAges'     => $childAges,
+        ];
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            foreach ($params as $key => $val) {
+                if (!empty($val)) {
+                    $ShowApi->addTextPara($key, $val);
+                }
+            }
+            $response = $ShowApi->post();
+            $result = $this->fetchResult($response->getContent());
+            if (!array_key_exists('data', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('房间价格信息获取失败：'.json_encode($result));
+            }
+            return $result[ 'data' ];
         } catch (Exception $e) {
             throw $e;
         }

@@ -95,7 +95,17 @@ class WanweiController extends Controller
         $order_id = $request->input('order_id');
         $Order = Order::find($order_id);
         $UserMsgService = new UserMsgService();
-        $str = "{\"amount\":100.00,\"sys_order_id\":\"202106231518194782BCFB7F89B\",\"create_time\":\"2021-06-23 15:18:19\",\"open_id\":\"2088202878747694\",\"sign\":\"E332F01B705972EBBDC09CCE83479701\",\"type\":\"payment.success\",\"order_id\":\"PY_20210623151818936352\",\"app_id\":\"app_2ac357bae1ce441397\",\"pay_time\":\"2021-06-23 15:18:40\"}";
+        $str = "{
+            \"amount\":100.00,
+            \"sys_order_id\":\"202106231518194782BCFB7F89B\",
+            \"create_time\":\"2021-06-23 15:18:19\",
+            \"open_id\":\"2088202878747694\",
+            \"sign\":\"E332F01B705972EBBDC09CCE83479701\",
+            \"type\":\"payment.success\",
+            \"order_id\":\"PY_20210623151818936352\",
+            \"app_id\":\"app_2ac357bae1ce441397\",
+            \"pay_time\":\"2021-06-23 15:18:40\"
+        }";
         $data = json_decode($str, true);
         $data[ 'order_id' ] = 'PY_20210623104713910854';
         try {
@@ -153,7 +163,7 @@ class WanweiController extends Controller
                 $keyWords
             );
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new LogicException($e->getMessage());
         }
         return apiSuccess($res);
     }
@@ -161,18 +171,21 @@ class WanweiController extends Controller
     /**
      * Description:酒店支持城市
      *
+     * @param  \Illuminate\Http\Request  $request
+     *
      * @return string
-     * @throws \Exception
+     * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
      * @date   2021/6/25 0025
      */
     public function hotel2(Request $request)
     {
+        $all = $request->all();
         try {
             $HotelOrder = new HotelOrder();
             $res = $HotelOrder->getStandByCity();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new LogicException($e->getMessage());
         }
         return apiSuccess($res);
     }
@@ -197,11 +210,21 @@ class WanweiController extends Controller
             $HotelOrder = new HotelOrder();
             $res = $HotelOrder->getHotelDetails($hotelId);
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new LogicException($e->getMessage());
         }
         return apiSuccess($res);
     }
     
+    /**
+     * Description:房间信息查询
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/25 0025
+     */
     public function hotel4(Request $request)
     {
         $hotelId = $request->input('hotel_id');
@@ -215,8 +238,45 @@ class WanweiController extends Controller
             $HotelOrder = new HotelOrder();
             $res = $HotelOrder->getHotelRooms($hotelId, $inDate, $outDate, $excludeOta);
         } catch (Exception $e) {
-            throw $e;
-            throw new Exception($e->getMessage());
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($res);
+    }
+    
+    /**
+     * Description:获取房间实时价格
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/25 0025
+     */
+    public function hotel5(Request $request)
+    {
+        $hotelId = $request->input('hotel_id');
+        $roomId = $request->input('room_id');
+        $numberOfRooms = $request->input('num');
+        $inDate = $request->input('in_date');
+        $outDate = $request->input('out_date');
+        $child = $request->input('child');
+        $man = $request->input('man');
+        $childAges = $request->input('child_ages');
+        try {
+            $HotelOrder = new HotelOrder();
+            $res = $HotelOrder->getRoomPrice(
+                $hotelId,
+                $roomId,
+                $numberOfRooms,
+                $inDate,
+                $outDate,
+                $child,
+                $man,
+                $childAges
+            );
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
         }
         return apiSuccess($res);
     }

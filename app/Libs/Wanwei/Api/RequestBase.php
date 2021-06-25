@@ -34,7 +34,7 @@ class RequestBase
     {
         $url = $this->config->getApiUrl();//调用URL,根据情况改变此值
         if (!empty($apiMethod) && is_string($apiMethod)) {
-            $url = $url . '/' . $apiMethod;
+            $url = $url.'/'.$apiMethod;
         }
         $showapi_appid = $this->config->getAppId();
         $showapi_sign = $this->config->getAppSign();
@@ -55,14 +55,13 @@ class RequestBase
         $this->result = $result;
         try {
             $res = json_decode($result, true);
-            dd($res);
             if ($res == false) {
-                throw new Exception('结果解析失败-' . $result);
+                throw new Exception('结果解析失败-'.$result);
             }
             if ($res[ 'showapi_res_code' ] != '0') {
-                throw new Exception($res[ 'showapi_res_error' ] . ' showapi_res_id:' . $res[ 'showapi_res_id' ]);
+                throw new Exception($res[ 'showapi_res_error' ].' showapi_res_id:'.$res[ 'showapi_res_id' ]);
             }
-            return $res['showapi_res_body'];
+            return $res[ 'showapi_res_body' ];
         } catch (Exception $e) {
             throw $e;
         }
