@@ -56,6 +56,9 @@ class CountUserController extends Controller
 //        $data['consumerTodayFfNum'] = round($countProfitPrice*0.675/DB::table('users')->sum('lk'),2);
 
         $dataInfo = DB::table('order_integral_lk_distribution')->where('day',strtotime(date('Y-m-d',time())))->first();
+        if (!$dataInfo){
+            return false;
+        }
         $data['consumerTodayFfNum'] = round(($dataInfo->count_profit_price*0.675)/$data['consumerLk'],2);
 
     //消费者-昨日lk总数
