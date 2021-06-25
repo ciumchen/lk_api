@@ -66,10 +66,10 @@ class RegionUserService
         $cityData = CityNode::where('city', $code)->whereRaw('district is not null')->get(['district']);
         $districtDict = array_column(json_decode($cityData, 1), 'district');
         $districtData = BusinessData::select('district', DB::raw('count(*) as shopTotal'))
-            ->whereIn('district', $districtDict)
-            ->groupBy('district')
-            ->orderBy('district', 'asc')
-            ->get();
+                        ->whereIn('district', $districtDict)
+                        ->groupBy('district')
+                        ->orderBy('district', 'asc')
+                        ->get();
         $districtArr = json_decode($districtData, 1);
 
         //获取区级地理信息
@@ -78,8 +78,8 @@ class RegionUserService
 
         //获取每个区级地区的商家uid
         $disuserData = BusinessData::whereIn('district', $districtDict)
-            ->orderBy('district', 'asc')
-            ->get(['district', 'uid']);
+                        ->orderBy('district', 'asc')
+                        ->get(['district', 'uid']);
         $disuserDict = json_decode($disuserData, 1);
 
         //合并同一区级商家 uid
@@ -94,10 +94,10 @@ class RegionUserService
         foreach ($disuserRes as $key => $value)
         {
             $priceTotal = Order::select(DB::raw('sum(profit_price) as total'))
-                ->whereIn('business_uid', $value)
-                ->where(['status' => 2, 'name' => '录单'])
-                ->where('updated_at', '>=', $cityInfo->created_at)
-                ->get();
+                            ->whereIn('business_uid', $value)
+                            ->where(['status' => 2, 'name' => '录单'])
+                            ->where('updated_at', '>=', $cityInfo->created_at)
+                            ->get();
             $integralSum[$key]['priceTotal'] = json_decode($priceTotal, 1)[0]['total'];
         }
 
@@ -114,7 +114,7 @@ class RegionUserService
 
         //组装数据
         $cityArr['businessList'] = array_slice($districtArr, $start, $length);
-        $cityArr['inteTotal'] = sprintf('%.2f',array_sum(array_column($districtArr, 'priceTotal')) * 0.0125);
+        $cityArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($districtArr, 'priceTotal')) * 0.0125);
         $cityArr['region'] = $cityInfo->name;
         $cityArr['businessSum'] = $businessSum;
 
@@ -138,8 +138,8 @@ class RegionUserService
 
         //区级商家信息
         $businessList = BusinessData::where('district', $code)
-            ->orderBy('uid', 'asc')
-            ->get(['uid', 'name', 'contact_number']);
+                        ->orderBy('uid', 'asc')
+                        ->get(['uid', 'name', 'contact_number']);
 
         $businessData = json_decode($businessList, 1);
 
@@ -147,11 +147,11 @@ class RegionUserService
 
         //获取商家让利金额总和
         $priceTotal = Order::select(DB::raw('business_uid as uid, sum(profit_price) as total'))
-            ->whereIn('business_uid', $businessUids)
-            ->where(['status' => 2, 'name' => '录单'])
-            ->where('updated_at', '>=', $districtInfo->created_at)
-            ->groupBy('business_uid')
-            ->get();
+                        ->whereIn('business_uid', $businessUids)
+                        ->where(['status' => 2, 'name' => '录单'])
+                        ->where('updated_at', '>=', $districtInfo->created_at)
+                        ->groupBy('business_uid')
+                        ->get();
 
         $priceData = array_column(json_decode($priceTotal, 1), null, 'uid');
 
@@ -167,7 +167,7 @@ class RegionUserService
         $businessArr['businessList'] = array_slice($businessData, $start, $length);
         $businessArr['region'] = $districtInfo->name;
         $businessArr['businessSum'] = $businessSum;
-        $businessArr['inteTotal'] = sprintf('%.2f',array_sum(array_column($businessData, 'priceTotal')) * 0.0175);
+        $businessArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($businessData, 'priceTotal')) * 0.0175);
 
         //返回
         return $businessArr;
@@ -192,11 +192,11 @@ class RegionUserService
 
         //获取资产列表
         $assetsList = DB::table('assets_logs')
-            ->where(['uid' => $uid, 'operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
-            ->where('created_at', '>=', $time)
-            ->orderBy('created_at', 'desc')
-            ->forPage($page, $perPage)
-            ->get(['amount','created_at']);
+                        ->where(['uid' => $uid, 'operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
+                        ->where('created_at', '>=', $time)
+                        ->orderBy('created_at', 'desc')
+                        ->forPage($page, $perPage)
+                        ->get(['amount', 'created_at']);
 
         $assetsData = json_decode($assetsList, 1);
         $amountSum = array_sum(array_column($assetsData, 'amount'));
@@ -204,11 +204,11 @@ class RegionUserService
         //组装数据
         foreach ($assetsData as $key => $val)
         {
-            $assetsData[$key]['amount'] = sprintf('%.2f',$val['amount']);
+            $assetsData[$key]['amount'] = sprintf('%.2f', $val['amount']);
             $assetsData[$key]['name'] = '录单';
         }
         $assetsArr['assetsData'] = $assetsData;
-        $assetsArr['amountSum'] = sprintf('%.2f',$amountSum);
+        $assetsArr['amountSum'] = sprintf('%.2f', $amountSum);
 
         //返回
         return $assetsArr;
