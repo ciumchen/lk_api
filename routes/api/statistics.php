@@ -12,3 +12,6 @@ Route::any('shRlCount', 'Statistics\StatisticsController@shRlCount');
 
 //获取今日排队和剩余排队订单的消费金额的让利比例的统计（5%-10%-20%）
 Route::any('getGiveOderPrice', 'Statistics\StatisticsController@getGiveOderPrice');
+
+//获取各种类型订单让利比例的统计（5%-10%-20%）
+Route::any('getOrderRlbl', 'Statistics\StatisticsController@getOrderRlbl');
