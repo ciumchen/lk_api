@@ -92,7 +92,7 @@ class RegionUser extends Model
         return $assetsData;
     }
 
-    /**获取区级代理商家录单让利金额记录
+    /**获取区级代理商家录单让利订单列表
      * @param array $data
      * @return mixed
      * @throws

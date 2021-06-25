@@ -50,7 +50,7 @@ class RegionUserController extends Controller
         return (new RegionUser())->getAssets($request->code, $request->page, $request->perPage);
     }
 
-    /**获取区级代理商家录单让利金额记录
+    /**获取区级代理商家录单让利订单列表
      * @param Request $request
      * @return mixed
      * @throws
