@@ -70,7 +70,7 @@ class HotelOrder extends RequestBase
         $latitude = '',
         $keyWords = ''
     ) {
-        $apiMethod = '1715-2';/* 接口标识 */
+        $apiMethod = '1653-1';/* 接口标识 */
         $params = [
             'page'      => $page,
             'limit'     => $limit,
@@ -103,6 +103,106 @@ class HotelOrder extends RequestBase
                 throw  new Exception('酒店获取失败：'.json_encode($result));
             }
             return $result[ 'data' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:获取酒店支持的城市
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/25 0025
+     */
+    public function getStandByCity()
+    {
+        $apiMethod = '1653-2';/* 接口标识 */
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            $response = $ShowApi->post();
+            $result = $this->fetchResult($response->getContent());
+            if (!array_key_exists('cityNameList', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('酒店支持城市获取失败：'.json_encode($result));
+            }
+            return $result[ 'cityNameList' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:获取酒店详情
+     *
+     * @param  string  $hotelId
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/25 0025
+     */
+    public function getHotelDetails($hotelId)
+    {
+        $apiMethod = '1653-3';/* 接口标识 */
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            $ShowApi->addTextPara('hotelId', $hotelId);
+            $response = $ShowApi->post();
+            $result = $this->fetchResult($response->getContent());
+            if (!array_key_exists('data', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('酒店支持城市获取失败：'.json_encode($result));
+            }
+            return $result[ 'data' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description: 获取酒店信息
+     *
+     * @param  string  $hotelId     酒店ID
+     * @param  string  $inDate      入住时间，格式为：YYYY-MM-DD（默认2天后）
+     * @param  string  $outDate     离开时间，格式为：YYYY-MM-DD（默认3天后）
+     * @param  bool    $excludeOta  排除禁止OTA裸售的数据，默认true
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/25 0025
+     */
+    public function getHotelRooms($hotelId, $inDate = '', $outDate = '', bool $excludeOta = true)
+    {
+        $apiMethod = '1653-4';/* 接口标识 */
+        $params = [
+            'hotelId'    => $hotelId,
+            'inDate'     => $inDate,
+            'outDate'    => $outDate,
+            'excludeOta' => $excludeOta,
+        ];
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            foreach ($params as $key => $val) {
+                if (!empty($val)) {
+                    $ShowApi->addTextPara($key, $val);
+                }
+            }
+            $response = $ShowApi->post();
+            $result = $this->fetchResult($response->getContent());
+            if (!array_key_exists('roomInfo', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('房间信息获取失败：'.json_encode($result));
+            }
+            return $result[ 'roomInfo' ];
         } catch (Exception $e) {
             throw $e;
         }
