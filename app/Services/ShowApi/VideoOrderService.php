@@ -157,9 +157,17 @@ class VideoOrderService extends CommonService
             if ($Order->video->pay_status != '0') {
                 throw new Exception('订单 '.$Order->order_no.' 无法充值');
             }
-            $card_list = $this->getVideoCard($Order->video->item_id, $Order->order_no);
+            try {
+                $card_list = $this->getVideoCard($Order->video->item_id, $Order->order_no);
+            } catch (Exception $e) {
+                $Order->video->status = OrderVideo::STATUS_FAIL;
+                $Order->video->updated_at = date('Y-m-d H:i:s');
+                $Order->video->save();
+                throw $e;
+            }
             /* 视频订单状态更新 */
             $Order->video->card_list = json_encode($card_list);
+            $Order->video->status = OrderVideo::STATUS_SUCCESS;
             $Order->video->updated_at = date('Y-m-d H:i:s');
             $Order->video->save();
         } catch (Exception $e) {
