@@ -201,8 +201,11 @@ class MyNingController extends Controller
         $uid = $request->input('uid');
         $phone = $request->input('phone');
         $userInfo = User::where('id', $uid)->first();
-        $phoneUser = User::where('id', $phone)->first();
-        dd($phoneUser);
+        $phoneUser = User::where('phone', $phone)->first();
+
+        if ($phoneUser){
+            return "该手机号已被uid=".$phoneUser->id." 的用户使用，请更换其他手机号";
+        }
         if ($userInfo) {
             $userInfo->phone = $phone;
             $re = $userInfo->save();
