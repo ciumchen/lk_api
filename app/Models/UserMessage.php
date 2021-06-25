@@ -290,22 +290,22 @@ class UserMessage extends Model
                     $card_list = json_decode($val[ 'card_list' ], true);
                     $content = '您购买的卡密信息为：'.$goods_title.' ';
                     foreach ($card_list as $_k => $_val) {
-                       /* if (array_key_exists('cardNum', $_val)) {
-                            $content .= '卡号：'.$_val[ 'cardNum' ].' ';
-                        }*/
+                        /* if (array_key_exists('cardNum', $_val)) {
+                             $content .= '卡号：'.$_val[ 'cardNum' ].' ';
+                         }*/
                         if (array_key_exists('cardSign', $_val)) {
                             $content .= '卡密：'.$_val[ 'cardSign' ].' ';
                         }
-                        if (array_key_exists('cardExpDate', $_val)) {
+                        /*if (array_key_exists('cardExpDate', $_val)) {
                             $content .= '过期时间：'.$_val[ 'cardExpDate' ].' ';
-                        }
+                        }*/
                     }
                 }
                 $msgList[] = [
                     'id'      => $val[ 'id' ],
                     'title'   => $val[ 'title' ] ?: $name.'购买',
                     'time'    => $val[ 'created_at' ],
-                    'content' => $val[ 'content' ] ?: '本次购买'.$name.' '.$val[ 'price' ].' 元'.','.$content,
+                    'content' => $val[ 'content' ] ?: $content,
                 ];
             } else {
                 $notes = $name == '飞机票' ? '订单已完成' : '';
