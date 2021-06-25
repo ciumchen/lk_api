@@ -178,9 +178,10 @@ class HotelOrder extends RequestBase
      * @author lidong<947714443@qq.com>
      * @date   2021/6/25 0025
      */
-    public function getHotelRooms($hotelId, $inDate = '', $outDate = '', bool $excludeOta = true)
+    public function getHotelRooms($hotelId, $inDate = '', $outDate = '', $excludeOta = '')
     {
         $apiMethod = '1653-4';/* 接口标识 */
+        $excludeOta = empty($excludeOta) || $excludeOta != 'false';
         $params = [
             'hotelId'    => $hotelId,
             'inDate'     => $inDate,
@@ -194,6 +195,7 @@ class HotelOrder extends RequestBase
                     $ShowApi->addTextPara($key, $val);
                 }
             }
+            dump($ShowApi);
             $response = $ShowApi->post();
             $result = $this->fetchResult($response->getContent());
             if (!array_key_exists('roomInfo', $result)) {

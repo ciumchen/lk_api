@@ -55,6 +55,7 @@ class RequestBase
         $this->result = $result;
         try {
             $res = json_decode($result, true);
+            dd($res);
             if ($res == false) {
                 throw new Exception('结果解析失败-' . $result);
             }

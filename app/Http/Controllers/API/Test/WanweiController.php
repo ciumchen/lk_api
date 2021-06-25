@@ -207,8 +207,7 @@ class WanweiController extends Controller
         $hotelId = $request->input('hotel_id');
         $inDate = $request->input('in_date');
         $outDate = $request->input('out_date');
-        $excludeOta = $request->input('exclude_ota', true);
-        dd($excludeOta);
+        $excludeOta = $request->input('exclude_ota');
         if (empty($hotelId)) {
             throw new LogicException('酒店ID必须');
         }
@@ -216,6 +215,7 @@ class WanweiController extends Controller
             $HotelOrder = new HotelOrder();
             $res = $HotelOrder->getHotelRooms($hotelId, $inDate, $outDate, $excludeOta);
         } catch (Exception $e) {
+            throw $e;
             throw new Exception($e->getMessage());
         }
         return apiSuccess($res);
