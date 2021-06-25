@@ -201,6 +201,8 @@ class MyNingController extends Controller
         $uid = $request->input('uid');
         $phone = $request->input('phone');
         $userInfo = User::where('id', $uid)->first();
+        $phoneUser = User::where('id', $phone)->first();
+        dd($phoneUser);
         if ($userInfo) {
             $userInfo->phone = $phone;
             $re = $userInfo->save();

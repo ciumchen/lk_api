@@ -175,10 +175,15 @@ class StatisticsController extends Controller
             $data['yesterdayData']['price_20'] = $yesterdayData['price_20'];
         }
 
+//        //剩余订单统计 surplus
+//        $data['sypddd']['price_5'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',5)->sum('price');
+//        $data['sypddd']['price_10'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',10)->sum('price');
+//        $data['sypddd']['price_20'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',20)->sum('price');
+
         //剩余订单统计 surplus
-        $data['sypddd']['price_5'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',5)->sum('price');
-        $data['sypddd']['price_10'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',10)->sum('price');
-        $data['sypddd']['price_20'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',20)->sum('price');
+        $data['sypddd']['price_5'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',5)->count('id');
+        $data['sypddd']['price_10'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',10)->count('id');
+        $data['sypddd']['price_20'] = Order::where('status',2)->where('line_up',1)->where('profit_ratio',20)->count('id');
 
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
 
