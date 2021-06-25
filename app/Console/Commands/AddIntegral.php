@@ -106,6 +106,7 @@ class AddIntegral extends Command
             //控制添加积分
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
             $old_addCountProfitPrice = $LkBlData['count_profit_price'];
+            $LkBlData['dr_count'] = +1;
             if ($LkBlData['count_profit_price'] != 0) {
                 $lk_unit_price = Setting::where('key', 'lk_unit_price')->value('value');
                 if (($old_addCountProfitPrice * 0.675 / $LkBlData['count_lk']) < $lk_unit_price) {
