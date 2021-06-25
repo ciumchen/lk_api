@@ -447,7 +447,7 @@ class Order extends Model
      */
     public function setVideoOrder($uid, $money, $order_no)
     {
-        $profit_ratio = Setting::getSetting('ww_video_profit_ratio');
+        $profit_ratio = Setting::getSetting('set_business_rebate_scale_vc');
         $profit_price = $money * ($profit_ratio / 100);
         try {
             $this->uid = $uid;
