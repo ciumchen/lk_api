@@ -151,36 +151,9 @@ class MyNingController extends Controller
 
 //            dd($orderInfo);
             foreach ($orderInfo as $k => $v) {
-//                dd($v->order_no);
-//                dd($v);
-
-                try {
-                    $orderData = Order::find($v->id);
-                    $orderService = new OrderService();
-                    $orderType = $orderService->getDescription($v->id, $orderData);//订单类型
-//        dd($orderData);
-                } catch (\Exception $e) {
-                }
-
-//        dd($orderType);
-                if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT') {
-                    $dataInfo = $orderData->trade;
-                } elseif ($orderType == 'VC') {
-                    $dataInfo = $orderData->video;
-                } elseif ($orderType == 'AT') {
-                    $dataInfo = $orderData->air;
-                } elseif ($orderType == 'UB') {
-//            $dataInfo = $orderData->video;
-                    return false;
-                } else {
-                    return $orderType;
-                }
-
-
-//dd($orderData->order_no);
-
-                if ($orderData->order_no) {
-                    (new OrderService_test())->completeOrder($v->order_no);
+//dd($v->id);
+                if ($v->id) {
+                    (new OrderService_test())->completeOrder($v->id);
                 }
 
             }
