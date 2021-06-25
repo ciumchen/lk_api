@@ -305,7 +305,7 @@ class UserMessage extends Model
                     'id'      => $val[ 'id' ],
                     'title'   => $val[ 'title' ] ?: $name.'购买',
                     'time'    => $val[ 'created_at' ],
-                    'content' => $val[ 'content' ] ?: $content,
+                    'content' => ($val[ 'content' ] ?: $content).'（长按可复制卡密）',
                 ];
             } else {
                 $notes = $name == '飞机票' ? '订单已完成' : '';
