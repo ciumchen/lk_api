@@ -82,7 +82,7 @@ class RegionUser extends Model
         }
 
         //获取区级代理数据
-        $districtInfo = CityNode::where('district', $code)->first();
+        $districtInfo = $this->getDistrict($code);
 
         //获取数据
         $assetsData = (new RegionUserService())->getAssets($districtInfo, $page, $perPage);
@@ -90,5 +90,40 @@ class RegionUser extends Model
 
         //返回
         return $assetsData;
+    }
+
+    /**获取区级代理商家录单让利金额记录
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function getProfitAmount(array $data)
+    {
+        //获取区级代理数据
+        $districtInfo = $this->getDistrict($data['code']);
+
+        $res = Order::where(['business_uid' => $data['uid'], 'status' => 2, 'name' => '录单'])
+                ->where('updated_at', '>=', $districtInfo->created_at)
+                ->exists();
+        if (!$res)
+        {
+            throw new LogicException('该商家录单订单不存在');
+        }
+
+        $data['time'] = $districtInfo->created_at;
+
+        //获取数据
+        return (new RegionUserService())->getProfitAmount($data);
+
+    }
+
+    /**获取区级代理数据
+     * @param string $code
+     * @return mixed
+     * @throws
+     */
+    public function getDistrict(string $code)
+    {
+        return CityNode::where('district', $code)->first();
     }
 }

@@ -213,4 +213,46 @@ class RegionUserService
         //返回
         return $assetsArr;
     }
+
+    /**获取区级代理商家录单让利金额记录
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function getProfitAmount(array $data)
+    {
+        //订单列表
+        $orderInfo = Order::where(['business_uid' => $data['uid'], 'status' => 2, 'name' => '录单'])
+                        ->where('updated_at', '>=', $data['time'])
+                        ->orderBy('created_at', 'desc')
+                        ->forPage($data['page'], $data['perPage'])
+                        ->get(['name', 'profit_ratio', 'profit_price', 'created_at']);
+        $orderList = json_decode($orderInfo, 1);
+
+        //订单总数
+        $orderTotal = Order::where(['business_uid' => $data['uid'], 'status' => 2, 'name' => '录单'])
+                        ->where('updated_at', '>=', $data['time'])
+                        ->count();
+
+        //商家信息
+        $shopData = BusinessData::where('uid', $data['uid'])->first();
+        if (!$shopData)
+        {
+            throw new LogicException('该商家信息不存在');
+        }
+
+        //组装数据
+        foreach ($orderList as $key => $val)
+        {
+            $orderList[$key]['title'] = $val['name'] . ' ' . '让利比例' . intval($val['profit_ratio']) . '%';
+            $orderList[$key]['profit_amount'] = sprintf('%.2f', $val['profit_price'] * 0.0175);
+        }
+
+        //返回
+        return [
+            'orderList' => $orderList,
+            'orderTotal' => $orderTotal,
+            'shopName'   => $shopData->name,
+        ];
+    }
 }

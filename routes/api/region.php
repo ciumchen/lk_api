@@ -12,3 +12,6 @@ Route::any('get-district', 'Site\RegionUserController@getDistrict');
 
 //获取区级代理资产积分信息
 Route::any('get-assets', 'Site\RegionUserController@getAssets');
+
+//获取区级代理商家录单让利金额记录
+Route::any('get-profit-amount', 'Site\RegionUserController@getProfitAmount');
