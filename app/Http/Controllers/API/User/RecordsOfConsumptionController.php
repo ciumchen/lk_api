@@ -23,7 +23,7 @@ class RecordsOfConsumptionController extends Controller
         $data = (new Order())
             ->where("uid", $uid)
             ->where('status', 2)
-            ->orderBy('id', 'desc')
+            ->orderBy('created_at', 'desc')
             ->latest('id')
             ->forPage($page, $pageSize)
             ->get(['id','price','name','updated_at']);
