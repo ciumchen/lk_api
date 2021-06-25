@@ -189,5 +189,26 @@ class StatisticsController extends Controller
 
     }
 
+    //获取所有订单类型的让利比例
+    public function getOrderRlbl(){
+        $typeArr = [
+            'HF' => 'set_business_rebate_scale_hf',
+            'YK' => 'set_business_rebate_scale_yk',
+            'MT' => 'set_business_rebate_scale_mt',
+            'DD' => 'set_business_rebate_scale_dd',
+            'ZL' => 'set_business_rebate_scale_zl',
+            'AT' => 'set_business_rebate_scale_at',
+            'VC' => 'set_business_rebate_scale_vc',
+        ];
+        $data = array();
+        foreach ($typeArr as $k=>$v){
+            $data[$k] = Setting::where('key',$v)->value('value');
+        }
+
+        return $data;
+    }
+
 
 }
+
+

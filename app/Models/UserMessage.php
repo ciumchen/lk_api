@@ -296,9 +296,9 @@ class UserMessage extends Model
                         if (array_key_exists('cardSign', $_val)) {
                             $content .= '卡密：'.$_val[ 'cardSign' ].' ';
                         }
-                        /*if (array_key_exists('cardExpDate', $_val)) {
+                        if (array_key_exists('cardExpDate', $_val)) {
                             $content .= '过期时间：'.$_val[ 'cardExpDate' ].' ';
-                        }*/
+                        }
                     }
                 }
                 $msgList[] = [
