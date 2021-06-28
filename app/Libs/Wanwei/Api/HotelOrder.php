@@ -259,4 +259,97 @@ class HotelOrder extends RequestBase
             throw $e;
         }
     }
+    
+    /**
+     * Description:
+     *
+     * @param  string  $customerName        入住人信息，每个房间仅需填写1人。【多个人代表多个房间、使用逗号‘,’分隔】
+     * @param  string  $ratePlanId          价格计划Id
+     * @param  string  $hotelId             酒店ID
+     * @param  string  $contactName         联系人姓名
+     * @param  string  $contactPhone        联系人手机号码（酒店确认短信以及入住凭证号会发给这个手机号）
+     * @param  string  $inDate              入住时间，格式为：YYYY-MM-DD
+     * @param  string  $outDate             离开时间，格式为：YYYY-MM-DD
+     * @param  string  $man                 入住成人数，需和实施询价时填的一样
+     * @param  string  $customerArriveTime  客户到达时间 格式HH:mm:ss 例如09:20:30 表示早上9点20分30秒
+     * @param  string  $specialRemarks      特殊需求 可传入多个，格式：2,8。
+     *                                      0 无要求
+     *                                      2 尽量安排无烟房
+     *                                      8 尽量安排大床 仅当床型为“X张大床或X张双床”时，此选项才有效
+     *                                      10 尽量安排双床房 仅当床型为“X张大床或X张双床”时，此选项才有效
+     *                                      11 尽量安排吸烟房
+     *                                      12 尽量高楼层
+     *                                      15 尽量安排有窗房
+     *                                      16 尽量安排安静房间
+     *                                      18 尽量安排相近房间
+     * @param  string  $contactEmail        联系人邮箱
+     * @param  string  $childNum            入住儿童数，与实时询价时提交的应一致
+     * @param  string  $childAges           入住儿童的年龄，多个年龄用,分隔，与实时询价时提交的应一致
+     * @param  string  $callback            回调地址(需http开头，部分较高版本的ssl协议无法正常回调)，
+     *                                      请求方式POST，
+     *                                      回调参数
+     *                                      order(订单id)，
+     *                                      oldStatus(原订单状态)，
+     *                                      newStatus(新的订单状态)，
+     *                                      project(项目名，这里值为hotel)
+     *                                      只回调一次，不验证您的返回状态和参数
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/28 0028
+     */
+    public function setHotelOrder(
+        $customerName,
+        $ratePlanId,
+        $hotelId,
+        $contactName,
+        $contactPhone,
+        $inDate,
+        $outDate,
+        $man,
+        $customerArriveTime,
+        $specialRemarks = '',
+        $contactEmail = '',
+        $childNum = '',
+        $childAges = '',
+        $callback = ''
+    ) {
+        $apiMethod = '1653-6';/* 接口标识 */
+        $params = [
+            'customerName'       => $customerName,
+            'ratePlanId'         => $ratePlanId,
+            'hotelId'            => $hotelId,
+            'contactName'        => $contactName,
+            'contactPhone'       => $contactPhone,
+            'inDate'             => $inDate,
+            'outDate'            => $outDate,
+            'man'                => $man,
+            'customerArriveTime' => $customerArriveTime,
+            'specialRemarks'     => $specialRemarks,
+            'contactEmail'       => $contactEmail,
+            'childNum'           => $childNum,
+            'childAges'          => $childAges,
+            'callback'           => $callback,
+        ];
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            foreach ($params as $key => $val) {
+                if (!empty($val)) {
+                    $ShowApi->addTextPara($key, $val);
+                }
+            }
+            $response = $ShowApi->post();
+            $result = $this->fetchResult($response->getContent());
+            if (!array_key_exists('orderId', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('订单创建失败：'.json_encode($result));
+            }
+            return $result[ 'orderId' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
 }

@@ -280,4 +280,16 @@ class WanweiController extends Controller
         }
         return apiSuccess($res);
     }
+    
+    /**
+     * Description:
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/28 0028
+     */
+    public function hotel6(Request $request)
+    {
+    }
 }
