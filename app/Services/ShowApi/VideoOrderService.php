@@ -166,6 +166,7 @@ class VideoOrderService extends CommonService
                 throw $e;
             }
             /* 视频订单状态更新 */
+            $Order->video->pay_status = '1';
             $Order->video->card_list = json_encode($card_list);
             $Order->video->status = OrderVideo::STATUS_SUCCESS;
             $Order->video->updated_at = date('Y-m-d H:i:s');

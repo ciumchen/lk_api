@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Order;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Services\bmapi\VideoCardService;
 use App\Services\ShowApi\VideoOrderService;
 use Exception;
@@ -117,11 +118,11 @@ class VideoRechargeController extends Controller
      */
     public function rechargeWanWeiTest(Request $request)
     {
-        $genusId = $request->input('genus_id');
-        $order_no = $request->input('order_no');
+        $order_id = $request->input('order_id');
         try {
+            $Order = Order::find($order_id);
             $VideoService = new VideoOrderService();
-            $card_list = $VideoService->recharge($genusId, $order_no);
+            $card_list = $VideoService->recharge($order_id, $Order);
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
