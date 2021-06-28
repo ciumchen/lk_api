@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class OrderVideo
  *
+ * @package App\Models
  * @property int                             $id
  * @property string                          $order_no    订单号
  * @property int                             $user_id     充值用户ID
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string                          $item_id     会员充值 标准商品编号
  * @property int                             $create_type
  *           订单类型:1优酷会员,2迅雷会员,3土豆会员,4爱奇艺会员,5乐视会员,6好莱坞会员,7芒果TV移动PC端会员,8芒果TV全屏会员,9搜狐会员,10腾讯会员,
+ * @property string                          $channel     下单渠道:bm斑马力方,ww万维易源
+ * @property string|null                     $card_list   订单卡密信息
  * @property \Illuminate\Support\Carbon|null $created_at  创建时间
  * @property \Illuminate\Support\Carbon|null $updated_at  更新时间
  * @method static \Illuminate\Database\Eloquent\Builder|OrderVideo newModelQuery()
@@ -41,12 +44,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|OrderVideo whereTradeNo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderVideo whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderVideo whereUserId($value)
- * @mixin \Eloquent
- * @package App\Models
- * @property string                          $channel     下单渠道:bm斑马力方,ww万维易源
- * @property string|null                     $card_list   订单卡密信息
  * @method static \Illuminate\Database\Eloquent\Builder|OrderVideo whereCardList($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderVideo whereChannel($value)
+ * @mixin \Eloquent
  */
 class OrderVideo extends Model
 {
@@ -94,6 +94,16 @@ class OrderVideo extends Model
         self::CREATE_TYPE_MONGO_TV    => '芒果TV全屏会员',
         self::CREATE_TYPE_SOHU        => '搜狐会员',
         self::CREATE_TYPE_TENCENT     => '腾讯会员',
+    ];
+    
+    /**
+     * @var string[] 订单状态对应文字
+     */
+    public static $statusTexts = [
+        self::STATUS_DEFAULT => '未获取',
+        self::STATUS_SUCCESS => '获取成功',
+        self::STATUS_FAIL    => '获取异常',
+        self::STATUS_CANCEL  => '撤销',
     ];
     
     use HasFactory;
