@@ -798,6 +798,8 @@ class OrderService
                     $orderInfo->video->status = 0;
                     $orderInfo->video->updated_at = $data[ 'pay_time' ];
                     $orderInfo->video->save();
+                    $VideoOrderService = new VideoOrderService();
+                    $VideoOrderService->updateRechargeLogs($data, $description);
                     break;
                 case 'AT': /* 机票订单处理 */
                     $orderInfo->air->money = $data[ 'amount' ];
