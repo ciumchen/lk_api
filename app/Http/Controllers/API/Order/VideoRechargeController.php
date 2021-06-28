@@ -121,7 +121,7 @@ class VideoRechargeController extends Controller
         $order_no = $request->input('order_no');
         try {
             $VideoService = new VideoOrderService();
-            $card_list = $VideoService->getVideoCard($genusId, $order_no);
+            $card_list = $VideoService->recharge($genusId, $order_no);
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }

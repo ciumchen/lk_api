@@ -51,7 +51,7 @@ Route::any('ww-video-get-list', 'Order\VideoRechargeController@getWanWeiVideoLis
 /* 视频会员充值测试[斑马] */
 Route::any('video-recharge', 'Order\VideoRechargeController@rechargeTest');
 /* 视频会员充值测试[万维] */
-Route::any('video-recharge', 'Order\VideoRechargeController@rechargeWanWeiTest');
+Route::any('ww-video-recharge', 'Order\VideoRechargeController@rechargeWanWeiTest');
 /*********** 生活缴费 ************/
 //生活缴费查询[斑马]
 Route::any('utility-search', 'Order\UtilityController@getItemList');
