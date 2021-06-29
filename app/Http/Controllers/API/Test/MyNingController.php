@@ -234,7 +234,7 @@ class MyNingController extends Controller
 
     //初始化导入记录
     public function initDrOrderLog(Request $request){
-        $type = $request->input('type');
+        $type = $request->input('type');// mch_order
         $order_id = $request->input('order_id');
         if($order_id==''){
             $order_id = 0;
