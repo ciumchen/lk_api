@@ -61,7 +61,7 @@ class CreateOrderVideoTable extends Migration
                   ->nullable()
                   ->comment('更新时间');
         });
-        DB::statement('ALTER TABLE `order_utility_bill` comment "斑马力方生活缴费记录表";');
+        DB::statement('ALTER TABLE `order_utility_bill` comment "视频会员充值订单表";');
     }
     
     /**

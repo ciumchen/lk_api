@@ -261,7 +261,7 @@ class HotelOrder extends RequestBase
     }
     
     /**
-     * Description:
+     * Description:创建订单
      *
      * @param  string  $customerName        入住人信息，每个房间仅需填写1人。【多个人代表多个房间、使用逗号‘,’分隔】
      * @param  string  $ratePlanId          价格计划Id
@@ -348,6 +348,119 @@ class HotelOrder extends RequestBase
                 throw  new Exception('订单创建失败：'.json_encode($result));
             }
             return $result[ 'orderId' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:获取订单信息
+     *
+     * @param $orderId
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function getOrderDetails($orderId)
+    {
+        $apiMethod = '1653-7';
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            $ShowApi->addTextPara('orderId', $orderId);
+            $result = $ShowApi->post();
+            if (!array_key_exists('data', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('订单信息信息获取失败：'.json_encode($result));
+            }
+            return $result[ 'data' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description: 取消订单
+     *
+     * @param $orderId
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function cancelOrder($orderId)
+    {
+        $apiMethod = '1653-8';
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            $ShowApi->addTextPara('orderId', $orderId);
+            $result = $ShowApi->post();
+            if (!array_key_exists('updateTime', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('订单取消失败：'.json_encode($result));
+            }
+            return $result[ 'updateTime' ];
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:
+     *
+     * @param $orderId
+     *
+     * @return bool
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function payOrder($orderId)
+    {
+        $apiMethod = '1653-9';
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            $ShowApi->addTextPara('o', $orderId);
+            $result = $ShowApi->post();
+            if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+            }
+            return true;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:关键字搜索
+     *
+     * @param $keywords
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function getHotelByKeywords($keywords)
+    {
+        $apiMethod = '1653-12';
+        try {
+            $ShowApi = $this->getShowApi($apiMethod);
+            $ShowApi->addTextPara('keywords', $keywords);
+            $result = $ShowApi->post();
+            if (!array_key_exists('result', $result)) {
+                if (array_key_exists('ret_code', $result) && $result[ 'ret_code' ] != '0') {
+                    throw new Exception($result[ 'remark' ].'--'.json_encode($result));
+                }
+                throw  new Exception('酒店信息获取失败：'.json_encode($result));
+            }
+            return $result[ 'result' ];
         } catch (Exception $e) {
             throw $e;
         }
