@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Test;
 
 use App\Http\Controllers\Controller;
+use App\Models\LkshopOrder;
+use App\Models\LkshopOrderLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
@@ -226,6 +228,24 @@ class MyNingController extends Controller
             return "账号解封成功";
         }else{
             return "账号解封失败";
+        }
+
+    }
+
+    //初始化导入记录
+    public function initDrOrderLog(Request $request){
+        $type = $request->input('type');
+        $order_id = $request->input('order_id');
+        if($order_id==''){
+            $order_id = 0;
+        }
+        echo "初始化导入记录";
+        $logData = LkshopOrderLog::where('type',$type)->first();
+        $logData->order_id = $order_id;
+        if($logData->save()){
+            echo "初始化成功，order_id=".$order_id;
+        }else{
+            echo "初始化失败";
         }
 
     }
