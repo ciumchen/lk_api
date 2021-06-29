@@ -35,6 +35,8 @@ use App\Exceptions\LogicException;
  * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution wherePrice10($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution wherePrice20($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution wherePrice5($value)
+ * @property int|null $dr_count 导入订单数量统计
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderIntegralLkDistribution whereDrCount($value)
  */
 class OrderIntegralLkDistribution extends Model
 {

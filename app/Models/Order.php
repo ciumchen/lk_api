@@ -559,6 +559,27 @@ class Order extends Model
         return $this->hasOne(OrderUtilityBill::class, 'order_id', 'id');
     }
     
+    /**
+     * Description:
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function hotel()
+    {
+        return $this->hasOne(OrderHotel::class, 'order_id', 'id');
+    }
+    
+    /**
+     * Description: 格式化时间字段
+     *
+     * @param $value
+     *
+     * @return mixed|string
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
     public function getCreatedAtAttribute($value)
     {
         if ($value) {
@@ -571,6 +592,15 @@ class Order extends Model
         return $value;
     }
     
+    /**
+     * Description: 格式化时间字段
+     *
+     * @param $value
+     *
+     * @return mixed|string
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
     public function getUpdatedAtAttribute($value)
     {
         if ($value) {
