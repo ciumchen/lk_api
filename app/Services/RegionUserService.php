@@ -77,7 +77,7 @@ class RegionUserService
         $nameDict = array_column(json_decode($districtNames, 1), null, 'code');
 
         //获取每个区级地区的商家uid
-        $disuserData = BusinessData::whereIn('district', $districtDict)
+        $disuserData = BusinessData::where('city', $code)
                         ->orderBy('district', 'asc')
                         ->get(['district', 'uid']);
         $disuserDict = json_decode($disuserData, 1);
@@ -114,7 +114,7 @@ class RegionUserService
 
         //组装数据
         $cityArr['businessList'] = array_slice($districtArr, $start, $length);
-        $cityArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($districtArr, 'priceTotal')) * 0.0125);
+        $cityArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($integralSum, 'priceTotal')) * 0.0125);
         $cityArr['region'] = $cityInfo->name;
         $cityArr['businessSum'] = $businessSum;
 
@@ -250,7 +250,7 @@ class RegionUserService
         foreach ($orderList as $key => $val)
         {
             $orderList[$key]['title'] = $val['name'] . ' ' . '让利比例' . intval($val['profit_ratio']) . '%';
-            $orderList[$key]['profit_amount'] = sprintf('%.2f', $val['profit_price'] * 0.0175);
+            $orderList[$key]['profit_amount'] = sprintf('%.2f', $val['profit_price'] * 0.0125);
         }
 
         //返回
