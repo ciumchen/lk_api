@@ -199,7 +199,12 @@ class RegionUserService
                         ->get(['amount', 'created_at']);
 
         $assetsData = json_decode($assetsList, 1);
-        $amountSum = array_sum(array_column($assetsData, 'amount'));
+
+        //总金额
+        $amountSum = DB::table('assets_logs')
+                        ->where(['uid' => $uid, 'operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
+                        ->where('created_at', '>=', $time)
+                        ->sum('amount');
 
         //组装数据
         foreach ($assetsData as $key => $val)
