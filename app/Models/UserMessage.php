@@ -395,12 +395,12 @@ class UserMessage extends Model
     public function delReddot(int $uid)
     {
         (new UserMessage())
-            ->where(function ($query) use ($uid) {
-                $query->where('user_id', $uid)
-                      ->where('deleted_at', null)
-                      ->whereIn('type', [1, 2, 3]);
-            })
-            ->delete();
+            ->where(function($query) use ($uid){
+            $query->where('user_id', $uid)
+                ->where('deleted_at', null)
+                ->whereNotIn('type', [8]);
+        })
+        ->delete();
     }
     
     /**获取系统消息小红点

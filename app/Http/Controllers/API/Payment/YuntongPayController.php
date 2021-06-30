@@ -37,12 +37,20 @@ class YuntongPayController extends Controller
         $data = $request->all();
         $uid = $data[ 'uid' ] ?: 0;
         $tradeOrder = new TradeOrder();
+
+        $priceList = [];
+        if (in_array($data['description'], ['HF', 'ZL', 'MT', 'YK']))
+        {
+            $type = $this->sysPriceType($data['description']);
+            $priceList = (new Setting())->getSysPrice($type);
+        }
+        
         //判断支付金额
-        if (!in_array($data[ 'money' ], [50, 100, 200]) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
+        if (!in_array($data[ 'money' ], $priceList) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
             throw new LogicException('话费充值金额不在可选值范围内');
-        } elseif (!in_array($data[ 'money' ], [300, 500, 1000]) && $data[ 'description' ] == "MT") {
+        } elseif (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "MT") {
             throw new LogicException('美团充值金额不在可选值范围内');
-        } elseif (!in_array($data[ 'money' ], [100, 200, 500, 1000]) && $data[ 'description' ] == "YK") {
+        } elseif (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "YK") {
             throw new LogicException('油卡充值金额不在可选值范围内');
         }
         //检查用户当月消费金额
@@ -613,5 +621,35 @@ class YuntongPayController extends Controller
             throw $e;
             throw new LogicException($e->getMessage());
         }
+    }
+
+    /**
+     * 设置充值金额参数
+     * @param string $description
+     * @return string
+     */
+    public function sysPriceType(string $description)
+    {
+        switch ($description)
+        {
+            case "MT":
+                $priceType = 'mt';
+                break;
+            case "HF":
+                $priceType = 'hf';
+                break;
+            case "YK":
+                $priceType = 'yk';
+                break;
+            case "DD":
+                $priceType = 'dd';
+                break;
+            case "ZL":
+                $priceType = 'zl';
+                break;
+            default:
+            $priceType = '';
+        }
+        return $priceType;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use App\Exceptions\LogicException;
 
 /**
  * App\Models\Setting
@@ -46,5 +47,38 @@ class Setting extends Model
         $data = explode('|', $data);
 
         return $data;
+    }
+
+    /**判断参数是否存在
+     * @param $key
+     * @return mixed
+     * @throws
+     */
+    public function isSettings($key)
+    {
+        $res = Setting::where('key', $key)->exists();
+        if (!$res)
+        {
+            throw new LogicException('该配置参数信息不存在');
+        }
+    }
+
+    /**获取充值金额
+     * @param string $type
+     * @return mixed
+     * @throws
+     */
+    public function getSysPrice($type)
+    {
+        //组装key
+        $key = 'sys_price_' . $type;
+        $this->isSettings($key);
+
+        //获取数据
+        $priceArr = self::getManySetting($key);
+
+        //升序排序返回
+        sort($priceArr);
+        return $priceArr;
     }
 }
