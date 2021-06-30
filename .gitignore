@@ -24,3 +24,4 @@ nginx.htaccess
 /common/logs/prod
 .phpstorm.meta.php
 .php-cs-fixer.cache
+psalm.xml
