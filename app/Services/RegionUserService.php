@@ -250,7 +250,7 @@ class RegionUserService
         foreach ($orderList as $key => $val)
         {
             $orderList[$key]['title'] = $val['name'] . ' ' . '让利比例' . intval($val['profit_ratio']) . '%';
-            $orderList[$key]['profit_amount'] = sprintf('%.2f', $val['profit_price'] * 0.0125);
+            $orderList[$key]['profit_amount'] = sprintf('%.2f', $val['profit_price'] * 0.0175);
         }
 
         //返回
