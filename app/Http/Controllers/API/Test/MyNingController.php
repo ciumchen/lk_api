@@ -250,6 +250,14 @@ class MyNingController extends Controller
 
     }
 
+    //修改订单名
+    public function updateShopOrderName(Request $request){
+        $logData = DB::table('lkshop_order')->update(['name'=>'商户订单']);
+
+        dd($logData);
+
+    }
+
 
 }
 

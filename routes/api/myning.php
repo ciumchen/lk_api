@@ -23,6 +23,8 @@ Route::any("xfUserAssetFH", 'Test\MyNingController@xfUserAssetFH');
 //初始化导入记录
 Route::any("initDrOrderLog", 'Test\MyNingController@initDrOrderLog');
 
+Route::any("updateShopOrderName", 'Test\MyNingController@updateShopOrderName');
+
 
 
 
