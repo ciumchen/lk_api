@@ -105,7 +105,7 @@ class RegionUserService
         foreach ($districtArr as $key => $val)
         {
             $districtArr[$key]['name'] = $nameDict[$val['district']]['name'];
-            $districtArr[$key]['priceTotal'] = $integralSum[$val['district']]['priceTotal'];
+            $districtArr[$key]['priceTotal'] = sprintf('%.2f', $integralSum[$val['district']]['priceTotal'] * 0.0175);
         }
 
         //分页
@@ -213,7 +213,7 @@ class RegionUserService
             $assetsData[$key]['name'] = '录单';
         }
         $assetsArr['assetsData'] = $assetsData;
-        $assetsArr['amountSum'] = sprintf('%.2f', $amountSum);
+        $assetsArr['amountSum'] = sprintf('%.2f', $amountSum * 0.0175);
 
         //返回
         return $assetsArr;
