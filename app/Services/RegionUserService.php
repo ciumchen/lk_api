@@ -165,6 +165,8 @@ class RegionUserService
         $start = ($page - 1) * $perPage;
         $length = $perPage;
 
+        //按积分排序
+        array_multisort(array_column($businessData, 'priceTotal'), SORT_DESC, $businessData);
         $businessArr['businessList'] = array_slice($businessData, $start, $length);
         $businessArr['region'] = $districtInfo->name;
         $businessArr['businessSum'] = $businessSum;
