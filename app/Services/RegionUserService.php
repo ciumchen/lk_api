@@ -213,7 +213,7 @@ class RegionUserService
             $assetsData[$key]['name'] = '录单';
         }
         $assetsArr['assetsData'] = $assetsData;
-        $assetsArr['amountSum'] = sprintf('%.2f', $amountSum * 0.0175);
+        $assetsArr['amountSum'] = sprintf('%.2f', $amountSum);
 
         //返回
         return $assetsArr;
