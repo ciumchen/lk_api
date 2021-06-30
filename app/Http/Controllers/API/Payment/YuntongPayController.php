@@ -46,11 +46,11 @@ class YuntongPayController extends Controller
         }
         
         //判断支付金额
-        if (!in_array($data[ 'money' ], $priceList) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
+        if (!in_array($data[ 'money' ], [50, 100, 200]) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
             throw new LogicException('话费充值金额不在可选值范围内');
         } elseif (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "MT") {
             throw new LogicException('美团充值金额不在可选值范围内');
-        } elseif (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "YK") {
+        } elseif (!in_array($data[ 'money' ], [100, 200, 500, 1000]) && $data[ 'description' ] == "YK") {
             throw new LogicException('油卡充值金额不在可选值范围内');
         }
         //检查用户当月消费金额
