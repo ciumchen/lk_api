@@ -324,7 +324,7 @@ class UserMessage extends Model
             ->where(function($query) use ($uid){
             $query->where('user_id', $uid)
                 ->where('deleted_at', null)
-                ->whereIn('type', [1, 2, 3]);
+                ->whereNotIn('type', [8]);
         })
         ->delete();
     }
