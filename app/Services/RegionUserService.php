@@ -157,7 +157,7 @@ class RegionUserService
 
         foreach ($businessData as $key => $val)
         {
-            $businessData[$key]['priceTotal'] = $priceData[$val['uid']]['total'] ?? 0;
+            $businessData[$key]['priceTotal'] = sprintf('%.2f', ($priceData[$val['uid']]['total'] ?? 0) * 0.0175);
         }
 
         //分页
@@ -167,7 +167,7 @@ class RegionUserService
         $businessArr['businessList'] = array_slice($businessData, $start, $length);
         $businessArr['region'] = $districtInfo->name;
         $businessArr['businessSum'] = $businessSum;
-        $businessArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($businessData, 'priceTotal')) * 0.0175);
+        $businessArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($businessData, 'priceTotal')));
 
         //返回
         return $businessArr;
@@ -250,7 +250,7 @@ class RegionUserService
         foreach ($orderList as $key => $val)
         {
             $orderList[$key]['title'] = $val['name'] . ' ' . '让利比例' . intval($val['profit_ratio']) . '%';
-            $orderList[$key]['profit_amount'] = sprintf('%.2f', $val['profit_price'] * 0.0175);
+            $orderList[$key]['profit_amount'] = $val['profit_price'];
         }
 
         //返回
