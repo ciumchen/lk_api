@@ -201,6 +201,7 @@ class RegionUserService
         $assetsList = DB::table('assets_logs')
                         ->whereIn('uid', $uidDict)
                         ->where(['operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
+                        ->orWhere('remark', '市节点运营返佣')
                         ->where('created_at', '>=', $time)
                         ->orderBy('created_at', 'desc')
                         ->forPage($page, $perPage)
@@ -212,6 +213,7 @@ class RegionUserService
         $amountSum = DB::table('assets_logs')
                         ->whereIn('uid', $uidDict)
                         ->where(['operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
+                        ->orWhere('remark', '市节点运营返佣')
                         ->where('created_at', '>=', $time)
                         ->sum('amount');
 
