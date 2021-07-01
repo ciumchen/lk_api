@@ -8,7 +8,7 @@ Route::any('pushOrder', 'Test\MyNingController@pushOrder');
 //添加用户积分和商家积分
 Route::any("addUserIntegral", "User\AddIntegralController@addUserIntegral");
 
-//获取用户待添加积分
+//获取消费者和商家排队积分记录
 Route::any("getUserIntegral", "User\getIntegralController@getUserIntegral");
 
 //修改手机号
