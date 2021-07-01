@@ -114,6 +114,7 @@ class RegionUserService
         $length = $perPage;
 
         //组装数据
+        array_multisort(array_column($districtArr, 'priceTotal'), SORT_DESC, $districtArr);
         $cityArr['businessList'] = array_slice($districtArr, $start, $length);
         $cityArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($integralSum, 'priceTotal')) * 0.0125);
         $cityArr['region'] = $cityInfo->name;
