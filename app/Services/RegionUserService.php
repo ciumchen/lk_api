@@ -186,12 +186,9 @@ class RegionUserService
     public function getCityAssets($cityInfo, int $page, int $perPage)
     {
         $time = $cityInfo->created_at;
+        $uid = $cityInfo->uid;
 
-        //获取市级区域区级代理信息
-        $cityDisList = (new RegionUser)->getCityAll($cityInfo->city);
-        $uidDict = array_column(json_decode($cityDisList, 1), 'uid');
-
-        $res = AssetsLogs::whereIn('uid', $uidDict)->exists();
+        $res = AssetsLogs::where('uid', $uid)->exists();
         if (!$res)
         {
             throw new LogicException('该市级代理资产记录不存在');
@@ -199,9 +196,7 @@ class RegionUserService
 
         //获取资产列表
         $assetsList = DB::table('assets_logs')
-                        ->whereIn('uid', $uidDict)
-                        ->where(['operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
-                        ->orWhere('remark', '市节点运营返佣')
+                        ->where(['uid' => $uid, 'operate_type' => 'city_rebate', 'remark' => '市节点运营返佣'])
                         ->where('created_at', '>=', $time)
                         ->orderBy('created_at', 'desc')
                         ->forPage($page, $perPage)
@@ -211,9 +206,7 @@ class RegionUserService
 
         //总金额
         $amountSum = DB::table('assets_logs')
-                        ->whereIn('uid', $uidDict)
-                        ->where(['operate_type' => 'district_rebate', 'remark' => '区级节点运营返佣'])
-                        ->orWhere('remark', '市节点运营返佣')
+                        ->where(['uid' => $uid, 'operate_type' => 'city_rebate', 'remark' => '市节点运营返佣'])
                         ->where('created_at', '>=', $time)
                         ->sum('amount');
 
