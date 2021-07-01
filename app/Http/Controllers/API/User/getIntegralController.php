@@ -13,6 +13,9 @@ class getIntegralController extends Controller
         $uid = $request->input('uid');
         $role = $request->input('role');
 
+        //排队积分统计
+        $data['countJf'] = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->sum('to_be_added_integral');
+
         $allOrderData = Order::where('status',2)->where('line_up',1)->get();
         if ($allOrderData!='[]'){
             foreach ($allOrderData->toArray() as $k=>$v){
