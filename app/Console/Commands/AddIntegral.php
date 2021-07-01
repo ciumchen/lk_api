@@ -152,6 +152,8 @@ class AddIntegral extends Command
                 $dataInfo = $orderData->air;
             } elseif ($orderType == 'UB') {
                 $dataInfo = $orderData->utility;
+            } elseif ($orderType == 'SHOP') {
+                $dataInfo = $orderData->lkshopOrder;
             } else {
 //                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;

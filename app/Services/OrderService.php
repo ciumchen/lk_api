@@ -20,10 +20,10 @@ use App\Services\ShowApi\VideoOrderService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\LkshopOrder;
 class OrderService
 {
-    
+
     /**完成订单
      *
      * @param  string  $orderNo
@@ -96,7 +96,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-    
+
     /**完成订单
      *
      * @param  string  $orderNo
@@ -182,7 +182,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-    
+
     /**完成订单
      *
      * @param  string  $orderNo
@@ -273,7 +273,7 @@ class OrderService
             DB::rollBack();
         }
     }
-    
+
     /**返佣
      *
      * @param $order
@@ -526,7 +526,7 @@ class OrderService
             );
         $this->updateRebateData($welfareAmount, $shareAmount, $market, $platformAmount, $order->price, $user);
     }
-    
+
     /**找盟主
      *
      * @param       $invite_uid
@@ -559,7 +559,7 @@ class OrderService
             return false;
         }
     }
-    
+
     /**更新返佣统计
      *
      * @param $welfare
@@ -583,7 +583,7 @@ class OrderService
         $rebateData->total_consumption = bcadd($price, $rebateData->total_consumption, 8);
         $rebateData->save();
     }
-    
+
     //邀请补贴和邀请人积分添加
     //商户uid,实际让利比例，订单分类 HF YK MT,消费者uid
     public function addInvitePoints($order_business_uid, $order_profit_price, $description, $uid, $orderNo)
@@ -642,7 +642,7 @@ class OrderService
             $description
         );
     }
-    
+
     /**
      * Description:
      *
@@ -726,7 +726,7 @@ class OrderService
             DB::rollBack();
         }
     }
-    
+
     /**
      * Description:
      * TODO:判断订单类型
@@ -761,6 +761,9 @@ class OrderService
             if (!empty($Order->utility)) { /* 生活缴费 */
                 $description = 'UB';
             }
+            if (!empty($Order->lkshopOrder)) { /* 生活缴费 */
+                $description = 'SHOP';
+            }
             /* 判断 是否已经获取到对应类型的订单*/
             if (empty($description)) {
                 throw new Exception('没有对应类型的订单');
@@ -770,7 +773,7 @@ class OrderService
         }
         return $description;
     }
-    
+
     /**
      * Description:更新对应子订单
      *
@@ -820,7 +823,7 @@ class OrderService
             throw $e;
         }
     }
-    
+
     /**
      * Description:支付前更新子订单
      *
@@ -856,7 +859,7 @@ class OrderService
             throw $e;
         }
     }
-    
+
     /**
      * Description:完成订单后的后续操作[充值等]
      *
