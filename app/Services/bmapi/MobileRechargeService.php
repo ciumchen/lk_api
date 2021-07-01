@@ -3,7 +3,7 @@
 namespace App\Services\bmapi;
 
 use App\Models\Setting;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
 use App\Models\TradeOrder;
@@ -14,15 +14,14 @@ use Log;
 
 class MobileRechargeService extends BaseService
 {
-
     /**
      * 生成充值订单
      *
-     * @param \App\Models\User $user   付款用户数据模型
-     * @param string           $mobile 充值手机
-     * @param float            $money  充值金额
+     * @param  \App\Models\User  $user    付款用户数据模型
+     * @param  string            $mobile  充值手机
+     * @param  float             $money   充值金额
      *
-     * @return mixed
+     * @return \App\Models\Order|\App\Models\Order[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      * @throws \Exception
      * @throws \Throwable
      */
@@ -51,13 +50,13 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
         DB::commit();
-        return $Order->find($order_id);
+        return Order::find($order_id);
     }
-
+    
     /**
-     * @param $user
-     * @param $mobile
-     * @param $money
+     * @param  \App\Models\User  $user
+     * @param  string            $mobile
+     * @param  float             $money
      *
      * @return mixed
      * @throws \Throwable
@@ -87,9 +86,9 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
         Db::commit();
-        return $Order->find($order_id);
+        return Order::find($order_id);
     }
-
+    
     /**
      * 话费代充订单数据创建
      *
@@ -102,7 +101,7 @@ class MobileRechargeService extends BaseService
     public function createDlOrderParams($user, $money, $order_no)
     {
         $date = date("Y-m-d H:i:s");
-        $profit_ratio = Setting::where('key','set_business_rebate_scale_zl')->value('value');
+        $profit_ratio = Setting::getSetting('set_business_rebate_scale_zl');
         $profit_price = $money * ($profit_ratio / 100);
         return [
             'uid'          => $user->id,
@@ -119,7 +118,7 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-
+    
     /**
      * trade_order 表代充订单数据创建
      *
@@ -132,7 +131,7 @@ class MobileRechargeService extends BaseService
     public function createDlTradeOrderParams($user, $money, $order_no, $mobile, $order_id)
     {
         $date = date("Y-m-d H:i:s");
-        $profit_ratio = (Setting::where('key','set_business_rebate_scale_zl')->value('value'))/100;
+        $profit_ratio = (Setting::where('key', 'set_business_rebate_scale_zl')->value('value')) / 100;
         $profit_price = $money * $profit_ratio;
         return [
             'user_id'       => $user->id,
@@ -156,7 +155,7 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-
+    
     /**
      * TradeOrder 表数据组装
      *
@@ -195,14 +194,14 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-
+    
     /**
      * Order 表数据组装
      *
-     * @param \App\Models\User $user     充值用户模型数据
-     * @param float            $money    充值金额
+     * @param  \App\Models\User  $user      充值用户模型数据
+     * @param  float             $money     充值金额
      *
-     * @param string           $order_no 订单号
+     * @param  string            $order_no  订单号
      *
      * @return array
      */
@@ -226,13 +225,13 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-
+    
     /**
      * 斑马手机充值检查
      * 订单生成前调用
      *
-     * @param string $mobile
-     * @param float  $money
+     * @param  string  $mobile
+     * @param  float   $money
      *
      * @return bool
      * @throws \Exception
@@ -253,7 +252,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-
+    
     /**
      * 回调处理订单状态
      *
@@ -295,17 +294,17 @@ class MobileRechargeService extends BaseService
             $rechargeInfo->updated_at = $data[ 'timestamp' ];
             $rechargeInfo->save();
         } catch (Exception $e) {
-            Log::debug('banMaNotify-Error:' . $e->getMessage(), [json_encode($data)]);
+            Log::debug('banMaNotify-Error:'.$e->getMessage(), [json_encode($data)]);
             throw $e;
         }
     }
-
+    
     /**
      * 订单充值
      * 付款成功后调用
      *
-     * @param int    $order_id 订单ID
-     * @param string $order_no 订单编号
+     * @param  int     $order_id  订单ID
+     * @param  string  $order_no  订单编号
      *
      * @return bool
      * @throws \Exception
@@ -325,14 +324,14 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-
+    
     /**
      * 手机充值
      *
-     * @param string $mobile
-     * @param float  $money
-     * @param string $order_no
-     * @param string $notify_url
+     * @param  string  $mobile
+     * @param  float   $money
+     * @param  string  $order_no
+     * @param  string  $notify_url
      *
      * @return array
      * @throws \Exception
@@ -354,20 +353,20 @@ class MobileRechargeService extends BaseService
                     ->getResult();
             $bill = $PayBill->getBill();
         } catch (Exception $e) {
-            Log::debug('BanMaMobilePay-Error:' . $e->getMessage(), ['BILL:' . json_encode($PayBill->getBill())]);
+            Log::debug('BanMaMobilePay-Error:'.$e->getMessage(), ['BILL:'.json_encode($PayBill->getBill())]);
             throw  $e;
         }
         return $bill;
     }
-
+    
     /**
      * 生成手机充值订单
      *
-     * @param int    $order_id 订单[order]表ID
-     * @param string $order_no 订单号
-     * @param int    $uid      用户ID
-     * @param string $mobile   充值电话
-     * @param float  $money    充值金额
+     * @param  int     $order_id  订单[order]表ID
+     * @param  string  $order_no  订单号
+     * @param  int     $uid       用户ID
+     * @param  string  $mobile    充值电话
+     * @param  float   $money     充值金额
      *
      * @return mixed
      * @throws \Exception
@@ -391,13 +390,13 @@ class MobileRechargeService extends BaseService
         }
         return $MobileOrder;
     }
-
+    
     /**
      * 手机充值订单表更新
      *
-     * @param int                                  $order_id       订单ID
-     * @param array                                $bill           第三方返回账单信息
-     * @param \App\Models\OrderMobileRecharge|null $MobileRecharge 手机充值记录表
+     * @param  int                                   $order_id        订单ID
+     * @param  array                                 $bill            第三方返回账单信息
+     * @param  \App\Models\OrderMobileRecharge|null  $MobileRecharge  手机充值记录表
      *
      * @throws \Exception
      */
