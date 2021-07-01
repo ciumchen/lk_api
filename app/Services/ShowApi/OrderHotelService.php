@@ -2,8 +2,10 @@
 
 namespace App\Services\ShowApi;
 
+use App\Exceptions\LogicException;
 use Exception;
 use Wanwei\Api\HotelOrder;
+use Wanwei\Api\RequestBase;
 
 class OrderHotelService
 {
@@ -64,6 +66,46 @@ class OrderHotelService
                 $latitude,
                 $keyWords
             );
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $res;
+    }
+    
+    /**
+     * Description:获取支持的城市
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/1 0001
+     */
+    public function getStandCity()
+    {
+        try {
+            $HotelOrder = new HotelOrder();
+            $res = $HotelOrder->getStandByCity();
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $res;
+    }
+    
+    /**
+     * Description:
+     *
+     * @param  string  $hotelId
+     *
+     * @return mixed
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/1 0001
+     */
+    public function getHotelRoomList($hotelId)
+    {
+        try {
+            $HotelOrder = new HotelOrder();
+            $res = $HotelOrder->getHotelDetails($hotelId);
         } catch (Exception $e) {
             throw $e;
         }
