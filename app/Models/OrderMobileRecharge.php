@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,28 +23,27 @@ use Illuminate\Database\Eloquent\Model;
  * @property string                          $goods_title 商品名称
  * @property int                             $uid         充值用户ID
  * @property int                             $create_type 订单类型:1充值订单,代充订单
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge query()
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereCreateType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereGoodsTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereMobile($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereMoney($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereOrderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereOrderNo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge wherePayStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereTradeNo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereUid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OrderMobileRecharge whereUpdatedAt($value)
+ * @method static Builder|OrderMobileRecharge newModelQuery()
+ * @method static Builder|OrderMobileRecharge newQuery()
+ * @method static Builder|OrderMobileRecharge query()
+ * @method static Builder|OrderMobileRecharge whereCreateType($value)
+ * @method static Builder|OrderMobileRecharge whereCreatedAt($value)
+ * @method static Builder|OrderMobileRecharge whereGoodsTitle($value)
+ * @method static Builder|OrderMobileRecharge whereId($value)
+ * @method static Builder|OrderMobileRecharge whereMobile($value)
+ * @method static Builder|OrderMobileRecharge whereMoney($value)
+ * @method static Builder|OrderMobileRecharge whereOrderId($value)
+ * @method static Builder|OrderMobileRecharge whereOrderNo($value)
+ * @method static Builder|OrderMobileRecharge wherePayStatus($value)
+ * @method static Builder|OrderMobileRecharge whereStatus($value)
+ * @method static Builder|OrderMobileRecharge whereTradeNo($value)
+ * @method static Builder|OrderMobileRecharge whereUid($value)
+ * @method static Builder|OrderMobileRecharge whereUpdatedAt($value)
  * @mixin \Eloquent
  * @package App\Models
  */
 class OrderMobileRecharge extends Model
 {
-    
     use HasFactory;
     
     protected $table = 'order_mobile_recharge';
@@ -51,11 +51,11 @@ class OrderMobileRecharge extends Model
     /**
      * 创建代充订单
      *
-     * @param int    $order_id order表ID
-     * @param string $order_no 订单号
-     * @param int    $uid      用户ID
-     * @param string $mobile   手机号
-     * @param float  $money    充值金额
+     * @param  int     $order_id  order表ID
+     * @param  string  $order_no  订单号
+     * @param  int     $uid       用户ID
+     * @param  string  $mobile    手机号
+     * @param  string  $money     充值金额
      *
      * @return \App\Models\OrderMobileRecharge
      * @throws \Exception
@@ -65,7 +65,7 @@ class OrderMobileRecharge extends Model
         try {
             $this->mobile = $mobile;
             $this->money = $money;
-            $this->create_type = '2';
+            $this->create_type = 2;
             $this->order_id = $order_id;
             $this->order_no = $order_no;
             $this->uid = $uid;

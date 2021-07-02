@@ -3,6 +3,7 @@
 namespace App\Services\bmapi;
 
 use App\Models\Setting;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
@@ -10,7 +11,7 @@ use App\Models\TradeOrder;
 use Bmapi\Api\MobileRecharge\GetItemInfo;
 use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class MobileRechargeService extends BaseService
 {
@@ -58,7 +59,7 @@ class MobileRechargeService extends BaseService
      * @param  string            $mobile
      * @param  float             $money
      *
-     * @return mixed
+     * @return \App\Models\Order|\App\Models\Order[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      * @throws \Throwable
      */
     public function setDlAllOrder($user, $mobile, $money)
@@ -92,9 +93,9 @@ class MobileRechargeService extends BaseService
     /**
      * 话费代充订单数据创建
      *
-     * @param $user
-     * @param $money
-     * @param $order_no
+     * @param  \App\Models\User  $user
+     * @param  string            $money
+     * @param  string            $order_no
      *
      * @return array
      */
@@ -102,7 +103,7 @@ class MobileRechargeService extends BaseService
     {
         $date = date("Y-m-d H:i:s");
         $profit_ratio = Setting::getSetting('set_business_rebate_scale_zl');
-        $profit_price = $money * ($profit_ratio / 100);
+        $profit_price = (float) $money * ($profit_ratio / 100);
         return [
             'uid'          => $user->id,
             'business_uid' => 2,
@@ -122,17 +123,17 @@ class MobileRechargeService extends BaseService
     /**
      * trade_order 表代充订单数据创建
      *
-     * @param $user
-     * @param $money
-     * @param $order_no
+     * @param  \App\Models\User  $user
+     * @param  string            $money
+     * @param  string            $order_no
      *
      * @return array
      */
     public function createDlTradeOrderParams($user, $money, $order_no, $mobile, $order_id)
     {
         $date = date("Y-m-d H:i:s");
-        $profit_ratio = (Setting::where('key', 'set_business_rebate_scale_zl')->value('value')) / 100;
-        $profit_price = $money * $profit_ratio;
+        $profit_ratio = Setting::getSetting('set_business_rebate_scale_zl') / 100;
+        $profit_price = (float) $money * $profit_ratio;
         return [
             'user_id'       => $user->id,
             'title'         => '话费代充',
@@ -159,11 +160,11 @@ class MobileRechargeService extends BaseService
     /**
      * TradeOrder 表数据组装
      *
-     * @param $user
-     * @param $mobile
-     * @param $money
-     * @param $order_id
-     * @param $order_no
+     * @param  \App\Models\User  $user
+     * @param  string            $mobile
+     * @param  string            $money
+     * @param  int               $order_id
+     * @param  string            $order_no
      *
      * @return array
      */
@@ -171,7 +172,7 @@ class MobileRechargeService extends BaseService
     {
         $date = date("Y-m-d H:i:s");
         $profit_ratio = 0.05;
-        $profit_price = $money * $profit_ratio;
+        $profit_price = (float) $money * $profit_ratio;
         return [
             'user_id'       => $user->id,
             'title'         => '话费充值',
@@ -209,7 +210,7 @@ class MobileRechargeService extends BaseService
     {
         $date = date("Y-m-d H:i:s");
         $profit_ratio = 5;
-        $profit_price = $money * ($profit_ratio / 100);
+        $profit_price = (float) $money * ($profit_ratio / 100);
         return [
             'uid'          => $user->id,
             'business_uid' => 2,
@@ -256,7 +257,7 @@ class MobileRechargeService extends BaseService
     /**
      * 回调处理订单状态
      *
-     * @param $data
+     * @param  array  $data
      *
      * @throws \Exception
      */
@@ -341,7 +342,7 @@ class MobileRechargeService extends BaseService
         if (empty($notify_url)) {
             $notify_url = url('/api/mobile-notify');
         }
-        if (strpos($notify_url, 'lk.catspawvideo.com') !== false) {
+        if (strpos((string) $notify_url, 'lk.catspawvideo.com') !== false) {
             $notify_url = str_replace('http://', 'https://', $notify_url);
         }
         $PayBill = new PayBill();
@@ -366,19 +367,19 @@ class MobileRechargeService extends BaseService
      * @param  string  $order_no  订单号
      * @param  int     $uid       用户ID
      * @param  string  $mobile    充值电话
-     * @param  float   $money     充值金额
+     * @param  string  $money     充值金额
      *
-     * @return mixed
+     * @return \App\Models\OrderMobileRecharge
      * @throws \Exception
      */
     public function setMobileOrder($order_id, $order_no, $uid, $mobile, $money)
     {
-        $date = date('Y-m-d H:i:s');
+        $date = Carbon::now();
         $MobileOrder = new OrderMobileRecharge();
         try {
             $MobileOrder->mobile = $mobile;
             $MobileOrder->money = $money;
-            $MobileOrder->create_type = '1';
+            $MobileOrder->create_type = 1;
             $MobileOrder->order_id = $order_id;
             $MobileOrder->order_no = $order_no;
             $MobileOrder->created_at = $date;
