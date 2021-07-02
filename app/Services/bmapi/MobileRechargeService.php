@@ -90,6 +90,62 @@ class MobileRechargeService extends BaseService
         return Order::find($order_id);
     }
     
+    // TODO:创建批量代充订单
+    public function setZlManyOrder($user, $data)
+    {
+        try {
+            $this->checkManyRecharge($data);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        $Order = new Order();
+        $order_no = createOrderNo();
+        $dl_order_data = $this->createDlOrderParams($user, $data[ 'money' ], $order_no);
+        try {
+            // 生成 Order 表数据
+            $order_id = $Order->setOrder($dl_order_data);
+            // 生成 order_mobile 表数据
+            
+            // 生成 order_mobile_details 表数据
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return;
+    }
+    
+    /**
+     * Description:批量代充验证
+     *
+     * @param  array  $data
+     *
+     * @return bool
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/2 0002
+     */
+    public function checkManyRecharge($data)
+    {
+        try {
+            $status = true;
+            $error_msg = '';
+            foreach ($data as $val) {
+                try {
+                    $this->bmMobileRechargeCheck($val[ 'mobile' ], $val[ 'money' ]);
+                } catch (Exception $e) {
+                    $status = false;
+                    $error_msg .= "号码:{$val[ 'mobile' ]}的充值金额{$val[ 'money' ]}\n";
+                }
+            }
+            if ($status === false) {
+                $error_msg .= "不可用,请选择其它充值金额";
+                throw new Exception($error_msg);
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
+    }
+    
     /**
      * 话费代充订单数据创建
      *

@@ -7,6 +7,14 @@ use App\Services\RegionUserService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\RegionUser
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|RegionUser newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RegionUser newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RegionUser query()
+ * @mixin \Eloquent
+ */
 class RegionUser extends Model
 {
     use HasFactory;

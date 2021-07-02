@@ -41,12 +41,62 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|OrderMobileRecharge whereUpdatedAt($value)
  * @mixin \Eloquent
  * @package App\Models
+ * @property int                             $num         数量
+ * @property int                             $has_child   是否有子订单
+ * @method static Builder|OrderMobileRecharge whereHasChild($value)
+ * @method static Builder|OrderMobileRecharge whereNum($value)
  */
 class OrderMobileRecharge extends Model
 {
     use HasFactory;
     
+    const CREATE_TYPE_RECHARGE = 1;
+    
+    const CREATE_TYPE_ZL       = 2;
+    
+    const CREATE_TYPE_MZL      = 3;
+    
+    /**
+     * @var string 表名
+     */
     protected $table = 'order_mobile_recharge';
+    /**
+     * @var string[] 类型对应文字
+     */
+    public static $createTypeText = [
+        self::CREATE_TYPE_RECHARGE => '直充',
+        self::CREATE_TYPE_ZL       => '代充',
+        self::CREATE_TYPE_MZL      => '批量代充',
+    ];
+    
+    /**
+     * Description:
+     *
+     * @param  int     $order_id  order表ID
+     * @param  string  $order_no  订单号
+     * @param  int     $uid       用户ID
+     * @param  string  $mobile    手机号
+     * @param  string  $money     充值金额
+     *
+     * @return $this
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/2 0002
+     */
+    public function setOrder($order_id, $order_no, $uid, $mobile, $money)
+    {
+        try {
+            $this->mobile = $mobile;
+            $this->money = $money;
+            $this->order_id = $order_id;
+            $this->order_no = $order_no;
+            $this->uid = $uid;
+            $this->save();
+        } catch (Exception $e) {
+            throw  $e;
+        }
+        return $this;
+    }
     
     /**
      * 创建代充订单
@@ -63,16 +113,48 @@ class OrderMobileRecharge extends Model
     public function setDlMobileOrder($order_id, $order_no, $uid, $mobile, $money)
     {
         try {
-            $this->mobile = $mobile;
-            $this->money = $money;
             $this->create_type = 2;
-            $this->order_id = $order_id;
-            $this->order_no = $order_no;
-            $this->uid = $uid;
-            $this->save();
+            $this->setOrder($order_id, $order_no, $uid, $mobile, $money);
         } catch (Exception $e) {
             throw  $e;
         }
         return $this;
+    }
+    
+    /**
+     * Description:
+     *
+     * @param  int     $order_id  order表ID
+     * @param  string  $order_no  订单号
+     * @param  int     $uid       用户ID
+     * @param  string  $mobile    手机号
+     * @param  string  $money     充值金额
+     *
+     * @return $this
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/2 0002
+     */
+    public function setZLManyMobileOrder($order_id, $order_no, $uid, $mobile, $money)
+    {
+        try {
+            $this->create_type = 3;
+            $this->setOrder($order_id, $order_no, $uid, $mobile, $money);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $this;
+    }
+    
+    /**
+     * Description:关联详情
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/2 0002
+     */
+    public function details()
+    {
+        return $this->hasMany(OrderMobileRechargeDetails::class, 'order_mobile_id', 'id');
     }
 }
