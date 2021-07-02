@@ -16,6 +16,7 @@ class getIntegralController extends Controller
 
         //排队积分统计
         $data['countJf'] = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->sum('to_be_added_integral');
+        $data['integralJl'] = array();
 //dd($data['countJf']);dd(111);
         $allOrderData = Order::where('status',2)->where('line_up',1)->get();
         if ($allOrderData!='[]'){
@@ -42,7 +43,7 @@ class getIntegralController extends Controller
                     }
                     return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
                 }else{
-                    return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
+                    return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => $data]);
                 }
 
             }elseif ($role == 2){
@@ -53,15 +54,15 @@ class getIntegralController extends Controller
                     }
                     return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
                 }else{
-                    return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
+                    return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => $data]);
                 }
 
             }else{
-                return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
+                return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => $data]);
             }
 
         }else{
-            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => '没有排队订单']);
+            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => $data]);
         }
 
 
