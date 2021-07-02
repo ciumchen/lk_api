@@ -16,7 +16,7 @@ class getIntegralController extends Controller
 
         //排队积分统计
         $data['countJf'] = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->sum('to_be_added_integral');
-
+//dd($data['countJf']);dd(111);
         $allOrderData = Order::where('status',2)->where('line_up',1)->get();
         if ($allOrderData!='[]'){
             foreach ($allOrderData->toArray() as $k=>$v){
@@ -35,15 +35,29 @@ class getIntegralController extends Controller
             }
 
             if ($role == 1){
-                foreach ($pxData['uid'.$uid] as $v){
-                    $data['integralJl'][] = $v;
+                $userOrder = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->count();
+                if ($userOrder){
+                    foreach ($pxData['uid'.$uid] as $v){
+                        $data['integralJl'][] = $v;
+                    }
+                    return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+                }else{
+                    return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
                 }
-                return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+
             }elseif ($role == 2){
-                foreach ($pxData['business_uid'.$uid] as $v){
-                    $data['integralJl'][] = $v;
+                $userOrder = Order::where('business_uid',$uid)->where('status',2)->where('line_up',1)->count();
+                if ($userOrder){
+                    foreach ($pxData['business_uid'.$uid] as $v){
+                        $data['integralJl'][] = $v;
+                    }
+                    return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+                }else{
+                    return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
                 }
-                return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+
+            }else{
+                return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
             }
 
         }else{
