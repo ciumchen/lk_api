@@ -20,7 +20,7 @@ Route::any("getUserAssetInfo", 'Test\MyNingController@getUserAssetInfo');
 //解封用户资产账号
 Route::any("xfUserAssetFH", 'Test\MyNingController@xfUserAssetFH');
 
-//初始化导入记录
+//商城初始化导入记录
 Route::any("initDrOrderLog", 'Test\MyNingController@initDrOrderLog');
 
 Route::any("updateShopOrderName", 'Test\MyNingController@updateShopOrderName');
