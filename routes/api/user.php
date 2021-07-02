@@ -48,6 +48,8 @@ Route::any("getUserAssetsFxJf", "User\RecordsOfConsumptionController@getUserAsse
 //用户的公益贡献接口
 Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
 
+/********************************* 我的分享 *********************************/
+Route::any("user-share", "User\MyShareController@userShare");
 
 
 
