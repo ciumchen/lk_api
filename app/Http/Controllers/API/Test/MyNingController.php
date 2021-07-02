@@ -258,6 +258,15 @@ class MyNingController extends Controller
 
     }
 
+    //修改已导入订单的类型
+    public function updateShopDrLog(Request $request){
+        $description = $request->input('description');//lkshop_sh
+        $updat_description = $request->input('updat_description');
+        $logData = DB::table('lkshop_order')->where('description',$description)->update(['description'=>$updat_description]);
+
+        dd($logData);
+    }
+
 
 }
 

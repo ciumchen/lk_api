@@ -3,7 +3,7 @@
 //定时任务--待添加积分
 Route::any('orderTest', 'Test\MyNingController@orderTest');
 //自动审核录单
-Route::any('pushOrder', 'Test\MyNingController@pushOrder');
+//Route::any('pushOrder', 'Test\MyNingController@pushOrder');
 
 //添加用户积分和商家积分
 Route::any("addUserIntegral", "User\AddIntegralController@addUserIntegral");
@@ -24,6 +24,8 @@ Route::any("xfUserAssetFH", 'Test\MyNingController@xfUserAssetFH');
 Route::any("initDrOrderLog", 'Test\MyNingController@initDrOrderLog');
 
 Route::any("updateShopOrderName", 'Test\MyNingController@updateShopOrderName');
+//修改导入订单的类型
+Route::any("updateShopDrLog", 'Test\MyNingController@updateShopDrLog');
 
 
 
