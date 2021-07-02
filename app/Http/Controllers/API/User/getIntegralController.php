@@ -15,7 +15,7 @@ class getIntegralController extends Controller
         $role==''?$role=1:$role;
 
         //排队积分统计
-        $data['countJf'] = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->sum('to_be_added_integral');
+        $data['countJf'] = array();
         $data['integralJl'] = array();
 //dd($data['countJf']);dd(111);
         $allOrderData = Order::where('status',2)->where('line_up',1)->get();
@@ -36,6 +36,7 @@ class getIntegralController extends Controller
             }
 
             if ($role == 1){
+                $data['countJf'] = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->sum('to_be_added_integral');
                 $userOrder = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->count();
                 if ($userOrder){
                     foreach ($pxData['uid'.$uid] as $v){
@@ -47,6 +48,7 @@ class getIntegralController extends Controller
                 }
 
             }elseif ($role == 2){
+                $data['countJf'] = Order::where('business_uid',$uid)->where('status',2)->where('line_up',1)->sum('profit_price');
                 $userOrder = Order::where('business_uid',$uid)->where('status',2)->where('line_up',1)->count();
                 if ($userOrder){
                     foreach ($pxData['business_uid'.$uid] as $v){
