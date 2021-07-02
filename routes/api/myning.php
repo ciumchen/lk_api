@@ -26,6 +26,8 @@ Route::any("initDrOrderLog", 'Test\MyNingController@initDrOrderLog');
 Route::any("updateShopOrderName", 'Test\MyNingController@updateShopOrderName');
 //修改导入订单的类型
 Route::any("updateShopDrLog", 'Test\MyNingController@updateShopDrLog');
+//查询导入时间
+Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
 
 
 

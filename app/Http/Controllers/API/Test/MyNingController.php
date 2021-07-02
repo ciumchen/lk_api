@@ -249,6 +249,13 @@ class MyNingController extends Controller
         }
 
     }
+    //查看导入时间
+    public function getAddOrderTime(){
+        $data[] = LkshopOrderLog::where('type','mch_order')->value('order_id');
+        $data[] = LkshopOrderLog::where('type','1688_order')->value('order_id');
+
+        dd($data);
+    }
 
     //修改订单名
 //    public function updateShopOrderName(Request $request){
