@@ -12,7 +12,7 @@ class getIntegralController extends Controller
     public function getUserIntegral(Request $request){
         $uid = $request->input('uid');
         $role = $request->input('role');
-        $role==''?1:$role;
+        $role==''?$role=1:$role;
 
         //排队积分统计
         $data['countJf'] = Order::where('uid',$uid)->where('status',2)->where('line_up',1)->sum('to_be_added_integral');
