@@ -50,6 +50,8 @@ Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
 
 /********************************* 我的分享 *********************************/
 Route::any("user-share", "User\MyShareController@userShare");
+Route::any("shop-share", "User\MyShareController@shopShare");
+Route::any("users-assets", "User\MyShareController@usersAssets");
 
 
 
