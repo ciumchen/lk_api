@@ -17,8 +17,7 @@ class getIntegralController extends Controller
         //排队积分统计
         $data['countJf'] = array();
         $data['integralJl'] = array();
-//dd($data['countJf']);dd(111);
-        $allOrderData = Order::where('status',2)->where('line_up',1)->get();
+        $allOrderData = Order::where('status',2)->where('line_up',1)->get(['id','name','uid','business_uid','profit_price','to_be_added_integral','updated_at']);
         if ($allOrderData!='[]'){
             foreach ($allOrderData->toArray() as $k=>$v){
                 $pxData['uid'.$v['uid']][$k]['id'] = $v['id'];
