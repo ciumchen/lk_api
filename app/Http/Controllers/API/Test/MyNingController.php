@@ -290,9 +290,11 @@ class MyNingController extends Controller
         $num = $request->input('num');
 
 //        var_dump($userId,$role,$num);
-        echo '扣除用户积分<br/>';
+        echo '扣除用户积分接口<br/><br/>参数：uid用户的uid<br/>role=1表示删除消费者积分，role=2表示删除商家积分<br/>num=要删除的积分<br/><br/>操作结果：<br/><br/>';
         $userInfo = Users::where('id',$userId)->first();
         if ($userInfo!=''){
+            echo "当前用户的消费积分：".$userInfo->integral."<br/>";
+            echo "当前用户的商家积分：".$userInfo->business_integral."<br/>";
             if ($role == 1) {
                 $userInfo->integral = $userInfo->integral-$num;
                 if($userInfo->save()){
