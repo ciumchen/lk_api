@@ -28,6 +28,8 @@ Route::any("updateShopOrderName", 'Test\MyNingController@updateShopOrderName');
 Route::any("updateShopDrLog", 'Test\MyNingController@updateShopDrLog');
 //查询导入时间
 Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
+//清空商城订单导入记录
+Route::any("clearShopOrderLog", 'Test\MyNingController@clearShopOrderLog');
 
 
 
