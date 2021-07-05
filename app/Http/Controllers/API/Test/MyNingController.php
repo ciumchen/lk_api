@@ -289,21 +289,25 @@ class MyNingController extends Controller
         $role = $request->input('role');
         $num = $request->input('num');
 
+//        var_dump($userId,$role,$num);
+        echo '扣除用户积分<br/>';
         $userInfo = Users::where('id',$userId)->first();
         if ($userInfo!=''){
             if ($role == 1) {
                 $userInfo->integral = $userInfo->integral-$num;
                 if($userInfo->save()){
-                    echo "扣除uid=".$userId." 的用户消费者积分，".$num."积分";
+                    echo "扣除成功<br/>扣除uid=".$userId." 的用户消费者积分，".$num."积分<br/>";
                 }
             } elseif ($role == 2) {
                 $userInfo->business_integral = $userInfo->business_integral-$num;
                 if($userInfo->save()){
-                    echo "扣除uid=".$userId." 的用户商家积分，".$num."积分";
+                    echo "扣除成功<br/>扣除uid=".$userId." 的用户商家积分，".$num."积分<br/>";
                 }
+            }else{
+                echo '扣除积分失败<br/>';
             }
         }else{
-            echo '该uid用户不存在';
+            echo '该uid用户不存在<br/>';
         }
 
     }
