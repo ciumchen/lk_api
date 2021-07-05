@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Test;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderMobileRechargeDetails;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -37,5 +38,50 @@ class DongController extends Controller
         //以上结果输出的是一个Carbon 类型的日期时间对象
         $res = Carbon::now();
         echo $res;
+    }
+    
+    public function setMobileDetails(Request $request)
+    {
+        $Model = new OrderMobileRechargeDetails();
+        $data = [];
+        $data[] = [
+            'order_mobile_id' => '1',
+            'order_id'        => '2',
+            'mobile'          => '12345678912',
+            'money'           => '50',
+        ];
+        $data[] = [
+            'order_mobile_id' => '1',
+            'order_id'        => '2',
+            'mobile'          => '12345678913',
+            'money'           => '50',
+        ];
+        $data[] = [
+            'order_mobile_id' => '1',
+            'order_id'        => '2',
+            'mobile'          => '12345678914',
+            'money'           => '50',
+        ];
+        $data[] = [
+            'order_mobile_id' => '1',
+            'order_id'        => '2',
+            'mobile'          => '12345678915',
+            'money'           => '50',
+        ];
+        try {
+            $res = $Model->addAll($data);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        dd($res);
+    }
+    
+    public function updateAll()
+    {
+        $Model = new OrderMobileRechargeDetails();
+        $data = $Model->updateStatusAll([['order_mobile_id', '=', '1']]);
+        dump($data);
+//        $res = $Model->save($data);
+//        dd($res);
     }
 }

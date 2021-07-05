@@ -2,6 +2,7 @@
 
 namespace App\Services\bmapi;
 
+use App\Models\OrderMobileRechargeDetails;
 use App\Models\Setting;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -90,8 +91,18 @@ class MobileRechargeService extends BaseService
         return Order::find($order_id);
     }
     
-    // TODO:创建批量代充订单
-    public function setZlManyOrder($user, $data)
+    /**
+     * Description: 创建批量代充订单
+     *
+     * @param $user
+     * @param $data
+     *
+     * @return \App\Models\Order
+     * @throws \Throwable
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
+    public function setManyZlOrder($user, $data)
     {
         try {
             $this->checkManyRecharge($data);
@@ -99,18 +110,44 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
         $Order = new Order();
+        $uid = $user->id;
         $order_no = createOrderNo();
-        $dl_order_data = $this->createDlOrderParams($user, $data[ 'money' ], $order_no);
+        DB::beginTransaction();
         try {
+            $money = 0;
+            $first_mobile = '';
+            foreach ($data as $key => $row) {
+                if ($key == '0') {
+                    $first_mobile = $row[ 'mobile' ];
+                }
+                $money += $row[ 'money' ];
+            }
             // 生成 Order 表数据
-            $order_id = $Order->setOrder($dl_order_data);
+            $orderInfo = $Order->setManyMobileOrder($uid, $money, $order_no);
             // 生成 order_mobile 表数据
-            
+            $mobileInfo = (new OrderMobileRecharge())->setZLManyMobileOrder(
+                $orderInfo->id,
+                $order_no,
+                $user->id,
+                $first_mobile,
+                $money
+            );
             // 生成 order_mobile_details 表数据
+            $details = [];
+            foreach ($data as $key => $row) {
+                $details[ $key ][ 'order_mobile_id' ] = $mobileInfo->id;
+                $details[ $key ][ 'order_id' ] = $orderInfo->id;
+                $details[ $key ][ 'order_no' ] = createOrderNo();
+                $details[ $key ][ 'mobile' ] = $row[ 'mobile' ];
+                $details[ $key ][ 'money' ] = $row[ 'money' ];
+            }
+            (new OrderMobileRechargeDetails())->addAll($details);
         } catch (Exception $e) {
+            DB::rollBack();
             throw $e;
         }
-        return;
+        DB::commit();
+        return $Order;
     }
     
     /**
@@ -380,6 +417,23 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
         return true;
+    }
+    
+    /* TODO:多账号代充*/
+    public function manyRecharge($order_id, Order $Order = null)
+    {
+        if (empty($Order)) {
+            $Order = Order::find($order_id);
+        }
+        try {
+            $Mobile = $Order->mobile;
+            if (empty($Mobile)) {
+                throw new Exception('手机充值订单不存在');
+            }
+            /*TODO:循环充值每个手机号*/
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
     
     /**

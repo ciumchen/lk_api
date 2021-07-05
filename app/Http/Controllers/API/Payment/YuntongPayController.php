@@ -20,7 +20,6 @@ use Log;
 
 class YuntongPayController extends Controller
 {
-    
     use AllowField;
     
     /**
@@ -37,14 +36,11 @@ class YuntongPayController extends Controller
         $data = $request->all();
         $uid = $data[ 'uid' ] ?: 0;
         $tradeOrder = new TradeOrder();
-
         $priceList = [];
-        if (in_array($data['description'], ['HF', 'ZL', 'MT', 'YK']))
-        {
-            $type = $this->sysPriceType($data['description']);
+        if (in_array($data[ 'description' ], ['HF', 'ZL', 'MT', 'YK'])) {
+            $type = $this->sysPriceType($data[ 'description' ]);
             $priceList = (new Setting())->getSysPrice($type);
         }
-        
         //判断支付金额
         if (!in_array($data[ 'money' ], $priceList) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
             throw new LogicException('话费充值金额不在可选值范围内');
@@ -622,16 +618,17 @@ class YuntongPayController extends Controller
             throw new LogicException($e->getMessage());
         }
     }
-
+    
     /**
      * 设置充值金额参数
-     * @param string $description
+     *
+     * @param  string  $description
+     *
      * @return string
      */
     public function sysPriceType(string $description)
     {
-        switch ($description)
-        {
+        switch ($description) {
             case "MT":
                 $priceType = 'mt';
                 break;
@@ -648,7 +645,7 @@ class YuntongPayController extends Controller
                 $priceType = 'zl';
                 break;
             default:
-            $priceType = '';
+                $priceType = '';
         }
         return $priceType;
     }

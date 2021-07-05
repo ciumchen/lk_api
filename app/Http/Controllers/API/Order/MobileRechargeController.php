@@ -6,14 +6,14 @@ use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\bmapi\MobileRechargeService;
-use DB;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class MobileRechargeController extends Controller
 {
-    
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\LogicException
@@ -35,7 +35,7 @@ class MobileRechargeController extends Controller
         try {
             $MobileService = new MobileRechargeService();
             $order = $MobileService->setAllOrder($user, $mobile, $money);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw new LogicException($e->getMessage());
         }
@@ -44,7 +44,7 @@ class MobileRechargeController extends Controller
     }
     
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\LogicException
@@ -66,7 +66,7 @@ class MobileRechargeController extends Controller
         try {
             $MobileService = new MobileRechargeService();
             $order = $MobileService->setDlAllOrder($user, $mobile, $money);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw new LogicException($e->getMessage());
         }
@@ -74,12 +74,56 @@ class MobileRechargeController extends Controller
         return response()->json(['code' => 0, 'data' => $order, 'msg' => '订单创建成功']);
     }
     
+    /**
+     * Description:
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
+    public function setManyZlOrder(Request $request)
+    {
+        $user = $request->user();
+        $params = $request->input('params');
+        try {
+            if ($params) {
+                $data = json_decode($params, true);
+            } else {
+                throw new Exception('请填写对应数据');
+            }
+            $MobileService = new MobileRechargeService();
+            $order = $MobileService->setManyZlOrder($user, $data);
+        } catch (Exception $e) {
+            throw $e;
+            throw new LogicException($e->getMessage());
+        } catch (\Throwable $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($order);
+    }
+    
+    /**
+     * Description:充值测试
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
     public function rechargeTest(Request $request)
     {
         $order_id = $request->input('order_id');
         $order_no = $request->input('order_no');
         $MobileService = new MobileRechargeService();
-        $MobileService->recharge($order_id, $order_no);
+        try {
+            $MobileService->recharge($order_id, $order_no);
+        } catch (Exception $e) {
+            throw $e;
+        }
         return response()->json();
     }
 }

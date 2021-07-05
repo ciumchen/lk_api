@@ -1,24 +1,28 @@
 <?php
 
-Route::middleware(['auth:sanctum'])
-     ->group(function () {
-         //录订单
-         Route::post('order', 'Order\OrderController');
-         //获取我的订单
-         Route::get("get-my-orders", "Order\OrderController@getMyOrders");
-         //删除订单
-         Route::post("del-order", "Order\OrderController@delOrder");
-         //手机充值[斑马]
-         Route::post('mobile-order', 'Order\MobileRechargeController@setOrder');
-         //手机代充[斑马]
-         Route::post('mobile-dl-order', 'Order\MobileRechargeController@setDlOrder');
-         /* 视频会员订单生成[斑马] */
-         Route::post('video-set-order', 'Order\VideoRechargeController@setOrder');
-         /* 视频会员订单生成[万维] */
-         Route::post('ww-video-set-order', 'Order\VideoRechargeController@setWanWeiVideoOrder');
-         //生活缴费生成订单[斑马]
-         Route::any('utility-set-order', 'Order\UtilityController@setOrder');
-     });
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth:sanctum'])->group(
+    function () {
+        //录订单
+        Route::post('order', 'Order\OrderController');
+        //获取我的订单
+        Route::get("get-my-orders", "Order\OrderController@getMyOrders");
+        //删除订单
+        Route::post("del-order", "Order\OrderController@delOrder");
+        //手机充值[斑马]
+        Route::post('mobile-order', 'Order\MobileRechargeController@setOrder');
+        //手机代充[斑马]
+        Route::post('mobile-dl-order', 'Order\MobileRechargeController@setDlOrder');
+        Route::post('mobile-lot-dl-order', 'Order\MobileRechargeController@setManyZlOrder');
+        /* 视频会员订单生成[斑马] */
+        Route::post('video-set-order', 'Order\VideoRechargeController@setOrder');
+        /* 视频会员订单生成[万维] */
+        Route::post('ww-video-set-order', 'Order\VideoRechargeController@setWanWeiVideoOrder');
+        //生活缴费生成订单[斑马]
+        Route::any('utility-set-order', 'Order\UtilityController@setOrder');
+    }
+);
 //我的分享
 Route::any("consumer", "Order\MyShareController@Consumer");
 Route::any("merchant", "Order\MyShareController@Merchant");

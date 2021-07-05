@@ -99,6 +99,31 @@ class OrderMobileRecharge extends Model
     }
     
     /**
+     * Description:创建话费订单
+     *
+     * @param  int     $order_id  order表ID
+     * @param  string  $order_no  订单号
+     * @param  int     $uid       用户ID
+     * @param  string  $mobile    手机号
+     * @param  string  $money     充值金额
+     *
+     * @return $this
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
+    public function setMobileOrder($order_id, $order_no, $uid, $mobile, $money)
+    {
+        try {
+            $this->create_type = 1;
+            $this->setOrder($order_id, $order_no, $uid, $mobile, $money);
+        } catch (Exception $e) {
+            throw  $e;
+        }
+        return $this;
+    }
+    
+    /**
      * 创建代充订单
      *
      * @param  int     $order_id  order表ID
@@ -149,7 +174,7 @@ class OrderMobileRecharge extends Model
     /**
      * Description:关联详情
      *
-     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      * @author lidong<947714443@qq.com>
      * @date   2021/7/2 0002
      */

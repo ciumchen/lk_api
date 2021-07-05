@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\OrderMobileRechargeDetails
@@ -35,4 +37,50 @@ class OrderMobileRechargeDetails extends Model
     use HasFactory;
     
     protected $table = 'order_mobile_recharge_details';
+    
+    /**
+     * Description:
+     *
+     * @param  array  $data
+     *
+     * @return bool
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
+    public function addAll(array $data)
+    {
+        try {
+            $date = Carbon::now();
+            foreach ($data as $key => $val) {
+                $data[ $key ][ 'created_at' ] = $date;
+                $data[ $key ][ 'updated_at' ] = $date;
+            }
+            $res = DB::table($this->getTable())->insert($data);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $res;
+    }
+    
+    /**
+     * Description:批量更新状态
+     *
+     * @param  array  $where
+     * @param  int    $status
+     *
+     * @return bool|int
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
+    public function updateStatusAll(array $where, $status = 1)
+    {
+        try {
+            $res = $this->where($where)->update(['status' => $status]);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $res;
+    }
 }

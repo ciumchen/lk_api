@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Controllers\API\Message\UserMsgController;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -165,7 +166,32 @@ class Order extends Model
                  ->insertGetId($data);
     }
     
-    /*TODO：生成批量代充订单*/
+    /**
+     * Description: 批量代充
+     *
+     * @param  int     $uid
+     * @param  string  $money
+     * @param  string  $order_no
+     *
+     * @return $this
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
+    public function setManyMobileOrder($uid, $money, $order_no)
+    {
+        try {
+            $profit_ratio = Setting::getSetting('set_business_rebate_scale_zl');
+            $profit_price = (float) $money * ($profit_ratio / 100);
+            $business_uid = 2;
+            $name = '批量代充';
+            $this->setOrderSelf($uid, $business_uid, $profit_ratio, $money, $profit_price, $order_no, $name);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $this;
+    }
+    
     /**
      * Description: 生成订单
      *
@@ -209,7 +235,8 @@ class Order extends Model
             $this->state = $state;
             $this->pay_status = $pay_status;
             $this->order_no = $order_no;
-        } catch (\Exception $e) {
+            $this->save();
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -413,7 +440,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -446,7 +473,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -479,7 +506,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -512,7 +539,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;

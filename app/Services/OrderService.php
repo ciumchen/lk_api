@@ -9,11 +9,13 @@ use App\Models\AssetsType;
 use App\Models\CityNode;
 use App\Models\IntegralLogs;
 use App\Models\Order;
+use App\Models\OrderMobileRecharge;
 use App\Models\RebateData;
 use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
 use App\Services\AirOrderService;
+use App\Services\bmapi\MobileRechargeService;
 use App\Services\bmapi\UtilityBillRechargeService;
 use App\Services\bmapi\VideoCardService;
 use App\Services\ShowApi\VideoOrderService;
@@ -23,7 +25,6 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    
     /**完成订单
      *
      * @param  string  $orderNo
@@ -752,6 +753,18 @@ class OrderService
             if (!empty($Order->trade)) { /* 兼容trade_order */
                 $description = $Order->trade->description;
             }
+            if (!empty($Order->mobile)) {
+                switch ($Order->mobile->create_type) {
+                    case OrderMobileRecharge::CREATE_TYPE_ZL:
+                        $description = 'ZL';
+                        break;
+                    case OrderMobileRecharge::CREATE_TYPE_MZL:
+                        $description = 'MZL';
+                        break;
+                    default:
+                        $description = 'HF';
+                }
+            }
             if (!empty($Order->video)) { /* 视频会员订单 */
                 $description = 'VC';
             }
@@ -849,6 +862,17 @@ class OrderService
                     $Order->utility->order_no = $order_no;
                     $Order->utility->save();
                     break;
+                case 'HF':
+                case 'ZL':
+                case 'MZL':
+                    if ($description == 'HF' || $description == 'ZL') {
+                        $Order->trade->order_no = $order_no;
+                        $Order->trade->save();
+                    }
+                    // 批量充值订单更新
+                    $Order->mobile->order_no = $order_no;
+                    $Order->mobile->save();
+                    break;
                 default:
                     throw new Exception('子订单类型未知');
             }
@@ -897,6 +921,18 @@ class OrderService
                     break;
                 case 'AT': /* 机票充值 */
                     (new AirOrderService())->airOrder($order_id);
+                    break;
+                case 'HF':
+                case 'ZL':
+                case 'MZL':
+                    /* 手机充值订单*/
+                    $MobileService = new MobileRechargeService();
+                    if ($description == 'HF' || $description == 'ZL') {
+                        $MobileService->recharge($order_id, $Order->order_no);
+                    } else {
+                        /* TODO:多账号代充 */
+                        $MobileService->manyRecharge($order_id, $Order);
+                    }
                     break;
                 default:/* 订单无需处理 */
                     ;
