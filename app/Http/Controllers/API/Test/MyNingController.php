@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LkshopOrder;
 use App\Models\LkshopOrderLog;
 use App\Models\User;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -285,8 +286,25 @@ class MyNingController extends Controller
 //扣除用户商城积分
     public function kcUserShopJf(Request $request){
         $userId = $request->input('uid');//用户uid
-        $integral = $request->input('integral');//消费者积分
-        $business_integral = $request->input('business_integral');//商家积分
+        $role = $request->input('role');
+        $num = $request->input('num');
+
+        $userInfo = Users::where('id',$userId)->first();
+        if ($userInfo!=''){
+            if ($role == 1) {
+                $userInfo->integral = $userInfo->integral-$num;
+                if($userInfo->save()){
+                    echo "扣除uid=".$userId." 的用户消费者积分，".$num."积分";
+                }
+            } elseif ($role == 2) {
+                $userInfo->business_integral = $userInfo->business_integral-$num;
+                if($userInfo->save()){
+                    echo "扣除uid=".$userId." 的用户商家积分，".$num."积分";
+                }
+            }
+        }else{
+            echo '该uid用户不存在';
+        }
 
     }
 
