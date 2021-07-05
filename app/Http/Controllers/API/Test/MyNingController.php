@@ -275,11 +275,11 @@ class MyNingController extends Controller
 //    }
 
 
-    public function clearShopOrderLog(){
-        $re1 = DB::table('lkshop_order')->truncate();
-        $re2 = DB::table('lkshop_order_log')->truncate();
-        dd($re1,$re2);
-    }
+//    public function clearShopOrderLog(){
+//        $re1 = DB::table('lkshop_order')->truncate();
+//        $re2 = DB::table('lkshop_order_log')->truncate();
+//        dd($re1,$re2);
+//    }
 
 }
 
