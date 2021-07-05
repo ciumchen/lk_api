@@ -281,6 +281,17 @@ class MyNingController extends Controller
 //        dd($re1,$re2);
 //    }
 
+
+//扣除用户商城积分
+    public function kcUserShopJf(Request $request){
+        $userId = $request->input('uid');//用户uid
+        $integral = $request->input('integral');//消费者积分
+        $business_integral = $request->input('business_integral');//商家积分
+
+    }
+
+
+
 }
 
 
