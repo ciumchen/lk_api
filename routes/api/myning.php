@@ -32,6 +32,9 @@ Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
 //扣除用户积分
 Route::any("kcUserShopJf", 'Test\MyNingController@kcUserShopJf');
 
+//清空商城卡单处理
+Route::any("setShopKdOrderId", 'Test\MyNingController@setShopKdOrderId');
+
 
 
 

@@ -314,6 +314,29 @@ class MyNingController extends Controller
 
     }
 
+    //清空商城卡单处理
+    public function setShopKdOrderId(Request $request){
+        $orderId = $request->input('orderId');
+        if($orderId){
+            echo '修改OrderId'.$orderId.'的记录<br/>';
+            $orderInfo = Order::where('id',$orderId)->first();
+            $orderInfo->line_up = 0;
+            if($orderInfo->save()){
+                echo '修改成功';
+            }else{
+                echo '修改失败';
+            }
+
+        }else{
+            echo 'orderId不能为空';
+        }
+
+
+
+
+
+    }
+
 
 
 }
