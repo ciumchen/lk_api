@@ -67,6 +67,21 @@ class MyShare extends Model
         return (new MyShareService)->usersAssets($data);
     }
 
+    /**用户团长资产记录
+     * @param array $data
+     * @return mixed
+     * @throws    
+    */
+    public function headsAssets(array $data)
+    {
+        //检查用户
+        $this->isUser($data['uid']);
+        $this->isInvite($data['uid']);
+
+        //返回
+        return (new MyShareService)->headsAssets($data);
+    }
+
     /**用户是否存在
      * @param int $uid
      * @return mixed

@@ -1,14 +1,6 @@
 <?php
 
 namespace App\Services;
-
-use App\Exceptions\LogicException;
-use App\Http\Controllers\API\Airticket\OrderPayBillController;
-use App\Models\AirTradeLogs;
-use App\Models\Order;
-use App\Models\OrderAirTrade;
-use App\Models\RechargeLogs;
-use App\Models\User;
 use DB;
 
 class MyShareService
@@ -47,7 +39,7 @@ class MyShareService
             'users.role'               => 2,
             'order.status'             => 2,
             'assets_logs.operate_type' => 'share_b_rebate',
-            'assets_logs.remark' => '邀请商家，获得盈利返佣'
+            'assets_logs.remark'       => '邀请商家，获得盈利返佣'
         ];
 
         //返回
@@ -65,9 +57,29 @@ class MyShareService
         $where = [
             'users.invite_uid'         => $data['uid'],
             'users.status'             => 1,
-            'assets_logs.operate_type' => 'invite_rebate',
-            'assets_logs.operate_type' => 'share_b_rebate',
-            'assets_logs.remark'       => '邀请商家，获得盈利返佣',
+            'users.member_head'        => 1,
+            'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
+            'assets_logs.remark'       => ['邀请商家，获得盈利返佣'],
+        ];
+
+        //返回
+        return $this->commonAssets($data, $where);
+    }
+
+    /**获取用户分享团员数据
+    * @param array $data
+    * @return mixed
+    * @throws
+    */
+    public function headsAssets(array $data)
+    {
+        //组装sql 条件
+        $where = [
+            'users.invite_uid'         => $data['uid'],
+            'users.status'             => 1,
+            'users.member_head'        => 2,
+            'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
+            'assets_logs.remark'       => ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'],
         ];
 
         //返回
@@ -82,22 +94,47 @@ class MyShareService
     */
     public function commonShare(array $data, array $where)
     {
+        //商家
+        $role = $where['users.role'] == 2 ? true : false;
+
         //获取分享团员数据
-        $lowerData = DB::table('users')
-                    ->select(DB::raw('users.id, users.avatar, users.phone, users.member_head, cast(sum(order.price) as decimal(10,2)) as totalPrice, cast(sum(assets_logs.amount)as decimal(10,2)) as totalAssets'))
-                    ->leftJoin('order', 'users.id', 'order.uid')
-                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
-                    ->where($where)
-                    ->forPage($data['page'], $data['perPage'])
-                    ->groupBy('users.id')
-                    ->get()
-                    ->each(function ($item) {
-                        $item->phone = substr_replace($item->phone,'****',3,4);
-                    });
-        $lowerList = json_decode($lowerData, 1);
+        $userList = DB::table('users')
+                    ->where(['invite_uid' => $data['uid'], 'role' => $where['users.role'], 'status' => $where['users.status']])
+                    ->get(['id', 'avatar', 'phone', 'member_head']);
+        $userArr = json_decode($userList, 1);
+        $uids = array_column($userArr, 'id');
+
+        //消费总金额
+        $orderPrice = DB::table('order')
+                        ->select(DB::raw('uid, cast(sum(price) as decimal(10,2)) as totalPrice'))
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('uid', $uids)
+                        ->groupBy('uid')
+                        ->get();
+        $sumPrice = array_column(json_decode($orderPrice, 1), null, 'uid');
         
-        //根据累计奖励排序
-        array_multisort(array_column($lowerList, 'totalAssets'), SORT_DESC, $lowerList);
+        //消费总奖励
+        $orderPrice = DB::table('assets_logs')
+                        ->select(DB::raw('uid, cast(sum(amount)as decimal(10,2)) as totalAssets'))
+                        ->where(['operate_type' => $where['assets_logs.operate_type']])
+                        ->whereIn('uid', $uids)
+                        ->when($role, function ($query) use($where) {
+                            return $query->where('remark', $where['assets_logs.remark']);
+                        })
+                        ->groupBy('uid')
+                        ->get();
+        $sumAssets = array_column(json_decode($orderPrice, 1), null, 'uid');
+
+        //组装数据
+        foreach ($userArr as $key => $val)
+        {
+            $userArr[$key]['phone'] = substr_replace($val['phone'],'****',3,4);
+            $userArr[$key]['totalPrice'] = sprintf('%.2f', $sumPrice[$val['id']]['totalPrice'] ?? 0);
+            $userArr[$key]['totalAssets'] = sprintf('%.2f', $sumAssets[$val['id']]['totalAssets'] ?? 0);
+        }
+
+        //根据总奖励排序
+        array_multisort(array_column($userArr, 'totalAssets'), SORT_DESC, $userArr);
 
         //根据不同角色获取数量
         $userCount = DB::table('users')
@@ -107,25 +144,37 @@ class MyShareService
                     ->get();
         $countList = (json_decode($userCount, 1));
 
-        //获取消费奖励和让利奖励
-        $totalData = DB::table('users')
-                    ->select(DB::raw('cast(sum(order.profit_price) as decimal(10,2)) as totalProfit, cast(sum(assets_logs.amount)as decimal(10,2)) as totalAssets'))
-                    ->leftJoin('order', 'users.id', 'order.uid')
-                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
-                    ->where($where)
-                    ->get();
-        $totalList = (json_decode($totalData, 1));
+        //获取消费总让利奖励
+        $totalProfit = DB::table('order')
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('uid', $uids)
+                        ->groupBy('uid')
+                        ->sum('profit_price');
+
+        //获取消费总奖励
+        $totalAssets = DB::table('assets_logs')
+                        ->where(['operate_type' => $where['assets_logs.operate_type']])
+                        ->whereIn('uid', $uids)
+                        ->when($role, function ($query) use($where) {
+                            $query->where(['remark' => $where['assets_logs.remark']]);
+                        })
+                        ->sum('amount');
+        
+        $totalList = [
+            'totalProfit' => sprintf('%.2f', $totalProfit),
+            'totalAssets' => sprintf('%.2f', $totalAssets),
+        ];
 
         //返回
         return [
-            'lowerList' => $lowerList,
+            'userArr' => $userArr,
             'countList' => $countList,
             'totalList' => $totalList,
-            'rewardSum' => sprintf('%.2f', $totalList[0]['totalProfit'] + $totalList[0]['totalAssets']),
+            'rewardSum' => sprintf('%.2f', $totalProfit + $totalAssets),
         ];
     }
 
-    /**获取用户分享团员、商家资产数据
+    /**获取用户分享团员、团长资产数据
     * @param array $data
     * @param array $where
     * @return mixed
@@ -133,12 +182,31 @@ class MyShareService
     */
     public function commonAssets(array $data, array $where)
     {
-        //获取分享团员数据
+        //类型
+        $operateType = $where['assets_logs.operate_type'];
+        unset($where['assets_logs.operate_type']);
+
+        //团长
+        $memberHead = $where['users.member_head'] == 2 ? true : false;
+        //备注
+        $remark = $where['assets_logs.remark'];
+        if ($memberHead)
+        {
+            unset($where['assets_logs.remark']);
+        }
+        
+        //获取分享团员资产数据
         $assetsData = DB::table('users')
                     ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
                     ->where($where)
+                    ->whereIn('assets_logs.operate_type', $operateType)
+                    ->when($memberHead, function ($query) use($remark) {
+                        return $query->whereIn('assets_logs.remark', $remark);
+                    })
                     ->forPage($data['page'], $data['perPage'])
                     ->groupBy('assets_logs.id')
+                    ->orderBy('assets_logs.amount', 'desc')
+                    ->orderBy('assets_logs.created_at', 'desc')
                     ->get(['assets_logs.amount', 'assets_logs.created_at'])
                     ->each(function ($item) {
                         $item->amount = sprintf('%.2f', $item->amount);
@@ -146,9 +214,14 @@ class MyShareService
                     });
         $assetsList = json_decode($assetsData, 1);
 
+        //资产总金额
         $assetsSum = DB::table('users')
                     ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
                     ->where($where)
+                    ->whereIn('assets_logs.operate_type', $operateType)
+                    ->when($memberHead, function ($query) use($remark) {
+                        return $query->whereIn('assets_logs.remark', $remark);
+                    })
                     ->sum('assets_logs.amount');
 
         //返回

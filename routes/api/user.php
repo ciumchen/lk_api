@@ -49,9 +49,16 @@ Route::any("getUserAssetsFxJf", "User\RecordsOfConsumptionController@getUserAsse
 Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
 
 /********************************* 我的分享 *********************************/
+//是否为团长
+Route::any("is-manage", "User\MyShareController@isManage");
+//团员数据
 Route::any("user-share", "User\MyShareController@userShare");
+//商家数据
 Route::any("shop-share", "User\MyShareController@shopShare");
+//团员资产记录
 Route::any("users-assets", "User\MyShareController@usersAssets");
+//团长资产记录
+Route::any("heads-assets", "User\MyShareController@headsAssets");
 
 
 
