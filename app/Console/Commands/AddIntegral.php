@@ -57,8 +57,7 @@ class AddIntegral extends Command
     public function handle()
     {
         log::info('=================自动添加积分任务===================================');
-
-
+        
         $setValue = Setting::where('key', 'consumer_integral')->value('value');
         if ($setValue == 1) {
 //            $orderInfo = Order::where("status",2)->where('pay_status','succeeded')->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
