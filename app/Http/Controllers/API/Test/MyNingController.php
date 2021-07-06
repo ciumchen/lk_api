@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LkshopOrder;
 use App\Models\LkshopOrderLog;
 use App\Models\User;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -249,14 +250,70 @@ class MyNingController extends Controller
         }
 
     }
+    //查看导入时间
+    public function getAddOrderTime(){
+        $data[] = LkshopOrderLog::where('type','mch_order')->value('order_id');
+        $data[] = LkshopOrderLog::where('type','1688_order')->value('order_id');
+
+        dd($data);
+    }
 
     //修改订单名
-    public function updateShopOrderName(Request $request){
-        $logData = DB::table('lkshop_order')->update(['name'=>'商户订单']);
+//    public function updateShopOrderName(Request $request){
+//        $logData = DB::table('lkshop_order')->update(['name'=>'商户订单']);
+//
+//        dd($logData);
+//
+//    }
 
-        dd($logData);
+    //修改已导入订单的类型
+//    public function updateShopDrLog(Request $request){
+//        $description = $request->input('description');//lkshop_sh
+//        $updat_description = $request->input('updat_description');
+//        $logData = DB::table('lkshop_order')->where('description',$description)->update(['description'=>$updat_description]);
+//
+//        dd($logData);
+//    }
+
+
+//    public function clearShopOrderLog(){
+//        $re1 = DB::table('lkshop_order')->truncate();
+//        $re2 = DB::table('lkshop_order_log')->truncate();
+//        dd($re1,$re2);
+//    }
+
+
+//扣除用户商城积分
+    public function kcUserShopJf(Request $request){
+        $userId = $request->input('uid');//用户uid
+        $role = $request->input('role');
+        $num = $request->input('num');
+
+//        var_dump($userId,$role,$num);
+        echo '扣除用户积分接口<br/><br/>参数：uid用户的uid<br/>role=1表示删除消费者积分，role=2表示删除商家积分<br/>num=要删除的积分<br/><br/>操作结果：<br/><br/>';
+        $userInfo = Users::where('id',$userId)->first();
+        if ($userInfo!=''){
+            echo "当前用户的消费积分：".$userInfo->integral."<br/>";
+            echo "当前用户的商家积分：".$userInfo->business_integral."<br/>";
+            if ($role == 1) {
+                $userInfo->integral = $userInfo->integral-$num;
+                if($userInfo->save()){
+                    echo "扣除成功<br/>扣除uid=".$userId." 的用户消费者积分，".$num."积分<br/>";
+                }
+            } elseif ($role == 2) {
+                $userInfo->business_integral = $userInfo->business_integral-$num;
+                if($userInfo->save()){
+                    echo "扣除成功<br/>扣除uid=".$userId." 的用户商家积分，".$num."积分<br/>";
+                }
+            }else{
+                echo '扣除积分失败<br/>';
+            }
+        }else{
+            echo '该uid用户不存在<br/>';
+        }
 
     }
+
 
 
 }

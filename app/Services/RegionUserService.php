@@ -8,6 +8,7 @@ use App\Models\BusinessData;
 use App\Models\CityData;
 use App\Models\CityNode;
 use App\Models\Order;
+use App\Models\RegionUser;
 use Illuminate\Support\Facades\DB;
 
 class RegionUserService
@@ -113,6 +114,7 @@ class RegionUserService
         $length = $perPage;
 
         //组装数据
+        array_multisort(array_column($districtArr, 'priceTotal'), SORT_DESC, $districtArr);
         $cityArr['businessList'] = array_slice($districtArr, $start, $length);
         $cityArr['inteTotal'] = sprintf('%.2f', array_sum(array_column($integralSum, 'priceTotal')) * 0.0125);
         $cityArr['region'] = $cityInfo->name;
@@ -164,6 +166,8 @@ class RegionUserService
         $start = ($page - 1) * $perPage;
         $length = $perPage;
 
+        //按积分排序
+        array_multisort(array_column($businessData, 'priceTotal'), SORT_DESC, $businessData);
         $businessArr['businessList'] = array_slice($businessData, $start, $length);
         $businessArr['region'] = $districtInfo->name;
         $businessArr['businessSum'] = $businessSum;
@@ -173,7 +177,54 @@ class RegionUserService
         return $businessArr;
     }
 
-    /**获取市级区域代理信息
+    /**获取市级区域代理录单积分记录
+     * @param $cityInfo
+     * @param int $page
+     * @param int $perPage
+     * @return mixed
+     * @throws
+     */
+    public function getCityAssets($cityInfo, int $page, int $perPage)
+    {
+        $time = $cityInfo->created_at;
+        $uid = $cityInfo->uid;
+
+        $res = AssetsLogs::where('uid', $uid)->exists();
+        if (!$res)
+        {
+            throw new LogicException('该市级代理资产记录不存在');
+        }
+
+        //获取资产列表
+        $assetsList = DB::table('assets_logs')
+                        ->where(['uid' => $uid, 'operate_type' => 'city_rebate', 'remark' => '市节点运营返佣'])
+                        ->where('created_at', '>=', $time)
+                        ->orderBy('created_at', 'desc')
+                        ->forPage($page, $perPage)
+                        ->get(['amount', 'created_at']);
+
+        $assetsData = json_decode($assetsList, 1);
+
+        //总金额
+        $amountSum = DB::table('assets_logs')
+                        ->where(['uid' => $uid, 'operate_type' => 'city_rebate', 'remark' => '市节点运营返佣'])
+                        ->where('created_at', '>=', $time)
+                        ->sum('amount');
+
+        //组装数据
+        foreach ($assetsData as $key => $val)
+        {
+            $assetsData[$key]['amount'] = sprintf('%.2f', $val['amount']);
+            $assetsData[$key]['name'] = '录单';
+        }
+        $assetsArr['assetsData'] = $assetsData;
+        $assetsArr['amountSum'] = sprintf('%.2f', $amountSum);
+
+        //返回
+        return $assetsArr;
+    }
+
+    /**获取区级区域代理录单积分记录
      * @param $districtInfo
      * @param int $page
      * @param int $perPage

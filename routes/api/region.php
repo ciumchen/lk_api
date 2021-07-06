@@ -10,6 +10,9 @@ Route::any('get-city', 'Site\RegionUserController@getCity');
 //获取区级代理信息
 Route::any('get-district', 'Site\RegionUserController@getDistrict');
 
+//获取市级代理资产积分信息
+Route::any('get-city-assets', 'Site\RegionUserController@getCityAssets');
+
 //获取区级代理资产积分信息
 Route::any('get-assets', 'Site\RegionUserController@getAssets');
 

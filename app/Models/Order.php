@@ -560,6 +560,11 @@ class Order extends Model
                     ->first();
     }
     
+    public function lkshopOrder()
+    {
+        return $this->hasOne(LkshopOrder::class, 'oid', 'id');
+    }
+    
     /**
      * Description:TradeOrder表关联
      *

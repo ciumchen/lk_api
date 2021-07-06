@@ -3,12 +3,12 @@
 //定时任务--待添加积分
 Route::any('orderTest', 'Test\MyNingController@orderTest');
 //自动审核录单
-Route::any('pushOrder', 'Test\MyNingController@pushOrder');
+//Route::any('pushOrder', 'Test\MyNingController@pushOrder');
 
 //添加用户积分和商家积分
 Route::any("addUserIntegral", "User\AddIntegralController@addUserIntegral");
 
-//获取用户待添加积分
+//获取消费者和商家排队积分记录
 Route::any("getUserIntegral", "User\getIntegralController@getUserIntegral");
 
 //修改手机号
@@ -20,10 +20,17 @@ Route::any("getUserAssetInfo", 'Test\MyNingController@getUserAssetInfo');
 //解封用户资产账号
 Route::any("xfUserAssetFH", 'Test\MyNingController@xfUserAssetFH');
 
-//初始化导入记录
+//商城初始化导入记录
 Route::any("initDrOrderLog", 'Test\MyNingController@initDrOrderLog');
 
 Route::any("updateShopOrderName", 'Test\MyNingController@updateShopOrderName');
+//修改导入订单的类型
+Route::any("updateShopDrLog", 'Test\MyNingController@updateShopDrLog');
+//查询导入时间
+Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
+
+//扣除用户积分
+Route::any("kcUserShopJf", 'Test\MyNingController@kcUserShopJf');
 
 
 

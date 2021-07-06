@@ -22,6 +22,7 @@ use App\Services\ShowApi\VideoOrderService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\LkshopOrder;
 
 class OrderService
 {
@@ -773,6 +774,9 @@ class OrderService
             }
             if (!empty($Order->utility)) { /* 生活缴费 */
                 $description = 'UB';
+            }
+            if (!empty($Order->lkshopOrder)) { /* 生活缴费 */
+                $description = 'SHOP';
             }
             /* 判断 是否已经获取到对应类型的订单*/
             if (empty($description)) {

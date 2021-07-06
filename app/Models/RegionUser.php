@@ -74,6 +74,32 @@ class RegionUser extends Model
         return (new RegionUserService())->getDistrictNode($code, $page, $perPage);
     }
 
+    /**获取市级代理积分记录
+     * @param string $code
+     * @param int $page
+     * @param int $perPage
+     * @return mixed
+     * @throws
+     */
+    public function getCityAssets(string $code, int $page, int $perPage)
+    {
+        $res = CityNode::where('city', $code)->whereRaw('district is null')->exists();
+        if (!$res)
+        {
+            throw new LogicException('该市级代理不存在');
+        }
+
+        //获取市级代理数据
+        $cityInfo = $this->getCity($code);
+
+        //获取数据
+        $assetsData = (new RegionUserService())->getCityAssets($cityInfo, $page, $perPage);
+        $assetsData['distName'] = $cityInfo->name;
+
+        //返回
+        return $assetsData;
+    }
+
     /**获取区级代理积分记录
      * @param string $code
      * @param int $page
@@ -133,5 +159,25 @@ class RegionUser extends Model
     public function getDistrict(string $code)
     {
         return CityNode::where('district', $code)->first();
+    }
+
+    /**获取市级代理数据
+     * @param string $code
+     * @return mixed
+     * @throws
+     */
+    public function getCity(string $code)
+    {
+        return CityNode::where('city', $code)->whereRaw('district is null')->first();
+    }
+
+    /**获取市级区域区级代理数据
+     * @param string $code
+     * @return mixed
+     * @throws
+     */
+    public function getCityAll(string $code)
+    {
+        return CityNode::where('city', $code)->get();
     }
 }
