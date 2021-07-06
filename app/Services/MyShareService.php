@@ -215,6 +215,11 @@ class MyShareService
             'totalAssets' => sprintf('%.2f', $totalAssets),
         ];
 
+        //数组分页
+        $start = ($data['page'] - 1) * $data['perPage'];
+        $length = $data['perPage'];
+        $userArr = array_slice($userArr, $start, $length);
+
         //返回
         return [
             'userArr' => $userArr,
