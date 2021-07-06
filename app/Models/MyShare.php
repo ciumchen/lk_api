@@ -18,8 +18,15 @@ class MyShare extends Model
     */
     public function isManage(array $data)
     {
+        $res = $this->isHead($data['uid']);
+        //获取积分
+        $assetsSum = (new MyShareService)->headsIntegral($data);
+
         //返回
-        return $this->isHead($data['uid']);
+        return [
+            'res' => $res,
+            'assetsSum' => $assetsSum
+        ];
     }
 
     /**用户个人分享

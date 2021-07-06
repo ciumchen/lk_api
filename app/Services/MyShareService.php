@@ -86,6 +86,26 @@ class MyShareService
         return $this->commonAssets($data, $where);
     }
 
+    /**获取用户分享团员数据
+    * @param array $data
+    * @return mixed
+    * @throws
+    */
+    public function headsIntegral(array $data)
+    {
+        //组装sql 条件
+        $where = [
+            'users.id'                 => $data['uid'],
+            'users.status'             => 1,
+            'users.member_head'        => 2,
+        ];
+        $operateType = ['invite_rebate', 'share_b_rebate'];
+        $remark = ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'];
+
+        //返回
+        return $this->headIntegral($where, $operateType, $remark);
+    }
+
     /**获取用户分享团员、商家数据
     * @param array $data
     * @param array $where
@@ -230,6 +250,49 @@ class MyShareService
         $integralList = array_merge($assetsList, $orderList);
 
         //资产总金额
+       /*  $assetsSum = DB::table('users')
+                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
+                    ->where($where)
+                    ->whereIn('assets_logs.operate_type', $operateType)
+                    ->when($memberHead, function ($query) use($remark) {
+                        return $query->whereIn('assets_logs.remark', $remark);
+                    })
+                    ->sum('assets_logs.amount'); */
+
+        //订单总让利
+        /* unset($where['assets_logs.remark']);
+        $profitSum = DB::table('users')
+                    ->leftJoin('order', 'users.id', 'order.uid')
+                    ->where($where)
+                    ->sum('order.profit_price'); */
+        //总积分
+        $assetsSum = $this->headIntegral($where, $operateType, $remark);
+
+        //数组分页
+        $start = ($data['page'] - 1) * $data['perPage'];
+        $length = $data['perPage'];
+        $integralList = array_slice($integralList, $start, $length);
+
+        //返回
+        return [
+            'assetsList' => $integralList,
+            'assetsSum'  => $assetsSum
+        ];
+    }
+
+    /**获取用户分享团员、团长资产数据
+    * @param array $where
+    * @param array $operateType
+    * @param array $remark
+    * @return mixed
+    * @throws
+    */
+    public function headIntegral(array $where, array $operateType, array $remark)
+    {
+        //团长
+        $memberHead = $where['users.member_head'] == 2 ? true : false;
+
+        //资产总金额
         $assetsSum = DB::table('users')
                     ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
                     ->where($where)
@@ -246,15 +309,7 @@ class MyShareService
                     ->where($where)
                     ->sum('order.profit_price');
 
-        //数组分页
-        $start = ($data['page'] - 1) * $data['perPage'];
-        $length = $data['perPage'];
-        $integralList = array_slice($integralList, $start, $length);
-
         //返回
-        return [
-            'assetsList' => $integralList,
-            'assetsSum'  => sprintf('%.2f', $assetsSum + $profitSum)
-        ];
+        return sprintf('%.2f', $assetsSum + $profitSum);
     }
 }
