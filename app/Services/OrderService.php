@@ -596,6 +596,7 @@ class OrderService
             'YK' => 'Invite_points_yk',
             'MT' => 'Invite_points_mt',
             'ZL' => 'Invite_points_zl',
+            'MZL' => 'Invite_points_zl',
             'VC' => 'Invite_points_vc',
         ];
         $activityState = 0;
