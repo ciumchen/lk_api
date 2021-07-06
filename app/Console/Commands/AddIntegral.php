@@ -37,7 +37,7 @@ class AddIntegral extends Command
      *
      * @var string
      */
-    protected $description = '自动控单添加积分';
+    protected $description = '';
 
     /**
      * Create a new command instance.
@@ -56,24 +56,20 @@ class AddIntegral extends Command
      */
     public function handle()
     {
-        log::info('=================自动添加积分任务===================================');
+//        log::info('=================自动添加积分任务===================================');
 
         $setValue = Setting::where('key', 'consumer_integral')->value('value');
         if ($setValue == 1) {
-//            $orderInfo = Order::where("status",2)->where('pay_status','succeeded')->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
-//            $orderInfo = Order::where("status",2)->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
-//            $orderInfo = Order::where("status",2)->where("line_up",1)->where('id','!=',27353)->with(['Trade_Order'])->orderBy('id','asc')->first();
-//            $orderInfo = Order::where("status", 2)->where("line_up", 1)->with(['Trade_Order'])->orderBy('id', 'asc')->first();
             $orderInfo = Order::where("status", 2)->where("line_up", 1)->orderBy('id', 'asc')->first();
             if ($orderInfo != null) {
                 $orderInfo = $orderInfo->toArray();
             } else {
-                log::info('=================排队订单为空===================================');
+//                log::info('=================排队订单为空===================================');
                 return "排队订单为空";
             }
 
             $orderId = $orderInfo['id'];
-            log::info("=================打印订单信息1==================================",$orderInfo);
+//            log::info("=================打印订单信息1==================================",$orderInfo);
 //            $order_no = $orderInfo['trade__order']['order_no'];
             $orderldModer = new OrderIntegralLkDistribution();
             $todaytime = strtotime(date("Y-m-d"), time());
@@ -113,10 +109,10 @@ class AddIntegral extends Command
                     $this->completeOrder($orderId);
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
-                    log::info('=================添加积分成功1===================================');
+//                    log::info('=================添加积分成功1===================================');
                     return "添加积分成功";
                 } else {
-                    log::info('=================添加积分已达到上限数量===================================');
+//                    log::info('=================添加积分已达到上限数量===================================');
                     return "添加积分已达到上限数量";
                 }
 
@@ -124,12 +120,12 @@ class AddIntegral extends Command
                 $this->completeOrder($orderId);
                 $LkBlData['count_profit_price'] = $addCountProfitPrice;
                 DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
-                log::info('=================添加积分成功2===================================');
+//                log::info('=================添加积分成功2===================================');
                 return "添加积分成功";
             }
 
         } else {
-            log::info('=================后台未开启控单===================================');
+//            log::info('=================后台未开启控单===================================');
             return "后台未开启控单";
         }
 
@@ -142,7 +138,7 @@ class AddIntegral extends Command
             $orderData = Order::find($orderId);
             $orderService = new OrderService();
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
-            log::debug("=================打印订单信息2==================================",$orderData->toArray());
+//            log::debug("=================打印订单信息2==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
                 $dataInfo = $orderData->trade;
@@ -155,24 +151,20 @@ class AddIntegral extends Command
             } elseif ($orderType == 'SHOP') {
                 $dataInfo = $orderData->lkshopOrder;
             } else {
-                log::debug("=================打印订单信息3-000000==================================".$orderType);
+//                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
             }
         } catch (\Exception $e) {
-            log::debug("=================打印订单信息3-111111==================================".$e);
+//            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
 //        dd($orderType);
 
-        log::debug("=================打印订单信息3==================================",$dataInfo->toArray());
+//        log::debug("=================打印订单信息3==================================",$dataInfo->toArray());
 //        dd($dataInfo);
         $consumer_uid = $dataInfo->user_id;
         $description = $dataInfo->description;
         $orderNo = $dataInfo->order_no;
-        log::debug("=================打印订单信息4==================================".$consumer_uid);
-        log::debug("=================打印订单信息5==================================".$description);
-        log::debug("=================打印订单信息6==================================".$orderNo);
-        log::debug("=================打印订单信息7==================================".$orderId);
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($orderId);
@@ -198,7 +190,9 @@ class AddIntegral extends Command
             $customer->save();
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+//            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+
+            (new OrderService())->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
 
             $order->save();
             DB::commit();
