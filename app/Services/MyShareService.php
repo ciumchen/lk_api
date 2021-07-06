@@ -58,12 +58,16 @@ class MyShareService
             'users.id'                 => $data['uid'],
             'users.status'             => 1,
             'users.member_head'        => 1,
-            'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
-            'assets_logs.remark'       => ['邀请商家，获得盈利返佣'],
+            //'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
+            //'assets_logs.remark'       => ['邀请商家，获得盈利返佣'],
+        ];
+        $param = [
+            'operateType' => ['invite_rebate', 'share_b_rebate'],
+            'remark'      => ['邀请商家，获得盈利返佣'],
         ];
 
         //返回
-        return $this->commonAssets($data, $where);
+        return $this->commonAssets($data, $where, $param);
     }
 
     /**获取用户分享团员数据
@@ -78,15 +82,19 @@ class MyShareService
             'users.id'                 => $data['uid'],
             'users.status'             => 1,
             'users.member_head'        => 2,
-            'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
-            'assets_logs.remark'       => ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'],
+            //'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
+            //'assets_logs.remark'       => ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'],
+        ];
+        $param = [
+            'operateType' => ['invite_rebate', 'share_b_rebate'],
+            'remark'      => ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'],
         ];
 
         //返回
-        return $this->commonAssets($data, $where);
+        return $this->commonAssets($data, $where, $param);
     }
 
-    /**获取用户分享团员数据
+    /**获取团长总积分
     * @param array $data
     * @return mixed
     * @throws
@@ -197,32 +205,21 @@ class MyShareService
     /**获取用户分享团员、团长资产数据
     * @param array $data
     * @param array $where
+    * @param array $param
     * @return mixed
     * @throws
     */
-    public function commonAssets(array $data, array $where)
+    public function commonAssets(array $data, array $where, array $param)
     {
-        //类型
-        $operateType = $where['assets_logs.operate_type'];
-        unset($where['assets_logs.operate_type']);
-
-        //团长
-        $memberHead = $where['users.member_head'] == 2 ? true : false;
-        //备注
-        $remark = $where['assets_logs.remark'];
-        if ($memberHead)
-        {
-            unset($where['assets_logs.remark']);
-        }
-        
         //获取分享团员资产数据
         $assetsData = DB::table('users')
                     ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
                     ->where($where)
-                    ->whereIn('assets_logs.operate_type', $operateType)
-                    ->when($memberHead, function ($query) use($remark) {
-                        return $query->whereIn('assets_logs.remark', $remark);
-                    })
+                    ->whereIn('assets_logs.operate_type', $param['operateType'])
+                    ->whereIn('assets_logs.remark', $param['remark'])
+                    /* ->when($memberHead, function ($query) use($param) {
+                        return $query->whereIn('assets_logs.remark', $param['remark']);
+                    }) */
                     ->groupBy('assets_logs.id')
                     ->orderBy('assets_logs.amount', 'desc')
                     ->orderBy('assets_logs.created_at', 'desc')
@@ -266,7 +263,7 @@ class MyShareService
                     ->where($where)
                     ->sum('order.profit_price'); */
         //总积分
-        $assetsSum = $this->headIntegral($where, $operateType, $remark);
+        $assetsSum = $this->headIntegral($where, $param['operateType'], $param['remark']);
 
         //数组分页
         $start = ($data['page'] - 1) * $data['perPage'];
@@ -280,7 +277,7 @@ class MyShareService
         ];
     }
 
-    /**获取用户分享团员、团长资产数据
+    /**获取用户分享团员、团长总金额总让利
     * @param array $where
     * @param array $operateType
     * @param array $remark
@@ -289,17 +286,14 @@ class MyShareService
     */
     public function headIntegral(array $where, array $operateType, array $remark)
     {
-        //团长
-        $memberHead = $where['users.member_head'] == 2 ? true : false;
-
-        //资产总金额
         $assetsSum = DB::table('users')
                     ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
                     ->where($where)
                     ->whereIn('assets_logs.operate_type', $operateType)
-                    ->when($memberHead, function ($query) use($remark) {
+                    ->whereIn('assets_logs.remark', $remark)
+                    /* ->when($memberHead, function ($query) use($remark) {
                         return $query->whereIn('assets_logs.remark', $remark);
-                    })
+                    }) */
                     ->sum('assets_logs.amount');
 
         //订单总让利
