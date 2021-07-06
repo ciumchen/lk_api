@@ -132,10 +132,13 @@ class AddIntegral extends Command
     }
 
 
-    public function completeOrder(string $orderId)
+    public function completeOrder(string $orderId,Order $orderData=null)
     {
         try {
-            $orderData = Order::find($orderId);
+            if (empty($orderData)){
+                $orderData = Order::find($orderId);
+            }
+//            $orderData = Order::find($orderId);
             $orderService = new OrderService();
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
 //            log::debug("=================打印订单信息2==================================",$orderData->toArray());
@@ -150,6 +153,8 @@ class AddIntegral extends Command
                 $dataInfo = $orderData->utility;
             } elseif ($orderType == 'SHOP') {
                 $dataInfo = $orderData->lkshopOrder;
+            } elseif ($orderType == 'ZL' || $orderType == 'MZL') {
+                $dataInfo = $orderData->mobile;
             } else {
 //                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
