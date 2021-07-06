@@ -11,14 +11,17 @@ use Illuminate\Support\Facades\DB;
 /**
  * App\Models\OrderMobileRechargeDetails
  *
- * @property int                             $id
- * @property int                             $order_mobile_id order_mobile订单ID
- * @property int                             $order_id        order订单ID
- * @property string                          $mobile          充值手机
- * @property string                          $money           充值金额
- * @property int                             $status          充值状态:0充值中,1成功,9撤销
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int                                  $id
+ * @property int                                  $order_mobile_id order_mobile订单ID
+ * @property int                                  $order_id        order订单ID
+ * @property string                               $mobile          充值手机
+ * @property string                               $money           充值金额
+ * @property int                                  $status          充值状态:0充值中,1成功,9撤销
+ * @property string                               $order_no        子订单号
+ * @property string                               $trade_no        接口方返回单号
+ * @property \Illuminate\Support\Carbon|null      $created_at
+ * @property \Illuminate\Support\Carbon|null      $updated_at
+ * @property-read \App\Models\OrderMobileRecharge $pMobile
  * @method static Builder|OrderMobileRechargeDetails newModelQuery()
  * @method static Builder|OrderMobileRechargeDetails newQuery()
  * @method static Builder|OrderMobileRechargeDetails query()
@@ -31,6 +34,8 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|OrderMobileRechargeDetails whereStatus($value)
  * @method static Builder|OrderMobileRechargeDetails whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static Builder|OrderMobileRechargeDetails whereOrderNo($value)
+ * @method static Builder|OrderMobileRechargeDetails whereTradeNo($value)
  */
 class OrderMobileRechargeDetails extends Model
 {
@@ -82,5 +87,17 @@ class OrderMobileRechargeDetails extends Model
             throw $e;
         }
         return $res;
+    }
+    
+    /**
+     * Description:反查上级
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/6 0006
+     */
+    public function pMobile()
+    {
+        return $this->belongsTo(OrderMobileRecharge::class, 'order_mobile_id', 'id');
     }
 }

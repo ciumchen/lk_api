@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\API\Test;
 
+use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderMobileRechargeDetails;
+use App\Services\bmapi\MobileRechargeService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -83,5 +85,41 @@ class DongController extends Controller
         dump($data);
 //        $res = $Model->save($data);
 //        dd($res);
+    }
+    
+    public function updateMobileDetails(Request $request)
+    {
+        $order_id = $request->input('order_id');
+        try {
+            $MobileService = new MobileRechargeService();
+            $bill = [
+                'rechargeAccount' => '18707145152',
+                'saleAmount'      => '50.00',
+            ];
+            $MobileService->updateManyMobileOrder($order_id, $bill);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/6 0006
+     */
+    public function manyRecharge(Request $request)
+    {
+        $order_id = $request->input('order_id');
+        try {
+            $MobileService = new MobileRechargeService();
+            $res = $MobileService->manyRecharge($order_id);
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        dd($res);
     }
 }

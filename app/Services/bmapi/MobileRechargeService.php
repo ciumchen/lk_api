@@ -376,17 +376,29 @@ class MobileRechargeService extends BaseService
                 throw new Exception('验签不通过');
             }
             $rechargeInfo = $MobileRecharge->where('order_no', '=', $data[ 'outer_tid' ])
-                                           ->first();
-            if (empty($rechargeInfo)) {
+                                           ->first(); /*单号充值*/
+            $Details = new OrderMobileRechargeDetails(); /* 多号充值 */
+            $DetailsInfo = $Details->where('order_no', '=', $data[ 'outer_tid' ])->first();
+            if (empty($rechargeInfo) && empty($DetailsInfo)) {
                 throw new Exception('未查询到订单数据');
             }
-            if ($rechargeInfo->status != 0) {
+            if ($rechargeInfo->status != 0 && $DetailsInfo->status != 0) {
                 throw new Exception('订单已处理');
             }
-            $rechargeInfo->status = $data[ 'recharge_state' ];
-            $rechargeInfo->trade_no = $data[ 'tid' ];
-            $rechargeInfo->updated_at = $data[ 'timestamp' ];
-            $rechargeInfo->save();
+            if (!empty($rechargeInfo)) {
+                $rechargeInfo->status = $data[ 'recharge_state' ];
+                $rechargeInfo->trade_no = $data[ 'tid' ];
+                $rechargeInfo->updated_at = $data[ 'timestamp' ];
+                $rechargeInfo->save();
+            }
+            if (!empty($DetailsInfo)) {
+                $DetailsInfo->status = $data[ 'recharge_state' ];
+                $DetailsInfo->trade_no = $data[ 'tid' ];
+                $DetailsInfo->updated_at = $data[ 'timestamp' ];
+                $DetailsInfo->save();
+                $DetailsInfo->pMobile->status = 1;
+                $DetailsInfo->pMobile->save();
+            }
         } catch (Exception $e) {
             Log::debug('banMaNotify-Error:'.$e->getMessage(), [json_encode($data)]);
             throw $e;
@@ -419,21 +431,54 @@ class MobileRechargeService extends BaseService
         return true;
     }
     
-    /* TODO:多账号代充*/
+    /**
+     * Description:多账号代充
+     *
+     * @param                          $order_id
+     * @param  \App\Models\Order|null  $Order
+     *
+     * @return bool
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/6 0006
+     */
     public function manyRecharge($order_id, Order $Order = null)
     {
         if (empty($Order)) {
             $Order = Order::find($order_id);
         }
         try {
+            if (empty($Order)) {
+                throw new Exception('订单不存在');
+            }
             $Mobile = $Order->mobile;
             if (empty($Mobile)) {
                 throw new Exception('手机充值订单不存在');
             }
-            /*TODO:循环充值每个手机号*/
+            $MobileDetails = $Mobile->details;
+            if (empty($MobileDetails)) {
+                throw new Exception('待充值手机不存在');
+            }
+            $status = true;
+            $msg = '订单号: '.$Order->order_no.' 订单内 ';
+            foreach ($MobileDetails as $row) {
+                try {
+                    /* 调用充值 */
+                    $bill = $this->bmMobileRecharge($row->mobile, $row->money, $row->order_no);
+                    /* 更新订单 */
+                    $this->updateManyMobileOrder($order_id, $bill);
+                } catch (Exception $e) {
+                    $msg .= '号码：'.$row[ 'mobile' ].',金额：'.$row[ 'money' ];
+                    $status = false;
+                }
+            }
+            if ($status == false) {
+                throw new Exception($msg.'充值异常');
+            }
         } catch (Exception $e) {
             throw $e;
         }
+        return true;
     }
     
     /**
@@ -527,6 +572,41 @@ class MobileRechargeService extends BaseService
             $MobileRecharge->pay_status = $bill[ 'payState' ];
             $MobileRecharge->goods_title = $bill[ 'itemName' ];
             $MobileRecharge->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
+    /**
+     * Description:
+     *
+     * @param                          $order_id
+     * @param                          $bill
+     * @param  \App\Models\Order|null  $Order
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/6 0006
+     */
+    public function updateManyMobileOrder($order_id, $bill, Order $Order = null)
+    {
+        try {
+            if (empty($Order)) {
+                $Order = Order::findOrFail($order_id);
+            }
+            if (empty($Order->mobile)) {
+                throw new Exception('非法手机充值数据');
+            }
+            if (empty($Order->mobile->details)) {
+                throw new Exception('充值手机详情不存在');
+            }
+            $Details = $Order->mobile->details;
+            $Detail = $Details->where('mobile', '=', $bill[ 'rechargeAccount' ])->first();
+            if ($Detail->status != '0') {
+                throw new Exception('订单已充值');
+            }
+            $Detail->status = 1;
+            $Detail->save();
         } catch (Exception $e) {
             throw $e;
         }

@@ -45,6 +45,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int                             $has_child   是否有子订单
  * @method static Builder|OrderMobileRecharge whereHasChild($value)
  * @method static Builder|OrderMobileRecharge whereNum($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\OrderMobileRechargeDetails[] $details
+ * @property-read int|null $details_count
  */
 class OrderMobileRecharge extends Model
 {
