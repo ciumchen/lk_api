@@ -227,11 +227,11 @@ class MyShareService
                     ->each(function ($item) {
                         $item->amount = sprintf('%.2f', $item->amount);
                         $item->name = '消费积分';
-                    });
+                    });                    
         $assetsList = json_decode($assetsData, 1);
 
         //获取分享团员订单数据
-        unset($where['assets_logs.remark']);
+        $where['order.status'] = 2;
         $orderData = DB::table('users')
                     ->leftJoin('order', 'users.id', 'order.uid')
                     ->where($where)
@@ -244,6 +244,8 @@ class MyShareService
                         $item->name = '让利积分';
                     });
         $orderList = json_decode($orderData, 1);
+        
+        //总数据
         $integralList = array_merge($assetsList, $orderList);
 
         //资产总金额
@@ -263,6 +265,7 @@ class MyShareService
                     ->where($where)
                     ->sum('order.profit_price'); */
         //总积分
+        unset($where['order.status']);
         $assetsSum = $this->headIntegral($where, $param['operateType'], $param['remark']);
 
         //数组分页
@@ -286,6 +289,7 @@ class MyShareService
     */
     public function headIntegral(array $where, array $operateType, array $remark)
     {
+        //资产总金额
         $assetsSum = DB::table('users')
                     ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
                     ->where($where)
@@ -297,7 +301,7 @@ class MyShareService
                     ->sum('assets_logs.amount');
 
         //订单总让利
-        unset($where['assets_logs.remark']);
+        $where['order.status'] = 2;
         $profitSum = DB::table('users')
                     ->leftJoin('order', 'users.id', 'order.uid')
                     ->where($where)
