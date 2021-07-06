@@ -55,7 +55,7 @@ class MyShareService
     {
         //组装sql 条件
         $where = [
-            'users.invite_uid'         => $data['uid'],
+            'users.id'                 => $data['uid'],
             'users.status'             => 1,
             'users.member_head'        => 1,
             'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
@@ -75,7 +75,7 @@ class MyShareService
     {
         //组装sql 条件
         $where = [
-            'users.invite_uid'         => $data['uid'],
+            'users.id'                 => $data['uid'],
             'users.status'             => 1,
             'users.member_head'        => 2,
             'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
@@ -203,16 +203,31 @@ class MyShareService
                     ->when($memberHead, function ($query) use($remark) {
                         return $query->whereIn('assets_logs.remark', $remark);
                     })
-                    ->forPage($data['page'], $data['perPage'])
                     ->groupBy('assets_logs.id')
                     ->orderBy('assets_logs.amount', 'desc')
                     ->orderBy('assets_logs.created_at', 'desc')
                     ->get(['assets_logs.amount', 'assets_logs.created_at'])
                     ->each(function ($item) {
                         $item->amount = sprintf('%.2f', $item->amount);
-                        $item->name = '分享积分';
+                        $item->name = '消费积分';
                     });
         $assetsList = json_decode($assetsData, 1);
+
+        //获取分享团员订单数据
+        unset($where['assets_logs.remark']);
+        $orderData = DB::table('users')
+                    ->leftJoin('order', 'users.id', 'order.uid')
+                    ->where($where)
+                    ->groupBy('order.id')
+                    ->orderBy('order.profit_price', 'desc')
+                    ->orderBy('order.created_at', 'desc')
+                    ->get(['order.profit_price', 'order.created_at'])
+                    ->each(function ($item) {
+                        $item->profit_price = sprintf('%.2f', $item->profit_price);
+                        $item->name = '让利积分';
+                    });
+        $orderList = json_decode($orderData, 1);
+        $integralList = array_merge($assetsList, $orderList);
 
         //资产总金额
         $assetsSum = DB::table('users')
@@ -224,10 +239,22 @@ class MyShareService
                     })
                     ->sum('assets_logs.amount');
 
+        //订单总让利
+        unset($where['assets_logs.remark']);
+        $profitSum = DB::table('users')
+                    ->leftJoin('order', 'users.id', 'order.uid')
+                    ->where($where)
+                    ->sum('order.profit_price');
+
+        //数组分页
+        $start = ($data['page'] - 1) * $data['perPage'];
+        $length = $data['perPage'];
+        $integralList = array_slice($integralList, $start, $length);
+
         //返回
         return [
-            'assetsList' => $assetsList,
-            'assetsSum'  => sprintf('%.2f', $assetsSum)
+            'assetsList' => $integralList,
+            'assetsSum'  => sprintf('%.2f', $assetsSum + $profitSum)
         ];
     }
 }
