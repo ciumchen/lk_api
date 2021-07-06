@@ -59,6 +59,8 @@ Route::any("shop-share", "User\MyShareController@shopShare");
 Route::any("users-assets", "User\MyShareController@usersAssets");
 //团长资产记录
 Route::any("heads-assets", "User\MyShareController@headsAssets");
+//团队资产记录
+Route::any("team-assets", "User\MyShareController@teamAssets");
 
 
 

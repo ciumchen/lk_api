@@ -58,9 +58,8 @@ class MyShareService
             'users.id'                 => $data['uid'],
             'users.status'             => 1,
             'users.member_head'        => 1,
-            //'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
-            //'assets_logs.remark'       => ['邀请商家，获得盈利返佣'],
         ];
+
         $param = [
             'operateType' => ['invite_rebate', 'share_b_rebate'],
             'remark'      => ['邀请商家，获得盈利返佣'],
@@ -70,7 +69,7 @@ class MyShareService
         return $this->commonAssets($data, $where, $param);
     }
 
-    /**获取用户分享团员数据
+    /**获取用户分享团长数据
     * @param array $data
     * @return mixed
     * @throws
@@ -82,9 +81,8 @@ class MyShareService
             'users.id'                 => $data['uid'],
             'users.status'             => 1,
             'users.member_head'        => 2,
-            //'assets_logs.operate_type' => ['invite_rebate', 'share_b_rebate'],
-            //'assets_logs.remark'       => ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'],
         ];
+
         $param = [
             'operateType' => ['invite_rebate', 'share_b_rebate'],
             'remark'      => ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'],
@@ -107,11 +105,35 @@ class MyShareService
             'users.status'             => 1,
             'users.member_head'        => 2,
         ];
-        $operateType = ['invite_rebate', 'share_b_rebate'];
-        $remark = ['邀请商家，获得盈利返佣', '邀请商家盟主分红', '同级别盟主奖励'];
+
+        $operateType = ['share_b_rebate'];
+        $remark = ['邀请商家盟主分红', '同级别盟主奖励'];
 
         //返回
-        return $this->headIntegral($where, $operateType, $remark);
+        return $this->teamHeadInt($where, $operateType, $remark);
+    }
+
+    /**获取团长团队资产数据
+    * @param array $data
+    * @return mixed
+    * @throws
+    */
+    public function teamAssets(array $data)
+    {
+        //组装sql 条件
+        $where = [
+            'users.id'                 => $data['uid'],
+            'users.status'             => 1,
+            'users.member_head'        => 2,
+        ];
+
+        $param = [
+            'operateType' => ['share_b_rebate'],
+            'remark'      => ['邀请商家盟主分红', '同级别盟主奖励'],
+        ];
+
+        //返回
+        return $this->TeamAss($data, $where, $param);
     }
 
     /**获取用户分享团员、商家数据
@@ -211,59 +233,18 @@ class MyShareService
     */
     public function commonAssets(array $data, array $where, array $param)
     {
-        //获取分享团员资产数据
-        $assetsData = DB::table('users')
-                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
-                    ->where($where)
-                    ->whereIn('assets_logs.operate_type', $param['operateType'])
-                    ->whereIn('assets_logs.remark', $param['remark'])
-                    /* ->when($memberHead, function ($query) use($param) {
-                        return $query->whereIn('assets_logs.remark', $param['remark']);
-                    }) */
-                    ->groupBy('assets_logs.id')
-                    ->orderBy('assets_logs.amount', 'desc')
-                    ->orderBy('assets_logs.created_at', 'desc')
-                    ->get(['assets_logs.amount', 'assets_logs.created_at'])
-                    ->each(function ($item) {
-                        $item->amount = sprintf('%.2f', $item->amount);
-                        $item->name = '消费积分';
-                    });                    
+        //获取资产记录列表
+        $assetsData = $this->commonAss($where, $param);
         $assetsList = json_decode($assetsData, 1);
 
         //获取分享团员订单数据
         $where['order.status'] = 2;
-        $orderData = DB::table('users')
-                    ->leftJoin('order', 'users.id', 'order.uid')
-                    ->where($where)
-                    ->groupBy('order.id')
-                    ->orderBy('order.profit_price', 'desc')
-                    ->orderBy('order.created_at', 'desc')
-                    ->get(['order.profit_price', 'order.created_at'])
-                    ->each(function ($item) {
-                        $item->profit_price = sprintf('%.2f', $item->profit_price);
-                        $item->name = '让利积分';
-                    });
+        $orderData = $this->commonOrder($where);
         $orderList = json_decode($orderData, 1);
         
         //总数据
         $integralList = array_merge($assetsList, $orderList);
 
-        //资产总金额
-       /*  $assetsSum = DB::table('users')
-                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
-                    ->where($where)
-                    ->whereIn('assets_logs.operate_type', $operateType)
-                    ->when($memberHead, function ($query) use($remark) {
-                        return $query->whereIn('assets_logs.remark', $remark);
-                    })
-                    ->sum('assets_logs.amount'); */
-
-        //订单总让利
-        /* unset($where['assets_logs.remark']);
-        $profitSum = DB::table('users')
-                    ->leftJoin('order', 'users.id', 'order.uid')
-                    ->where($where)
-                    ->sum('order.profit_price'); */
         //总积分
         unset($where['order.status']);
         $assetsSum = $this->headIntegral($where, $param['operateType'], $param['remark']);
@@ -280,6 +261,124 @@ class MyShareService
         ];
     }
 
+    /**获取用户分享团长团队资产数据
+    * @param array $data
+    * @param array $where
+    * @param array $param
+    * @return mixed
+    * @throws
+    */
+    public function TeamAss(array $data, array $where, array $param)
+    {
+        //获取资产记录列表
+        $assetsData = $this->commonAss($where, $param);
+        $assetsList = json_decode($assetsData, 1);
+
+        //数组分页
+        $start = ($data['page'] - 1) * $data['perPage'];
+        $length = $data['perPage'];
+        $assetsList = array_slice($assetsList, $start, $length);
+
+        //总积分
+        $assetsSum = $this->teamHeadInt($where, $param['operateType'], $param['remark']);
+
+        //返回
+        return [
+            'assetsList' => $assetsList,
+            'assetsSum'  => $assetsSum
+        ];
+    }
+
+    /**获取用户分享资产数据
+    * @param array $where
+    * @param array $param
+    * @return mixed
+    * @throws
+    */
+    public function commonAss(array $where, array $param)
+    {
+        //获取分享资产数据
+        return DB::table('users')
+                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
+                    ->where($where)
+                    ->whereIn('assets_logs.operate_type', $param['operateType'])
+                    ->whereIn('assets_logs.remark', $param['remark'])
+                    ->groupBy('assets_logs.id')
+                    ->orderBy('assets_logs.amount', 'desc')
+                    ->orderBy('assets_logs.created_at', 'desc')
+                    ->get(['assets_logs.amount', 'assets_logs.created_at'])
+                    ->each(function ($item) {
+                        $item->amount = sprintf('%.2f', $item->amount);
+                        $item->name = '消费积分';
+                    });
+    }
+
+    /**获取用户分享订单数据
+    * @param array $data
+    * @param array $where
+    * @param array $param
+    * @return mixed
+    * @throws
+    */
+    public function commonOrder(array $where)
+    {
+        //获取分享订单数据
+        $where['order.status'] = 2;
+        return DB::table('users')
+                    ->leftJoin('order', 'users.id', 'order.uid')
+                    ->where($where)
+                    ->groupBy('order.id')
+                    ->orderBy('order.profit_price', 'desc')
+                    ->orderBy('order.created_at', 'desc')
+                    ->get(['order.profit_price', 'order.created_at'])
+                    ->each(function ($item) {
+                        $item->profit_price = sprintf('%.2f', $item->profit_price);
+                        $item->name = '让利积分';
+                    });
+    }
+    
+
+    /**获取用户分享团长总金额
+    * @param array $where
+    * @param array $operateType
+    * @param array $remark
+    * @return mixed
+    * @throws
+    */
+    public function teamHeadInt(array $where, array $operateType, array $remark)
+    {
+        //资产总金额
+        $assetsSum = DB::table('users')
+                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
+                    ->where($where)
+                    ->whereIn('assets_logs.operate_type', $operateType)
+                    ->whereIn('assets_logs.remark', $remark)
+                    ->sum('assets_logs.amount');
+
+        //返回
+        return sprintf('%.2f', $assetsSum);
+    }
+
+    /**获取用户分享总让利
+    * @param array $where
+    * @param array $operateType
+    * @param array $remark
+    * @return mixed
+    * @throws
+    */
+    public function commonPro(array $where)
+    {
+        //资产总金额
+        $where['order.status'] = 2;
+        $profitSum = DB::table('users')
+                    ->leftJoin('order', 'users.id', 'order.uid')
+                    ->where($where)
+                    ->sum('order.profit_price');
+
+        //返回
+        return sprintf('%.2f', $profitSum);
+    }
+
     /**获取用户分享团员、团长总金额总让利
     * @param array $where
     * @param array $operateType
@@ -290,22 +389,11 @@ class MyShareService
     public function headIntegral(array $where, array $operateType, array $remark)
     {
         //资产总金额
-        $assetsSum = DB::table('users')
-                    ->leftJoin('assets_logs', 'users.id', 'assets_logs.uid')
-                    ->where($where)
-                    ->whereIn('assets_logs.operate_type', $operateType)
-                    ->whereIn('assets_logs.remark', $remark)
-                    /* ->when($memberHead, function ($query) use($remark) {
-                        return $query->whereIn('assets_logs.remark', $remark);
-                    }) */
-                    ->sum('assets_logs.amount');
+        $assetsSum = $this->teamHeadInt($where, $operateType, $remark);
 
         //订单总让利
         $where['order.status'] = 2;
-        $profitSum = DB::table('users')
-                    ->leftJoin('order', 'users.id', 'order.uid')
-                    ->where($where)
-                    ->sum('order.profit_price');
+        $profitSum = $this->commonPro($where);
 
         //返回
         return sprintf('%.2f', $assetsSum + $profitSum);

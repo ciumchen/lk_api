@@ -70,6 +70,18 @@ class MyShareController extends Controller
         return (new MyShare())->headsAssets($data);
     }
 
+    /**团长团队资产记录
+     * @param Request $request
+     * @return mixed
+     * @throws    
+    */
+    public function teamAssets(Request $request)
+    {
+        $data = $request->all();
+        //返回
+        return (new MyShare())->teamAssets($data);
+    }
+
     //团长
     //operate_type=invite_rebate
     //operate_type=share_b_rebate&remark=邀请商家，获得盈利返佣
