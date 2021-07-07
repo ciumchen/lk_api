@@ -76,7 +76,7 @@ class VerifyCode extends Model
         self::TYPE_REGISTER => 'SMS_196170270',
         self::TYPE_FORGET_PASSWORD => 'SMS_196170269',
         self::TYPE_WITHDRAW_TO_WALLET => 'SMS_196170273',
-        self::TYPE_UPDATE_USER_PHONE => 'SMS_217405516',
+        self::TYPE_UPDATE_USER_PHONE => 'SMS_219395043',
     ];
 
     /**
