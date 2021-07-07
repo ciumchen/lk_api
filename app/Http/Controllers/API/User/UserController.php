@@ -393,7 +393,7 @@ class UserController extends Controller
                 $userDataLogModel->edit_to_phone = $user->phone.'=>'.$phone;
                 $userDataLogModel->save();
 
-                $userInfo = Users::where('id',$user->id)->first();
+                $userInfo = User::where('id',$user->id)->first();
                 $userInfo->phone = $phone;
                 $userInfo->save();
                 DB::commit();
