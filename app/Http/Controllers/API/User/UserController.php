@@ -14,10 +14,13 @@ use App\Models\IntegralLogs;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\Users;
 use App\Models\UserUpdatePhoneLog;
 use App\Models\VerifyCode;
 use App\Services\BusinessService;
 use App\Services\OssService;
+use Illuminate\Database\Eloquent\Model;
+
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -385,17 +388,22 @@ class UserController extends Controller
         }else{
             DB::beginTransaction();
             try {
-                $userDataLogModel->user_id = $user->id;
-                $userDataLogModel->time = time();
-                $userDataLogModel->edit_to_phone = $user->phone.'=>'.$phone;
-                $userDataLogModel->save();
+                $logDataArr = array(
+                    'user_id'=>$user->id,
+                    'time'=>time(),
+                    'edit_to_phone'=>$user->phone.'=>'.$phone,
+                    'user_id'=>$user->id,
+                );
+                DB::table('user_update_phone_log')->insert($logDataArr);
 
-                $user->phone = $phone;
-                $user->save();
-                return response()->json(['code' => 1, 'msg' => '修改成功']);
+                $userInfo = Users::where('id',$user->id)->first();
+                $userInfo->phone = $phone;
+                $userInfo->save();
                 DB::commit();
+                return response()->json(['code' => 1, 'msg' => '修改成功']);
             } catch (Exception $exception) {
                 DB::rollBack();
+                throw $exception;
                 return response()->json(['code' => 0, 'msg' => '修改失败']);
             }
 
