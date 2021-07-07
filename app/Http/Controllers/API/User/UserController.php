@@ -402,7 +402,7 @@ class UserController extends Controller
                 DB::commit();
             } catch (Exception $exception) {
                 DB::rollBack();
-                throw $exception;
+//                throw $exception;
                 return response()->json(['code' => 0, 'msg' => '修改失败']);
             }
             return response()->json(['code' => 1, 'msg' => '修改成功']);
