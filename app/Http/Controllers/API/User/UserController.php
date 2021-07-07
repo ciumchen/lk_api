@@ -349,16 +349,45 @@ class UserController extends Controller
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
 
-    //修改用户手机号
-    public function updateUserPhone(Request $request){
+    //修改用户手机号--验证当前密码
+    public function updateUserPhoneOne(Request $request){
         $this->validate($request, [
+            'password' => ['bail', 'required'],
+            'verify_code' => ['bail', 'required'],
+        ], [
+            'phone' => '密码',
+            'verify_code' => '验证码',
+        ]);
+
+        $user = $request->user();
+        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
+            throw new LogicException('无效的验证码',0);
+        }
+
+//        dd(optional($user)->verifyPassword($request->password));
+        if (optional($user)->verifyPassword($request->password)) {
+            return response()->json(['code' => 1, 'msg' => '验证密码成功']);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '验证密码失败']);
+        }
+
+
+
+    }
+
+    //修改用户手机号
+    public function updateUserPhoneTwo(Request $request){
+        $this->validate($request, [
+            'password' => ['bail', 'required'],
             'phone' => ['bail', 'required'],
             'verify_code' => ['bail', 'required'],
         ], [
+            'password' => '密码',
             'phone' => '手机号',
             'verify_code' => '验证码',
         ]);
         $phone = $request->input('phone');//新手机号
+        $password = $request->input('password');//密码
         if(preg_match('/^1[3-9]\d{9}$/', $phone)!=1){
             throw new LogicException('手机号格式不合法',0);
         }
@@ -396,6 +425,10 @@ class UserController extends Controller
                 $userInfo = User::where('id',$user->id)->first();
                 $userInfo->phone = $phone;
                 $userInfo->save();
+
+//                //修改密码 $password
+                $userInfo->changePassword($password);
+
                 DB::commit();
             } catch (Exception $exception) {
                 DB::rollBack();
