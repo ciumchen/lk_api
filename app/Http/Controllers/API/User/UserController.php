@@ -388,13 +388,10 @@ class UserController extends Controller
         }else{
             DB::beginTransaction();
             try {
-                $logDataArr = array(
-                    'user_id'=>$user->id,
-                    'time'=>time(),
-                    'edit_to_phone'=>$user->phone.'=>'.$phone,
-                    'user_id'=>$user->id,
-                );
-                DB::table('user_update_phone_log')->insert($logDataArr);
+                $userDataLogModel->user_id = $user->id;
+                $userDataLogModel->time = time();
+                $userDataLogModel->edit_to_phone = $user->phone.'=>'.$phone;
+                $userDataLogModel->save();
 
                 $userInfo = Users::where('id',$user->id)->first();
                 $userInfo->phone = $phone;
