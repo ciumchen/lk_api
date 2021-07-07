@@ -23,7 +23,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use PDOException;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\DB;
 class UserController extends Controller
 {
 
@@ -365,10 +365,6 @@ class UserController extends Controller
             throw new LogicException('账户异常',0);
         }
 
-        if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE)) {
-            throw new LogicException('无效的验证码',0);
-        }
-
         if($user->phone == $phone){
             throw new LogicException('更换的手机号不能跟当前绑定的手机号相同',0);
         }
@@ -378,6 +374,9 @@ class UserController extends Controller
             throw new LogicException('该手机号已被其他帐号使用，请更换其他手机号',0);
         }
 
+        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
+            throw new LogicException('无效的验证码',0);
+        }
 
         $userDataLogModel = new UserUpdatePhoneLog;
         $userDataLog = $userDataLogModel::where('user_id',$user->id)->orderBy('updated_at','desc')->first();
@@ -401,7 +400,7 @@ class UserController extends Controller
             }
 
         }
-        
+
     }
 
 

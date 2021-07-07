@@ -173,4 +173,21 @@ class VerifyCode extends Model
 
         return true;
     }
+
+    public static function updateUserPhonCheck(string $phone, string $code, int $type): bool
+    {
+        $latest = static::where('phone', $phone)->where('type', $type)->latest()->first();
+        if (null === $latest ||
+            $latest->used ||
+            (time() > strtotime($latest->expires_at)) ||
+            $latest->code !== $code) {
+            return false;
+        }
+
+        $latest->markAsUsed();
+
+        Cache::forget('verify_code_'.$phone.'_'.$type.'_locked');
+
+        return true;
+    }
 }

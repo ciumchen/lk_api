@@ -14,7 +14,7 @@ class UserUpdatePhoneLog extends Authenticatable
 {
 
     use HasFactory, HasApiTokens, Notifiable;
-
+    protected $table = 'user_update_phone_log';
 
     protected $fillable = [
         'user_id',
