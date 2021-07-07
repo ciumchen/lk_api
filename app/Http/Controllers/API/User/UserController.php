@@ -14,6 +14,7 @@ use App\Models\IntegralLogs;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\UserUpdatePhoneLog;
 use App\Models\VerifyCode;
 use App\Services\BusinessService;
 use App\Services\OssService;
@@ -369,21 +370,38 @@ class UserController extends Controller
         }
 
         if($user->phone == $phone){
-            throw new LogicException('更换的手机号不能跟旧手机号相同',0);
+            throw new LogicException('更换的手机号不能跟当前绑定的手机号相同',0);
         }
 
         $phoneUser = User::where('phone', $phone)->first();
         if ($phoneUser != ''){
-            throw new LogicException('该手机号已被其他的用户使用，请更换其他手机号',0);
+            throw new LogicException('该手机号已被其他帐号使用，请更换其他手机号',0);
         }
 
-        $user->phone = $phone;
-        if($user->save()){
-            return response()->json(['code' => 1, 'msg' => '修改成功']);
+
+        $userDataLogModel = new UserUpdatePhoneLog;
+        $userDataLog = $userDataLogModel::where('user_id',$user->id)->orderBy('updated_at','desc')->first();
+        if ($userDataLog!='' && ((time()-$userDataLog->time) <= 86400)){
+            return response()->json(['code' => 0, 'msg' => '24小时只能修改一次']);
         }else{
-            return response()->json(['code' => 0, 'msg' => '修改失败']);
-        }
+            DB::beginTransaction();
+            try {
+                $userDataLogModel->user_id = $user->id;
+                $userDataLogModel->time = time();
+                $userDataLogModel->edit_to_phone = $user->phone.'=>'.$phone;
+                $userDataLogModel->save();
 
+                $user->phone = $phone;
+                $user->save();
+                return response()->json(['code' => 1, 'msg' => '修改成功']);
+                DB::commit();
+            } catch (Exception $exception) {
+                DB::rollBack();
+                return response()->json(['code' => 0, 'msg' => '修改失败']);
+            }
+
+        }
+        
     }
 
 
