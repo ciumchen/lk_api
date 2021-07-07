@@ -29,6 +29,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('change-pass', 'User\UserController@changeUserPassword');
     //修改姓名
     Route::post('change-real-name', 'User\UserController@changeRealName');
+    //修改用户手机号
+    Route::post('updateUserPhone', 'User\UserController@updateUserPhone');
 });
 //新增消费者统计和新增商家统计
 Route::any("addConsumer", "User\CountUserController@addConsumer");

@@ -14,6 +14,7 @@ use App\Models\IntegralLogs;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\VerifyCode;
 use App\Services\BusinessService;
 use App\Services\OssService;
 use Exception;
@@ -343,4 +344,49 @@ class UserController extends Controller
         $user->changePassword($new_password);
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
+
+    //修改用户手机号
+    public function updateUserPhone(Request $request){
+        $this->validate($request, [
+            'phone' => ['bail', 'required'],
+            'verify_code' => ['bail', 'required'],
+        ], [
+            'phone' => '手机号',
+            'verify_code' => '验证码',
+        ]);
+        $phone = $request->input('phone');//新手机号
+        if(preg_match('/^1[3-9]\d{9}$/', $phone)!=1){
+            throw new LogicException('手机号格式不合法',0);
+        }
+        $user = $request->user();
+
+        if (User::STATUS_NORMAL != $user->status) {
+            throw new LogicException('账户异常',0);
+        }
+
+        if (!VerifyCode::check($user->phone, $request->verify_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET)) {
+            throw new LogicException('无效的验证码',0);
+        }
+
+        if($user->phone == $phone){
+            throw new LogicException('更换的手机号不能跟旧手机号相同',0);
+        }
+
+        $phoneUser = User::where('phone', $phone)->first();
+        if ($phoneUser != ''){
+            throw new LogicException('该手机号已被其他的用户使用，请更换其他手机号',0);
+        }
+
+        $user->phone = $phone;
+        if($user->save()){
+            return response()->json(['code' => 1, 'msg' => '修改成功']);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '修改失败']);
+        }
+
+    }
+
+
+
+
 }
