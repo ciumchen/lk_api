@@ -61,3 +61,7 @@ Route::any('ww-video-recharge', 'Order\VideoRechargeController@rechargeWanWeiTes
 Route::any('utility-search', 'Order\UtilityController@getItemList');
 //生活缴费账单查询[斑马]
 Route::any('utility-bill', 'Order\UtilityController@checkBill');
+
+/********************** 兑换充值 **********************/
+//兑换话费回调[斑马]
+Route::any('usdt-phone', 'Order\MobileNotifyController@usdtCall');

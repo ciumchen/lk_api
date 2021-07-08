@@ -56,4 +56,46 @@ class MobileNotifyController extends Controller
         }
         die('success');
     }
+
+    /**兑换话费回调
+     * @param Request $request
+     * @return mixed
+     * @throws
+     */
+    public function usdtCall(Request $request)
+    {
+        $data = $request->all();
+        try {
+            $MobileRechargeService = new MobileRechargeService();
+            $MobileRechargeService->convertNotify($data);
+
+            //新增充值记录
+            if ($data[ 'recharge_state' ] == 1) {
+                $recharge = new RechargeLogs();
+                $recharge = $recharge->where('reorder_id', '=', $data[ 'tid' ])
+                            ->first();
+                if (!empty($recharge)) {
+                    $recharge->created_at = date("Y-m-d H:i:s");
+                    $recharge->updated_at = date("Y-m-d H:i:s");
+                    $recharge->save();
+                } else {
+                    $recharge = new RechargeLogs();
+                    $recharge->reorder_id = $data[ 'tid' ];
+                    $recharge->order_no = $data[ 'outer_tid' ];
+                    $recharge->type = 'HF';
+                    $recharge->status = 1;
+                    $recharge->created_at = date("Y-m-d H:i:s");
+                    $recharge->updated_at = date("Y-m-d H:i:s");
+                    $recharge->save();
+                }
+            }
+
+            //发送用户消息
+            (new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
+        } catch (\Exception $e) {
+            Log::debug('MobileNotify', [json_encode($data)]);
+            die('failed');
+        }
+        die('success');
+    }
 }

@@ -22,11 +22,11 @@ class ConvertLogs extends Model
         $convertLogs = new ConvertLogs();
         $convertLogs->uid = $data['uid'];
         $convertLogs->phone = $data['phone'];
-        $convertLogs->name = $data['name'];
+        $convertLogs->user_name = $data['user_name'];
         $convertLogs->price = $data['price'];
         $convertLogs->usdt_amount = $data['usdtAmount'];
         $convertLogs->order_no = $data['orderNo'];
-        $convertLogs->type = 1;
+        $convertLogs->type = $data['type'];
         $convertLogs->status = 0;
         $convertLogs->created_at = $date;
         $convertLogs->updated_at = $date;
@@ -52,10 +52,11 @@ class ConvertLogs extends Model
         $AssetsLogs->operate_type = 'user_convert';
         $AssetsLogs->amount = $data['usdtAmount'];
         $AssetsLogs->amount_before_change = $data['atAmount'];
-        $AssetsLogs->tx_hash = '';
+        //$AssetsLogs->tx_hash = '';
         $AssetsLogs->ip = $data['ip'];
         $AssetsLogs->user_agent = '';
         $AssetsLogs->remark = $data['remark'];
+        $AssetsLogs->order_no = $data['orderNo'];
         $AssetsLogs->created_at = $date;
         $AssetsLogs->updated_at = $date;
         $res = $AssetsLogs->save();

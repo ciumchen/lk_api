@@ -10,3 +10,5 @@ Route::get('usdt-amount', 'Assets\ConvertController@getUsdtAmount');
 Route::get('compute-price', 'Assets\ConvertController@computePrice');
 //兑换话费
 Route::post('phone-bill', 'Assets\ConvertController@phoneBill');
+//兑换美团
+Route::post('meituan-bill', 'Assets\ConvertController@meituanBill');

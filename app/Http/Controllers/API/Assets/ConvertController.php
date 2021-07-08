@@ -42,4 +42,17 @@ class ConvertController extends Controller
         //返回
         return (new Assets())->phoneBill($data);
     }
+
+    /**usdt 兑换美团
+     * @param Request $request
+     * @return mixed
+     * @throws
+     */
+    public function meituanBill(Request $request)
+    {
+        $data = $request->all();
+
+        //返回
+        return (new Assets())->meituanBill($data);
+    }
 }

@@ -140,10 +140,33 @@ class Assets extends Model
      */
     public function phoneBill(array $data)
     {
+        if (!in_array($data['price'], [50, 100]))
+        {
+            throw new LogicException('兑换话费的金额不在可选范围内');
+        }
+
         //检查用户金额
         $this->diffPrice($data);
 
         return (new ConvertService())->phoneBill($data);
+    }
+
+    /**usdt 兑换美团
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function meituanBill(array $data)
+    {
+        if (!in_array($data['price'], [100, 300]))
+        {
+            throw new LogicException('兑换美团的金额不在可选范围内');
+        }
+
+        //检查用户金额
+        $this->diffPrice($data);
+
+        return (new ConvertService())->meituanBill($data);
     }
 
     /**获取 usdt 价格

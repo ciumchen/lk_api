@@ -2,6 +2,7 @@
 
 namespace App\Services\bmapi;
 
+use App\Models\ConvertLogs;
 use App\Models\OrderMobileRechargeDetails;
 use App\Models\Setting;
 use Illuminate\Support\Carbon;
@@ -608,6 +609,159 @@ class MobileRechargeService extends BaseService
             $Detail->status = 1;
             $Detail->save();
         } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**usdt 兑换生成手机充值订单
+     * @param  string  $order_no  订单号
+     * @param  int     $uid       用户ID
+     * @param  string  $mobile    充值电话
+     * @param  string  $money     充值金额
+     * @return \App\Models\OrderMobileRecharge
+     * @throws \Exception
+     */
+    public function addMobileOrder($order_no, $uid, $mobile, $money)
+    {
+        $date = Carbon::now();
+        $MobileOrder = new OrderMobileRecharge();
+        try {
+            $MobileOrder->mobile = $mobile;
+            $MobileOrder->money = $money;
+            $MobileOrder->create_type = 9;
+            $MobileOrder->order_id = 0;
+            $MobileOrder->order_no = $order_no;
+            $MobileOrder->created_at = $date;
+            $MobileOrder->updated_at = $date;
+            $MobileOrder->uid = $uid;
+            $MobileOrder->save();
+        } catch (Exception $e) {
+            throw  $e;
+        }
+        return $MobileOrder;
+    }
+
+    /**usdt 兑换订单充值
+     * 减usdt 成功后调用
+     * @param  string  $order_no  订单号
+     * @return bool
+     * @throws \Exception
+     */
+    public function convertRecharge($order_no)
+    {
+        $MobileOrder = new OrderMobileRecharge();
+        //获取订单数据
+        $mobileOrderInfo = $MobileOrder->where('order_no', $order_no)
+                            ->first();
+
+        //回调地址
+        $notifyUrl = '/api/usdt-phone';
+        try {
+            /* 调用充值 */
+            $bill = $this->bmMobileRecharge($mobileOrderInfo->mobile, $mobileOrderInfo->money, $order_no, $notifyUrl);
+
+            /* 更新订单 */
+            $this->updMobileOrder($order_no, $bill);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
+    }
+
+    /**usdt 兑换手机充值订单表更新
+     * @param  string                                $order_no        订单号
+     * @param  array                                 $bill            第三方返回账单信息
+     * @param  \App\Models\OrderMobileRecharge|null  $MobileRecharge  手机充值记录表
+     * @throws \Exception
+     */
+    public function updMobileOrder($order_no, $bill, OrderMobileRecharge $MobileRecharge = null)
+    {
+        //获取订单数据
+        if ($MobileRecharge == null) {
+            $MobileRecharge = OrderMobileRecharge::where('order_no', $order_no)
+                               ->first();
+        }
+        try {
+            $MobileRecharge->mobile = $bill[ 'rechargeAccount' ];
+            $MobileRecharge->money = $bill[ 'saleAmount' ];
+            $MobileRecharge->order_no = $bill[ 'outerTid' ];
+            $MobileRecharge->updated_at = $bill[ 'operateTime' ];
+            $MobileRecharge->trade_no = $bill[ 'billId' ];
+            $MobileRecharge->status = $bill[ 'rechargeState' ];
+            $MobileRecharge->pay_status = $bill[ 'payState' ];
+            $MobileRecharge->goods_title = $bill[ 'itemName' ];
+            $MobileRecharge->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**兑换话费回调处理订单状态
+     * @param  array  $data
+     * @throws \Exception
+     */
+    public function convertNotify($data)
+    {
+        $MobileRecharge = new OrderMobileRecharge();
+        $convertLogs = new ConvertLogs();
+        try {
+            if (empty($data))
+            {
+                throw new Exception('手机充值回调数据为空');
+            }
+            $PayBill = new PayBill();
+            if (!$PayBill->checkSign($data))
+            {
+                throw new Exception('验签不通过');
+            }
+            //单号充值
+            $rechargeInfo = $MobileRecharge->where('order_no', $data[ 'outer_tid' ])
+                            ->first(); 
+            if (empty($rechargeInfo))
+            {
+                throw new Exception('未查询到订单数据');
+            }
+
+            //更新充值记录表数据
+            if (!empty($rechargeInfo))
+            {
+                $rechargeInfo->status = $data[ 'recharge_state' ];
+                $rechargeInfo->trade_no = $data[ 'tid' ];
+                $rechargeInfo->updated_at = $data[ 'timestamp' ];
+                $rechargeInfo->save();
+            }
+
+            //更新兑换记录数据
+            $convertInfo = $convertLogs->where('order_no', $data[ 'outer_tid' ])
+                            ->first();
+            if (empty($convertInfo))
+            {
+                throw new Exception('未查询到兑换数据');
+            }
+            if (!empty($convertInfo))
+            {
+                switch ($data[ 'recharge_state' ])
+                {
+                    case 0:
+                        $status = 1;
+                        break;
+                    case 1:
+                        $status = 2;
+                        break;
+                    case 9:
+                        $status = 3;
+                        break;                    
+                    default:
+                        $status = 0;
+                        break;
+                }
+                $convertInfo->status = $status;
+                $convertInfo->updated_at = $data[ 'timestamp' ];
+                $convertInfo->save();
+            }
+
+        } catch (Exception $e) {
+            Log::debug('banMaNotify-Error:'.$e->getMessage(), [json_encode($data)]);
             throw $e;
         }
     }
