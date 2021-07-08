@@ -266,6 +266,7 @@ class User extends Authenticatable
         $salt = Str::random(6);
         //$password = '123456';
         log::debug("=================修改用户手机号==================================".$this->phone);
+        log::debug("=================修改用户手机号==================================".$salt);
         Password::create([
             'password' => encrypt_password($this->phone, $password, $salt),
         ]);
