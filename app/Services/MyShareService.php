@@ -195,7 +195,16 @@ class MyShareService
                     ->where(['invite_uid' => $data['uid'], 'status' => 1])
                     ->groupBy('role')
                     ->get();
-        $countList = (json_decode($userCount, 1));
+        $countList = array_column(json_decode($userCount, 1), null, 'type');
+        $userTotal = array_sum(array_column($countList, 'total'));
+        //消费者包含所有
+        if (!$role)
+        {
+            foreach ($countList as $key => $val)
+            {
+                $countList['userCount']['total'] = $userTotal;
+            }
+        }
 
         //获取消费总让利奖励
         $totalProfit = DB::table('order')
