@@ -122,4 +122,9 @@ class DongController extends Controller
         }
         dd($res);
     }
+    
+    public function signIn()
+    {
+        return apiSuccess('签到');
+    }
 }
