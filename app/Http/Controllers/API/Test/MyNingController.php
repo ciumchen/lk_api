@@ -295,6 +295,11 @@ class MyNingController extends Controller
 //        dd($re1,$re2);
 //    }
 
+//初始化修改用户手机号记录
+    public function clearUserPhoneUpdateLog(){
+        $re1 = DB::table('user_update_phone_log')->truncate();
+        dd($re1);
+    }
 
 //扣除用户商城积分
     public function kcUserShopJf(Request $request){

@@ -35,6 +35,9 @@ Route::any("kcUserShopJf", 'Test\MyNingController@kcUserShopJf');
 //清空商城卡单处理
 Route::any("setShopKdOrderId", 'Test\MyNingController@setShopKdOrderId');
 
+//初始化修改用户手机号记录
+Route::any("clearUserPhoneUpdateLog", 'Test\MyNingController@clearUserPhoneUpdateLog');
+
 
 
 
