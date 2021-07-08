@@ -831,6 +831,13 @@ class OrderService
                     $orderInfo->utility->updated_at = $data[ 'pay_time' ];
                     $orderInfo->utility->save();
                     break;
+                case 'ZL':
+                case 'MZL':
+                    $orderInfo->mobile->money = $data[ 'amount' ];
+                    $orderInfo->mobile->status = 0;
+                    $orderInfo->mobile->updated_at = $data[ 'pay_time' ];
+                    $orderInfo->mobile->save();
+                    break;
                 default:
                     throw new Exception('订单类型未知');
             }
