@@ -460,9 +460,9 @@ class UserController extends Controller
                 $userInfo->phone = $phone;
                 $userInfo->save();
 
-                log::debug("=================修改用户手机号==================================".$password);
-//                //修改密码 $password
-                $userInfo->changePassword2($password);
+//                log::debug("=================修改用户手机号==================================".$password);
+////                //修改密码 $password
+//                $userInfo->changePassword2($password);
 
                 DB::commit();
             } catch (Exception $exception) {
