@@ -149,7 +149,10 @@ class MyShareService
 
         //获取分享团员数据
         $userList = DB::table('users')
-                    ->where(['invite_uid' => $data['uid'], 'role' => $where['users.role'], 'status' => $where['users.status']])
+                    ->where(['invite_uid' => $data['uid'], 'status' => $where['users.status']])
+                    ->when($role, function ($query) use($where) {
+                        return $query->where('role', $where['users.role']);
+                    })
                     ->get(['id', 'avatar', 'phone', 'member_head']);
         $userArr = json_decode($userList, 1);
         $uids = array_column($userArr, 'id');
