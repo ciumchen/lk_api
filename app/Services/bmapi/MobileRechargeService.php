@@ -382,7 +382,8 @@ class MobileRechargeService extends BaseService
             if (empty($rechargeInfo) && empty($DetailsInfo)) {
                 throw new Exception('未查询到订单数据');
             }
-            if ($rechargeInfo->status != 0 && $DetailsInfo->status != 0) {
+            if ((!empty($rechargeInfo) && $rechargeInfo->status != 0)
+                || (!empty($DetailsInfo) && $DetailsInfo->status != 0)) {
                 throw new Exception('订单已处理');
             }
             if (!empty($rechargeInfo)) {
