@@ -385,7 +385,10 @@ class UserController extends Controller
         ]);
 
         $user = $request->user();
-        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
+//        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
+//            throw new LogicException('无效的验证码',0);
+//        }
+        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE)) {
             throw new LogicException('无效的验证码',0);
         }
 
