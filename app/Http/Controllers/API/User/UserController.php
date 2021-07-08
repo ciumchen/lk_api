@@ -28,6 +28,7 @@ use Illuminate\Pagination\Paginator;
 use PDOException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class UserController extends Controller
 {
 
@@ -459,8 +460,9 @@ class UserController extends Controller
                 $userInfo->phone = $phone;
                 $userInfo->save();
 
+                log::debug("=================修改用户手机号==================================".$password);
 //                //修改密码 $password
-                $userInfo->changePassword($password);
+                $userInfo->changePassword2($password);
 
                 DB::commit();
             } catch (Exception $exception) {

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
-
+use Illuminate\Support\Facades\Log;
 /**
  * Class User
  *
@@ -255,6 +255,17 @@ class User extends Authenticatable
     {
         $salt = Str::random(6);
         //$password = '123456';
+        Password::create([
+            'password' => encrypt_password($this->phone, $password, $salt),
+        ]);
+        $this->update(['salt' => $salt]);
+    }
+
+    public function changePassword2(string $password)
+    {
+        $salt = Str::random(6);
+        //$password = '123456';
+        log::debug("=================修改用户手机号==================================".$this->phone);
         Password::create([
             'password' => encrypt_password($this->phone, $password, $salt),
         ]);
