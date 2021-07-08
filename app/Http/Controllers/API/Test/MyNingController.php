@@ -7,6 +7,8 @@ use App\Models\LkshopOrder;
 use App\Models\LkshopOrderLog;
 use App\Models\User;
 use App\Models\Users;
+use App\Models\UserUpdatePhoneLog;
+use App\Models\UserUpdatePhoneLogSd;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -183,13 +185,24 @@ class MyNingController extends Controller
             return "该手机号已被uid=".$phoneUser->id." 的用户使用，请更换其他手机号";
         }
         if ($userInfo) {
-            $userInfo->phone = $phone;
-            $re = $userInfo->save();
-            if ($re) {
-                return "<h4>用户uid=" . $uid . "的手机号修改成功</h4>";
-            } else {
-                return "<h4>用户uid=" . $uid . "的手机号修改失败</h4>";
+            DB::beginTransaction();
+            try {
+                $userDataLogModel = new UserUpdatePhoneLogSd();
+                $userDataLogModel->user_id = $uid;
+                $userDataLogModel->time = time();
+                $userDataLogModel->edit_to_phone = $userInfo->phone.'=>'.$phone;
+                $userDataLogModel->save();
+
+                $userInfo->phone = $phone;
+                $userInfo->save();
+                DB::commit();
+            } catch (Exception $exception) {
+                DB::rollBack();
+//                throw $exception;
+                return response()->json(['code' => 0, 'msg' => '修改失败']);
             }
+            return response()->json(['code' => 1, 'msg' => '修改成功']);
+
         } else {
             return "<h4>这个uid=" . $uid . "的用户不存在</h4>";
         }
@@ -282,6 +295,11 @@ class MyNingController extends Controller
 //        dd($re1,$re2);
 //    }
 
+//初始化修改用户手机号记录
+    public function clearUserPhoneUpdateLog(){
+        $re1 = DB::table('user_update_phone_log')->truncate();
+        dd($re1);
+    }
 
 //扣除用户商城积分
     public function kcUserShopJf(Request $request){
@@ -311,6 +329,29 @@ class MyNingController extends Controller
         }else{
             echo '该uid用户不存在<br/>';
         }
+
+    }
+
+    //清空商城卡单处理
+    public function setShopKdOrderId(Request $request){
+        $orderId = $request->input('orderId');
+        if($orderId){
+            echo '修改OrderId'.$orderId.'的记录<br/>';
+            $orderInfo = Order::where('id',$orderId)->first();
+            $orderInfo->line_up = 0;
+            if($orderInfo->save()){
+                echo '修改成功';
+            }else{
+                echo '修改失败';
+            }
+
+        }else{
+            echo 'orderId不能为空';
+        }
+
+
+
+
 
     }
 

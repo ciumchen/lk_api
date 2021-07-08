@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\User;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApplyBusinessRequest;
+use App\Http\Requests\NewApplyBusinessRequest;
 use App\Http\Requests\RealNameRequest;
 use App\Http\Resources\IntegralLogsResources;
 use App\Http\Resources\UserResources;
@@ -14,14 +15,20 @@ use App\Models\IntegralLogs;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\Users;
+use App\Models\UserUpdatePhoneLog;
+use App\Models\VerifyCode;
 use App\Services\BusinessService;
 use App\Services\OssService;
+use Illuminate\Database\Eloquent\Model;
+
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use PDOException;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class UserController extends Controller
 {
 
@@ -48,6 +55,29 @@ class UserController extends Controller
         try {
             //写入申请商家数据
             BusinessService::submitApply($request, $user);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return response()->json(['code' => 0, 'msg' => '申请成功']);
+    }
+
+    //新申请商家
+    public function newApplyBusiness(NewApplyBusinessRequest $request)
+    {
+        $user = $request->user();
+        //检测用户状态
+        $user->checkStatus();
+        if ($user->role == User::ROLE_BUSINESS) {
+            throw new LogicException('已是商家无需再次申请');
+        }
+        if (BusinessApply::where('uid', $user->id)->whereIn('status', [BusinessApply::DEFAULT_STATUS,
+                                                                       BusinessApply::BY_STATUS,
+        ])->exists()) {
+            throw new LogicException('已申请成为商家，请等待审核结果');
+        }
+        try {
+            //写入申请商家数据
+            BusinessService::newSubmitApply($request, $user);
         } catch (Exception $e) {
             throw $e;
         }
@@ -343,4 +373,112 @@ class UserController extends Controller
         $user->changePassword($new_password);
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
+
+    //修改用户手机号--验证当前密码
+    public function updateUserPhoneOne(Request $request){
+        $this->validate($request, [
+            'password' => ['bail', 'required'],
+            'verify_code' => ['bail', 'required'],
+        ], [
+            'phone' => '密码',
+            'verify_code' => '验证码',
+        ]);
+
+        $user = $request->user();
+//        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
+//            throw new LogicException('无效的验证码',0);
+//        }
+        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE)) {
+            throw new LogicException('无效的验证码',0);
+        }
+
+//        dd(optional($user)->verifyPassword($request->password));
+        if (optional($user)->verifyPassword($request->password)) {
+            return response()->json(['code' => 1, 'msg' => '验证密码成功']);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '验证密码失败']);
+        }
+
+
+
+    }
+
+    //修改用户手机号
+    public function updateUserPhoneTwo(Request $request){
+        $this->validate($request, [
+            'password' => ['bail', 'required'],
+            'phone' => ['bail', 'required'],
+            'rephone' => ['bail', 'required'],
+//            'verify_code' => ['bail', 'required'],
+        ], [
+            'password' => '密码',
+            'phone' => '手机号',
+            'rephone' => '确认手机号',
+//            'verify_code' => '验证码',
+        ]);
+        $phone = $request->input('phone');//新手机号
+        $rephone = $request->input('rephone');//确认手机号
+        $password = $request->input('password');//密码
+        if(preg_match('/^1[3-9]\d{9}$/', $phone)!=1){
+            throw new LogicException('手机号格式不合法',0);
+        }
+        if(preg_match('/^1[3-9]\d{9}$/', $rephone)!=1){
+            throw new LogicException('确认手机号格式不合法',0);
+        }
+        if ($phone!=$rephone){
+            throw new LogicException('手机号和确认手机号不一致',0);
+        }
+        $user = $request->user();
+
+        if (User::STATUS_NORMAL != $user->status) {
+            throw new LogicException('账户异常',0);
+        }
+
+        if($user->phone == $phone){
+            throw new LogicException('更换的手机号不能跟当前绑定的手机号相同',0);
+        }
+
+        $phoneUser = User::where('phone', $phone)->first();
+        if ($phoneUser != ''){
+            throw new LogicException('该手机号已被其他帐号使用，请更换其他手机号',0);
+        }
+
+//        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
+//            throw new LogicException('无效的验证码',0);
+//        }
+
+        $userDataLogModel = new UserUpdatePhoneLog;
+        $userDataLog = $userDataLogModel::where('user_id',$user->id)->orderBy('updated_at','desc')->first();
+        if ($userDataLog!='' && ((time()-$userDataLog->time) <= 86400)){
+            return response()->json(['code' => 0, 'msg' => '24小时只能修改一次']);
+        }else{
+            DB::beginTransaction();
+            try {
+                $userDataLogModel->user_id = $user->id;
+                $userDataLogModel->time = time();
+                $userDataLogModel->edit_to_phone = $user->phone.'=>'.$phone;
+                $userDataLogModel->save();
+
+                $userInfo = User::where('id',$user->id)->first();
+                $userInfo->phone = $phone;
+                $userInfo->save();
+
+//                log::debug("=================修改用户手机号==================================".$password);
+////                //修改密码 $password
+//                $userInfo->changePassword2($password);
+
+                DB::commit();
+            } catch (Exception $exception) {
+                DB::rollBack();
+//                throw $exception;
+                return response()->json(['code' => 0, 'msg' => '修改失败']);
+            }
+            return response()->json(['code' => 1, 'msg' => '修改成功']);
+        }
+
+    }
+
+
+
+
 }

@@ -37,7 +37,7 @@ class AddIntegral extends Command
      *
      * @var string
      */
-    protected $description = '自动控单添加积分';
+    protected $description = '';
 
     /**
      * Create a new command instance.
@@ -60,10 +60,6 @@ class AddIntegral extends Command
 
         $setValue = Setting::where('key', 'consumer_integral')->value('value');
         if ($setValue == 1) {
-//            $orderInfo = Order::where("status",2)->where('pay_status','succeeded')->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
-//            $orderInfo = Order::where("status",2)->where("line_up",1)->with(['Trade_Order'])->orderBy('id','asc')->first();
-//            $orderInfo = Order::where("status",2)->where("line_up",1)->where('id','!=',27353)->with(['Trade_Order'])->orderBy('id','asc')->first();
-//            $orderInfo = Order::where("status", 2)->where("line_up", 1)->with(['Trade_Order'])->orderBy('id', 'asc')->first();
             $orderInfo = Order::where("status", 2)->where("line_up", 1)->orderBy('id', 'asc')->first();
             if ($orderInfo != null) {
                 $orderInfo = $orderInfo->toArray();
@@ -136,10 +132,13 @@ class AddIntegral extends Command
     }
 
 
-    public function completeOrder(string $orderId)
+    public function completeOrder(string $orderId,Order $orderData=null)
     {
         try {
-            $orderData = Order::find($orderId);
+            if (empty($orderData)){
+                $orderData = Order::find($orderId);
+            }
+//            $orderData = Order::find($orderId);
             $orderService = new OrderService();
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
 //            log::debug("=================打印订单信息2==================================",$orderData->toArray());
@@ -154,6 +153,8 @@ class AddIntegral extends Command
                 $dataInfo = $orderData->utility;
             } elseif ($orderType == 'SHOP') {
                 $dataInfo = $orderData->lkshopOrder;
+            } elseif ($orderType == 'ZL' || $orderType == 'MZL') {
+                $dataInfo = $orderData->mobile;
             } else {
 //                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
@@ -169,10 +170,6 @@ class AddIntegral extends Command
         $consumer_uid = $dataInfo->user_id;
         $description = $dataInfo->description;
         $orderNo = $dataInfo->order_no;
-//        log::debug("=================打印订单信息4==================================".$consumer_uid);
-//        log::debug("=================打印订单信息5==================================".$description);
-//        log::debug("=================打印订单信息6==================================".$orderNo);
-//        log::debug("=================打印订单信息7==================================".$orderId);
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($orderId);
@@ -198,7 +195,9 @@ class AddIntegral extends Command
             $customer->save();
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+//            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+
+            (new OrderService())->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
 
             $order->save();
             DB::commit();
