@@ -200,10 +200,8 @@ class MyShareService
         //消费者包含所有
         if (!$role)
         {
-            foreach ($countList as $key => $val)
-            {
-                $countList['userCount']['total'] = $userTotal;
-            }
+            !empty($countList['userCount']['type']) ? $countList['userCount']['type'] : $countList['userCount']['type'] = 'userCount';
+            $countList['userCount']['total'] = $userTotal;
         }
 
         //获取消费总让利奖励
