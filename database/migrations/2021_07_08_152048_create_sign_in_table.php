@@ -17,8 +17,9 @@ class CreateSignInTable extends Migration
             $table->id();
             $table->bigInteger('uid')->default(0)->comment('用户ID');
             $table->bigInteger('yx_uid')->default(0)->comment('用户在优选商城中的ID');
-            $table->string('sign_date')->default('')->comment('签到日期格式 YYYYmmdd');
+            $table->string('sign_date', 10)->default('')->comment('签到日期格式 YYYY-mm-dd');
             $table->tinyInteger('is_add_points')->default(0)->comment('是否已经添加积分');
+            $table->mediumInteger('total_num')->default(0)->comment('连续登录天数');
             $table->timestamps();
         });
     }
