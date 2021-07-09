@@ -43,7 +43,7 @@ class MyShareService
         ];
 
         //返回
-        return $this->commonShare($data, $where);        
+        return $this->storeShare($data, $where);
     }
 
     /**获取用户分享团员数据
@@ -229,6 +229,91 @@ class MyShareService
         $totalAssets = DB::table('order')
                         ->where(['status' => $where['order.status']])
                         ->whereIn('uid', $uids)
+                        ->sum('profit_price');
+        
+        $totalList = [
+            'totalProfit' => sprintf('%.2f', $totalProfit),
+            'totalAssets' => sprintf('%.2f', $totalAssets * $ratio),
+        ];
+
+        //数组分页
+        $start = ($data['page'] - 1) * $data['perPage'];
+        $length = $data['perPage'];
+        $userArr = array_slice($userArr, $start, $length);
+
+        //返回
+        return [
+            'userArr' => $userArr,
+            'countList' => $countList,
+            'totalList' => $totalList,
+            'rewardSum' => sprintf('%.2f', $totalProfit + $totalAssets),
+        ];
+    }
+
+    /**获取用户分享商家数据
+    * @param array $data
+    * @param array $where
+    * @return mixed
+    * @throws
+    */
+    public function storeShare(array $data, array $where)
+    {
+        //获取分享团员数据
+        $userList = DB::table('users')
+                    ->where(['invite_uid' => $data['uid'], 'status' => $where['users.status'], 'role' => $where['users.role']])
+                    ->get(['id', 'avatar', 'phone', 'member_head']);
+        $userArr = json_decode($userList, 1);
+        $uids = array_column($userArr, 'id');
+
+        //消费总金额
+        $orderPrice = DB::table('order')
+                        ->select(DB::raw('business_uid, cast(sum(price) as decimal(10,2)) as totalPrice'))
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('business_uid', $uids)
+                        ->groupBy('business_uid')
+                        ->get();
+        $sumPrice = array_column(json_decode($orderPrice, 1), null, 'business_uid');
+        
+        //消费总奖励
+        $orderProfit = DB::table('order')
+                        ->select(DB::raw('business_uid, cast(sum(profit_price) as decimal(10,2)) as totalProfit'))
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('business_uid', $uids)
+                        ->groupBy('business_uid')
+                        ->get();
+        $sumAssets = array_column(json_decode($orderProfit, 1), null, 'business_uid');
+        $ratio = 0.02;
+
+        //组装数据
+        foreach ($userArr as $key => $val)
+        {
+            $userArr[$key]['phone'] = substr_replace($val['phone'],'****',3,4);
+            $userArr[$key]['totalPrice'] = sprintf('%.2f', $sumPrice[$val['id']]['totalPrice'] ?? 0);
+            $userArr[$key]['totalAssets'] = sprintf('%.2f', !empty($sumAssets[$val['id']]) ? $sumAssets[$val['id']]['totalProfit'] * $ratio : 0);
+        }
+
+        //根据总奖励排序
+        array_multisort(array_column($userArr, 'totalAssets'), SORT_DESC, $userArr);
+
+        //根据不同角色获取数量
+        $userCount = DB::table('users')
+                    ->select(DB::raw("if(role = 1, 'userCount', 'shopCount') type, count(*) total"))
+                    ->where(['invite_uid' => $data['uid'], 'status' => 1])
+                    ->groupBy('role')
+                    ->get();
+        $countList = array_column(json_decode($userCount, 1), null, 'type');
+
+        //获取消费总让利奖励
+        $totalProfit = DB::table('order')
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('business_uid', $uids)
+                        ->groupBy('business_uid')
+                        ->sum('profit_price');
+
+        //获取消费总奖励
+        $totalAssets = DB::table('order')
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('business_uid', $uids)
                         ->sum('profit_price');
         
         $totalList = [
