@@ -9,6 +9,7 @@ use App\Services\OrderService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\LogicException;
+use App\Models\Assets;
 
 /** 兑换充值 **/
 
@@ -50,6 +51,7 @@ class ConvertService
             DB::rollBack();
         }
         DB::commit();
+        return json_encode(['code' => 200, 'msg' => '兑换话费充值成功']);
     }
 
     /**usdt 兑换美团
@@ -82,6 +84,7 @@ class ConvertService
             DB::rollBack();
         }
         DB::commit();
+        return json_encode(['code' => 200, 'msg' => '兑换额度（美团）充值成功']);
     }
 
     /**usdt 兑换
@@ -91,6 +94,10 @@ class ConvertService
     */
     public function commonConvert(array $data)
     {
+        //获取当前用户可用 usdt 金额
+        $atAmount = (new Assets())->getUsdtAmount($data['uid']);
+        $data['atAmount'] = $atAmount['amount'];
+
         //插入数据到兑换记录
         (new ConvertLogs())->setConvert($data);
 

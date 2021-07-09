@@ -70,7 +70,7 @@ class MobileNotifyController extends Controller
             $MobileRechargeService->convertNotify($data);
 
             //新增充值记录
-            if ($data[ 'recharge_state' ] == 1) {
+            /* if ($data[ 'recharge_state' ] == 1) {
                 $recharge = new RechargeLogs();
                 $recharge = $recharge->where('reorder_id', '=', $data[ 'tid' ])
                             ->first();
@@ -88,10 +88,10 @@ class MobileNotifyController extends Controller
                     $recharge->updated_at = date("Y-m-d H:i:s");
                     $recharge->save();
                 }
-            }
+            } */
 
             //发送用户消息
-            (new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
+            //(new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
         } catch (\Exception $e) {
             Log::debug('MobileNotify', [json_encode($data)]);
             die('failed');

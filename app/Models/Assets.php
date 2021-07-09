@@ -145,6 +145,9 @@ class Assets extends Model
             throw new LogicException('兑换话费的金额不在可选范围内');
         }
 
+        //获取所需兑换的usdt 金额
+        $data['usdtAmount'] = $this->computePrice($data['price']);
+
         //检查用户金额
         $this->diffPrice($data);
 
@@ -162,6 +165,9 @@ class Assets extends Model
         {
             throw new LogicException('兑换美团的金额不在可选范围内');
         }
+
+        //获取所需兑换的usdt 金额
+        $data['usdtAmount'] = $this->computePrice($data['price']);
 
         //检查用户金额
         $this->diffPrice($data);
