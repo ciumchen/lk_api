@@ -246,7 +246,7 @@ class MyShareService
             'userArr' => $userArr,
             'countList' => $countList,
             'totalList' => $totalList,
-            'rewardSum' => sprintf('%.2f', $totalProfit + $totalAssets),
+            'rewardSum' => sprintf('%.2f', $totalList['totalProfit'] + $totalList['totalAssets']),
         ];
     }
 
@@ -331,7 +331,7 @@ class MyShareService
             'userArr' => $userArr,
             'countList' => $countList,
             'totalList' => $totalList,
-            'rewardSum' => sprintf('%.2f', $totalProfit + $totalAssets),
+            'rewardSum' => sprintf('%.2f', $totalList['totalProfit'] + $totalList['totalAssets']),
         ];
     }
 
