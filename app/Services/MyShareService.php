@@ -167,7 +167,7 @@ class MyShareService
         $sumPrice = array_column(json_decode($orderPrice, 1), null, 'uid');
         
         //消费总奖励
-        $orderPrice = DB::table('assets_logs')
+        /* $orderPrice = DB::table('assets_logs')
                         ->select(DB::raw('uid, cast(sum(amount)as decimal(10,2)) as totalAssets'))
                         ->where(['operate_type' => $where['assets_logs.operate_type']])
                         ->whereIn('uid', $uids)
@@ -175,15 +175,22 @@ class MyShareService
                             return $query->where('remark', $where['assets_logs.remark']);
                         })
                         ->groupBy('uid')
+                        ->get(); */
+        $orderProfit = DB::table('order')
+                        ->select(DB::raw('uid, cast(sum(profit_price) as decimal(10,2)) as totalProfit'))
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('uid', $uids)
+                        ->groupBy('uid')
                         ->get();
-        $sumAssets = array_column(json_decode($orderPrice, 1), null, 'uid');
+        $sumAssets = array_column(json_decode($orderProfit, 1), null, 'uid');
+        $ratio = 0.03;
 
         //组装数据
         foreach ($userArr as $key => $val)
         {
             $userArr[$key]['phone'] = substr_replace($val['phone'],'****',3,4);
             $userArr[$key]['totalPrice'] = sprintf('%.2f', $sumPrice[$val['id']]['totalPrice'] ?? 0);
-            $userArr[$key]['totalAssets'] = sprintf('%.2f', $sumAssets[$val['id']]['totalAssets'] ?? 0);
+            $userArr[$key]['totalAssets'] = sprintf('%.2f', !empty($sumAssets[$val['id']]) ? $sumAssets[$val['id']]['totalProfit'] * $ratio : 0);
         }
 
         //根据总奖励排序
