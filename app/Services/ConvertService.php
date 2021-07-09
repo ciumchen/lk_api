@@ -8,6 +8,7 @@ use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\LogicException;
 
 /** 兑换充值 **/
 
@@ -20,6 +21,11 @@ class ConvertService
     */
     public function phoneBill(array $data)
     {
+        $reg = '/^1[3456789]\d{9}$/';
+        if (preg_match($reg, $data['phone']) < 1)
+        {
+            throw new LogicException('手机号格式不正确');
+        }
         DB::beginTransaction();
         try
         {
@@ -53,6 +59,11 @@ class ConvertService
     */
     public function meituanBill(array $data)
     {
+        $reg = '/^1[3456789]\d{9}$/';
+        if (preg_match($reg, $data['phone']) < 1)
+        {
+            throw new LogicException('手机号格式不正确');
+        }
         DB::beginTransaction();
         try
         {
