@@ -27,13 +27,14 @@ class ConvertService
             $data['orderNo'] = createOrderNo();
             $data['user_name'] = '';
             $data['type'] = 1;
+            $data['remark'] = '兑换话费';
 
             //新增兑换数据
             $data['orderName'] = '兑换话费';
             $this->commonConvert($data);
 
             //新增充值记录
-            (new MobileRechargeService)->addMobileOrder($data['orderNo'], $data['uid'], $data['phone'], $data['price']);
+            (new MobileRechargeService)->addMobileOrder($data['orderNo'], $data['uid'], $data['number'], $data['price']);
             //调用话费充值
             (new MobileRechargeService)->convertRecharge($data['orderNo']);
             
@@ -59,6 +60,7 @@ class ConvertService
             $data['orderNo'] = createOrderNo();
             $data['user_name'] = $data['userName'];
             $data['type'] = 2;
+            $data['remark'] = '兑换额度（美团）';
 
             //新增兑换数据
             $data['orderName'] = '兑换额度（美团）';
@@ -82,7 +84,6 @@ class ConvertService
         (new ConvertLogs())->setConvert($data);
 
         //插入数据到变动记录
-        $data['remark'] = '兑换话费';
         (new ConvertLogs())->setAssetsLogs($data);
 
         //更新用户资产数据
