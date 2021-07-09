@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\LogicException;
 use App\Libs\Yuntong\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
@@ -22,27 +23,26 @@ use App\Models\TradeOrder;
  * @property \Illuminate\Support\Carbon|null $deleted_at 删除时间
  * @property int                             $is_del     是否删除：0 否；1 是
  * @property string|null                     $order_no   trade_order表 -- order_no
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage newQuery()
+ * @method static Builder|UserMessage newModelQuery()
+ * @method static Builder|UserMessage newQuery()
  * @method static \Illuminate\Database\Query\Builder|UserMessage onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage query()
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereIsDel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereOrderNo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereSysMid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserMessage whereUserId($value)
+ * @method static Builder|UserMessage query()
+ * @method static Builder|UserMessage whereCreatedAt($value)
+ * @method static Builder|UserMessage whereDeletedAt($value)
+ * @method static Builder|UserMessage whereId($value)
+ * @method static Builder|UserMessage whereIsDel($value)
+ * @method static Builder|UserMessage whereOrderNo($value)
+ * @method static Builder|UserMessage whereStatus($value)
+ * @method static Builder|UserMessage whereSysMid($value)
+ * @method static Builder|UserMessage whereType($value)
+ * @method static Builder|UserMessage whereUpdatedAt($value)
+ * @method static Builder|UserMessage whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|UserMessage withTrashed()
  * @method static \Illuminate\Database\Query\Builder|UserMessage withoutTrashed()
  * @mixin \Eloquent
  */
 class UserMessage extends Model
 {
-    
     use HasFactory;
     use SoftDeletes;
     
@@ -53,7 +53,7 @@ class UserMessage extends Model
      * @param  string  $orderNo
      * @param  int     $type
      *
-     * @return mixed
+     * @return void
      * @throws
      */
     public function setMsg(string $orderNo, int $type)
@@ -165,9 +165,9 @@ class UserMessage extends Model
             })
             ->distinct('recharge_logs.order_no')
             ->get([
-                'user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price',
-                'trade_order.numeric',
-            ])
+                      'user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'trade_order.price',
+                      'trade_order.numeric',
+                  ])
             ->toArray();
         //机票订单
         $orderArr = (new RechargeLogs())
@@ -207,9 +207,9 @@ class UserMessage extends Model
             })
             ->distinct('recharge_logs.order_no')
             ->get([
-                'user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'order.price',
-                'order_video.card_list', 'order_video.goods_title',
-            ])
+                      'user_message.id', 'recharge_logs.type', 'recharge_logs.created_at', 'order.price',
+                      'order_video.card_list', 'order_video.goods_title',
+                  ])
             ->toArray();
         $orderData = array_merge($tradeArr, $orderArr, $videoArr);
         foreach ($orderData as $key => $value) {
@@ -225,9 +225,9 @@ class UserMessage extends Model
                 $join->on('trade_order.order_no', 'user_message.order_no');
             })
             ->where([
-                'order.uid'        => $uid, 'order.name' => '录单', 'order.status' => 2,
-                'order.pay_status' => 'succeeded', 'user_message.is_del' => 0,
-            ])
+                        'order.uid'        => $uid, 'order.name' => '录单', 'order.status' => 2,
+                        'order.pay_status' => 'succeeded', 'user_message.is_del' => 0,
+                    ])
             ->distinct('order.id')
             ->get(['user_message.id', 'order.created_at', 'order.price', 'trade_order.numeric'])
             ->toArray();
@@ -395,12 +395,12 @@ class UserMessage extends Model
     public function delReddot(int $uid)
     {
         (new UserMessage())
-            ->where(function($query) use ($uid){
-            $query->where('user_id', $uid)
-                ->where('deleted_at', null)
-                ->whereNotIn('type', [8]);
-        })
-        ->delete();
+            ->where(function ($query) use ($uid) {
+                $query->where('user_id', $uid)
+                      ->where('deleted_at', null)
+                      ->whereNotIn('type', [8]);
+            })
+            ->delete();
     }
     
     /**获取系统消息小红点
