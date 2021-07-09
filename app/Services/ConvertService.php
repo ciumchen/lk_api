@@ -34,7 +34,7 @@ class ConvertService
             $this->commonConvert($data);
 
             //新增充值记录
-            (new MobileRechargeService)->addMobileOrder($data['orderNo'], $data['uid'], $data['number'], $data['price']);
+            (new MobileRechargeService)->addMobileOrder($data['orderNo'], $data['uid'], $data['phone'], $data['price']);
             //调用话费充值
             (new MobileRechargeService)->convertRecharge($data['orderNo']);
             

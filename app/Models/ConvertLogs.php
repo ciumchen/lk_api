@@ -21,7 +21,7 @@ class ConvertLogs extends Model
         $date = date('Y-m-d H:i:s');
         $convertLogs = new ConvertLogs();
         $convertLogs->uid = $data['uid'];
-        $convertLogs->number = $data['number'];
+        $convertLogs->phone = $data['phone'];
         $convertLogs->user_name = $data['user_name'];
         $convertLogs->price = $data['price'];
         $convertLogs->usdt_amount = $data['usdtAmount'];

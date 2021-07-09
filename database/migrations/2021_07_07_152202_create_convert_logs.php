@@ -17,7 +17,7 @@ class CreateConvertLogs extends Migration
             $table->engine = 'InnoDB';
             $table->id();
             $table->unsignedInteger('uid')->default(0)->comment('充值用户id');
-            $table->string('number', 30)->default('')->comment('充值手机号/卡号');
+            $table->string('phone', 15)->default('')->comment('充值手机号/卡号');
             $table->string('user_name', 20)->default('')->comment('充值姓名');
             $table->unsignedDecimal('price', 10, 2)->default(0.00)->comment('充值金额');
             $table->unsignedDecimal('usdt_amount', 10, 2)->default(0.00)->comment('兑换金额');
