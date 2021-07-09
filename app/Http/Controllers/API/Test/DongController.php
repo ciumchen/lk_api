@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderMobileRechargeDetails;
 use App\Services\bmapi\MobileRechargeService;
+use App\Services\SignInService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -125,6 +126,13 @@ class DongController extends Controller
     
     public function signIn()
     {
-        return apiSuccess('签到');
+        try {
+            $SignInService = new SignInService();
+//            $res = $SignInService->getPreDayContinuousLoginTimes(9566, '2020-10-22');
+            $res = $SignInService->updateSignInAfterAddPoints(9566, 0, '2020-10-22');
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($res);
     }
 }

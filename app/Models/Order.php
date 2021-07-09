@@ -63,6 +63,7 @@ use App\Exceptions\LogicException;
  * @method static Builder|Order whereUpdatedAt($value)
  * @mixin \Eloquent
  * @package App\Models
+ * @property-read \App\Models\LkshopOrder|null $lkshopOrder
  */
 class Order extends Model
 {
