@@ -219,17 +219,21 @@ class MyShareService
                         ->sum('profit_price');
 
         //获取消费总奖励
-        $totalAssets = DB::table('assets_logs')
+        /* $totalAssets = DB::table('assets_logs')
                         ->where(['operate_type' => $where['assets_logs.operate_type']])
                         ->whereIn('uid', $uids)
                         ->when($role, function ($query) use($where) {
                             $query->where(['remark' => $where['assets_logs.remark']]);
                         })
-                        ->sum('amount');
+                        ->sum('amount'); */
+        $totalAssets = DB::table('order')
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('uid', $uids)
+                        ->sum('profit_price');
         
         $totalList = [
             'totalProfit' => sprintf('%.2f', $totalProfit),
-            'totalAssets' => sprintf('%.2f', $totalAssets),
+            'totalAssets' => sprintf('%.2f', $totalAssets * $ratio),
         ];
 
         //数组分页
