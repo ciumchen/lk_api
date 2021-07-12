@@ -129,7 +129,8 @@ class DongController extends Controller
         try {
             $SignInService = new SignInService();
 //            $res = $SignInService->getPreDayContinuousLoginTimes(9566, '2020-10-22');
-            $res = $SignInService->updateSignInAfterAddPoints(9566, 0, '2020-10-22');
+//            $res = $SignInService->updateSignInAfterAddPoints(9566, '2020-10-22');
+            $res = $SignInService->yxSignIn(1668, '2020-10-22');
         } catch (\Exception $e) {
             throw new LogicException($e->getMessage());
         }
