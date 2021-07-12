@@ -311,4 +311,50 @@ class BusinessController extends Controller
         return response()->json(['code'=>0, 'msg'=>'修改成功']);
 
     }
+
+    /**新修改商家信息
+     * @param UpdateBusinessDataRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws LogicException
+     */
+    public function newUpdateBusinessData(UpdateBusinessDataRequest $request){
+        $user = $request->user();
+
+        if($user->role != User::ROLE_BUSINESS)
+            throw new LogicException('非法访问');
+        try{
+            $businessData = $user->businessData()->first();
+            $business_applyDB = new BusinessApply();
+            $business_apply_data = $business_applyDB->where('id', $businessData->business_apply_id)->first();
+
+            $businessData->contact_number = $request->contact_number;
+            $businessData->address = $request->address;
+            $businessData->category_id = $request->category_id;
+            $businessData->province = $request->province;
+            $businessData->city = $request->city;
+            $businessData->district = $request->district;
+            $businessData->name = $request->name;
+            $businessData->main_business = $request->main_business;
+            $businessData->run_time = $request->start_time.'-'.$request->end_time;
+            if ($businessData->status==2){
+                $businessData->status = 1;
+            }
+            $businessData->save();
+
+            $business_apply_data->phone = $request->contact_number;
+            $business_apply_data->address = $request->address;
+            $business_apply_data->name = $request->name;
+            $business_apply_data->work = $request->main_business;
+            $business_apply_data->save();
+
+        }catch (Exception $e) {
+            throw $e;
+        }
+
+        return response()->json(['code'=>1, 'msg'=>'修改成功']);
+
+    }
+
+
+
 }
