@@ -226,7 +226,11 @@ class BusinessController extends Controller
     //获取商家分类
     public function getBusinessFl(){
         $businessData = (new BusinessCategory())->get()->toArray();
-        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $businessData]);
+        foreach ($businessData as $k=>$v){
+            $businessArr[$k]['text'] = $v['name'];
+            $businessArr[$k]['value'] = $v['id'];
+        }
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $businessArr]);
 
     }
 
