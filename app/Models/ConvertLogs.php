@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\LogicException;
+use Illuminate\Support\Facades\DB;
 
 class ConvertLogs extends Model
 {
@@ -97,6 +98,26 @@ class ConvertLogs extends Model
         ->update(['oid' => $oid, 'updated_at' => date('Y-m-d H:i:s')]);
     }
 
+    /**用户兑换记录列表
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function getConvertList(array $data)
+    {
+        //获取数据
+        return DB::table($this->table)
+                        ->where(['uid' => $data['uid'], 'status' => 2])
+                        ->orderBy('usdt_amount', 'desc')
+                        ->orderBy('created_at', 'desc')
+                        ->forPage($data['page'], $data['perPage'])
+                        ->get(['type', 'created_at', 'usdt_amount'])
+                        ->each(function ($item) {
+                            $item->type = self::CONVERT_TYPE[$item->type];
+                        })
+                        ->toArray();
+    }
+
     /**查询数据是否存在
      * @param string $orderNo
      * @return mixed
@@ -110,4 +131,9 @@ class ConvertLogs extends Model
             throw new LogicException('此兑换数据不存在');
         }
     }
+
+    const CONVERT_TYPE = [
+        '1' => '兑换话费',
+        '2' => '兑换余额（美团）',
+    ];
 }

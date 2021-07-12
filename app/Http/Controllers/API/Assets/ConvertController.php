@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Assets;
 
 use App\Http\Controllers\Controller;
 use App\Models\Assets;
+use App\Models\ConvertLogs;
 use Illuminate\Http\Request;
 
 /** 兑换充值 **/
@@ -54,5 +55,17 @@ class ConvertController extends Controller
 
         //返回
         return (new Assets())->meituanBill($data);
+    }
+
+    /**用户兑换记录列表
+     * @param Request $request
+     * @return mixed
+     * @throws
+     */
+    public function getConvertList(Request $request)
+    {
+        $data = $request->all();
+        //返回
+        return (new ConvertLogs())->getConvertList($data);
     }
 }

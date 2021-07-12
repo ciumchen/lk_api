@@ -12,3 +12,5 @@ Route::get('compute-price', 'Assets\ConvertController@computePrice');
 Route::post('phone-bill', 'Assets\ConvertController@phoneBill');
 //兑换美团
 Route::post('meituan-bill', 'Assets\ConvertController@meituanBill');
+//用户兑换记录列表
+Route::post('convert-list', 'Assets\ConvertController@getConvertList');

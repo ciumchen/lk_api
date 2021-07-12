@@ -22,6 +22,7 @@ class CreateConvertLogs extends Migration
             $table->unsignedDecimal('price', 10, 2)->default(0.00)->comment('充值金额');
             $table->unsignedDecimal('usdt_amount', 10, 2)->default(0.00)->comment('兑换金额');
             $table->string('order_no', 30)->default('')->comment('充值订单号');
+            $table->unsignedInteger('oid')->default(0)->comment('order 表 id');
             $table->tinyInteger('type')->default(0)->comment('兑换类型：1 话费；2 美团');
             $table->tinyInteger('status')->default(0)->comment('兑换状态：0 待兑换；1 处理中； 2 成功；3 失败');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
