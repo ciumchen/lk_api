@@ -26,22 +26,22 @@ class NewApplyBusinessRequest extends FormRequest
     public function rules()
     {
         return [
-            'img' => ['bail', 'required'],
-            'img2' => ['bail', 'required'],
-            'img_just' => ['bail', 'required'],
-            'img_back' => ['bail', 'required'],
+            'img' => ['bail', 'required'],//营业执照图片
+            'img2' => ['bail', 'required'],//门店照图片
+            'img_just' => ['bail', 'required'],//身份证正面照
+            'img_back' => ['bail', 'required'],//身份证反面照
 //            'img_hold' => ['bail', 'required'],
-            'img_details' => ['bail', 'required'],
-            'contact_number' => ['bail', 'required', new PhoneNumber()],
-            'address' => ['bail', 'required'],
-            'category_id' => ['bail', 'required', 'exists:business_category,id'],
-            'start_time' => ['bail', 'required'],
+//            'img_details' => ['bail', 'required'],
+            'contact_number' => ['bail', 'required', new PhoneNumber()],//联系方式
+            'address' => ['bail', 'required'],//商家详细地址
+            'category_id' => ['bail', 'required', 'exists:business_category,id'],//店铺类别
+            'start_time' => ['bail', 'required'],//
             'end_time' => ['bail', 'required'],
-            'province' => ['bail', 'required', 'exists:city_data,code'],
-            'city' => ['bail', 'required', 'exists:city_data,code'],
-            'district' => ['bail', 'required', 'exists:city_data,code'],
-            'name' => ['bail', 'required'],
-            'main_business' => ['bail', 'required'],
+            'province' => ['bail', 'required', 'exists:city_data,code'],//省
+            'city' => ['bail', 'required', 'exists:city_data,code'],//市
+            'district' => ['bail', 'required', 'exists:city_data,code'],//区
+            'name' => ['bail', 'required'],//商店名称
+            'main_business' => ['bail', 'required'],//主营业务
         ];
     }
     /**
@@ -58,7 +58,7 @@ class NewApplyBusinessRequest extends FormRequest
             'img_just' => '身份证正面照',
             'img_back' => '身份证反面照',
 //            'img_hold' => '身份证手持照',
-            'img_details' => '商家详情照',
+//            'img_details' => '商家详情照',
             'contact_number' => '联系电话',
             'address' => '详细地址',
             'category_id' => '商家分类',

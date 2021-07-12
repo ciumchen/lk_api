@@ -75,13 +75,14 @@ class UserController extends Controller
         ])->exists()) {
             throw new LogicException('已申请成为商家，请等待审核结果');
         }
+
         try {
             //写入申请商家数据
             BusinessService::newSubmitApply($request, $user);
         } catch (Exception $e) {
             throw $e;
         }
-        return response()->json(['code' => 0, 'msg' => '申请成功']);
+        return response()->json(['code' => 1, 'msg' => '申请成功']);
     }
 
     /**提交实名认证
