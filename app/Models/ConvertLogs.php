@@ -27,7 +27,7 @@ class ConvertLogs extends Model
         $convertLogs->usdt_amount = $data['usdtAmount'];
         $convertLogs->order_no = $data['orderNo'];
         $convertLogs->type = $data['type'];
-        $convertLogs->status = 0;
+        $convertLogs->status = 1;
         $convertLogs->created_at = $date;
         $convertLogs->updated_at = $date;
         $res = $convertLogs->save();
@@ -81,6 +81,33 @@ class ConvertLogs extends Model
         if (!$res)
         {
             throw new LogicException('更新资产金额失败');
+        }
+    }
+
+    /**更新oid 字段
+     * @param string $orderNo
+     * @param string $oid
+     * @return mixed
+     * @throws
+     */
+    public function updOid(string $orderNo, string $oid)
+    {
+        $this->isExist($orderNo);
+        ConvertLogs::where(['order_no' => $orderNo])
+        ->update(['oid' => $oid, 'updated_at' => date('Y-m-d H:i:s')]);
+    }
+
+    /**查询数据是否存在
+     * @param string $orderNo
+     * @return mixed
+     * @throws
+     */
+    public function isExist(string $orderNo)
+    {
+        $res = ConvertLogs::where(['order_no' => $orderNo])->exists();
+        if (!$res)
+        {
+            throw new LogicException('此兑换数据不存在');
         }
     }
 }

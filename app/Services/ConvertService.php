@@ -41,9 +41,9 @@ class ConvertService
             $this->commonConvert($data);
 
             //新增充值记录
-            (new MobileRechargeService)->addMobileOrder($data['orderNo'], $data['uid'], $data['phone'], $data['price']);
+            //(new MobileRechargeService)->addMobileOrder($data['orderNo'], $data['uid'], $data['phone'], $data['price']);
             //调用话费充值
-            (new MobileRechargeService)->convertRecharge($data['orderNo']);
+            //(new MobileRechargeService)->convertRecharge($data['orderNo']);
             
         } catch (Exception $e)
         {
@@ -110,8 +110,11 @@ class ConvertService
         //order 表增加订单记录
         $ratio = 5;
         $profitPrice = $data['price'] * $ratio / 100;
-        (new Order())->setOrderSelf($data['uid'], 2, $ratio, $data['price'], $profitPrice, 
+        $order = (new Order())->setOrderSelf($data['uid'], 2, $ratio, $data['price'], $profitPrice, 
         $data['orderNo'], $data['orderName'], 1, 'await', 'convert');
+        //更新convert_logs 表 oid 字段
+        (new ConvertLogs)->updOid($order->order_no, $order->id);
+
         //更新order 表审核状态
         (new OrderService())->completeBmOrder($data['orderNo']);
     }
