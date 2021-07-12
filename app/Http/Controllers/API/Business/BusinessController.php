@@ -223,6 +223,13 @@ class BusinessController extends Controller
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $data]);
     }
 
+    //获取商家分类
+    public function getBusinessFl(){
+        $businessData = (new BusinessCategory())->get()->toArray();
+        return response()->json(['code'=>0, 'msg'=>'获取成功', 'data' => $businessData]);
+
+    }
+
     /**获取商家信息
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -232,8 +239,8 @@ class BusinessController extends Controller
         $user = $request->user();
 //        $user->id;//用户ID
 //        print_r($user->id);exit;
-//        if($user->role != User::ROLE_BUSINESS)
-//            throw new LogicException('非法访问');
+        if($user->role != User::ROLE_BUSINESS)
+            throw new LogicException('非法访问');
 
         $data['business'] = $user->businessData()->first();
 

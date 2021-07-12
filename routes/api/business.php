@@ -15,3 +15,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('newApplyBusiness', 'User\UserController@newApplyBusiness');
 
 });
+//获取商家分类
+Route::post('getBusinessFl', 'Business\BusinessController@getBusinessFl');
