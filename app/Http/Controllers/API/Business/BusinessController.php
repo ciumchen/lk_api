@@ -232,8 +232,8 @@ class BusinessController extends Controller
         $user = $request->user();
 //        $user->id;//用户ID
 //        print_r($user->id);exit;
-        if($user->role != User::ROLE_BUSINESS)
-            throw new LogicException('非法访问');
+//        if($user->role != User::ROLE_BUSINESS)
+//            throw new LogicException('非法访问');
 
         $data['business'] = $user->businessData()->first();
 
