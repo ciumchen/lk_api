@@ -142,9 +142,10 @@ class AddIntegral extends Command
             }
 //            $orderData = Order::find($orderId);
             $orderService = new OrderService();
+            log::debug("=================打印订单信息01==================================".$orderId);
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
-            log::debug("=================打印订单信息2==================================".$orderType);
-            log::debug("=================打印订单信息2==================================",$orderData->toArray());
+            log::debug("=================打印订单信息02==================================".$orderType);
+            log::debug("=================打印订单信息03==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
                 $dataInfo = $orderData->trade;
