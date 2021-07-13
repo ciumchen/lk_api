@@ -115,12 +115,15 @@ class SignInService
                 throw new Exception('已经签过到了');
             }
             $todayInfo = $SignIn->storeSignIn($uid, $yx_uid, $date, $total_num);
-
             if ($total_num >= self::$days_give_points_need) {
                 /*达到或者超过*/
                 $this->updateSignInAfterAddPoints($uid, $date);
                 $todayInfo->is_add_points = SignIn::IS_ADD_POINTS_ADDED;
                 $todayInfo->save();
+                return [
+                    'points' => Setting::getSetting('sign_points'),
+                    'days'   => self::$days_give_points_need,
+                ];
             }
         } catch (Exception $e) {
             DB::rollBack();
