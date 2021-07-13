@@ -598,6 +598,8 @@ class OrderService
             'ZL' => 'Invite_points_zl',
             'MZL' => 'Invite_points_zl',
             'VC' => 'Invite_points_vc',
+            'CPH' => 'Invite_points_cph',    //兑换话费
+            'CMT' => 'Invite_points_cmt',    //兑换美团
         ];
         $activityState = 0;
         if ($description != 'LR' && isset($InvitePointsArr[ $description ])) {
