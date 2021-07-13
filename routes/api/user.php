@@ -61,6 +61,8 @@ Route::any("users-assets", "User\MyShareController@usersAssets");
 Route::any("heads-assets", "User\MyShareController@headsAssets");
 //团队资产记录
 Route::any("team-assets", "User\MyShareController@teamAssets");
+//团员、团队资产总奖励
+Route::any("profit-total", "User\MyShareController@profitTotal");
 
 
 

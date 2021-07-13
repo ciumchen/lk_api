@@ -104,6 +104,21 @@ class MyShare extends Model
         return (new MyShareService)->teamAssets($data);
     }
 
+    /**用户团员总奖励
+     * @param array $data
+     * @return mixed
+     * @throws    
+    */
+    public function profitTotal(array $data)
+    {
+        //检查用户
+        $this->isUser($data['uid']);
+        $this->isInvite($data['uid']);
+
+        //返回
+        return (new MyShareService)->profitTotal($data);
+    }
+
     /**用户是否存在
      * @param int $uid
      * @return mixed

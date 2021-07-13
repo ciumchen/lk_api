@@ -46,6 +46,26 @@ class MyShareService
         return $this->storeShare($data, $where);
     }
 
+    /**获取用户分享总金额
+    * @param array $data
+    * @return mixed
+    * @throws
+    */
+    public function profitTotal(array $data)
+    {
+        //组装sql 条件
+        $where = [
+            'users.invite_uid'         => $data['uid'],
+            'users.status'             => 1,
+            'users.role'               => 1,
+            'order.status'             => 2,
+            'assets_logs.operate_type' => 'invite_rebate'
+        ];
+
+        //返回
+        return $this->commonTotal($data, $where);
+    }
+
     /**获取用户分享团员数据
     * @param array $data
     * @return mixed
@@ -212,11 +232,11 @@ class MyShareService
         }
 
         //获取消费总让利奖励
-        $totalProfit = DB::table('order')
+        /* $totalProfit = DB::table('order')
                         ->where(['status' => $where['order.status']])
                         ->whereIn('uid', $uids)
                         ->groupBy('uid')
-                        ->sum('profit_price');
+                        ->sum('profit_price'); */
 
         //获取消费总奖励
         /* $totalAssets = DB::table('assets_logs')
@@ -226,15 +246,15 @@ class MyShareService
                             $query->where(['remark' => $where['assets_logs.remark']]);
                         })
                         ->sum('amount'); */
-        $totalAssets = DB::table('order')
+        /* $totalAssets = DB::table('order')
                         ->where(['status' => $where['order.status']])
                         ->whereIn('uid', $uids)
-                        ->sum('profit_price');
+                        ->sum('profit_price'); */
         
-        $totalList = [
+        /* $totalList = [
             'totalProfit' => sprintf('%.2f', $totalProfit),
             'totalAssets' => sprintf('%.2f', $totalAssets * $ratio),
-        ];
+        ]; */
 
         //数组分页
         $start = ($data['page'] - 1) * $data['perPage'];
@@ -245,8 +265,49 @@ class MyShareService
         return [
             'userArr' => $userArr,
             'countList' => $countList,
-            'totalList' => $totalList,
-            'rewardSum' => sprintf('%.2f', $totalList['totalProfit'] + $totalList['totalAssets']),
+            //'totalList' => $totalList,
+            //'rewardSum' => sprintf('%.2f', $totalList['totalProfit'] + $totalList['totalAssets']),
+        ];
+    }
+
+    /**获取用户分享总奖励
+    * @param array $data
+    * @param array $where
+    * @return mixed
+    * @throws
+    */
+    public function commonTotal(array $data, array $where)
+    {
+        //商家
+        $role = $where['users.role'] == 2 ? true : false;
+
+        //获取分享团员数据
+        $userList = DB::table('users')
+                    ->where(['invite_uid' => $data['uid'], 'status' => $where['users.status']])
+                    ->when($role, function ($query) use($where) {
+                        return $query->where('role', $where['users.role']);
+                    })
+                    ->get(['id', 'avatar', 'phone', 'member_head']);
+        $userArr = json_decode($userList, 1);
+        $uids = array_column($userArr, 'id');
+        //获取消费总让利奖励
+        $totalProfit = DB::table('order')
+        ->where(['status' => $where['order.status']])
+        ->whereIn('uid', $uids)
+        ->groupBy('uid')
+        ->sum('profit_price');
+        $ratio = $role ? 0.02 : 0.03;
+
+        //获取消费总奖励
+        $totalAssets = DB::table('order')
+                        ->where(['status' => $where['order.status']])
+                        ->whereIn('uid', $uids)
+                        ->sum('profit_price');
+
+        return [
+            'totalProfit' => sprintf('%.2f', $totalProfit),
+            'totalAssets' => sprintf('%.2f', $totalAssets * $ratio),
+            'rewardSum' => sprintf('%.2f', sprintf('%.2f', $totalProfit) + sprintf('%.2f', $totalAssets * $ratio)),
         ];
     }
 
@@ -349,12 +410,13 @@ class MyShareService
         $assetsList = json_decode($assetsData, 1);
 
         //获取分享团员订单数据
-        $where['order.status'] = 2;
-        $orderData = $this->commonOrder($where);
-        $orderList = json_decode($orderData, 1);
+        //$where['order.status'] = 2;
+        //$orderData = $this->commonOrder($where);
+        //$orderList = json_decode($orderData, 1);
         
         //总数据
-        $integralList = array_merge($assetsList, $orderList);
+        //$integralList = array_merge($assetsList, $orderList);
+        $integralList = $assetsList;
 
         //总积分
         unset($where['order.status']);
@@ -503,10 +565,11 @@ class MyShareService
         $assetsSum = $this->teamHeadInt($where, $operateType, $remark);
 
         //订单总让利
-        $where['order.status'] = 2;
-        $profitSum = $this->commonPro($where);
+        //$where['order.status'] = 2;
+        //$profitSum = $this->commonPro($where);
 
         //返回
-        return sprintf('%.2f', $assetsSum + $profitSum);
+        //return sprintf('%.2f', $assetsSum + $profitSum);
+        return sprintf('%.2f', $assetsSum);
     }
 }
