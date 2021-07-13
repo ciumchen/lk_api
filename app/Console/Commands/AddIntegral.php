@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\AssetsLogs;
 use App\Models\IntegralLogs;
 use App\Models\OrderIntegralLkDistribution;
+use App\Models\OrderMobileRecharge;
 use App\Models\OrderUtilityBill;
 use App\Models\OrderVideo;
 use App\Services\OrderService;
@@ -153,7 +154,7 @@ class AddIntegral extends Command
                 $dataInfo = $orderData->utility;
             } elseif ($orderType == 'SHOP') {
                 $dataInfo = $orderData->lkshopOrder;
-            } elseif ($orderType == 'ZL' || $orderType == 'MZL') {
+            } elseif ($orderType == 'MZL') {
                 $dataInfo = $orderData->mobile;
             } else {
 //                log::debug("=================打印订单信息3-000000==================================".$orderType);
@@ -168,7 +169,21 @@ class AddIntegral extends Command
 //        log::debug("=================打印订单信息3==================================",$dataInfo->toArray());
 //        dd($dataInfo);
         $consumer_uid = $dataInfo->user_id;
-        $description = $dataInfo->description;
+        if ($orderType == 'MZL'){
+            switch ($dataInfo->create_type) {
+                case OrderMobileRecharge::CREATE_TYPE_ZL:
+                    $description = 'ZL';
+                    break;
+                case OrderMobileRecharge::CREATE_TYPE_MZL:
+                    $description = 'MZL';
+                    break;
+                default:;
+//                        $description = 'HF';
+            }
+        }else{
+            $description = $dataInfo->description;
+        }
+
         $orderNo = $dataInfo->order_no;
         DB::beginTransaction();
         try {
