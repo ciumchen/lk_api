@@ -142,10 +142,10 @@ class AddIntegral extends Command
             }
 //            $orderData = Order::find($orderId);
             $orderService = new OrderService();
-            log::debug("=================打印订单信息01==================================".$orderId);
+//            log::debug("=================打印订单信息01==================================".$orderId);
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
-            log::debug("=================打印订单信息02==================================".$orderType);
-            log::debug("=================打印订单信息03==================================",$orderData->toArray());
+//            log::debug("=================打印订单信息02==================================".$orderType);
+//            log::debug("=================打印订单信息03==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
                 $dataInfo = $orderData->trade;
@@ -160,13 +160,13 @@ class AddIntegral extends Command
             } elseif ($orderType == 'MZL') {
                 $dataInfo = $orderData->mobile;
             } else {
-                log::debug("=================打印订单信息3-000000==================================".$orderType);
+//                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
             }
         } catch (\Exception $e) {
             report($e);
             throw new LogicException('类型错误');
-            log::debug("=================打印订单信息3-111111==================================".$e);
+//            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
         $consumer_uid = $dataInfo->user_id;
