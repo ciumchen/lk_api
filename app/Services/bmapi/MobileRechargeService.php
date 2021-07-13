@@ -655,7 +655,7 @@ class MobileRechargeService extends BaseService
                             ->first();
 
         //回调地址
-        $notifyUrl = '/api/usdt-phone';
+        $notifyUrl = url('/api/usdt-phone');
         try {
             /* 调用充值 */
             $bill = $this->bmMobileRecharge($mobileOrderInfo->mobile, $mobileOrderInfo->money, $order_no, $notifyUrl);
