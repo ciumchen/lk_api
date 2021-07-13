@@ -159,13 +159,13 @@ class AddIntegral extends Command
             } elseif ($orderType == 'MZL') {
                 $dataInfo = $orderData->mobile;
             } else {
-//                log::debug("=================打印订单信息3-000000==================================".$orderType);
+                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
             }
         } catch (\Exception $e) {
             report($e);
             throw new LogicException('类型错误');
-//            log::debug("=================打印订单信息3-111111==================================".$e);
+            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
         $consumer_uid = $dataInfo->user_id;
