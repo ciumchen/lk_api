@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Test;
 
 use App\Http\Controllers\Controller;
+use App\Models\BusinessData;
 use App\Models\LkshopOrder;
 use App\Models\LkshopOrderLog;
 use App\Models\User;
@@ -353,6 +354,14 @@ class MyNingController extends Controller
 
 
 
+    }
+
+    //批量修改商家信息表审核状态
+    public function plUpdateBussStutas(){
+        $data = array('is_status'=>2);
+        $re = DB::table('business_data')->update($data);
+
+        var_dump($re);
     }
 
 

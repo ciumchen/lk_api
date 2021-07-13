@@ -26,78 +26,6 @@ use App\Models\LkshopOrder;
 
 class OrderService
 {
-    /**完成订单
-     *
-     * @param  string  $orderNo
-     *
-     * @return mixed
-     */
-    public function completeOrder1(string $orderNo)
-    {
-        $tradeOrderInfo = TradeOrder::where('status', 'succeeded')
-                                    ->where('order_no', $orderNo)
-                                    ->first();
-        $id = $tradeOrderInfo->oid;
-        DB::beginTransaction();
-        try {
-            $order = Order::lockForUpdate()
-                          ->find($id);
-            if ($order->status != Order::STATUS_DEFAULT) {
-                return false;
-            }
-            $order->status = Order::STATUS_SUCCEED;
-            $order->pay_status = 'succeeded';
-            //用户应返还几分比例
-            $userRebateScale = Setting::getManySetting('user_rebate_scale');
-            $businessRebateScale = Setting::getManySetting('business_rebate_scale');
-            $rebateScale = array_combine($businessRebateScale, $userRebateScale);
-            //通过，给用户加积分、更新LK
-            $customer = User::lockForUpdate()
-                            ->find($order->uid);
-            //按比例计算实际获得积分
-            $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
-            $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
-            $customerIntegral = bcmul($order->price, $profit_ratio, 2);
-            $amountBeforeChange = $customer->integral;
-            $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
-            $lkPer = Setting::getSetting('lk_per') ?? 300;
-            //更新LK
-            $customer->lk = bcdiv($customer->integral, $lkPer, 0);
-            $customer->save();
-            IntegralLogs::addLog(
-                $customer->id,
-                $customerIntegral,
-                IntegralLogs::TYPE_SPEND,
-                $amountBeforeChange,
-                1,
-                '消费者完成订单'
-            );
-            //给商家加积分，更新LK
-            $business = User::lockForUpdate()
-                            ->find($order->business_uid);
-            $amountBeforeChange = $business->business_integral;
-            $business->business_integral = bcadd($business->business_integral, $order->profit_price, 2);
-            $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
-            //更新LK
-            $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
-            $business->save();
-            IntegralLogs::addLog(
-                $business->id,
-                $order->profit_price,
-                IntegralLogs::TYPE_SPEND,
-                $amountBeforeChange,
-                2,
-                '商家完成订单'
-            );
-            //返佣
-            $this->encourage($order, $customer, $business);
-            $order->save();
-            DB::commit();
-        } catch (Exception $exception) {
-            DB::rollBack();
-            var_dump($exception->getMessage());
-        }
-    }
 
     /**完成订单
      *
@@ -596,7 +524,7 @@ class OrderService
             'YK' => 'Invite_points_yk',
             'MT' => 'Invite_points_mt',
             'ZL' => 'Invite_points_zl',
-            'MZL' => 'Invite_points_zl',
+            'MZL' => 'Invite_points_mzl',
             'VC' => 'Invite_points_vc',
         ];
         $activityState = 0;

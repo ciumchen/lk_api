@@ -30,7 +30,7 @@ Route::any("updateShopDrLog", 'Test\MyNingController@updateShopDrLog');
 Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
 
 //扣除用户积分
-Route::any("kcUserShopJf", 'Test\MyNingController@kcUserShopJf');
+//Route::any("kcUserShopJf", 'Test\MyNingController@kcUserShopJf');
 
 //清空商城卡单处理
 Route::any("setShopKdOrderId", 'Test\MyNingController@setShopKdOrderId');
@@ -38,6 +38,8 @@ Route::any("setShopKdOrderId", 'Test\MyNingController@setShopKdOrderId');
 //初始化修改用户手机号记录
 Route::any("clearUserPhoneUpdateLog", 'Test\MyNingController@clearUserPhoneUpdateLog');
 
+//批量修改商家信息表审核状态
+Route::any("plUpdateBussStutas", 'Test\MyNingController@plUpdateBussStutas');
 
 
 
