@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\LogicException;
 use App\Models\AssetsLogs;
 use App\Models\IntegralLogs;
 use App\Models\OrderIntegralLkDistribution;
@@ -161,29 +162,12 @@ class AddIntegral extends Command
                 return $orderType;
             }
         } catch (\Exception $e) {
+            report($e);
+            throw new LogicException('类型错误');
 //            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
-//        dd($orderType);
-
-//        log::debug("=================打印订单信息3==================================",$dataInfo->toArray());
-//        dd($dataInfo);
-        $consumer_uid = $dataInfo->user_id;
-        if ($orderType == 'MZL'){
-            switch ($dataInfo->create_type) {
-                case OrderMobileRecharge::CREATE_TYPE_ZL:
-                    $description = 'ZL';
-                    break;
-                case OrderMobileRecharge::CREATE_TYPE_MZL:
-                    $description = 'MZL';
-                    break;
-                default:;
-//                        $description = 'HF';
-            }
-        }else{
-            $description = $dataInfo->description;
-        }
-
+        $description = $orderType;
         $orderNo = $dataInfo->order_no;
         DB::beginTransaction();
         try {
