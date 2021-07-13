@@ -18,7 +18,8 @@ class ConvertController extends Controller
      */
     public function getUsdtAmount(Request $request)
     {
-        return (new Assets())->getUsdtAmount($request->uid);
+        $uid = intval($request->uid);
+        return (new Assets())->getUsdtAmount($uid);
     }
 
     /**usdt 计算兑换金额
@@ -28,7 +29,8 @@ class ConvertController extends Controller
      */
     public function computePrice(Request $request)
     {
-        return (new Assets())->computePrice($request->price);
+        $price = intval($request->price);
+        return (new Assets())->computePrice($price);
     }
 
     /**usdt 兑换话费
