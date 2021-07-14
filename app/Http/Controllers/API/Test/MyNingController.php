@@ -423,6 +423,24 @@ class MyNingController extends Controller
 
     }
 
+    //修改用户商家身份
+    public function updateUserInfoRole(Request $request){
+        $phone = $request->input('phone');
+        $role = $request->input('role');
+        $userInfo = Users::where('phone',$phone)->first();
+        if ($userInfo!=''){
+            $userInfo->role = $role;
+            if($userInfo->save()){
+                dd('修改成功');
+            }else{
+                dd('修改失败');
+            }
+        }else{
+            dd('用户不存在');
+        }
+
+    }
+
 
 }
 

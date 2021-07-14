@@ -44,3 +44,6 @@ Route::any("plUpdateBussStutas", 'Test\MyNingController@plUpdateBussStutas');
 //同商城用户的uid
 Route::any("updateLkShopUserId", 'Test\MyNingController@updateLkShopUserId');
 
+//修改用户商家身份
+Route::any("updateUserInfoRole", 'Test\MyNingController@updateUserInfoRole');
+
