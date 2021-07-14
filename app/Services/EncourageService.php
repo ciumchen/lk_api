@@ -86,7 +86,7 @@ class EncourageService
      * Description: 二级上级分佣
      *
      * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
+     * @param \App\Models\User|null  $user
      * @param \App\Models\AssetsType $assets
      * @param                        $orderNo
      * @param int                    $platformUid
@@ -96,7 +96,7 @@ class EncourageService
      * @author lidong<947714443@qq.com>
      * @date   2021/7/14 0014
      */
-    public function inviteEncourageSecond(Order $order, User $user, AssetsType $assets, $orderNo, $platformUid = 0)
+    public function inviteEncourageSecond(Order $order, $user, AssetsType $assets, $orderNo, $platformUid = 0)
     {
         try {
             if (intval($platformUid) == 0) {
@@ -132,7 +132,7 @@ class EncourageService
      * Description:三级上级分佣
      *
      * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
+     * @param \App\Models\User|null  $user
      * @param \App\Models\AssetsType $assets
      * @param                        $orderNo
      * @param int                    $platformUid
@@ -142,7 +142,7 @@ class EncourageService
      * @author lidong<947714443@qq.com>
      * @date   2021/7/14 0014
      */
-    public function inviteEncourageThird(Order $order, User $user, AssetsType $assets, $orderNo, $platformUid = 0)
+    public function inviteEncourageThird(Order $order, $user, AssetsType $assets, $orderNo, $platformUid = 0)
     {
         try {
             if (intval($platformUid) == 0) {

@@ -256,7 +256,7 @@ class OrderService
         $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 2);
         // 分享佣金分成三级给予
         $EncourageService = new EncourageService();
-        $EncourageService->inviteEncourage($order, $user, $assets, $order, $platformUid);
+        $EncourageService->inviteEncourage($order, $user, $assets, $orderNo, $platformUid);
 //        $invite = User::where('status', User::STATUS_NORMAL)
 //                      ->whereId($user->invite_uid)
 //                      ->first();

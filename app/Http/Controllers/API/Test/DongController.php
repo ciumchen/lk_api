@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderMobileRechargeDetails;
 use App\Services\bmapi\MobileRechargeService;
+use App\Services\OrderService;
 use App\Services\SignInService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -106,7 +107,7 @@ class DongController extends Controller
     /**
      * Description:
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -133,6 +134,20 @@ class DongController extends Controller
             $res = $SignInService->yxSignIn(1668, '2020-10-22');
         } catch (\Exception $e) {
             throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($res);
+    }
+    
+    public function encourage(Request $request)
+    {
+        $order_id = $request->input('order_id');
+        try {
+            $Order = Order::findOrFail($order_id);
+            $OrderService = new OrderService();
+            $desc = $OrderService->getDescription($order_id, $Order);
+            $res = $OrderService->completeOrderTable($order_id, $Order->uid, $desc, $Order->order_no);
+        } catch (\Exception $e) {
+            throw $e;
         }
         return apiSuccess($res);
     }
