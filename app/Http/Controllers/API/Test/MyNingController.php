@@ -317,28 +317,36 @@ class MyNingController extends Controller
         $role = $request->input('role');
         $num = $request->input('num');
 
-//        var_dump($userId,$role,$num);
-        echo '扣除用户积分接口<br/><br/>参数：uid用户的uid<br/>role=1表示删除消费者积分，role=2表示删除商家积分<br/>num=要删除的积分<br/><br/>操作结果：<br/><br/>';
-        $userInfo = Users::where('id', $userId)->first();
-        if ($userInfo != '') {
-            echo "当前用户的消费积分：" . $userInfo->integral . "<br/>";
-            echo "当前用户的商家积分：" . $userInfo->business_integral . "<br/>";
-            if ($role == 1) {
-                $userInfo->integral = $userInfo->integral - $num;
-                if ($userInfo->save()) {
-                    echo "扣除成功<br/>扣除uid=" . $userId . " 的用户消费者积分，" . $num . "积分<br/>";
-                }
-            } elseif ($role == 2) {
-                $userInfo->business_integral = $userInfo->business_integral - $num;
-                if ($userInfo->save()) {
-                    echo "扣除成功<br/>扣除uid=" . $userId . " 的用户商家积分，" . $num . "积分<br/>";
+        if($userId && $role && $num ){
+            //        var_dump($userId,$role,$num);
+//        echo '扣除用户积分接口<br/><br/>参数：uid用户的uid<br/>role=1表示删除消费者积分，role=2表示删除商家积分<br/>num=要删除的积分<br/><br/>操作结果：<br/><br/>';
+            $userInfo = Users::where('id', $userId)->first();
+
+            if ($userInfo != '') {
+//            echo "当前用户的消费积分：" . $userInfo->integral . "<br/>";
+//            echo "当前用户的商家积分：" . $userInfo->business_integral . "<br/>";
+                if ($role == 1) {
+                    $userInfo->integral = $userInfo->integral - $num;
+                    if ($userInfo->save()) {
+                        $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户消费者积分，" . $num . "积分<br/>";
+                    }
+                } elseif ($role == 2) {
+                    $userInfo->business_integral = $userInfo->business_integral - $num;
+                    if ($userInfo->save()) {
+                        $data[] =  "扣除成功<br/>扣除uid=" . $userId . " 的用户商家积分，" . $num . "积分<br/>";
+                    }
+                } else {
+                    $data[] =  '扣除积分失败<br/>';
                 }
             } else {
-                echo '扣除积分失败<br/>';
+                $data[] =  '该uid用户不存在<br/>';
             }
-        } else {
-            echo '该uid用户不存在<br/>';
+        }else{
+            $data[] =  "参数错误<br/>";
         }
+
+        $this->returnView($data,'myning-test');
+
 
     }
 
@@ -481,7 +489,32 @@ class MyNingController extends Controller
 
     }
 
+    //test视图模板测试
+    public function myningtest(){
+        return view('test',['title' => '测试模板']);
 
+    }
+
+    public function getTable(Request $request){
+        $data = $request->all();
+        dd($data);
+    }
+
+    //视图弹框
+    public function returnView($data,$url){
+        echo "<style>
+a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;position: relative;display: inline-block;margin-bottom: 0;padding: 6px 12px;cursor: pointer;-webkit-transition: all;transition: all;
+    -webkit-transition-timing-function: linear;transition-timing-function: linear;-webkit-transition-duration: .2s;transition-duration: .2s;text-align: center;
+    vertical-align: top;white-space: nowrap;color: #fff;border: 1px solid #ccc;border-radius: 3px;background-clip: padding-box;background: #aaaaf5 !important;width:100px;height: 32px;
+}</style>";
+        echo "<div style = 'text-align:center;margin: 100px auto;font-size: 20px'>";
+//dd($data);
+        foreach ($data as $v){
+            echo $v."<br/>";
+        }
+        echo "<a href='$url'>返回</a>";
+        echo "</div>";
+    }
 }
 
 
