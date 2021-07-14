@@ -552,14 +552,18 @@ class OrderService
             $activityState = 0;
         }
         //给商家加积分，更新LK
+        log::debug("=================打印日志11111=====1111111=============================");
         $business = User::lockForUpdate()
                         ->find($invite_uid);
+        log::debug("=================打印日志11111=====22222222=============================");
         $amountBeforeChange = $business->business_integral;
         $business->business_integral = bcadd($business->business_integral, $order_profit_price, 2);
         $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
         //更新LK
+        log::debug("=================打印日志11111=====33333=============================");
         $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
         $business->save();
+        log::debug("=================打印日志11111=====44444444=============================");
         IntegralLogs::addLog(
             $business->id,
             $order_profit_price,
@@ -572,6 +576,7 @@ class OrderService
             $uid,
             $description
         );
+        log::debug("=================打印日志11111=====5555555555=============================");
     }
 
     /**

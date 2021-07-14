@@ -208,6 +208,11 @@ class AddIntegral extends Command
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
 //            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
             log::debug("=================打印订单信息4444444444=====4444444444444444=============================");
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->business_uid);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->profit_price);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$description);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$consumer_uid);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$orderNo);
             (new OrderService())->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
             log::debug("=================打印订单信息4444444444=====555555555555555555=============================");
             $order->save();
