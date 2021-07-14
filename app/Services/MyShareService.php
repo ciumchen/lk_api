@@ -57,13 +57,12 @@ class MyShareService
         $userPrice = $this->userSumPrice($data);
         //获取商家总让利
         $shopProfirt = $this->shopSumProfit($data);
-        $ratio = 0.03;
 
         //返回
         return [
-            'userPrice'   => sprintf('%.2f', $userPrice * $ratio),
+            'userPrice'   => sprintf('%.2f', $userPrice),
             'shopProfirt' => sprintf('%.2f', $shopProfirt),
-            'rewardSum'   => sprintf('%.2f', $userPrice * $ratio + $shopProfirt),
+            'rewardSum'   => sprintf('%.2f', $userPrice + $shopProfirt),
         ];
     }
 
