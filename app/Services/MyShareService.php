@@ -60,9 +60,9 @@ class MyShareService
 
         //返回
         return [
-            'userProfirt'   => sprintf('%.2f', $userProfirt * 0.03),
+            'userProfirt' => sprintf('%.2f', $userProfirt * 0.03),
             'shopProfirt' => sprintf('%.2f', $shopProfirt * 0.02),
-            'rewardSum'   => sprintf('%.2f', $userProfirt * 0.03 + $shopProfirt *0.02),
+            'rewardSum'   => sprintf('%.2f', $userProfirt * 0.03 + $shopProfirt * 0.02),
         ];
     }
 
