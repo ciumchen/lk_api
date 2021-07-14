@@ -207,9 +207,9 @@ class AddIntegral extends Command
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
 //            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
-
+            log::debug("=================打印订单信息4444444444=====4444444444444444=============================");
             (new OrderService())->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
-            log::debug("=================打印订单信息4444444444=====444444444444=============================");
+            log::debug("=================打印订单信息4444444444=====555555555555555555=============================");
             $order->save();
             DB::commit();
             log::debug("=================打印订单信息55555==================================");
