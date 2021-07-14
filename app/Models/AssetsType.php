@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,18 +17,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $large_withdraw_amount 提现审核额度
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType query()
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereAssetsName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereCanWithdraw($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereContractAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereLargeWithdrawAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereRechargeStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AssetsType whereWithdrawFee($value)
+ * @method static Builder|AssetsType newModelQuery()
+ * @method static Builder|AssetsType newQuery()
+ * @method static Builder|AssetsType query()
+ * @method static Builder|AssetsType whereAssetsName($value)
+ * @method static Builder|AssetsType whereCanWithdraw($value)
+ * @method static Builder|AssetsType whereContractAddress($value)
+ * @method static Builder|AssetsType whereCreatedAt($value)
+ * @method static Builder|AssetsType whereId($value)
+ * @method static Builder|AssetsType whereLargeWithdrawAmount($value)
+ * @method static Builder|AssetsType whereRechargeStatus($value)
+ * @method static Builder|AssetsType whereUpdatedAt($value)
+ * @method static Builder|AssetsType whereWithdrawFee($value)
  * @mixin \Eloquent
  */
 class AssetsType extends Model
