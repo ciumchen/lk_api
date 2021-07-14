@@ -527,12 +527,7 @@ class MyShareService
         //资产总金额
         $assetsSum = $this->teamHeadInt($where, $operateType, $remark);
 
-        //订单总让利
-        //$where['order.status'] = 2;
-        //$profitSum = $this->commonPro($where);
-
         //返回
-        //return sprintf('%.2f', $assetsSum + $profitSum);
         return sprintf('%.2f', $assetsSum);
     }
 }
