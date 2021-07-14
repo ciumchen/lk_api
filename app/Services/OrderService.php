@@ -559,6 +559,12 @@ class OrderService
         $amountBeforeChange = $business->business_integral;
         $business->business_integral = bcadd($business->business_integral, $order_profit_price, 2);
         $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
+
+        log::debug("=================打印日志11111=====aaa11111=============================".$amountBeforeChange);
+        log::debug("=================打印日志11111=====aaa2222=============================".$business->business_integral);
+        log::debug("=================打印日志11111=====aaa3333=============================".$businessLkPer);
+
+
         //更新LK
         log::debug("=================打印日志11111=====33333=============================");
         $business->business_lk = bcdiv($business->business_integral, $businessLkPer, 0);
