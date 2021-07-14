@@ -379,14 +379,29 @@ class MyNingController extends Controller
         $end = $request->input('end');
         ini_set("max_execution_time", 0);
         set_time_limit(0);
-//        $shopUserData = TtshopUser::get(['id','binding']);
+        $shopUserData = TtshopUser::get(['id','binding']);
+        $i = 0;
+        foreach ($shopUserData->toArray() as $v) {
+            $userInfo = Users::where('phone', $v['binding'])->first();
+            if ($userInfo != '') {
+                $userInfo->shop_uid = $v['id'];
+                $userInfo->save();
+                $i++;
+            }
+
+        }
+
+        dd($i);
+        exit;
+
+
         dump($start,$end);
         if ($start=='' || $end=='') {
             dd('没有传limit范围');
         } else {
             $shopUserData = TtshopUser::offset($start)->limit($end)->get(['id', 'binding']);
 //            dd($shopUserData->toArray());
-//            dd(count($shopUserData->toArray()));
+            dd(count($shopUserData->toArray()));
             $i = 0;
             foreach ($shopUserData->toArray() as $v) {
                 $userInfo = Users::where('phone', $v['binding'])->first();
