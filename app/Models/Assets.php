@@ -130,7 +130,7 @@ class Assets extends Model
         }
 
         //返回
-        return bcdiv($price, $usdtPrice / (1 - $ratio), 8);
+        return bcdiv($price / $usdtPrice, 1 - $ratio, 8);
     }
 
     /**usdt 兑换话费
