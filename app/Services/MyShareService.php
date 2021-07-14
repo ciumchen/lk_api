@@ -53,7 +53,7 @@ class MyShareService
     */
     public function profitTotal(array $data)
     {
-        //获取用户累计总消费
+        //获取用户总让利
         $userProfirt = $this->userSumProfirt($data);
         //获取商家总让利
         $shopProfirt = $this->shopSumProfit($data);
@@ -381,7 +381,6 @@ class MyShareService
 
     /**获取用户分享团员累计消费
     * @param array $data
-    * @param array $where
     * @return mixed
     * @throws
     */
@@ -404,7 +403,6 @@ class MyShareService
 
     /**获取用户分享团员累计总让利
     * @param array $data
-    * @param array $where
     * @return mixed
     * @throws
     */
