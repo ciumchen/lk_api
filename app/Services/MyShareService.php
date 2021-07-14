@@ -394,7 +394,6 @@ class MyShareService
         $uids = array_column($userArr, 'id');
 
         //消费总金额
-        DB::connection()->enableQueryLog();
         return DB::table('order')
                 ->where(['status' => 2])
                 ->whereIn('uid', $uids)
