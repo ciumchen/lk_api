@@ -57,13 +57,12 @@ class MyShareService
         $userProfirt = $this->userSumProfirt($data);
         //获取商家总让利
         $shopProfirt = $this->shopSumProfit($data);
-        $ratio = 0.03;
 
         //返回
         return [
-            'userProfirt'   => sprintf('%.2f', $userProfirt * $ratio),
-            'shopProfirt' => sprintf('%.2f', $shopProfirt),
-            'rewardSum'   => sprintf('%.2f', $userProfirt * $ratio + $shopProfirt),
+            'userProfirt'   => sprintf('%.2f', $userProfirt * 0.03),
+            'shopProfirt' => sprintf('%.2f', $shopProfirt * 0.02),
+            'rewardSum'   => sprintf('%.2f', $userProfirt * 0.03 + $shopProfirt *0.02),
         ];
     }
 
@@ -421,7 +420,7 @@ class MyShareService
         //商家总让利
         return DB::table('order')
                 ->where(['status' => 2])
-                ->whereIn('uid', $uids)
+                ->whereIn('business_uid', $uids)
                 ->sum('profit_price');
     }
 
