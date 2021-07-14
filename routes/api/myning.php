@@ -47,3 +47,8 @@ Route::any("updateLkShopUserId", 'Test\MyNingController@updateLkShopUserId');
 //修改用户商家身份
 Route::any("updateUserInfoRole", 'Test\MyNingController@updateUserInfoRole');
 
+//修改商家申请后没有插入商家表的记录
+Route::any("insertUserBuinssData", 'Test\MyNingController@insertUserBuinssData');
+
+
+

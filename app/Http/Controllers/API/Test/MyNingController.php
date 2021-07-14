@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Test;
 
 use App\Http\Controllers\Controller;
+use App\Models\BusinessApply;
 use App\Models\BusinessData;
 use App\Models\LkshopOrder;
 use App\Models\LkshopOrderLog;
@@ -438,6 +439,39 @@ class MyNingController extends Controller
         }else{
             dd('用户不存在');
         }
+
+    }
+
+    //修改商家申请后没有插入商家表的记录
+    public function insertUserBuinssData(Request $request){
+        $uid = $request->input('uid');
+        $business_apply_id = $request->input('business_apply_id');
+
+        $businessApplyData = BusinessApply::where('id',$business_apply_id)->first();
+        if ($businessApplyData){
+            $businessDataModel = new BusinessData();
+            $businessDataModel->uid = $uid;
+            $businessDataModel->business_apply_id = $business_apply_id;
+            $businessDataModel->contact_number = $businessApplyData->phone;
+            $businessDataModel->address = $businessApplyData->address;
+            $businessDataModel->name = $businessApplyData->name;
+            $businessDataModel->status = 1;
+            $businessDataModel->main_business = $businessApplyData->work;
+            $businessDataModel->category_id = 2;
+            $businessDataModel->is_status = 2;
+            if ($businessDataModel->save()){
+                dd('添加商家信息成功');
+            }else{
+                dd('添加商家信息失败');
+            }
+
+        }else{
+            dd('商家申请记录不存在');
+        }
+
+
+
+
 
     }
 
