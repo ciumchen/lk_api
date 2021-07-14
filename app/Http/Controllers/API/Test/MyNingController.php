@@ -446,6 +446,7 @@ class MyNingController extends Controller
     public function insertUserBuinssData(Request $request){
         $uid = $request->input('uid');
         $business_apply_id = $request->input('business_apply_id');
+        $main_business = $request->input('main_business');
 
         $businessApplyData = BusinessApply::where('id',$business_apply_id)->first();
         if ($businessApplyData){
@@ -456,9 +457,14 @@ class MyNingController extends Controller
             $businessDataModel->address = $businessApplyData->address;
             $businessDataModel->name = $businessApplyData->name;
             $businessDataModel->status = 1;
-            $businessDataModel->main_business = $businessApplyData->work;
+
             $businessDataModel->category_id = 2;
             $businessDataModel->is_status = 2;
+            if ($businessApplyData->work){
+                $businessDataModel->main_business = $businessApplyData->work;
+            }else{
+                $businessDataModel->main_business = $main_business;
+            }
             if ($businessDataModel->save()){
                 dd('添加商家信息成功');
             }else{
