@@ -73,8 +73,11 @@ class ConvertLogs extends Model
     */
     public function updAssets(array $data)
     {
+        $assetsLogs = AssetsLogs::where(['order_no' => $data['orderNo']])
+                        ->get(['amount', 'amount_before_change'])
+                        ->first();
         //更新后的金额
-        $nowAmount = $data['atAmount'] - $data['usdtAmount'];
+        $nowAmount = $assetsLogs->amount_before_change - $assetsLogs->amount;
 
         //需要更新信息的用户
         $res = Assets::where(['uid' => $data['uid'], 'assets_type_id' => 3, 'assets_name' => 'usdt'])
