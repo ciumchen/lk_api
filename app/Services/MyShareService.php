@@ -54,15 +54,16 @@ class MyShareService
     public function profitTotal(array $data)
     {
         //获取用户累计总消费
-        $userPrice = $this->userSumPrice($data);
+        $userProfirt = $this->userSumProfirt($data);
         //获取商家总让利
         $shopProfirt = $this->shopSumProfit($data);
+        $ratio = 0.03;
 
         //返回
         return [
-            'userPrice'   => sprintf('%.2f', $userPrice),
+            'userProfirt'   => sprintf('%.2f', $userProfirt * $ratio),
             'shopProfirt' => sprintf('%.2f', $shopProfirt),
-            'rewardSum'   => sprintf('%.2f', $userPrice + $shopProfirt),
+            'rewardSum'   => sprintf('%.2f', $userProfirt * $ratio + $shopProfirt),
         ];
     }
 
@@ -385,7 +386,7 @@ class MyShareService
     * @return mixed
     * @throws
     */
-    public function userSumPrice(array $data)
+    public function userSumProfirt(array $data)
     {
         //获取分享团员数据
         $userList = DB::table('users')
@@ -399,7 +400,7 @@ class MyShareService
         return DB::table('order')
                 ->where(['status' => 2])
                 ->whereIn('uid', $uids)
-                ->sum('price');
+                ->sum('profit_price');
     }
 
     /**获取用户分享团员累计总让利
