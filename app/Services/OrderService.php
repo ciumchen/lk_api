@@ -557,12 +557,12 @@ class OrderService
                         ->find($invite_uid);
         log::debug("=================打印日志11111=====22222222=============================");
         $amountBeforeChange = $business->business_integral;
+        log::debug("=================打印日志11111bbb=====bbbbbb1111=============================".$amountBeforeChange);
         $business->business_integral = bcadd($business->business_integral, $order_profit_price, 2);
+        log::debug("=================打印日志11111bbb=====bbbbbb2222222=============================".$business->business_integral);
         $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
-
-        log::debug("=================打印日志11111=====aaa11111=============================".$amountBeforeChange);
-        log::debug("=================打印日志11111=====aaa2222=============================".$business->business_integral);
-        log::debug("=================打印日志11111=====aaa3333=============================".$businessLkPer);
+        
+        log::debug("=================打印日志11111bbb=====bbbbbb33333=============================".$businessLkPer);
 
 
         //更新LK
