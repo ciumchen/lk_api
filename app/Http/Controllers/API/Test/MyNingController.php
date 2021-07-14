@@ -385,36 +385,39 @@ class MyNingController extends Controller
             $userInfo = Users::where('phone', $v['binding'])->first();
             if ($userInfo != '') {
                 $userInfo->shop_uid = $v['id'];
-                $userInfo->save();
-                $i++;
+                $re = $userInfo->save();
+                if ($re){
+                    $i++;
+                }
+
             }
 
         }
 
         dd($i);
         exit;
-
-
-        dump($start,$end);
-        if ($start=='' || $end=='') {
-            dd('没有传limit范围');
-        } else {
-            $shopUserData = TtshopUser::offset($start)->limit($end)->get(['id', 'binding']);
-//            dd($shopUserData->toArray());
-            dd(count($shopUserData->toArray()));
-            $i = 0;
-            foreach ($shopUserData->toArray() as $v) {
-                $userInfo = Users::where('phone', $v['binding'])->first();
-                if ($userInfo != '') {
-                    $userInfo->shop_uid = $v['id'];
-                    $userInfo->save();
-                    $i++;
-                }
-
-            }
-
-            var_dump($i);
-        }
+//
+//
+//        dump($start,$end);
+//        if ($start=='' || $end=='') {
+//            dd('没有传limit范围');
+//        } else {
+//            $shopUserData = TtshopUser::offset($start)->limit($end)->get(['id', 'binding']);
+////            dd($shopUserData->toArray());
+//            dd(count($shopUserData->toArray()));
+//            $i = 0;
+//            foreach ($shopUserData->toArray() as $v) {
+//                $userInfo = Users::where('phone', $v['binding'])->first();
+//                if ($userInfo != '') {
+//                    $userInfo->shop_uid = $v['id'];
+//                    $userInfo->save();
+//                    $i++;
+//                }
+//
+//            }
+//
+//            var_dump($i);
+//        }
 
 
 
