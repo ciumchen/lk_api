@@ -175,10 +175,12 @@ class AddIntegral extends Command
 
         log::debug("=================打印订单信息3-22222==================================".$description);
         log::debug("=================打印订单信息3-22222==================================".$orderNo);
+        log::debug("=================打印订单信息3-22222==================================".$dataInfo->toArray());
 
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($orderId);
+            log::debug("=================打印订单信息3-88888==================================".$order->line_up);
             if ($order->line_up != 1)
                 return false;
             $order->line_up = 0;
