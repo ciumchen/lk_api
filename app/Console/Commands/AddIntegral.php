@@ -191,6 +191,7 @@ class AddIntegral extends Command
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
+            log::debug("=================打印订单信息4444444444=====1111111111111=============================");
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
             $profit_ratio = bcdiv($rebateScale[intval($profit_ratio_offset)], 100, 4);
@@ -200,13 +201,15 @@ class AddIntegral extends Command
             $lkPer = Setting::getSetting('lk_per') ?? 300;
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
+            log::debug("=================打印订单信息4444444444=====2222222=============================");
             $customer->save();
+            log::debug("=================打印订单信息4444444444=====333333333=============================");
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
 //            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
 
             (new OrderService())->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
-
+            log::debug("=================打印订单信息4444444444=====444444444444=============================");
             $order->save();
             DB::commit();
             log::debug("=================打印订单信息55555==================================");
