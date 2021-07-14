@@ -561,7 +561,7 @@ class OrderService
         $business->business_integral = bcadd($business->business_integral, $order_profit_price, 2);
         log::debug("=================打印日志11111bbb=====bbbbbb2222222=============================".$business->business_integral);
         $businessLkPer = Setting::getSetting('business_Lk_per') ?? 60;
-        
+
         log::debug("=================打印日志11111bbb=====bbbbbb33333=============================".$businessLkPer);
 
 

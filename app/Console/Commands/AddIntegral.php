@@ -173,6 +173,7 @@ class AddIntegral extends Command
         $description = $orderType;
         $orderNo = $dataInfo->order_no;
 
+        log::debug("=================打印订单信息3-2222200000000==================================".$consumer_uid);
         log::debug("=================打印订单信息3-22222==================================".$description);
         log::debug("=================打印订单信息3-22222==================================".$orderNo);
         log::debug("=================打印订单信息3-22222==================================",$dataInfo->toArray());
