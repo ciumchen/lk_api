@@ -169,7 +169,7 @@ class AddIntegral extends Command
             log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
-        $consumer_uid = $dataInfo->user_id;
+        $consumer_uid = $dataInfo->user_id??$dataInfo->uid;
         $description = $orderType;
         $orderNo = $dataInfo->order_no;
 
