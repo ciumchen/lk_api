@@ -32,6 +32,7 @@ use App\Services\AddressService;
 use App\Services\AssetsService;
 use App\Services\TransferService;
 use App\Services\AssetConversionService;
+use App\Models\TtshopUser;
 class MyNingController extends Controller
 {
     //test测试
@@ -364,6 +365,34 @@ class MyNingController extends Controller
         var_dump($re);
     }
 
+
+    //同商城用户的uid
+    public function updateLkShopUserId(Request $request){
+        $start = $request->input('start');
+        $end = $request->input('end');
+        ini_set("max_execution_time", 0);
+        set_time_limit(0);
+        $shopUserData = TtshopUser::get(['id','binding']);
+//dd($shopUserData->toArray());
+//dd(count($shopUserData->toArray()));
+        $i =0;
+        foreach($shopUserData->toArray() as $v){
+            $userInfo = Users::where('phone',$v['binding'])->first();
+            if ($userInfo!=''){
+                $userInfo->shop_uid = $v['id'];
+                $userInfo->save();
+                $i++;
+            }
+
+        }
+
+var_dump($i);
+
+
+
+
+
+    }
 
 
 }

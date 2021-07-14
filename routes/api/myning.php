@@ -41,6 +41,6 @@ Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
 //批量修改商家信息表审核状态
 Route::any("plUpdateBussStutas", 'Test\MyNingController@plUpdateBussStutas');
 
-
-
+//同商城用户的uid
+Route::any("updateLkShopUserId", 'Test\MyNingController@updateLkShopUserId');
 
