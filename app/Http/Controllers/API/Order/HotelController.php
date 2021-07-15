@@ -18,6 +18,16 @@ class HotelController extends Controller
         $this->service = new OrderHotelService();
     }
     
+    /**
+     * Description:酒店搜索
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/15 0015
+     */
     public function search(Request $request)
     {
         $page = $request->input('page');
@@ -58,5 +68,20 @@ class HotelController extends Controller
             throw new LogicException($e->getMessage());
         }
         return apiSuccess($res);
+    }
+    
+    /**
+     * Description:支持的城市
+     *
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/15 0015
+     */
+    public function cityList()
+    {
+        try {
+            $this->service->getStandCity();
+        } catch (Exception $e) {
+        
+        }
     }
 }
