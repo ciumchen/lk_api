@@ -51,7 +51,7 @@ class ConvertLogs extends Model
         $AssetsLogs->assets_name = 'usdt';
         $AssetsLogs->uid = $data['uid'];
         $AssetsLogs->operate_type = 'user_convert';
-        $AssetsLogs->amount = $data['usdtAmount'];
+        $AssetsLogs->amount = '-' . $data['usdtAmount'];
         $AssetsLogs->amount_before_change = $data['atAmount'];
         $AssetsLogs->ip = $data['ip'];
         $AssetsLogs->user_agent = '';
