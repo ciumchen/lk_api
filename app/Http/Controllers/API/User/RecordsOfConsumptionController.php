@@ -165,6 +165,7 @@ class RecordsOfConsumptionController extends Controller
             'ZL' => 'Invite_points_zl',
             'VC' => 'Invite_points_vc',
             'MZL' => 'Invite_points_mzl',
+            'CL' => 'Invite_points_cl',
         ];
 
         foreach ($InvitePointsArr as $k=>$v){

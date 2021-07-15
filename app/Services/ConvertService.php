@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\LogicException;
 use App\Models\Assets;
+use App\Models\Setting;
 
 /** 兑换充值 **/
 
@@ -108,7 +109,7 @@ class ConvertService
         (new ConvertLogs())->updAssets($data);
 
         //order 表增加订单记录
-        $ratio = 5;
+        $ratio = Setting::getSetting('set_business_rebate_scale_cl');
         $profitPrice = $data['price'] * $ratio / 100;
         $order = (new Order())->setOrderSelf($data['uid'], 2, $ratio, $data['price'], $profitPrice, 
         $data['orderNo'], $data['orderName'], 1, 'await', 'convert');

@@ -533,6 +533,7 @@ class OrderService
             'ZL'  => 'Invite_points_zl',
             'MZL' => 'Invite_points_mzl',
             'VC'  => 'Invite_points_vc',
+            'CL'  => 'Invite_points_cl',
         ];
         $activityState = 0;
         if ($description != 'LR' && isset($InvitePointsArr[ $description ])) {
