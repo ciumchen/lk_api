@@ -108,22 +108,27 @@ class AddIntegral extends Command
             if ($LkBlData['count_profit_price'] != 0) {
                 $lk_unit_price = Setting::where('key', 'lk_unit_price')->value('value');
                 if (($old_addCountProfitPrice * 0.675 / $LkBlData['count_lk']) < $lk_unit_price) {
-                    $this->completeOrder($orderId);
-                    $LkBlData['count_profit_price'] = $addCountProfitPrice;
-                    DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
+                    if ($this->completeOrder($orderId)){
+                        $LkBlData['count_profit_price'] = $addCountProfitPrice;
+                        DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
+                        return "添加积分成功";
+                    }else{
+                        return "添加积分失败";
+                    }
 //                    log::info('=================添加积分成功1===================================');
-                    return "添加积分成功";
                 } else {
 //                    log::info('=================添加积分已达到上限数量===================================');
                     return "添加积分已达到上限数量";
                 }
 
             } else {
-                $this->completeOrder($orderId);
-                $LkBlData['count_profit_price'] = $addCountProfitPrice;
-                DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
-//                log::info('=================添加积分成功2===================================');
-                return "添加积分成功";
+                if ($this->completeOrder($orderId)){
+                    $LkBlData['count_profit_price'] = $addCountProfitPrice;
+                    DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
+                    return "添加积分成功";
+                }else{
+                    return "添加积分失败";
+                }
             }
 
         } else {
@@ -219,10 +224,12 @@ class AddIntegral extends Command
 //            log::debug("=================打印订单信息4444444444=====555555555555555555=============================");
             $order->save();
             DB::commit();
+            return true;
 //            log::debug("=================打印订单信息55555==================================");
         } catch (\Exception $exception) {
             DB::rollBack();
             var_dump($exception->getMessage());
+            return false;
 //            log::debug("=================打印订单信息666666==================================");
         }
     }
