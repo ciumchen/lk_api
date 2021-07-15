@@ -77,7 +77,7 @@ class ConvertLogs extends Model
                         ->get(['amount', 'amount_before_change'])
                         ->first();
         //更新后的金额
-        $nowAmount = $assetsLogs->amount_before_change - $assetsLogs->amount;
+        $nowAmount = $assetsLogs->amount_before_change + $assetsLogs->amount;
 
         //需要更新信息的用户
         $res = Assets::where(['uid' => $data['uid'], 'assets_type_id' => 3, 'assets_name' => 'usdt'])
