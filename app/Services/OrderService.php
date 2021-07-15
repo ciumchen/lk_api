@@ -533,7 +533,8 @@ class OrderService
             'ZL'  => 'Invite_points_zl',
             'MZL' => 'Invite_points_mzl',
             'VC'  => 'Invite_points_vc',
-            'CL'  => 'Invite_points_cl',
+            'CLP' => 'Invite_points_clp',
+            'CLM' => 'Invite_points_clm',
         ];
         $activityState = 0;
         if ($description != 'LR' && isset($InvitePointsArr[ $description ])) {
@@ -717,7 +718,15 @@ class OrderService
                 $description = 'SHOP';
             }
             if (!empty($Order->convertLogs)) { /* 碎片兑换 */
-                $description = 'CL';
+                switch ($Order->convertLogs->type) {
+                    case 1:
+                        $description = 'CLP';
+                        break;
+                    case 2:
+                        $description = 'CLM';
+                        break;
+                }
+                //$description = 'CL';
             }
             /* 判断 是否已经获取到对应类型的订单*/
             if (empty($description)) {

@@ -476,7 +476,8 @@ class AddIntegral extends Command
             'MT' => 'Invite_points_mt',
             'ZL' => 'Invite_points_zl',
             'VC' => 'Invite_points_vc',
-            'CL' => 'Invite_points_cl',
+            'CLP' => 'Invite_points_clp',
+            'CLM' => 'Invite_points_clm',
         ];
         $activityState = 0;
         if ($description != 'LR' && isset($InvitePointsArr[$description])) {
