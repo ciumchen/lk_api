@@ -253,7 +253,7 @@ class OrderService
         //分享佣金
         /* 计算总佣金 */
         $shareScale = Setting::getSetting('share_scale');
-        $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 2);
+        $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
         // 分享佣金分成三级给予
         $EncourageService = new EncourageService();
         $EncourageService->inviteEncourage($order, $user, $assets, $orderNo, $platformUid);
