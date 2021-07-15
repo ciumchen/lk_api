@@ -715,6 +715,9 @@ class OrderService
             if (!empty($Order->lkshopOrder)) { /* 生活缴费 */
                 $description = 'SHOP';
             }
+            if (!empty($Order->convertLogs)) { /* 碎片兑换 */
+                $description = 'CL';
+            }
             /* 判断 是否已经获取到对应类型的订单*/
             if (empty($description)) {
                 throw new Exception('没有对应类型的订单');

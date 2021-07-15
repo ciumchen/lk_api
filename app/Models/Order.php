@@ -63,7 +63,7 @@ use App\Exceptions\LogicException;
  * @method static Builder|Order whereUpdatedAt($value)
  * @mixin \Eloquent
  * @package App\Models
- * @property-read \App\Models\LkshopOrder|null $lkshopOrder
+ * @property-read \App\Models\LkshopOrder|null    $lkshopOrder
  */
 class Order extends Model
 {
@@ -111,7 +111,7 @@ class Order extends Model
     
     /**获取商家信息
      *
-     * @param  string  $orderNo
+     * @param string $orderNo
      *
      * @return array
      * @throws
@@ -130,9 +130,9 @@ class Order extends Model
     
     /**插入用户积分流水记录
      *
-     * @param  array   $usersData
-     * @param  string  $beforeIntegral
-     * @param  string  $integral
+     * @param array  $usersData
+     * @param string $beforeIntegral
+     * @param string $integral
      *
      * @throws
      */
@@ -156,7 +156,7 @@ class Order extends Model
     
     /**插入美团、油卡、话费记录
      *
-     * @param  array  $data
+     * @param array $data
      *
      * @return int
      * @throws
@@ -170,9 +170,9 @@ class Order extends Model
     /**
      * Description: 批量代充
      *
-     * @param  int     $uid
-     * @param  string  $money
-     * @param  string  $order_no
+     * @param int    $uid
+     * @param string $money
+     * @param string $order_no
      *
      * @return $this
      * @throws \Exception
@@ -196,16 +196,16 @@ class Order extends Model
     /**
      * Description: 生成订单
      *
-     * @param  int     $uid
-     * @param  int     $business_uid
-     * @param  string  $profit_ratio
-     * @param  string  $price
-     * @param  string  $profit_price
-     * @param  string  $order_no
-     * @param  string  $name
-     * @param  int     $state
-     * @param  string  $pay_status
-     * @param  string  $remark
+     * @param int    $uid
+     * @param int    $business_uid
+     * @param string $profit_ratio
+     * @param string $price
+     * @param string $profit_price
+     * @param string $order_no
+     * @param string $name
+     * @param int    $state
+     * @param string $pay_status
+     * @param string $remark
      *
      * @return $this
      * @throws \Exception
@@ -245,7 +245,7 @@ class Order extends Model
     
     /**获取当天未支付订单
      *
-     * @param  array  $data
+     * @param array $data
      *
      * @return mixed
      * @throws
@@ -275,7 +275,7 @@ class Order extends Model
     
     /**录单消息通知
      *
-     * @param  string  $orderNo
+     * @param string $orderNo
      *
      * @return mixed
      * @throws
@@ -306,7 +306,7 @@ class Order extends Model
     
     /**机票消息通知
      *
-     * @param  string  $orderNo
+     * @param string $orderNo
      *
      * @return mixed
      * @throws
@@ -337,7 +337,7 @@ class Order extends Model
     
     /**获取订单数据
      *
-     * @param  string  $orderNo
+     * @param string $orderNo
      *
      * @return mixed
      * @throws
@@ -356,7 +356,7 @@ class Order extends Model
     
     /**机票再次支付
      *
-     * @param  string  $orderNo
+     * @param string $orderNo
      *
      * @return mixed
      * @throws
@@ -417,9 +417,9 @@ class Order extends Model
     /**
      * 生成水费订单
      *
-     * @param  int     $uid
-     * @param  float   $money
-     * @param  string  $order_no
+     * @param int    $uid
+     * @param float  $money
+     * @param string $order_no
      *
      * @return \App\Models\Order
      * @throws \Exception
@@ -450,9 +450,9 @@ class Order extends Model
     /**
      * 生成水费订单
      *
-     * @param  int     $uid
-     * @param  float   $money
-     * @param  string  $order_no
+     * @param int    $uid
+     * @param float  $money
+     * @param string $order_no
      *
      * @return \App\Models\Order
      * @throws \Exception
@@ -483,9 +483,9 @@ class Order extends Model
     /**
      * 生成燃气费订单
      *
-     * @param  int     $uid
-     * @param  float   $money
-     * @param  string  $order_no
+     * @param int    $uid
+     * @param float  $money
+     * @param string $order_no
      *
      * @return $this
      * @throws \Exception
@@ -617,7 +617,7 @@ class Order extends Model
     
     /**机票更新支付状态
      *
-     * @param  string  $order_no
+     * @param string $order_no
      *
      * @throws
      */
@@ -640,6 +640,18 @@ class Order extends Model
     public function utility()
     {
         return $this->hasOne(OrderUtilityBill::class, 'order_id', 'id');
+    }
+    
+    /**
+     * Description:碎片兑换订单
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/15 0015
+     */
+    public function convertLogs()
+    {
+        return $this->hasOne(ConvertLogs::class, 'oid', 'id');
     }
     
     public function getCreatedAtAttribute($value)
