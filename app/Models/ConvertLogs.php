@@ -48,7 +48,7 @@ class ConvertLogs extends Model
         $date = date('Y-m-d H:i:s');
         $AssetsLogs = new AssetsLogs();
         $AssetsLogs->assets_type_id = 3;
-        $AssetsLogs->assets_name = 'convert';
+        $AssetsLogs->assets_name = 'usdt';
         $AssetsLogs->uid = $data['uid'];
         $AssetsLogs->operate_type = 'user_convert';
         $AssetsLogs->amount = $data['usdtAmount'];
