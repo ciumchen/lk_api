@@ -39,6 +39,7 @@ class VerifyCode extends Model
     const TYPE_LOGIN = 2;//登录
     const TYPE_FORGET_PASSWORD = 3;//找回密码
     const TYPE_WITHDRAW_TO_WALLET = 4;//提现到钱包
+    const TYPE_UPDATE_USER_PHONE = 5;//修改用户手机号
     /**
      * The attributes that are mass assignable.
      *
@@ -57,6 +58,7 @@ class VerifyCode extends Model
         self::TYPE_REGISTER => 'register',
         self::TYPE_FORGET_PASSWORD => 'forget_password',
         self::TYPE_WITHDRAW_TO_WALLET => 'withdraw_to_wallet',
+        self::TYPE_UPDATE_USER_PHONE => 'update_user_phone',
 
     ];
 
@@ -65,6 +67,7 @@ class VerifyCode extends Model
         self::TYPE_REGISTER => '注册',
         self::TYPE_FORGET_PASSWORD => '找回密码',
         self::TYPE_WITHDRAW_TO_WALLET => '提现到钱包',
+        self::TYPE_UPDATE_USER_PHONE => '修改用户手机号',
 
     ];
 
@@ -73,6 +76,7 @@ class VerifyCode extends Model
         self::TYPE_REGISTER => 'SMS_196170270',
         self::TYPE_FORGET_PASSWORD => 'SMS_196170269',
         self::TYPE_WITHDRAW_TO_WALLET => 'SMS_196170273',
+        self::TYPE_UPDATE_USER_PHONE => 'SMS_219395043',
     ];
 
     /**
@@ -159,6 +163,23 @@ class VerifyCode extends Model
         if (null === $latest ||
             $latest->used ||
             now()->gt($latest->expires_at) ||
+            $latest->code !== $code) {
+            return false;
+        }
+
+        $latest->markAsUsed();
+
+        Cache::forget('verify_code_'.$phone.'_'.$type.'_locked');
+
+        return true;
+    }
+
+    public static function updateUserPhonCheck(string $phone, string $code, int $type): bool
+    {
+        $latest = static::where('phone', $phone)->where('type', $type)->latest()->first();
+        if (null === $latest ||
+            $latest->used ||
+            (time() > strtotime($latest->expires_at)) ||
             $latest->code !== $code) {
             return false;
         }

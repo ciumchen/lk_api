@@ -40,6 +40,16 @@ class RegionUserController extends Controller
         return (new RegionUser())->getDistrictNode($request->code, $request->page, $request->perPage);
     }
 
+    /**获取市级代理资产积分记录
+     * @param Request $request
+     * @return mixed
+     * @throws
+     */
+    public function getCityAssets(Request $request)
+    {
+        return (new RegionUser())->getCityAssets($request->code, $request->page, $request->perPage);
+    }
+
     /**获取区级代理资产积分记录
      * @param Request $request
      * @return mixed

@@ -11,6 +11,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //修改商家
     Route::post('update-business', 'Business\BusinessController@updateBusinessData');
 
+//新申请商家接口
+    Route::post('newApplyBusiness', 'User\UserController@newApplyBusiness');
 
+    //新修改商家信息接口
+    Route::post('newUpdateBusinessData', 'Business\BusinessController@newUpdateBusinessData');
 
 });
+//获取商家分类
+Route::any('getBusinessFl', 'Business\BusinessController@getBusinessFl');

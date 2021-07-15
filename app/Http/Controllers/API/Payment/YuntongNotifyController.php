@@ -22,7 +22,6 @@ use App\Services\AirOrderService;
 
 class YuntongNotifyController extends Controller
 {
-    
     /**
      * 雲通支付回調
      *

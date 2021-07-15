@@ -163,6 +163,8 @@ class RecordsOfConsumptionController extends Controller
             'YK' => 'Invite_points_yk',
             'MT' => 'Invite_points_mt',
             'ZL' => 'Invite_points_zl',
+            'VC' => 'Invite_points_vc',
+            'MZL' => 'Invite_points_mzl',
         ];
 
         foreach ($InvitePointsArr as $k=>$v){
@@ -196,6 +198,8 @@ class RecordsOfConsumptionController extends Controller
             'YK'=>'油卡',
             'MT'=>'美团',
             'ZL'=>'代充',
+            'VC'=>'视频会员',
+            'MZL'=>'批量代充',
         );
         $data1 = array();
         foreach ($integralData as $k=>$v){

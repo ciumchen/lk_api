@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Api\Test;
 
 use App\Http\Controllers\Controller;
+use App\Models\BusinessApply;
+use App\Models\BusinessData;
 use App\Models\LkshopOrder;
 use App\Models\LkshopOrderLog;
 use App\Models\User;
+use App\Models\Users;
+use App\Models\UserUpdatePhoneLog;
+use App\Models\UserUpdatePhoneLogSd;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -28,6 +33,8 @@ use App\Services\AddressService;
 use App\Services\AssetsService;
 use App\Services\TransferService;
 use App\Services\AssetConversionService;
+use App\Models\TtshopUser;
+
 class MyNingController extends Controller
 {
     //test测试
@@ -178,17 +185,28 @@ class MyNingController extends Controller
         $userInfo = User::where('id', $uid)->first();
         $phoneUser = User::where('phone', $phone)->first();
 
-        if ($phoneUser){
-            return "该手机号已被uid=".$phoneUser->id." 的用户使用，请更换其他手机号";
+        if ($phoneUser) {
+            return "该手机号已被uid=" . $phoneUser->id . " 的用户使用，请更换其他手机号";
         }
         if ($userInfo) {
-            $userInfo->phone = $phone;
-            $re = $userInfo->save();
-            if ($re) {
-                return "<h4>用户uid=" . $uid . "的手机号修改成功</h4>";
-            } else {
-                return "<h4>用户uid=" . $uid . "的手机号修改失败</h4>";
+            DB::beginTransaction();
+            try {
+                $userDataLogModel = new UserUpdatePhoneLogSd();
+                $userDataLogModel->user_id = $uid;
+                $userDataLogModel->time = time();
+                $userDataLogModel->edit_to_phone = $userInfo->phone . '=>' . $phone;
+                $userDataLogModel->save();
+
+                $userInfo->phone = $phone;
+                $userInfo->save();
+                DB::commit();
+            } catch (Exception $exception) {
+                DB::rollBack();
+//                throw $exception;
+                return response()->json(['code' => 0, 'msg' => '修改失败']);
             }
+            return response()->json(['code' => 1, 'msg' => '修改成功']);
+
         } else {
             return "<h4>这个uid=" . $uid . "的用户不存在</h4>";
         }
@@ -200,7 +218,7 @@ class MyNingController extends Controller
     public function getUserAssetInfo(Request $request)
     {
         $uid = $request->input('uid');
-        $user = User::where('id',$uid)->first();
+        $user = User::where('id', $uid)->first();
 //        dd($user);
         $iets_asset = AssetsType::where('assets_name', 'iets')->first();
         $usdt_asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
@@ -218,47 +236,285 @@ class MyNingController extends Controller
     }
 
     //解封用户资产账号
-    public function xfUserAssetFH(Request $request){
+    public function xfUserAssetFH(Request $request)
+    {
         $uid = $request->input('uid');
         $amount = $request->input('amount');
         $assType = $request->input('assType');
-        $assData = Assets::where('uid',$uid)->where('assets_name',$assType)->first();
+        $assData = Assets::where('uid', $uid)->where('assets_name', $assType)->first();
         $assData->amount = $amount;
-        if($assData->save()){
+        if ($assData->save()) {
             return "账号解封成功";
-        }else{
+        } else {
             return "账号解封失败";
         }
 
     }
 
     //初始化导入记录
-    public function initDrOrderLog(Request $request){
+    public function initDrOrderLog(Request $request)
+    {
         $type = $request->input('type');// mch_order
         $order_id = $request->input('order_id');
-        if($order_id==''){
+        if ($order_id == '') {
             $order_id = 0;
         }
         echo "初始化导入记录";
-        $logData = LkshopOrderLog::where('type',$type)->first();
+        $logData = LkshopOrderLog::where('type', $type)->first();
         $logData->order_id = $order_id;
-        if($logData->save()){
-            echo "初始化成功，order_id=".$order_id;
-        }else{
+        if ($logData->save()) {
+            echo "初始化成功，order_id=" . $order_id;
+        } else {
             echo "初始化失败";
         }
 
     }
 
-    //修改订单名
-    public function updateShopOrderName(Request $request){
-        $logData = DB::table('lkshop_order')->update(['name'=>'商户订单']);
+    //查看导入时间
+    public function getAddOrderTime()
+    {
+        $data[] = LkshopOrderLog::where('type', 'mch_order')->value('order_id');
+        $data[] = LkshopOrderLog::where('type', '1688_order')->value('order_id');
 
-        dd($logData);
+        dd($data);
+    }
+
+    //修改订单名
+//    public function updateShopOrderName(Request $request){
+//        $logData = DB::table('lkshop_order')->update(['name'=>'商户订单']);
+//
+//        dd($logData);
+//
+//    }
+
+    //修改已导入订单的类型
+//    public function updateShopDrLog(Request $request){
+//        $description = $request->input('description');//lkshop_sh
+//        $updat_description = $request->input('updat_description');
+//        $logData = DB::table('lkshop_order')->where('description',$description)->update(['description'=>$updat_description]);
+//
+//        dd($logData);
+//    }
+
+
+//    public function clearShopOrderLog(){
+//        $re1 = DB::table('lkshop_order')->truncate();
+//        $re2 = DB::table('lkshop_order_log')->truncate();
+//        dd($re1,$re2);
+//    }
+
+//初始化修改用户手机号记录
+    public function clearUserPhoneUpdateLog()
+    {
+        $re1 = DB::table('user_update_phone_log')->truncate();
+        dd($re1);
+    }
+
+//扣除用户商城积分
+    public function kcUserShopJf(Request $request)
+    {
+        $userId = $request->input('uid');//用户uid
+        $role = $request->input('role');
+        $num = $request->input('num');
+
+        if($userId && $role && $num ){
+            //        var_dump($userId,$role,$num);
+//        echo '扣除用户积分接口<br/><br/>参数：uid用户的uid<br/>role=1表示删除消费者积分，role=2表示删除商家积分<br/>num=要删除的积分<br/><br/>操作结果：<br/><br/>';
+            $userInfo = Users::where('id', $userId)->first();
+
+            if ($userInfo != '') {
+//            echo "当前用户的消费积分：" . $userInfo->integral . "<br/>";
+//            echo "当前用户的商家积分：" . $userInfo->business_integral . "<br/>";
+                if ($role == 1) {
+                    $userInfo->integral = $userInfo->integral - $num;
+                    if ($userInfo->save()) {
+                        $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户消费者积分，" . $num . "积分<br/>";
+                    }
+                } elseif ($role == 2) {
+                    $userInfo->business_integral = $userInfo->business_integral - $num;
+                    if ($userInfo->save()) {
+                        $data[] =  "扣除成功<br/>扣除uid=" . $userId . " 的用户商家积分，" . $num . "积分<br/>";
+                    }
+                } else {
+                    $data[] =  '扣除积分失败<br/>';
+                }
+            } else {
+                $data[] =  '该uid用户不存在<br/>';
+            }
+        }else{
+            $data[] =  "参数错误<br/>";
+        }
+
+        $this->returnView($data,'myning-test');
+
 
     }
 
+    //清空商城卡单处理
+    public function setShopKdOrderId(Request $request)
+    {
+        $orderId = $request->input('orderId');
+        if ($orderId) {
+            echo '修改OrderId' . $orderId . '的记录<br/>';
+            $orderInfo = Order::where('id', $orderId)->first();
+            $orderInfo->line_up = 0;
+            if ($orderInfo->save()) {
+                echo '修改成功';
+            } else {
+                echo '修改失败';
+            }
 
+        } else {
+            echo 'orderId不能为空';
+        }
+
+
+    }
+
+    //批量修改商家信息表审核状态
+    public function plUpdateBussStutas()
+    {
+        $data = array('is_status' => 2);
+        $re = DB::table('business_data')->update($data);
+
+        var_dump($re);
+    }
+
+
+    //同商城用户的uid
+    public function updateLkShopUserId(Request $request)
+    {
+        $start = $request->input('start');
+        $end = $request->input('end');
+        ini_set("max_execution_time", 0);
+        set_time_limit(0);
+        $shopUserData = TtshopUser::get(['id','binding']);
+        $i = 0;
+        foreach ($shopUserData->toArray() as $v) {
+            $userInfo = Users::where('phone', $v['binding'])->first();
+            if ($userInfo != '') {
+                $userInfo->shop_uid = $v['id'];
+                $re = $userInfo->save();
+                if ($re){
+                    $i++;
+                }
+
+            }
+
+        }
+
+        dd($i);
+        exit;
+//
+//
+//        dump($start,$end);
+//        if ($start=='' || $end=='') {
+//            dd('没有传limit范围');
+//        } else {
+//            $shopUserData = TtshopUser::offset($start)->limit($end)->get(['id', 'binding']);
+////            dd($shopUserData->toArray());
+//            dd(count($shopUserData->toArray()));
+//            $i = 0;
+//            foreach ($shopUserData->toArray() as $v) {
+//                $userInfo = Users::where('phone', $v['binding'])->first();
+//                if ($userInfo != '') {
+//                    $userInfo->shop_uid = $v['id'];
+//                    $userInfo->save();
+//                    $i++;
+//                }
+//
+//            }
+//
+//            var_dump($i);
+//        }
+
+
+
+    }
+
+    //修改用户商家身份
+    public function updateUserInfoRole(Request $request){
+        $phone = $request->input('phone');
+        $role = $request->input('role');
+        $userInfo = Users::where('phone',$phone)->first();
+        if ($userInfo!=''){
+            $userInfo->role = $role;
+            if($userInfo->save()){
+                dd('修改成功');
+            }else{
+                dd('修改失败');
+            }
+        }else{
+            dd('用户不存在');
+        }
+
+    }
+
+    //修改商家申请后没有插入商家表的记录
+    public function insertUserBuinssData(Request $request){
+        $uid = $request->input('uid');
+        $business_apply_id = $request->input('business_apply_id');
+        $main_business = $request->input('main_business');
+
+        $businessApplyData = BusinessApply::where('id',$business_apply_id)->first();
+        if ($businessApplyData){
+            $businessDataModel = new BusinessData();
+            $businessDataModel->uid = $uid;
+            $businessDataModel->business_apply_id = $business_apply_id;
+            $businessDataModel->contact_number = $businessApplyData->phone;
+            $businessDataModel->address = $businessApplyData->address;
+            $businessDataModel->name = $businessApplyData->name;
+            $businessDataModel->status = 1;
+
+            $businessDataModel->category_id = 2;
+            $businessDataModel->is_status = 2;
+            if ($businessApplyData->work){
+                $businessDataModel->main_business = $businessApplyData->work;
+            }else{
+                $businessDataModel->main_business = $main_business;
+            }
+            if ($businessDataModel->save()){
+                dd('添加商家信息成功');
+            }else{
+                dd('添加商家信息失败');
+            }
+
+        }else{
+            dd('商家申请记录不存在');
+        }
+
+
+
+
+
+    }
+
+    //test视图模板测试
+    public function myningtest(){
+        return view('test',['title' => '测试模板']);
+
+    }
+
+    public function getTable(Request $request){
+        $data = $request->all();
+        dd($data);
+    }
+
+    //视图弹框
+    public function returnView($data,$url){
+        echo "<style>
+a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;position: relative;display: inline-block;margin-bottom: 0;padding: 6px 12px;cursor: pointer;-webkit-transition: all;transition: all;
+    -webkit-transition-timing-function: linear;transition-timing-function: linear;-webkit-transition-duration: .2s;transition-duration: .2s;text-align: center;
+    vertical-align: top;white-space: nowrap;color: #fff;border: 1px solid #ccc;border-radius: 3px;background-clip: padding-box;background: #aaaaf5 !important;width:100px;height: 32px;
+}</style>";
+        echo "<div style = 'text-align:center;margin: 100px auto;font-size: 20px'>";
+//dd($data);
+        foreach ($data as $v){
+            echo $v."<br/>";
+        }
+        echo "<a href='$url'>返回</a>";
+        echo "</div>";
+    }
 }
 
 

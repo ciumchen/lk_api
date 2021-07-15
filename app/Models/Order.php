@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Http\Controllers\API\Message\UserMsgController;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -39,32 +41,32 @@ use App\Exceptions\LogicException;
  * @property-read \App\Models\BusinessData|null   $business
  * @property-read mixed                           $updated_date
  * @property-read \App\Models\User|null           $user
- * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Order query()
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereBusinessUid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereLineUp($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereOrderNo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order wherePayStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereProfitPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereProfitRatio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereToBeAddedIntegral($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereToStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereUid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
+ * @method static Builder|Order newModelQuery()
+ * @method static Builder|Order newQuery()
+ * @method static Builder|Order query()
+ * @method static Builder|Order whereBusinessUid($value)
+ * @method static Builder|Order whereCreatedAt($value)
+ * @method static Builder|Order whereId($value)
+ * @method static Builder|Order whereLineUp($value)
+ * @method static Builder|Order whereName($value)
+ * @method static Builder|Order whereOrderNo($value)
+ * @method static Builder|Order wherePayStatus($value)
+ * @method static Builder|Order wherePrice($value)
+ * @method static Builder|Order whereProfitPrice($value)
+ * @method static Builder|Order whereProfitRatio($value)
+ * @method static Builder|Order whereRemark($value)
+ * @method static Builder|Order whereState($value)
+ * @method static Builder|Order whereStatus($value)
+ * @method static Builder|Order whereToBeAddedIntegral($value)
+ * @method static Builder|Order whereToStatus($value)
+ * @method static Builder|Order whereUid($value)
+ * @method static Builder|Order whereUpdatedAt($value)
  * @mixin \Eloquent
  * @package App\Models
+ * @property-read \App\Models\LkshopOrder|null $lkshopOrder
  */
 class Order extends Model
 {
-    
     /**
      * The table associated with the model.
      *
@@ -163,6 +165,82 @@ class Order extends Model
     {
         return DB::table($this->table)
                  ->insertGetId($data);
+    }
+    
+    /**
+     * Description: 批量代充
+     *
+     * @param  int     $uid
+     * @param  string  $money
+     * @param  string  $order_no
+     *
+     * @return $this
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/5 0005
+     */
+    public function setManyMobileOrder($uid, $money, $order_no)
+    {
+        try {
+            $profit_ratio = Setting::getSetting('set_business_rebate_scale_zl');
+            $profit_price = (float) $money * ($profit_ratio / 100);
+            $business_uid = 2;
+            $name = '批量代充';
+            $this->setOrderSelf($uid, $business_uid, $profit_ratio, $money, $profit_price, $order_no, $name);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $this;
+    }
+    
+    /**
+     * Description: 生成订单
+     *
+     * @param  int     $uid
+     * @param  int     $business_uid
+     * @param  string  $profit_ratio
+     * @param  string  $price
+     * @param  string  $profit_price
+     * @param  string  $order_no
+     * @param  string  $name
+     * @param  int     $state
+     * @param  string  $pay_status
+     * @param  string  $remark
+     *
+     * @return $this
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/2 0002
+     */
+    public function setOrderSelf(
+        $uid,
+        $business_uid,
+        $profit_ratio,
+        $price,
+        $profit_price,
+        $order_no,
+        $name,
+        $state = 1,
+        $pay_status = 'await',
+        $remark = ''
+    ) {
+        try {
+            $this->uid = $uid;
+            $this->business_uid = $business_uid;
+            $this->profit_ratio = $profit_ratio;
+            $this->price = $price;
+            $this->profit_price = $profit_price;
+            $this->status = 1;
+            $this->name = $name;
+            $this->remark = $remark;
+            $this->state = $state;
+            $this->pay_status = $pay_status;
+            $this->order_no = $order_no;
+            $this->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $this;
     }
     
     /**获取当天未支付订单
@@ -352,7 +430,7 @@ class Order extends Model
         $profit_price = $money * ($profit_ratio / 100);
         try {
             $this->uid = $uid;
-            $this->business_uid = '2';
+            $this->business_uid = 2;
             $this->profit_ratio = $profit_ratio;
             $this->price = $money;
             $this->profit_price = $profit_price;
@@ -363,7 +441,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -396,7 +474,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -429,7 +507,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -462,7 +540,7 @@ class Order extends Model
             $this->pay_status = 'await';
             $this->order_no = $order_no;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this;
@@ -481,6 +559,11 @@ class Order extends Model
     {
         return $this->where('order_no', '=', $order_no)
                     ->first();
+    }
+    
+    public function lkshopOrder()
+    {
+        return $this->hasOne(LkshopOrder::class, 'oid', 'id');
     }
     
     /**
