@@ -185,6 +185,7 @@ class AddIntegral extends Command
             if ($order->line_up != 1)
                 return false;
             $order->line_up = 0;
+            $order->import_day = date("Ymd",time());
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
