@@ -43,7 +43,9 @@ class OrderService_test
 //            $orderData = Order::find($orderId);
             $orderService = new OrderService();
 //            log::debug("=================打印订单信息01==================================".$orderId);
+//            dd($orderService);
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
+//            dd($orderType);
 //            log::debug("=================打印订单信息02==================================".$orderType);
 //            log::debug("=================打印订单信息03==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
@@ -66,6 +68,7 @@ class OrderService_test
                 return false;
             }
         } catch (\Exception $e) {
+            throw $e;
             report($e);
             throw new LogicException('类型错误：'.$e);
 //            log::debug("=================打印订单信息3-111111==================================".$e);
