@@ -54,6 +54,19 @@ Route::any("insertUserBuinssData", 'Test\MyNingController@insertUserBuinssData')
 Route::any("myning-test", 'Test\MyNingController@myningtest');
 //test模板测试
 Route::any("getTable", 'Test\MyNingController@getTable');
+//
+////扣除用户积分  152087
+//Route::any("kcUserJf", 'Test\MyNingController@kcUserJf');
+//
+////修改导入让利金额
+//Route::any("xgcount_profit_price", 'Test\MyNingController@xgcount_profit_price');
+
+
+//扣除lk
+//Route::any("del_kcuserLk", 'Test\MyNingController@del_kcuserLk');
+
+//扣除lk
+//Route::any("del_sh_kcuserLk", 'Test\MyNingController@del_sh_kcuserLk');
 
 
 
