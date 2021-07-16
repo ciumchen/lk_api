@@ -79,6 +79,10 @@ class ConvertService
             //新增兑换数据
             $data['orderName'] = '兑换额度（美团）';
             $this->commonConvert($data); 
+
+            //更新充值状态
+            ConvertLogs::where(['order_no' => $data['orderNo']])
+                        ->update(['status' => 2, 'updated_at' => date('Y-m-d H:i:s')]);
         } catch (Exception $e)
         {
             throw $e;
