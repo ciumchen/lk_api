@@ -164,6 +164,8 @@ class AddIntegral extends Command
                 $dataInfo = $orderData->lkshopOrder;
             } elseif ($orderType == 'MZL') {
                 $dataInfo = $orderData->mobile;
+            } elseif ($orderType == 'CLP' || $orderType == 'CLM') {
+                $dataInfo = $orderData->convertLogs;
             } else {
 //                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return $orderType;
