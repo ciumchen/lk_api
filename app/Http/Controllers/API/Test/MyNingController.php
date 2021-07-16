@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Test;
+namespace App\Http\Controllers\API\Test;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusinessApply;
