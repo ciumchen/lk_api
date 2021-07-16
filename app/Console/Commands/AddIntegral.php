@@ -168,7 +168,7 @@ class AddIntegral extends Command
                 $dataInfo = $orderData->convertLogs;
             } else {
 //                log::debug("=================打印订单信息3-000000==================================".$orderType);
-                return $orderType;
+                return false;
             }
         } catch (\Exception $e) {
             report($e);
@@ -230,7 +230,7 @@ class AddIntegral extends Command
 //            log::debug("=================打印订单信息55555==================================");
         } catch (\Exception $exception) {
             DB::rollBack();
-            var_dump($exception->getMessage());
+//            var_dump($exception->getMessage());
             return false;
 //            log::debug("=================打印订单信息666666==================================");
         }
