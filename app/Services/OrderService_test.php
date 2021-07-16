@@ -14,6 +14,17 @@ use App\Models\TradeOrder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\OrderIntegralLkDistribution;
+use App\Models\OrderMobileRecharge;
+use App\Models\OrderUtilityBill;
+use App\Models\OrderVideo;
+use App\Services\OrderService;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Matrix\Exception;
+
 class OrderService_test
 {
 
@@ -23,13 +34,18 @@ class OrderService_test
      *
      * @return mixed
      */
-    public function completeOrder(string $orderId)
+    public function completeOrder(string $orderId,Order $orderData=null)
     {
         try {
-            $orderData = Order::find($orderId);
+            if (empty($orderData)){
+                $orderData = Order::find($orderId);
+            }
+//            $orderData = Order::find($orderId);
             $orderService = new OrderService();
+//            log::debug("=================打印订单信息01==================================".$orderId);
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
-//            log::debug("=================打印订单信息2==================================",$orderData->toArray());
+//            log::debug("=================打印订单信息02==================================".$orderType);
+//            log::debug("=================打印订单信息03==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
                 $dataInfo = $orderData->trade;
@@ -39,71 +55,79 @@ class OrderService_test
                 $dataInfo = $orderData->air;
             } elseif ($orderType == 'UB') {
                 $dataInfo = $orderData->utility;
+            } elseif ($orderType == 'SHOP') {
+                $dataInfo = $orderData->lkshopOrder;
+            } elseif ($orderType == 'MZL') {
+                $dataInfo = $orderData->mobile;
+            } elseif ($orderType == 'CLP' || $orderType == 'CLM') {
+                $dataInfo = $orderData->convertLogs;
             } else {
 //                log::debug("=================打印订单信息3-000000==================================".$orderType);
-                return $orderType;
+                return false;
             }
         } catch (\Exception $e) {
+            report($e);
+            throw new LogicException('类型错误：'.$e);
 //            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
-//        dd($orderType);
-
-//        log::debug("=================打印订单信息3==================================",$dataInfo->toArray());
-//        dd($dataInfo);
-        $consumer_uid = $dataInfo->user_id;
-        $description = $dataInfo->description;
+        $consumer_uid = $dataInfo->user_id??$dataInfo->uid;
+        $description = $orderType;
         $orderNo = $dataInfo->order_no;
+
+//        log::debug("=================打印订单信息3-2222200000000==================================".$consumer_uid);
+//        log::debug("=================打印订单信息3-22222==================================".$description);
+//        log::debug("=================打印订单信息3-22222==================================".$orderNo);
+//        log::debug("=================打印订单信息3-22222==================================",$dataInfo->toArray());
 
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($orderId);
-            if ($order->status != Order::STATUS_DEFAULT)
+//            log::debug("=================打印订单信息3-88888==================================".$order->line_up);
+            if ($order->line_up != 1)
                 return false;
-            $order->status = Order::STATUS_SUCCEED;
-//            $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
+            $order->line_up = 0;
+            $order->import_day = date("Ymd",time());
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
-
-            //判断控单是否开启
-            $setValue = Setting::where('key','consumer_integral')->value('value');
-            if($setValue==1){
-                $order->line_up = 1;
-                $customer = User::find($order->uid);
-                //按比例计算实际获得积分
-                $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
-                $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
-                $order->to_be_added_integral = bcmul($order->price, $profit_ratio, 2);
-
-            }else{
-                //通过，给用户加积分、更新LK
-                $customer = User::lockForUpdate()->find($order->uid);
-                //按比例计算实际获得积分
-                $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
-                $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
-                $customerIntegral = bcmul($order->price, $profit_ratio, 2);
-                $amountBeforeChange = $customer->integral;
-                $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
-                $lkPer = Setting::getSetting('lk_per') ?? 300;
-                //更新LK
-                $customer->lk = bcdiv($customer->integral, $lkPer, 0);
-                $customer->save();
-                IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid,$description);
-                //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-                $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
-            }
-
-            $business = User::find($order->business_uid);
-            //返佣
-            $this->encourage($order, $customer, $business,$orderNo);
+            //通过，给用户加积分、更新LK
+            $customer = User::lockForUpdate()->find($order->uid);
+//            log::debug("=================打印订单信息4444444444=====1111111111111=============================");
+            //按比例计算实际获得积分
+            $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
+            $profit_ratio = bcdiv($rebateScale[intval($profit_ratio_offset)], 100, 4);
+            $customerIntegral = bcmul($order->price, $profit_ratio, 2);
+            $amountBeforeChange = $customer->integral;
+            $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
+            $lkPer = Setting::getSetting('lk_per') ?? 300;
+            //更新LK
+            $customer->lk = bcdiv($customer->integral, $lkPer, 0);
+//            log::debug("=================打印订单信息4444444444=====2222222=============================");
+            $customer->save();
+//            log::debug("=================打印订单信息4444444444=====333333333=============================");
+            IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
+            //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
+//            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+//            log::debug("=================打印订单信息4444444444=====4444444444444444=============================");
+//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->business_uid);
+//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->profit_price);
+//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$description);
+//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$consumer_uid);
+//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$orderNo);
+            (new OrderService())->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+//            log::debug("=================打印订单信息4444444444=====555555555555555555=============================");
             $order->save();
             DB::commit();
+            return true;
+//            log::debug("=================打印订单信息55555==================================");
         } catch (\Exception $exception) {
             DB::rollBack();
-            var_dump($exception->getMessage());
+//            var_dump($exception->getMessage());
+            return false;
+//            log::debug("=================打印订单信息666666==================================");
         }
     }
 
