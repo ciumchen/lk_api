@@ -172,7 +172,7 @@ class AddIntegral extends Command
             }
         } catch (\Exception $e) {
             report($e);
-            throw new LogicException('类型错误');
+            throw new LogicException('类型错误：'.$e);
 //            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
