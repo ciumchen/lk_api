@@ -42,6 +42,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|LkshopOrder whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LkshopOrder whereUid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LkshopOrder whereUpdatedAt($value)
+ * @property int|null $is_confirm 确认收货状态：0=未确认，1=已确认收货
+ * @method static \Illuminate\Database\Eloquent\Builder|LkshopOrder whereIsConfirm($value)
  */
 class LkshopOrder extends Model
 {

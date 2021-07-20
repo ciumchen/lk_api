@@ -17,8 +17,8 @@ class SignInService
     /**
      * Description: 获取前一天连续登录次数
      *
-     * @param  int     $uid
-     * @param  string  $date
+     * @param int    $uid
+     * @param string $date
      *
      * @return \Illuminate\Database\Eloquent\HigherOrderBuilderProxy|int|mixed
      * @throws \Exception
@@ -82,10 +82,33 @@ class SignInService
     }
     
     /**
+     * Description:通过优选商城用户ID获取用户来客信息
+     *
+     * @param $yx_uid
+     *
+     * @return \App\Models\User|\Illuminate\Database\Eloquent\Builder
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/7/20 0020
+     */
+    public function getUserByShopId($yx_uid)
+    {
+        try {
+            if (intval($yx_uid) <= 0) {
+                throw new Exception('用户ID参数不可为空');
+            }
+            $User = User::whereShopUid($yx_uid)->first();
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $User;
+    }
+    
+    /**
      * Description:签到调用接口
      *
-     * @param  int     $yx_uid
-     * @param  string  $date
+     * @param int    $yx_uid
+     * @param string $date
      *
      * @throws \Exception|\Throwable
      * @author lidong<947714443@qq.com>
@@ -99,7 +122,7 @@ class SignInService
             if ($yx_uid == 0) {
                 throw new Exception('缺少用户ID');
             }
-            $User = $this->getUserLaike($yx_uid);
+            $User = $this->getUserByShopId($yx_uid);
             if (empty($User)) {
                 throw new Exception('未找到对应用户');
             }
@@ -136,8 +159,8 @@ class SignInService
     /**
      * Description: 签到添加积分
      *
-     * @param  int     $uid
-     * @param  string  $date
+     * @param int    $uid
+     * @param string $date
      *
      * @throws \Exception|\Throwable
      * @author lidong<947714443@qq.com>
@@ -188,8 +211,8 @@ class SignInService
     /**
      * Description:获取前几天的日期数组
      *
-     * @param  int     $num
-     * @param  string  $date
+     * @param int    $num
+     * @param string $date
      *
      * @return array
      * @author lidong<947714443@qq.com>
@@ -209,7 +232,7 @@ class SignInService
      *
      * @param                         $uid
      * @param                         $integral
-     * @param  \App\Models\User|null  $User
+     * @param \App\Models\User|null   $User
      *
      * @return bool
      * @throws \Throwable

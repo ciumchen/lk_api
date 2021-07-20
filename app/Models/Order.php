@@ -64,6 +64,7 @@ use App\Exceptions\LogicException;
  * @mixin \Eloquent
  * @package App\Models
  * @property-read \App\Models\LkshopOrder|null    $lkshopOrder
+ * @property-read \App\Models\ConvertLogs|null $convertLogs
  */
 class Order extends Model
 {
