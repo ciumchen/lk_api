@@ -68,8 +68,11 @@ Route::any("heads-assets", "User\MyShareController@headsAssets");
 Route::any("team-assets", "User\MyShareController@teamAssets");
 //团员、团队资产总奖励
 Route::any("profit-total", "User\MyShareController@profitTotal");
+//获取用户积分和lk
+Route::any("getUserLkIntegral", "User\getUserInfoController@getUserLkIntegral");
 
-
+//获取用户消费积分lk百分百比
+Route::any("getUserIntegralbfb", "User\getUserInfoController@getUserIntegralbfb");
 
 
 
