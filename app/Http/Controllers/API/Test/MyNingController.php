@@ -183,7 +183,12 @@ class MyNingController extends Controller
 //        $consumer_uid = $dataInfo->user_id ?? $dataInfo->uid;
 //        $description = $orderType;
 //        $orderNo = $dataInfo->order_no;
-        return $dataInfo->order_no;
+        if (empty($dataInfo->order_no)){
+            $orderNo = TradeOrder::where('oid',$orderId)->value('order_no');
+        }else{
+            $orderNo = $dataInfo->order_no;
+        }
+        return $orderNo;
     }
 
         //修改用户手机号
