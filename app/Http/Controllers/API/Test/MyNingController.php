@@ -127,7 +127,7 @@ class MyNingController extends Controller
             foreach ($orderInfo as $k => $v) {
                 $orderNo = $this->getOrderInfoOrderNo($v->id);
                 //获取订单类型
-                $orderService = new OrderService();
+                $orderService = new OrderService_test();
                 $orderType = $orderService->getDescription($v->id);//订单类型
                 (new OrderService_test())->pushCompleteOrder($v->id,$orderNo,$v->uid,$orderType);
             }
