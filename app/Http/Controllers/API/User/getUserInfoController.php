@@ -34,7 +34,7 @@ class getUserInfoController extends Controller
         if ($userInfo){
             $sy_integral = $userInfo->integral-floor($userInfo->integral/300)*300;
             $data['sx_integral'] = round(300-$sy_integral,2);
-            $data['sx_100'] = (round($sy_integral/300*100,1)).'%';
+            $data['sx_100'] = (round($sy_integral/300*100)).'%';
 
             return response()->json(['code' => 0, 'msg' => $data]);
         }else{
