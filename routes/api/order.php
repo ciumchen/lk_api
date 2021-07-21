@@ -32,6 +32,9 @@ Route::any("mytest", "Order\MyShareController@test");
 Route::any("newFxMerchant", "Order\MyShareController@newFxMerchant");
 //查询用户分享商家累计总奖励记录
 Route::any("getUserFxshjl", "Order\MyShareController@getUserFxshjl");
+//查询二级消费
+Route::any("getTowXfUser", "Order\MyShareController@getTowXfUser");
+
 
 //当前登录用户的lk
 Route::any("getLkCount", "Order\MyShareController@getLkCount");

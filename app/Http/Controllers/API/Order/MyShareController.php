@@ -267,7 +267,7 @@ class MyShareController extends Controller
         $userId = $request->input('uid');
         $data = AssetsLogs::where('uid',$userId)->where(function ($query){
             $query->where('operate_type','invite_rebate')->orWhere('operate_type','share_b_rebate');
-        })->get();
+        })->orderBy('updated_at','desc')->get(['remark','updated_at','amount']);
         if ($data!='[]'){
             return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
         }else{
@@ -275,5 +275,38 @@ class MyShareController extends Controller
         }
 
     }
+
+    //查询二级和三级消费
+    public function getTowXfUser(Request $request){
+        $uid = $request->input('uid');
+        $grade = $request->input('grade');//2/3
+        if ($grade==2){//二级
+            $grade = 0.02;
+        }elseif($grade==3){//三级
+            $grade = 0.01;
+        }else{
+            return response()->json(['code'=>0, 'msg'=>'参数grade错误', 'data' => '']);
+        }
+        $userList = Users::where('invite_uid',$uid)->get(['id','phone','member_head']);
+        if ($userList!='[]'){
+            $data = array();
+            foreach ($userList->toArray() as $k=>$v){
+                $data[$k]['uid'] = $v['id'];
+                $data[$k]['phone'] = $v['phone'];
+                //消费总额
+                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('profit_price');
+                //消费奖励
+                $data[$k]['consumption_reward'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('profit_price')*$grade;
+            }
+            if (!empty($data)){
+                array_multisort(array_column($data, 'total_consumption'), SORT_DESC, $data);
+            }
+
+        }
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+    }
+
+
 
 }
