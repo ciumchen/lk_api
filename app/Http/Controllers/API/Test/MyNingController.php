@@ -721,6 +721,46 @@ $i = 0;
 dd($i);
     }
 
+//************************************************************************************
+
+//批量修改非商家的用户的商家身份为1
+public function getUserOnShUpdate(){
+    set_time_limit(0);
+    ini_set('max_execution_time', '0');
+        $userData = Users::where('role',2)->get();
+//        dd(count($userData->toArray()));
+    $i=0;
+        foreach($userData->toArray() as $k=>$v){
+            $userSh = BusinessData::where('uid',$v['id'])->first();
+            if ($userSh==null){
+                echo $v['id'].'<br/>';
+                $userInfo = Users::where('id',$v['id'])->first();
+                $userInfo->role =1;
+                $userInfo->save();
+                $i++;
+            }
+
+
+        }
+        var_dump($i);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

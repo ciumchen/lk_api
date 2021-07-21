@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\Order;
 
 use App\Http\Controllers\Controller;
+use App\Models\AssetsLogs;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -207,5 +209,71 @@ class MyShareController extends Controller
 
     }
 
+
+    //Merchant
+    //新分享商家
+    //累计商家让利奖励
+    //接口返回当前用户下每个商户的所有累积实际让利金额*2%
+    public function newFxMerchant(Request $request){
+        $this->validate($request, [
+            'uid' => 'bail|required|integer',
+        ]);
+
+        $userId = $request->input('uid');//获取当前用户的id
+        $userInfo = Users::where('id',$userId)->first();
+        //查询当前用户所有分享的商家
+        $userList = DB::table('users')->where('invite_uid',$userId)->where('role',2)->get(['id','phone','member_head'])->toArray();
+        foreach ($userList as $k=>$v){
+            //今日让利奖励
+            $today = date('Y-m-d',time());
+            //不判断是否是非盟主，查询当前id商家的所有录单,business_uid
+            $tuanYuanData[$k]['uid'] = $v->id;
+            $tuanYuanData[$k]['phone'] = $v->phone;
+            $tuanYuanData[$k]['price'] = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)->sum('price');//消费金额
+
+            //统计每个商户的今日录单的实际让利金额，判断当前用户是盟主就乘0.035，非盟主就乘0.02
+            $profit_price = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)->sum('profit_price');//实际让利金额
+            if ($userInfo->member_head==2){//盟主
+                $tuanYuanData[$k]['all_profit_price'] = round($profit_price*0.035,2);
+            }else{//非盟主
+                $tuanYuanData[$k]['all_profit_price'] = round($profit_price*0.02,2);
+            }
+
+//            //查询每个用户今日所有录单记录
+//            $tuanYuanData[$k]['orderData'] = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)
+//                ->get();//今日所有录单
+//            $tuanYuanData[$k]['orderData']!='[]'?:$tuanYuanData[$k]['orderData']=0;
+
+        }
+
+        if (!empty($tuanYuanData)){
+            array_multisort(array_column($tuanYuanData, 'price'), SORT_DESC, $tuanYuanData);
+        }
+
+        //累计让利奖励
+        $tuanYuanData['assetsLj']['allAmountRljl'] = AssetsLogs::where('uid',$userId)->where('remark','邀请商家，获得盈利返佣')->sum('amount');
+
+        //累计总奖励
+        $tuanYuanData['assetsLj']['allAmountZjl'] = AssetsLogs::where('uid',$userId)->where(function ($query){
+            $query->where('operate_type','invite_rebate')->orWhere('operate_type','share_b_rebate');
+        })->sum('amount');
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $tuanYuanData]);
+
+    }
+
+    //查询用户分享商家累计总奖励记录
+    public function getUserFxshjl(Request $request){
+        $userId = $request->input('uid');
+        $data = AssetsLogs::where('uid',$userId)->where(function ($query){
+            $query->where('operate_type','invite_rebate')->orWhere('operate_type','share_b_rebate');
+        })->get();
+        if ($data!='[]'){
+            return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+        }else{
+            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => '']);
+        }
+
+    }
 
 }

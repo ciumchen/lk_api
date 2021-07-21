@@ -53,6 +53,9 @@ Route::any("getUserAssetsFxJf", "User\RecordsOfConsumptionController@getUserAsse
 //用户的公益贡献接口
 Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
 
+//获取用户积分和lk
+Route::any("getUserLkIntegral", "User\getUserInfoController@getUserLkIntegral");
+
 
 
 

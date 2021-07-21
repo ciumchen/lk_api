@@ -54,7 +54,8 @@ Route::any("insertUserBuinssData", 'Test\MyNingController@insertUserBuinssData')
 Route::any("myning-test", 'Test\MyNingController@myningtest');
 //test模板测试
 Route::any("getTable", 'Test\MyNingController@getTable');
-//
+
+//************************************************************************
 ////扣除用户积分  152087
 //Route::any("kcUserJf", 'Test\MyNingController@kcUserJf');
 //
@@ -67,6 +68,11 @@ Route::any("getTable", 'Test\MyNingController@getTable');
 
 //扣除lk
 //Route::any("del_sh_kcuserLk", 'Test\MyNingController@del_sh_kcuserLk');
+//************************************************************************
+
+////批量修改非商家的用户的商家身份为1
+//Route::any("getUserOnShUpdate", 'Test\MyNingController@getUserOnShUpdate');
+
 
 
 

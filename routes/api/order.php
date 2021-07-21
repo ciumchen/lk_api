@@ -28,6 +28,11 @@ Route::any("consumer", "Order\MyShareController@Consumer");
 Route::any("merchant", "Order\MyShareController@Merchant");
 Route::any("team", "Order\MyShareController@Team");
 Route::any("mytest", "Order\MyShareController@test");
+//新分享商家
+Route::any("newFxMerchant", "Order\MyShareController@newFxMerchant");
+//查询用户分享商家累计总奖励记录
+Route::any("getUserFxshjl", "Order\MyShareController@getUserFxshjl");
+
 //当前登录用户的lk
 Route::any("getLkCount", "Order\MyShareController@getLkCount");
 //获取当前用户今日录单金额总数

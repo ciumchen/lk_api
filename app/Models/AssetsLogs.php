@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Carbon\Carbon;
 /**
  * App\Models\AssetsLogs
  *
@@ -59,7 +59,10 @@ class AssetsLogs extends Model
     protected $appends = ['updated_date'];
 
 
-
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
+    }
     /**
      * 类型.
      */
