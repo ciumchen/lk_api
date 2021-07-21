@@ -808,7 +808,8 @@ class OrderService_test
             }
             /* 判断 是否已经获取到对应类型的订单*/
             if (empty($description)) {
-                throw new Exception('没有对应类型的订单：'.json_encode($Order));
+                $description = 'LR';
+//                throw new Exception('没有对应类型的订单：'.json_encode($Order));
             }
         } catch (Exception $e) {
             throw $e;
