@@ -56,8 +56,8 @@ Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
 //获取用户积分和lk
 Route::any("getUserLkIntegral", "User\getUserInfoController@getUserLkIntegral");
 
-
-
+//获取用户消费积分lk百分百比
+Route::any("getUserIntegralbfb", "User\getUserInfoController@getUserIntegralbfb");
 
 
 

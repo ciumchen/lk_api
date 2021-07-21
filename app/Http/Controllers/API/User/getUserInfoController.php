@@ -27,4 +27,18 @@ class getUserInfoController extends Controller
         }
     }
 
+    //获取用户消费积分lk百分百比
+    public function getUserIntegralbfb(Request $request){
+        $uid = $request->input('uid');
+        $userInfo = Users::where('id',$uid)->first();
+        if ($userInfo){
+            $data['sx_integral'] = round($userInfo->integral-$userInfo->lk*300,2);
+            $data['sx_100'] = (round(($userInfo->integral-$userInfo->lk*300)/300*100,1)).'%';
+
+            return response()->json(['code' => 0, 'msg' => $data]);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '该帐号没有注册来客app']);
+        }
+    }
+
 }
