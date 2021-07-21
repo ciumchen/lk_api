@@ -150,7 +150,7 @@ class MyNingController extends Controller
                 $orderData = Order::find($orderId);
             }
 //            $orderData = Order::find($orderId);
-            $orderService = new OrderService();
+            $orderService = new OrderService_test();
 //            log::debug("=================打印订单信息01==================================".$orderId);
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
 //            log::debug("=================打印订单信息02==================================".$orderType);
