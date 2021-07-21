@@ -110,68 +110,26 @@ class MyNingController extends Controller
     //自动审核测试
 //https://ceshi.catspawvideo.com/api/pushOrder
 //http://localhost:8081/api/pushOrder
-    public function pushOrder2()
-    {
-        set_time_limit(0);
-        ini_set('max_execution_time', '0');
-//        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
-        $count = Order::where('status', "!=", 2)->where('pay_status', "!=", "ddyc")->count();
-//        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
-//dd($count);
-        if ($count) {
-            $orderInfo = DB::table('order')
-//                ->where('order.id','>','23314')
-//            $orderInfo = DB::table('order')
-                ->where('order.status', "!=", 2)
-                ->where('order.pay_status', "!=", "ddyc")
-                ->leftJoin('trade_order', 'order.id', '=', 'trade_order.oid')
-                ->limit(20)->get()->toArray();
-//                ->limit(1)->get()->toArray();
-
-//            dd($orderInfo);
-            foreach ($orderInfo as $k => $v) {
-//                dd($v->order_no);
-                if ($v->order_no) {
-                    (new OrderService_test())->completeOrder($v->order_no);
-                }
-
-            }
-
-            return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>" . ($count - 20) . "</font>条订单还需要审核</h4>";
-//            return "<h4>今次自动完成审核1条记录，总共还有<font color='red'>".($count-1)."</font>条订单还需要审核</h4>";
-
-        } else {
-            return '<h4>所有订单审核完成</h4>';
-        }
-
-
-    }
-
-
-    //自动审核测试
-//https://ceshi.catspawvideo.com/api/pushOrder
-//http://localhost:8081/api/pushOrder
     public function pushOrder()
     {
         set_time_limit(0);
         ini_set('max_execution_time', '0');
-//        $count = Order::where('status',"!=",2)->where('id','>',23314)->where('pay_status',"!=","ddyc")->count();
-        $count = Order::where('status', "!=", 2)->where('pay_status', "!=", "ddyc")->count();
-//        $count = Order::where('status',"!=",2)->where('pay_status',"!=","ddyc")->count();
+//        $count = Order::where('status', "!=", 2)->where('pay_status', "!=", "ddyc")->count();
+        $count = Order::where('status', "!=", 2)->count();
 //dd($count);
         if ($count) {
             $orderInfo = DB::table('order')
                 ->where('status', "!=", 2)
-                ->where('pay_status', "!=", "ddyc")
+//                ->where('pay_status', "!=", "ddyc")
                 ->limit(20)->get()->toArray();
 
 //            dd($orderInfo);
             foreach ($orderInfo as $k => $v) {
-//dd($v->id);
-                if ($v->id) {
-                    (new OrderService_test())->completeOrder($v->id);
-                }
-
+                $orderNo = $this->getOrderInfoOrderNo($v->id);
+                //获取订单类型
+                $orderService = new OrderService();
+                $orderType = $orderService->getDescription($v->id);//订单类型
+                (new OrderService_test())->pushCompleteOrder($v->id,$orderNo,$v->uid,$orderType);
             }
 
             return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>" . ($count - 20) . "</font>条订单还需要审核</h4>";
@@ -184,7 +142,51 @@ class MyNingController extends Controller
 
     }
 
-    //修改用户手机号
+    //获取订单号
+    public function getOrderInfoOrderNo(string $orderId,Order $orderData=null)
+    {
+        try {
+            if (empty($orderData)) {
+                $orderData = Order::find($orderId);
+            }
+//            $orderData = Order::find($orderId);
+            $orderService = new OrderService();
+//            log::debug("=================打印订单信息01==================================".$orderId);
+            $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
+//            log::debug("=================打印订单信息02==================================".$orderType);
+//            log::debug("=================打印订单信息03==================================",$orderData->toArray());
+//        dd($orderInfo,$orderData);
+            if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
+                $dataInfo = $orderData->trade;
+            } elseif ($orderType == 'VC') {
+                $dataInfo = $orderData->video;
+            } elseif ($orderType == 'AT') {
+                $dataInfo = $orderData->air;
+            } elseif ($orderType == 'UB') {
+                $dataInfo = $orderData->utility;
+            } elseif ($orderType == 'SHOP') {
+                $dataInfo = $orderData->lkshopOrder;
+            } elseif ($orderType == 'MZL') {
+                $dataInfo = $orderData->mobile;
+            } elseif ($orderType == 'CLP' || $orderType == 'CLM') {
+                $dataInfo = $orderData->convertLogs;
+            } else {
+//                log::debug("=================打印订单信息3-000000==================================".$orderType);
+                return false;
+            }
+        } catch (\Exception $e) {
+            report($e);
+            throw new LogicException('类型错误：' . $e);
+//            log::debug("=================打印订单信息3-111111==================================".$e);
+        }
+//
+//        $consumer_uid = $dataInfo->user_id ?? $dataInfo->uid;
+//        $description = $orderType;
+//        $orderNo = $dataInfo->order_no;
+        return $dataInfo->order_no;
+    }
+
+        //修改用户手机号
     public function updateUserPhone(Request $request)
     {
         $uid = $request->input('uid');
