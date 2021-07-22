@@ -38,7 +38,12 @@ $app->singleton(
 
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
+    App\Exceptions\Handler::class,
+);
+
+$app->singleton(
+    App\Providers\EventServiceProvider::class,
+    App\Providers\EventServiceProvider::class
 );
 
 /*
