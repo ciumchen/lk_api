@@ -292,8 +292,8 @@ class MyShareController extends Controller
                 $data[$k]['uid'] = $v['id'];
                 $data[$k]['phone'] = $v['phone'];
                 //消费总额
-//                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('profit_price');
-                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->sum('profit_price');
+//                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('price');
+                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->sum('price');
                 //消费奖励
 //                $data[$k]['consumption_reward'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('profit_price')*$grade;
                 $data[$k]['consumption_reward'] = Order::where('uid',$v['id'])->where('status',2)->sum('profit_price')*$grade;
