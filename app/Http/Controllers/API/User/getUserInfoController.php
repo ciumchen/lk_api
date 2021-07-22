@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assets;
 use App\Models\Order;
 use App\Models\Users;
 use Illuminate\Http\Request;
@@ -16,11 +17,6 @@ class getUserInfoController extends Controller
         $userData = Users::where('shop_uid',$shop_uid)->first();
 //        dd($userData);
         if ($userData!=null){
-            $data['id']= $userData->id;
-            $data['id']= $userData->id;
-
-
-
             return response()->json(['code' => 1, 'msg' => $userData->toArray()]);
         }else{
             return response()->json(['code' => 0, 'msg' => '该帐号没有注册来客app']);
@@ -40,6 +36,23 @@ class getUserInfoController extends Controller
         }else{
             return response()->json(['code' => 0, 'msg' => '该帐号没有注册来客app']);
         }
+    }
+
+    //获取用户资产
+    public function getUserAssetInfo(Request $request){
+        $request->validate([
+            'uid' => 'required|string',
+            'assetsTypeId' => 'required|string',
+        ]);
+        $uid = $request->input('uid');
+        $assetsTypeId = $request->input('assetsTypeId');
+        $userAsset = Assets::where('uid',$uid)->where('assets_type_id',$assetsTypeId)->first();
+        if ($userAsset){
+            return response()->json(['code' => 0, 'msg' => $userAsset->toArray()]);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '该用户没有该类型资产']);
+        }
+
     }
 
 }

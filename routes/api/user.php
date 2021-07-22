@@ -74,6 +74,9 @@ Route::any("getUserLkIntegral", "User\getUserInfoController@getUserLkIntegral");
 //获取用户消费积分lk百分百比
 Route::any("getUserIntegralbfb", "User\getUserInfoController@getUserIntegralbfb");
 
+//获取用户资产
+Route::any("getUserAssetInfo", "User\getUserInfoController@getUserAssetInfo");
+
 
 
 
