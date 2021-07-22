@@ -229,7 +229,6 @@ class MyShareController extends Controller
             //不判断是否是非盟主，查询当前id商家的所有录单,business_uid
             $tuanYuanData[$k]['uid'] = $v->id;
             $tuanYuanData[$k]['phone'] = $v->phone;
-            $tuanYuanData[$k]['price'] = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)->sum('price');//消费金额
 
             //统计每个商户的今日录单的实际让利金额，判断当前用户是盟主就乘0.035，非盟主就乘0.02
             $profit_price = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)->sum('profit_price');//实际让利金额
@@ -239,10 +238,9 @@ class MyShareController extends Controller
                 $tuanYuanData[$k]['all_profit_price'] = round($profit_price*0.02,2);
             }
 
-//            //查询每个用户今日所有录单记录
-//            $tuanYuanData[$k]['orderData'] = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)
-//                ->get();//今日所有录单
-//            $tuanYuanData[$k]['orderData']!='[]'?:$tuanYuanData[$k]['orderData']=0;
+            //统计每个商户录单的消费金额总数
+//            $tuanYuanData[$k]['price'] = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)->sum('price');//消费金额
+            $tuanYuanData[$k]['price'] = Order::where('business_uid',$v->id)->where('status',2)->sum('price');//录单总消费金额
 
         }
 
