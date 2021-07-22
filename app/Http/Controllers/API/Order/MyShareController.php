@@ -251,6 +251,9 @@ class MyShareController extends Controller
         //累计让利奖励
         $tuanYuanData['assetsLj']['allAmountRljl'] = AssetsLogs::where('uid',$userId)->where('remark','邀请商家，获得盈利返佣')->sum('amount');
 
+        //邀请分红资产记录变动数量统计
+        $tuanYuanData['assetsLj']['allYqfhAmountRljl'] = AssetsLogs::where('uid',$userId)->where('operate_type','invite_rebate')->sum('amount');
+
         //累计总奖励
         $tuanYuanData['assetsLj']['allAmountZjl'] = AssetsLogs::where('uid',$userId)->where(function ($query){
             $query->where('operate_type','invite_rebate')->orWhere('operate_type','share_b_rebate');
