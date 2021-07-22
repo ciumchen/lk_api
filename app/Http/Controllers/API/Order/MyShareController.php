@@ -301,10 +301,12 @@ class MyShareController extends Controller
             if (!empty($data)){
                 array_multisort(array_column($data, 'total_consumption'), SORT_DESC, $data);
             }
-
+            return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+        }else{
+            return response()->json(['code'=>0, 'msg'=>'获取失败', 'data' => 0]);
         }
 
-        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+
     }
 
 
