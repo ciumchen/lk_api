@@ -55,6 +55,11 @@ Route::any("myning-test", 'Test\MyNingController@myningtest');
 //test模板测试
 Route::any("getTable", 'Test\MyNingController@getTable');
 
+
+//修改用户申请商家审核状态UpdateBusinessApply
+Route::any("UpdateBusinessApply", 'Test\MyNingController@UpdateBusinessApply');
+
+
 //************************************************************************
 ////扣除用户积分  152087
 //Route::any("kcUserJf", 'Test\MyNingController@kcUserJf');
