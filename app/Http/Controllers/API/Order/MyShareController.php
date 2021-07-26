@@ -266,9 +266,11 @@ class MyShareController extends Controller
     //查询用户分享商家累计总奖励记录
     public function getUserFxshjl(Request $request){
         $userId = $request->input('uid');
+        $page = $request->input('page');
+        $page!=''?:$page=1;
         $data = AssetsLogs::where('uid',$userId)->where(function ($query){
             $query->where('operate_type','invite_rebate')->orWhere('operate_type','share_b_rebate');
-        })->orderBy('updated_at','desc')->get(['remark','updated_at','amount']);
+        })->orderBy('updated_at','desc')->forPage($page, 10)->get(['remark','updated_at','amount']);
         if ($data!='[]'){
             return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
         }else{
