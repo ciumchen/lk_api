@@ -32,4 +32,13 @@ use Illuminate\Support\Facades\Cache;
 class UserIdImg extends Model
 {
     protected $table = 'user_id_img';
+    protected $fillable = [
+        'uid',
+        'business_apply_id',
+        'img_just',
+        'img_back',
+        'img_hold',
+        'created_at',
+        'updated_at',
+    ];
 }

@@ -729,17 +729,19 @@ public function getUserOnShUpdate(){
 
 }
 
-//批量生成图片记录
-public function plInsertUserImages(){
+    //批量生成图片记录
+    public function plInsertUserImages(){
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
         $count = BusinessData::count();
         $i = 0;$j = 0;
         $shData = BusinessData::get()->toArray();
         $userIdImgMode = new UserIdImg();
         foreach ($shData as $k=>$v){
             if(!UserIdImg::where('uid',$v['uid'])->where('business_apply_id',$v['business_apply_id'])->exists()){
-                $userIdImgMode->uid=$v['uid'];
-                $userIdImgMode->business_apply_id=$v['business_apply_id'];
-                $userIdImgMode->save();
+                $data['uid']=$v['uid'];
+                $data['business_apply_id']=$v['business_apply_id'];
+                $userIdImgMode->create($data);
                 $j++;
             }
             $i++;
