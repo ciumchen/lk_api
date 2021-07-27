@@ -78,6 +78,6 @@ Route::any("UpdateBusinessApply", 'Test\MyNingController@UpdateBusinessApply');
 ////批量修改非商家的用户的商家身份为1
 //Route::any("getUserOnShUpdate", 'Test\MyNingController@getUserOnShUpdate');
 
-
-
+//批量生成图片记录
+Route::any("plInsertUserImages", 'Test\MyNingController@plInsertUserImages');
 

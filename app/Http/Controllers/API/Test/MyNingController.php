@@ -15,6 +15,7 @@ use App\Models\OrderUtilityBill;
 use App\Models\OrderVideo;
 use App\Models\TradeOrder;
 use App\Models\User;
+use App\Models\UserIdImg;
 use App\Models\Users;
 use App\Models\UserUpdatePhoneLog;
 use App\Models\UserUpdatePhoneLogSd;
@@ -728,7 +729,25 @@ public function getUserOnShUpdate(){
 
 }
 
+//批量生成图片记录
+public function plInsertUserImages(){
+        $count = BusinessData::count();
+        $i = 0;$j = 0;
+        $shData = BusinessData::get()->toArray();
+        $userIdImgMode = new UserIdImg();
+        foreach ($shData as $k=>$v){
+            if(!UserIdImg::where('uid',$v['uid'])->where('business_apply_id',$v['business_apply_id'])->exists()){
+                $userIdImgMode->uid=$v['uid'];
+                $userIdImgMode->business_apply_id=$v['business_apply_id'];
+                $userIdImgMode->save();
+                $j++;
+            }
+            $i++;
+        }
+        dump($count,$i,$j);
 
+
+}
 
 
 
