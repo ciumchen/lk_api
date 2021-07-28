@@ -29,6 +29,9 @@ Route::any("updateShopDrLog", 'Test\MyNingController@updateShopDrLog');
 //查询导入时间
 Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
 
+//修改导入时间
+Route::any("setShopOrderTime", 'Test\MyNingController@setShopOrderTime');
+
 //扣除用户积分
 Route::any("kcUserShopJf", 'Test\MyNingController@kcUserShopJf');
 

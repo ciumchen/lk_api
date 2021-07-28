@@ -751,7 +751,23 @@ public function getUserOnShUpdate(){
 
 }
 
+    //修改商城导入时间
+    public function setShopOrderTime(Request $request){
+        $time = $request->input('time');
+        if ($time < 1627200000 && $time!=''){
+            dd("重置导入订单的时间不能小于 1627200000");
+        }
+        $mch_orderData = LkshopOrderLog::where('type','mch_order')->first();
+        $a1688_orderData = LkshopOrderLog::where('type','1688_order')->first();
+        $mch_orderData->order_id = $time;
+        $a1688_orderData->order_id = $time;
+        if ($mch_orderData->save() && $a1688_orderData->save()){
+            dd('重置成功1111111111');
+        }else{
+            dd('重置失败0000000000');
+        }
 
+    }
 
 
 
