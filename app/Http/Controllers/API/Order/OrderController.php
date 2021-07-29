@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrdersResources;
 use App\Models\Order;
+use App\Models\OrderList;
 use App\Models\Setting;
 use App\Models\User;
 use Exception;
@@ -142,5 +143,47 @@ class OrderController extends Controller
      */
     public function getRatio(){
         return response()->json(['code'=>0, 'data'=>Setting::getManySetting('business_rebate_scale')]);
+    }
+
+    /**获取用户订单列表
+     * @param Request $request
+     * @return mixed
+     * @throws LogicException
+     */
+    public function userOrderList(Request $request)
+    {
+        //sql 条件
+        $where = [
+            'o.uid' => $request->uid
+        ];
+        //分页
+        $data = [
+            'page' => $request->page ?? 1,
+            'perPage' => $request->perPage ?? 10,
+        ];
+
+        //返回
+        return (new OrderList())->getOrders($where, $data);
+    }
+
+    /**获取用户订单列表
+     * @param Request $request
+     * @return mixed
+     * @throws LogicException
+     */
+    public function shopOrderList(Request $request)
+    {
+        //sql 条件
+        $where = [
+            'o.business_uid' => $request->uid
+        ];
+        //分页
+        $data = [
+            'page' => $request->page ?? 1,
+            'perPage' => $request->perPage ?? 10,
+        ];
+
+        //返回
+        return (new OrderList())->getOrders($where, $data);
     }
 }
