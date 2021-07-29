@@ -251,6 +251,9 @@ class MyShareController extends Controller
         //累计让利奖励
         $tuanYuanData['assetsLj']['allAmountRljl'] = AssetsLogs::where('uid',$userId)->where('remark','邀请商家，获得盈利返佣')->sum('amount');
 
+        //邀请分红资产记录变动数量统计
+        $tuanYuanData['assetsLj']['allYqfhAmountRljl'] = AssetsLogs::where('uid',$userId)->where('operate_type','invite_rebate')->sum('amount');
+
         //累计总奖励
         $tuanYuanData['assetsLj']['allAmountZjl'] = AssetsLogs::where('uid',$userId)->where(function ($query){
             $query->where('operate_type','invite_rebate')->orWhere('operate_type','share_b_rebate');
@@ -292,9 +295,13 @@ class MyShareController extends Controller
                 $data[$k]['uid'] = $v['id'];
                 $data[$k]['phone'] = $v['phone'];
                 //消费总额
-                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('profit_price');
+                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('price');
+//                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->sum('price');
                 //消费奖励
                 $data[$k]['consumption_reward'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('profit_price')*$grade;
+//                $data[$k]['consumption_reward'] = Order::where('uid',$v['id'])->where('status',2)->sum('profit_price')*$grade;
+
+
             }
             if (!empty($data)){
                 array_multisort(array_column($data, 'total_consumption'), SORT_DESC, $data);
