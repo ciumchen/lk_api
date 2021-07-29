@@ -30,7 +30,22 @@ class getUserInfoController extends Controller
         if ($userInfo){
             $sy_integral = $userInfo->integral-floor($userInfo->integral/300)*300;
             $data['sx_integral'] = round(300-$sy_integral,2);
-            $data['sx_100'] = (round($sy_integral/300*100)).'%';
+            $data['sx_100'] = (floor($sy_integral/300*1000)/10).'%';
+
+            return response()->json(['code' => 0, 'msg' => $data]);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '该帐号没有注册来客app']);
+        }
+    }
+
+    //获取用户消费积分lk百分百比
+    public function getUserShIntegralbfb(Request $request){
+        $uid = $request->input('uid');
+        $userInfo = Users::where('id',$uid)->first();
+        if ($userInfo){
+            $sy_integral = $userInfo->business_integral-floor($userInfo->business_integral/60)*60;
+            $data['sx_integral'] = round(60-$sy_integral,2);
+            $data['sx_100'] = (floor($sy_integral/60*1000)/10).'%';
 
             return response()->json(['code' => 0, 'msg' => $data]);
         }else{
