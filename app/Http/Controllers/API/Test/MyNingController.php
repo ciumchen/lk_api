@@ -205,7 +205,7 @@ class MyNingController extends Controller
 
 
     //对比用户资产和记录
-    public function getUserAssetInfo(Request $request)
+    public function getUserAssetInfoAndLog(Request $request)
     {
         $uid = $request->input('uid');
         $user = User::where('id', $uid)->first();
@@ -519,49 +519,49 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
     }
 
     //扣除用户积分  152087
-    public function kcUserJf(){
-        set_time_limit(0);
-        ini_set('max_execution_time', '0');
-
-        $jfData = IntegralLogs::where('id','>',152087)->get();
-//        $jfData = IntegralLogs::where('id','=',332)->get();
-        $i = 0;
-//        dd($jfData->toArray());
-
-        foreach ($jfData->toArray() as $k=>$v){
-
-//            dd($v['description'],$v['order_no']);
-            $oid = $this->getOderIdByDescription($v['description'],$v['order_no']);
-
-//            if ($v['description']=='LR'){
-//                dump($oid.'--'.$v['description']);
+//    public function kcUserJf(){
+//        set_time_limit(0);
+//        ini_set('max_execution_time', '0');
+//
+//        $jfData = IntegralLogs::where('id','>',152087)->get();
+////        $jfData = IntegralLogs::where('id','=',332)->get();
+//        $i = 0;
+////        dd($jfData->toArray());
+//
+//        foreach ($jfData->toArray() as $k=>$v){
+//
+////            dd($v['description'],$v['order_no']);
+//            $oid = $this->getOderIdByDescription($v['description'],$v['order_no']);
+//
+////            if ($v['description']=='LR'){
+////                dump($oid.'--'.$v['description']);
+////            }
+////        dump($oid.'--'.$v['description']);
+//
+//            $userInfo = Users::where('id',$v['uid'])->first();
+//            if ($v['role']==1){//扣除消费者积分
+//                $userInfo->integral = $userInfo->integral-$v['amount'];
+//                $userInfo->save();
+//
+//            }elseif ($v['role']==2){//扣除商家积分
+//                $userInfo->business_integral = $userInfo->business_integral-$v['amount'];
+//                $userInfo->save();
 //            }
-//        dump($oid.'--'.$v['description']);
-
-            $userInfo = Users::where('id',$v['uid'])->first();
-            if ($v['role']==1){//扣除消费者积分
-                $userInfo->integral = $userInfo->integral-$v['amount'];
-                $userInfo->save();
-
-            }elseif ($v['role']==2){//扣除商家积分
-                $userInfo->business_integral = $userInfo->business_integral-$v['amount'];
-                $userInfo->save();
-            }
-            //改变订单排队状态
-            $orderInfo = Order::where('id',$oid)->first();
-            $orderInfo->line_up = 1;
-            $orderInfo->save();
-
-            //删除用户积分记录
-            IntegralLogs::where('id',$v['id'])->delete();
-
-            $i++;
-
-        }
-
-        var_dump($i);
-
-    }
+//            //改变订单排队状态
+//            $orderInfo = Order::where('id',$oid)->first();
+//            $orderInfo->line_up = 1;
+//            $orderInfo->save();
+//
+//            //删除用户积分记录
+//            IntegralLogs::where('id',$v['id'])->delete();
+//
+//            $i++;
+//
+//        }
+//
+//        var_dump($i);
+//
+//    }
 
 
     public function getOderIdByDescription($desc,$order_no){
@@ -646,63 +646,63 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
 
     }
 
-    //扣除用户来客
-    public function del_kcuserLk(){
-//        echo floor(3.2232323233);exit;
-        $orderData = Order::where('status',2)
-            ->where('id','>=',38680)->where('id','<=',38810)
-//            ->where('id','>=',1566)->where('id','<=',1566)
-//            ->count();
-            ->get()->toArray();
-
-//dd($orderData);
-//dd($orderData);
-$i = 0;
-        foreach ($orderData as $k=>$v){
-            //扣除消费者lk
-            $userInfo = Users::where('id',$v['uid'])->first();
-            $userInfo->lk = floor($userInfo->integral/300);
-            $userInfo->save();
-
-            $i++;
-            //扣除商家lk
-
-        }
-
-dd($i);
-    }
-
-    //扣除s商家lk和邀请人lk
-    public function del_sh_kcuserLk(){
-        $orderData = Order::where('status',2)
-            ->where('id','>=',38680)->where('id','<=',38810)
-//            ->where('id','>=',1566)->where('id','<=',1566)
-//            ->count();
-            ->get()->toArray();
-
-//dd($orderData);
-//dd($orderData);
-$i = 0;
-        foreach ($orderData as $k=>$v){
-            //消费者uid的邀请人
-            $userInfo = Users::where('id',$v['uid'])->first();//消费者用户信息
-            $userInfoYQR = Users::where('id',$userInfo->invite_uid)->first();//邀请人的用户信息
-            $userInfoYQR->business_lk = floor($userInfoYQR->business_integral/60);
-            $userInfoYQR->save();
-
-//            dd($userInfo->id,$userInfoYQR->id);
-
-//dd($userInfo->business_integral);
-            //扣除商家uid的商家lk
-            $shInfo = Users::where('id',$v['business_uid'])->first();//消费者用户信息
-            $shInfo->business_lk = floor($shInfo->business_integral/60);
-            $shInfo->save();
-
-            $i++;
-        }
-
-dd($i);
-    }
+//    //扣除用户来客
+//    public function del_kcuserLk(){
+////        echo floor(3.2232323233);exit;
+//        $orderData = Order::where('status',2)
+//            ->where('id','>=',38680)->where('id','<=',38810)
+////            ->where('id','>=',1566)->where('id','<=',1566)
+////            ->count();
+//            ->get()->toArray();
+//
+////dd($orderData);
+////dd($orderData);
+//$i = 0;
+//        foreach ($orderData as $k=>$v){
+//            //扣除消费者lk
+//            $userInfo = Users::where('id',$v['uid'])->first();
+//            $userInfo->lk = floor($userInfo->integral/300);
+//            $userInfo->save();
+//
+//            $i++;
+//            //扣除商家lk
+//
+//        }
+//
+//dd($i);
+//    }
+//
+//    //扣除s商家lk和邀请人lk
+//    public function del_sh_kcuserLk(){
+//        $orderData = Order::where('status',2)
+//            ->where('id','>=',38680)->where('id','<=',38810)
+////            ->where('id','>=',1566)->where('id','<=',1566)
+////            ->count();
+//            ->get()->toArray();
+//
+////dd($orderData);
+////dd($orderData);
+//$i = 0;
+//        foreach ($orderData as $k=>$v){
+//            //消费者uid的邀请人
+//            $userInfo = Users::where('id',$v['uid'])->first();//消费者用户信息
+//            $userInfoYQR = Users::where('id',$userInfo->invite_uid)->first();//邀请人的用户信息
+//            $userInfoYQR->business_lk = floor($userInfoYQR->business_integral/60);
+//            $userInfoYQR->save();
+//
+////            dd($userInfo->id,$userInfoYQR->id);
+//
+////dd($userInfo->business_integral);
+//            //扣除商家uid的商家lk
+//            $shInfo = Users::where('id',$v['business_uid'])->first();//消费者用户信息
+//            $shInfo->business_lk = floor($shInfo->business_integral/60);
+//            $shInfo->save();
+//
+//            $i++;
+//        }
+//
+//dd($i);
+//    }
 
 //************************************************************************************
 
