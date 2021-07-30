@@ -769,6 +769,38 @@ public function getUserOnShUpdate(){
 
     }
 
+    //批量修改商家门头照
+    public function plUpdateUserShimg2(){
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
+
+        $shDataCount = BusinessData::where('banners','!=','')->count();
+        $shDataInfo = BusinessData::where('banners','!=','')->get();
+
+        $i = 0;
+        $errorShId = array();
+        if ($shDataCount > 0){
+            $businessApplyModel = new BusinessApply();
+            foreach ($shDataInfo->toArray() as $k=>$v){
+                $OneDaTa = $businessApplyModel::where('id',$v['business_apply_id'])->first();
+                if ($OneDaTa){
+                    $OneDaTa->img2 = $v['banners'];
+                    if($OneDaTa->save()){
+                        $i++;
+                    }else{
+                        $errorShId['id1'][] = $v['id'];
+                    }
+                }else{
+                    $errorShId['id2'][] = $v['id'];
+                }
+            }
+        }else{
+            dd('没有相关记录');
+        }
+        dd($shDataCount,$i,$errorShId);
+
+
+    }
 
 
 

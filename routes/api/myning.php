@@ -84,3 +84,6 @@ Route::any("UpdateBusinessApply", 'Test\MyNingController@UpdateBusinessApply');
 //批量生成图片记录
 Route::any("plInsertUserImages", 'Test\MyNingController@plInsertUserImages');
 
+//批量修改商家门头照
+Route::any("plUpdateUserShimg2", 'Test\MyNingController@plUpdateUserShimg2');
+
