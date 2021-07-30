@@ -65,7 +65,7 @@ class OrderListService
      * @return mixed
      * @throws \Exception
      */
-    public function getTradeRatio()
+    /*public function getTradeRatio()
     {
         //话费直充让利比例
         $hfratio = Setting::getSetting('set_business_rebate_scale_hf');
@@ -81,21 +81,19 @@ class OrderListService
             'mtratio' => '补贴'. $mtratio .'%激励' . $mtratio * 5 .'%消费积分',
             'ykratio' => '补贴'. $ykratio .'%激励' . $ykratio * 5 .'%消费积分'
         ];
-    }
+    }*/
 
     /**获取让利比例
      * @param string $ratioName
      * @return mixed
      * @throws \Exception
      */
-    public function getRatio(string $ratioName)
+    /*public function getRatio(string $ratioName)
     {
         //让利比例
         $ratio = Setting::getSetting($ratioName);
-        return [
-            'ratio' => '补贴'. $ratio .'%激励' . $ratio * 5 .'%消费积分',
-        ];
-    }
+        return '补贴'. $ratio .'%激励' . $ratio * 5 .'%消费积分';
+    }*/
 
     //trade_order 表状态
     const TRADE_STATUS = [
