@@ -2,8 +2,42 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
+
 class OrderListService
 {
+    /**返回订单列表
+     * @param array $orderArr
+     * @param array $data
+     * @return mixed
+     * @throws \Exception
+     */
+    public function result(array $orderArr, array $data)
+    {
+        //订单去重
+        $orderList = $this->assocUnique($orderArr, 'id');
+        //隐藏显示号码
+        foreach ($orderList as &$val)
+        {
+            if (in_array($val['name'], ['油卡']) && !empty($val['numeric']))
+            {
+                $val['numeric'] = substr_replace($val['numeric'], '****', -4, -8);
+            } elseif (!empty($val['numeric']))
+            {
+                $val['numeric'] = substr_replace($val['numeric'], '****', 3, 4);
+            }
+        }
+
+        //按created_at 排序
+        array_multisort(array_column($orderList, 'created_at'), SORT_DESC,
+            array_column($orderList, 'id'), SORT_DESC, $orderList);
+
+        //数组分页
+        $start = ($data['page'] - 1) * $data['perPage'];
+        $length = $data['perPage'];
+        return array_slice($orderList, $start, $length);
+    }
+
     /**订单去重
      * @param array $arr
      * @param string $key
@@ -27,6 +61,42 @@ class OrderListService
         return $arr;
     }
 
+    /**获取让利比例
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getTradeRatio()
+    {
+        //话费直充让利比例
+        $hfratio = Setting::getSetting('set_business_rebate_scale_hf');
+        //话费代充让利比例
+        $zlratio = Setting::getSetting('set_business_rebate_scale_zl');
+        //美团让利比例
+        $mtratio = Setting::getSetting('set_business_rebate_scale_mt');
+        //油卡让利比例
+        $ykratio = Setting::getSetting('set_business_rebate_scale_yk');
+        return [
+            'hfratio' => '补贴'. $hfratio .'%激励' . $hfratio * 5 .'%消费积分',
+            'zlratio' => '补贴'. $zlratio .'%激励' . $zlratio * 5 .'%消费积分',
+            'mtratio' => '补贴'. $mtratio .'%激励' . $mtratio * 5 .'%消费积分',
+            'ykratio' => '补贴'. $ykratio .'%激励' . $ykratio * 5 .'%消费积分'
+        ];
+    }
+
+    /**获取让利比例
+     * @param string $ratioName
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getRatio(string $ratioName)
+    {
+        //让利比例
+        $ratio = Setting::getSetting($ratioName);
+        return [
+            'ratio' => '补贴'. $ratio .'%激励' . $ratio * 5 .'%消费积分',
+        ];
+    }
+
     //trade_order 表状态
     const TRADE_STATUS = [
         0 => '待处理',
@@ -35,14 +105,14 @@ class OrderListService
 
     //order_mobile_recharge 表状态
     const MOBILE_STATUS = [
-        0 => '处理中',
+        0 => '充值中',
         1 => '成功',
         9 => '撤销',
     ];
 
     //order_video 表状态
     const VIDEO_STATUS = [
-        0 => '处理中',
+        0 => '充值中',
         1 => '成功',
         9 => '撤销',
     ];
@@ -64,8 +134,15 @@ class OrderListService
     //convert_logs 表状态
     const CONVERT_STATUS = [
         0 => '待兑换',
-        1 => '处理中',
+        1 => '充值中',
         2 => '成功',
         3 => '失败',
+    ];
+
+    //order_mobile_recharge_details 表状态
+    const MOBILEDETAILS_STATUS = [
+        0 => '充值中',
+        1 => '成功',
+        9 => '撤销',
     ];
 }

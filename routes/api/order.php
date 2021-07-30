@@ -79,3 +79,5 @@ Route::any('usdt-phone', 'Order\MobileNotifyController@usdtCall');
 Route::any("user-orders", "Order\OrderController@userOrderList");
 //获取商家订单
 Route::any("shop-orders", "Order\OrderController@shopOrderList");
+//获取多人代充充值详情
+Route::any("mobile-details", "Order\OrderController@getMobileDetails");

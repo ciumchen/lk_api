@@ -166,7 +166,7 @@ class OrderController extends Controller
         return (new OrderList())->getOrders($where, $data);
     }
 
-    /**获取用户订单列表
+    /**获取商家订单列表
      * @param Request $request
      * @return mixed
      * @throws LogicException
@@ -185,5 +185,22 @@ class OrderController extends Controller
 
         //返回
         return (new OrderList())->getOrders($where, $data);
+    }
+
+    /**获取多人代充充值详情
+     * @param Request $request
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getMobileDetails(Request $request)
+    {
+        //分页
+        $data = [
+            'page' => $request->page ?? 1,
+            'perPage' => $request->perPage ?? 10,
+        ];
+
+        //返回
+        return (new OrderList())->getMobileDetails($request->id, $data);
     }
 }
