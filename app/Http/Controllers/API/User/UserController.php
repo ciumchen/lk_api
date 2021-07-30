@@ -198,6 +198,9 @@ class UserController extends Controller
         if ($new_invite_user->status != 1) {
             throw new LogicException('邀请人状态为非正常状态不可修改');
         }
+        if ($new_invite_user->id>$user->id) {
+            throw new LogicException('邀请人的注册时间不能比你的注册时间晚');
+        }
         try {
             $user->invite_uid = $new_invite_user->id;
             $user->save();

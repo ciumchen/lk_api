@@ -45,7 +45,6 @@ class ConvertService
             (new MobileRechargeService)->addMobileOrder($data['orderNo'], $data['uid'], $data['phone'], $data['price']);
             //调用话费充值
             (new MobileRechargeService)->convertRecharge($data['orderNo']);
-            
         } catch (Exception $e)
         {
             throw $e;
@@ -78,7 +77,7 @@ class ConvertService
 
             //新增兑换数据
             $data['orderName'] = '兑换额度（美团）';
-            $this->commonConvert($data); 
+            $this->commonConvert($data);
 
             //更新充值状态
             ConvertLogs::where(['order_no' => $data['orderNo']])
@@ -115,7 +114,7 @@ class ConvertService
         //order 表增加订单记录
         $ratio = Setting::getSetting('set_business_rebate_scale_cl');
         $profitPrice = $data['price'] * $ratio / 100;
-        $order = (new Order())->setOrderSelf($data['uid'], 2, $ratio, $data['price'], $profitPrice, 
+        $order = (new Order())->setOrderSelf($data['uid'], 2, $ratio, $data['price'], $profitPrice,
         $data['orderNo'], $data['orderName'], 1, 'await', 'convert');
         //更新convert_logs 表 oid 字段
         (new ConvertLogs)->updOid($order->order_no, $order->id);

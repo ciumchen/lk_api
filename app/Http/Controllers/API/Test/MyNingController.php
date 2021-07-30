@@ -15,6 +15,7 @@ use App\Models\OrderUtilityBill;
 use App\Models\OrderVideo;
 use App\Models\TradeOrder;
 use App\Models\User;
+use App\Models\UserIdImg;
 use App\Models\Users;
 use App\Models\UserUpdatePhoneLog;
 use App\Models\UserUpdatePhoneLogSd;
@@ -45,41 +46,16 @@ use App\Models\TtshopUser;
 class MyNingController extends Controller
 {
     //test测试
-    public function test()
+    public function UpdateBusinessApply(Request $request)
     {
-//        $re = DB::select("select * form users");
-        //查询当前用户的邀请人
-//        $invite_uid = DB::table("users")->where('id',1)->pluck('invite_uid')->toArray();
-//        if($invite_uid[0]!=0){
-//            //有邀请人
-//            $member_head = DB::table("users")->where('id',$invite_uid[0])->pluck('member_head')->toArray();
-//            if ($member_head[0]!=2){
-//                //邀请人是非盟主按2%计算
-//            }else{
-//                //邀请人是盟主按3.5%计算
-//            }
-//        }else{
-//            //没有邀请人按2%计算
-//        }
-//
-//
-//
-//        echo "<pre>";
-//        print_r($invite_uid);
-//        print_r($member_head);
-
-        $re = Order::create([
-            'state' => 1,
-            'uid' => 2,
-            'business_uid' => 3,
-            'name' => '张三',
-            'profit_ratio' => '5',
-            'price' => '100',
-            'profit_price' => '200',
-        ])->toArray();
-
-        var_dump($re['id']);
-        echo 'test1112021年4月22日 13:39:29';
+        $uid = $request->input('uid');
+        $status = $request->input('status');
+        $re = BusinessApply::where('uid',$uid)->update(array('status'=>$status));
+        if ($re){
+            echo "修改成功";
+        }else{
+            echo "修改失败";
+        }
     }
 
     //图片上传oss测试
@@ -229,7 +205,7 @@ class MyNingController extends Controller
 
 
     //对比用户资产和记录
-    public function getUserAssetInfo(Request $request)
+    public function getUserAssetInfoAndLog(Request $request)
     {
         $uid = $request->input('uid');
         $user = User::where('id', $uid)->first();
@@ -543,49 +519,49 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
     }
 
     //扣除用户积分  152087
-    public function kcUserJf(){
-        set_time_limit(0);
-        ini_set('max_execution_time', '0');
-
-        $jfData = IntegralLogs::where('id','>',152087)->get();
-//        $jfData = IntegralLogs::where('id','=',332)->get();
-        $i = 0;
-//        dd($jfData->toArray());
-
-        foreach ($jfData->toArray() as $k=>$v){
-
-//            dd($v['description'],$v['order_no']);
-            $oid = $this->getOderIdByDescription($v['description'],$v['order_no']);
-
-//            if ($v['description']=='LR'){
-//                dump($oid.'--'.$v['description']);
+//    public function kcUserJf(){
+//        set_time_limit(0);
+//        ini_set('max_execution_time', '0');
+//
+//        $jfData = IntegralLogs::where('id','>',152087)->get();
+////        $jfData = IntegralLogs::where('id','=',332)->get();
+//        $i = 0;
+////        dd($jfData->toArray());
+//
+//        foreach ($jfData->toArray() as $k=>$v){
+//
+////            dd($v['description'],$v['order_no']);
+//            $oid = $this->getOderIdByDescription($v['description'],$v['order_no']);
+//
+////            if ($v['description']=='LR'){
+////                dump($oid.'--'.$v['description']);
+////            }
+////        dump($oid.'--'.$v['description']);
+//
+//            $userInfo = Users::where('id',$v['uid'])->first();
+//            if ($v['role']==1){//扣除消费者积分
+//                $userInfo->integral = $userInfo->integral-$v['amount'];
+//                $userInfo->save();
+//
+//            }elseif ($v['role']==2){//扣除商家积分
+//                $userInfo->business_integral = $userInfo->business_integral-$v['amount'];
+//                $userInfo->save();
 //            }
-//        dump($oid.'--'.$v['description']);
-
-            $userInfo = Users::where('id',$v['uid'])->first();
-            if ($v['role']==1){//扣除消费者积分
-                $userInfo->integral = $userInfo->integral-$v['amount'];
-                $userInfo->save();
-
-            }elseif ($v['role']==2){//扣除商家积分
-                $userInfo->business_integral = $userInfo->business_integral-$v['amount'];
-                $userInfo->save();
-            }
-            //改变订单排队状态
-            $orderInfo = Order::where('id',$oid)->first();
-            $orderInfo->line_up = 1;
-            $orderInfo->save();
-
-            //删除用户积分记录
-            IntegralLogs::where('id',$v['id'])->delete();
-
-            $i++;
-
-        }
-
-        var_dump($i);
-
-    }
+//            //改变订单排队状态
+//            $orderInfo = Order::where('id',$oid)->first();
+//            $orderInfo->line_up = 1;
+//            $orderInfo->save();
+//
+//            //删除用户积分记录
+//            IntegralLogs::where('id',$v['id'])->delete();
+//
+//            $i++;
+//
+//        }
+//
+//        var_dump($i);
+//
+//    }
 
 
     public function getOderIdByDescription($desc,$order_no){
@@ -670,63 +646,63 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
 
     }
 
-    //扣除用户来客
-    public function del_kcuserLk(){
-//        echo floor(3.2232323233);exit;
-        $orderData = Order::where('status',2)
-            ->where('id','>=',38680)->where('id','<=',38810)
-//            ->where('id','>=',1566)->where('id','<=',1566)
-//            ->count();
-            ->get()->toArray();
-
-//dd($orderData);
-//dd($orderData);
-$i = 0;
-        foreach ($orderData as $k=>$v){
-            //扣除消费者lk
-            $userInfo = Users::where('id',$v['uid'])->first();
-            $userInfo->lk = floor($userInfo->integral/300);
-            $userInfo->save();
-
-            $i++;
-            //扣除商家lk
-
-        }
-
-dd($i);
-    }
-
-    //扣除s商家lk和邀请人lk
-    public function del_sh_kcuserLk(){
-        $orderData = Order::where('status',2)
-            ->where('id','>=',38680)->where('id','<=',38810)
-//            ->where('id','>=',1566)->where('id','<=',1566)
-//            ->count();
-            ->get()->toArray();
-
-//dd($orderData);
-//dd($orderData);
-$i = 0;
-        foreach ($orderData as $k=>$v){
-            //消费者uid的邀请人
-            $userInfo = Users::where('id',$v['uid'])->first();//消费者用户信息
-            $userInfoYQR = Users::where('id',$userInfo->invite_uid)->first();//邀请人的用户信息
-            $userInfoYQR->business_lk = floor($userInfoYQR->business_integral/60);
-            $userInfoYQR->save();
-
-//            dd($userInfo->id,$userInfoYQR->id);
-
-//dd($userInfo->business_integral);
-            //扣除商家uid的商家lk
-            $shInfo = Users::where('id',$v['business_uid'])->first();//消费者用户信息
-            $shInfo->business_lk = floor($shInfo->business_integral/60);
-            $shInfo->save();
-
-            $i++;
-        }
-
-dd($i);
-    }
+//    //扣除用户来客
+//    public function del_kcuserLk(){
+////        echo floor(3.2232323233);exit;
+//        $orderData = Order::where('status',2)
+//            ->where('id','>=',38680)->where('id','<=',38810)
+////            ->where('id','>=',1566)->where('id','<=',1566)
+////            ->count();
+//            ->get()->toArray();
+//
+////dd($orderData);
+////dd($orderData);
+//$i = 0;
+//        foreach ($orderData as $k=>$v){
+//            //扣除消费者lk
+//            $userInfo = Users::where('id',$v['uid'])->first();
+//            $userInfo->lk = floor($userInfo->integral/300);
+//            $userInfo->save();
+//
+//            $i++;
+//            //扣除商家lk
+//
+//        }
+//
+//dd($i);
+//    }
+//
+//    //扣除s商家lk和邀请人lk
+//    public function del_sh_kcuserLk(){
+//        $orderData = Order::where('status',2)
+//            ->where('id','>=',38680)->where('id','<=',38810)
+////            ->where('id','>=',1566)->where('id','<=',1566)
+////            ->count();
+//            ->get()->toArray();
+//
+////dd($orderData);
+////dd($orderData);
+//$i = 0;
+//        foreach ($orderData as $k=>$v){
+//            //消费者uid的邀请人
+//            $userInfo = Users::where('id',$v['uid'])->first();//消费者用户信息
+//            $userInfoYQR = Users::where('id',$userInfo->invite_uid)->first();//邀请人的用户信息
+//            $userInfoYQR->business_lk = floor($userInfoYQR->business_integral/60);
+//            $userInfoYQR->save();
+//
+////            dd($userInfo->id,$userInfoYQR->id);
+//
+////dd($userInfo->business_integral);
+//            //扣除商家uid的商家lk
+//            $shInfo = Users::where('id',$v['business_uid'])->first();//消费者用户信息
+//            $shInfo->business_lk = floor($shInfo->business_integral/60);
+//            $shInfo->save();
+//
+//            $i++;
+//        }
+//
+//dd($i);
+//    }
 
 //************************************************************************************
 
@@ -753,10 +729,78 @@ public function getUserOnShUpdate(){
 
 }
 
+    //批量生成图片记录
+    public function plInsertUserImages(){
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
+        $count = BusinessData::count();
+        $i = 0;$j = 0;
+        $shData = BusinessData::get()->toArray();
+        $userIdImgMode = new UserIdImg();
+        foreach ($shData as $k=>$v){
+            if(!UserIdImg::where('uid',$v['uid'])->where('business_apply_id',$v['business_apply_id'])->exists()){
+                $data['uid']=$v['uid'];
+                $data['business_apply_id']=$v['business_apply_id'];
+                $userIdImgMode->create($data);
+                $j++;
+            }
+            $i++;
+        }
+        dump($count,$i,$j);
 
 
+}
+
+    //修改商城导入时间
+    public function setShopOrderTime(Request $request){
+        $time = $request->input('time');
+        if ($time < 1627200000 && $time!=''){
+            dd("重置导入订单的时间不能小于 1627200000");
+        }
+        $mch_orderData = LkshopOrderLog::where('type','mch_order')->first();
+        $a1688_orderData = LkshopOrderLog::where('type','1688_order')->first();
+        $mch_orderData->order_id = $time;
+        $a1688_orderData->order_id = $time;
+        if ($mch_orderData->save() && $a1688_orderData->save()){
+            dd('重置成功1111111111');
+        }else{
+            dd('重置失败0000000000');
+        }
+
+    }
+
+    //批量修改商家门头照
+    public function plUpdateUserShimg2(){
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
+
+        $shDataCount = BusinessData::where('banners','!=','')->count();
+        $shDataInfo = BusinessData::where('banners','!=','')->get();
+
+        $i = 0;
+        $errorShId = array();
+        if ($shDataCount > 0){
+            $businessApplyModel = new BusinessApply();
+            foreach ($shDataInfo->toArray() as $k=>$v){
+                $OneDaTa = $businessApplyModel::where('id',$v['business_apply_id'])->first();
+                if ($OneDaTa){
+                    $OneDaTa->img2 = $v['banners'];
+                    if($OneDaTa->save()){
+                        $i++;
+                    }else{
+                        $errorShId['id1'][] = $v['id'];
+                    }
+                }else{
+                    $errorShId['id2'][] = $v['id'];
+                }
+            }
+        }else{
+            dd('没有相关记录');
+        }
+        dd($shDataCount,$i,$errorShId);
 
 
+    }
 
 
 

@@ -3,7 +3,7 @@
 //定时任务--待添加积分
 Route::any('orderTest', 'Test\MyNingController@orderTest');
 //自动审核录单
-Route::any('pushOrder', 'Test\MyNingController@pushOrder');
+//Route::any('pushOrder', 'Test\MyNingController@pushOrder');
 
 //添加用户积分和商家积分
 Route::any("addUserIntegral", "User\AddIntegralController@addUserIntegral");
@@ -15,7 +15,7 @@ Route::any("getUserIntegral", "User\getIntegralController@getUserIntegral");
 Route::any("updateUserPhone", 'Test\MyNingController@updateUserPhone');
 
 //获取用户资产
-Route::any("getUserAssetInfo", 'Test\MyNingController@getUserAssetInfo');
+Route::any("getUserAssetInfoAndLog", 'Test\MyNingController@getUserAssetInfoAndLog');
 
 //解封用户资产账号
 Route::any("xfUserAssetFH", 'Test\MyNingController@xfUserAssetFH');
@@ -28,6 +28,9 @@ Route::any("updateShopOrderName", 'Test\MyNingController@updateShopOrderName');
 Route::any("updateShopDrLog", 'Test\MyNingController@updateShopDrLog');
 //查询导入时间
 Route::any("getAddOrderTime", 'Test\MyNingController@getAddOrderTime');
+
+//修改导入时间
+Route::any("setShopOrderTime", 'Test\MyNingController@setShopOrderTime');
 
 //扣除用户积分
 Route::any("kcUserShopJf", 'Test\MyNingController@kcUserShopJf');
@@ -55,6 +58,11 @@ Route::any("myning-test", 'Test\MyNingController@myningtest');
 //test模板测试
 Route::any("getTable", 'Test\MyNingController@getTable');
 
+
+//修改用户申请商家审核状态UpdateBusinessApply
+Route::any("UpdateBusinessApply", 'Test\MyNingController@UpdateBusinessApply');
+
+
 //************************************************************************
 ////扣除用户积分  152087
 //Route::any("kcUserJf", 'Test\MyNingController@kcUserJf');
@@ -73,6 +81,9 @@ Route::any("getTable", 'Test\MyNingController@getTable');
 ////批量修改非商家的用户的商家身份为1
 //Route::any("getUserOnShUpdate", 'Test\MyNingController@getUserOnShUpdate');
 
+//批量生成图片记录
+Route::any("plInsertUserImages", 'Test\MyNingController@plInsertUserImages');
 
-
+//批量修改商家门头照
+Route::any("plUpdateUserShimg2", 'Test\MyNingController@plUpdateUserShimg2');
 
