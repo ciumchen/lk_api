@@ -49,7 +49,7 @@ class OrderList extends Model
                 ->where($where)
                 ->whereIn('o.name', ['美团', '话费', '代充', '油卡', '录单'])
                 ->get(['o.id', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'o.status as ostatus',
-                    't.numeric', 't.order_no', 'r.status'])
+                    'o.business_uid', 't.numeric', 't.order_no', 'r.status'])
                 ->each(function ($item) {
                     $item->profit_ratio = (int)$item->profit_ratio;
                     switch ($item->name)
@@ -88,8 +88,8 @@ class OrderList extends Model
                 ->where($where)
                 ->whereIn('o.name', ['代充', '批量代充'])
                 ->whereIn('m.create_type', [2, 3])
-                ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'm.status',
-                    'm.mobile as numeric'])
+                ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'o.business_uid',
+                    'm.status', 'm.mobile as numeric'])
                 ->each(function ($item) {
                     $item->numeric = $item->numeric ?? '';
                     $item->status = (new OrderListService())::MOBILE_STATUS[$item->status];
@@ -109,8 +109,8 @@ class OrderList extends Model
                 ->leftJoin('order_video as v', 'o.id', 'v.order_id')
                 ->where($where)
                 ->whereIn('o.name', ['视频会员'])
-                ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.created_at', 'o.profit_ratio', 'v.status',
-                    'v.create_type as name', 'v.account as numeric'])
+                ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.created_at', 'o.profit_ratio', 'o.business_uid',
+                    'v.status', 'v.create_type as name', 'v.account as numeric'])
                 ->each(function ($item) {
                     $item->numeric = $item->numeric ?? '';
                     $item->status = (new OrderListService())::VIDEO_STATUS[$item->status];
@@ -131,8 +131,8 @@ class OrderList extends Model
                 ->leftJoin('convert_logs as c', 'o.id', 'c.oid')
                 ->where($where)
                 ->whereIn('o.name', ['兑换话费', '兑换额度（美团）'])
-                ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'c.status',
-                    'c.phone as numeric'])
+                ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'o.business_uid',
+                    'c.status', 'c.phone as numeric'])
                 ->each(function ($item) {
                     $item->numeric = $item->numeric ?? '';
                     $item->status = (new OrderListService())::CONVERT_STATUS[$item->status ?? 0];

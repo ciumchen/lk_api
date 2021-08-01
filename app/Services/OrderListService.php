@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BusinessData;
 use App\Models\Setting;
 
 class OrderListService
@@ -16,6 +17,11 @@ class OrderListService
     {
         //订单去重
         $orderList = $this->assocUnique($orderArr, 'id');
+
+        //获取商家信息
+        $businessList = json_decode((new BusinessData())->getBusiness(), 1);
+        $businessArr = array_column($businessList, null, 'uid');
+
         //隐藏显示号码
         foreach ($orderList as &$val)
         {
@@ -26,6 +32,8 @@ class OrderListService
             {
                 $val['numeric'] = substr_replace($val['numeric'], '****', 3, 4);
             }
+
+            $val['businessName'] = $businessArr[$val['business_uid']]['name'] ?? '商家已下架';
         }
 
         //按created_at 排序
