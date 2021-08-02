@@ -12,6 +12,14 @@ use GuzzleHttp;
 
 class TestController
 {
+    /**
+     * 测试启用
+     */
+    public function __construct()
+    {
+        die('测试接口');
+    }
+    
     //test测试
     public function test(){
 //        $re = DB::select("select * form users");

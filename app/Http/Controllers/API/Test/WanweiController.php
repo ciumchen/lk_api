@@ -16,6 +16,13 @@ use Wanwei\Http\ShowapiRequest;
 
 class WanweiController extends Controller
 {
+    /**
+     * 测试启用
+     */
+    public function __construct()
+    {
+        die('测试接口');
+    }
     
     //
     public function test()
@@ -279,5 +286,141 @@ class WanweiController extends Controller
             throw new LogicException($e->getMessage());
         }
         return apiSuccess($res);
+    }
+    
+    /**
+     * Description:创建订单
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/28 0028
+     */
+    public function hotel6(Request $request)
+    {
+        $customerName = $request->input('customerName');
+        $ratePlanId = $request->input('ratePlanId');
+        $hotelId = $request->input('hotelId');
+        $contactName = $request->input('contactName');
+        $contactPhone = $request->input('contactPhone');
+        $inDate = $request->input('inDate');
+        $outDate = $request->input('outDate');
+        $man = $request->input('man');
+        $customerArriveTime = $request->input('customerArriveTime');
+        $specialRemarks = $request->input('specialRemarks', '');
+        $contactEmail = $request->input('contactEmail', '');
+        $childNum = $request->input('childNum', '');
+        $childAges = $request->input('childAges', '');
+        try {
+            $HotelOrder = new HotelOrder();
+            $status = $HotelOrder->setHotelOrder(
+                $customerName,
+                $ratePlanId,
+                $hotelId,
+                $contactName,
+                $contactPhone,
+                $inDate,
+                $outDate,
+                $man,
+                $customerArriveTime,
+                $specialRemarks,
+                $contactEmail,
+                $childNum,
+                $childAges
+            );
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($status);
+    }
+    
+    /**
+     * Description:获取订单详情
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function hotel7(Request $request)
+    {
+        $orderId = $request->input('orderId');
+        try {
+            $HotelOrder = new HotelOrder();
+            $orderInfo = $HotelOrder->getOrderDetails($orderId);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($orderInfo);
+    }
+    
+    /**
+     * Description:取消订单
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function hotel8(Request $request)
+    {
+        $orderId = $request->input('orderId');
+        try {
+            $HotelOrder = new HotelOrder();
+            $cancelDate = $HotelOrder->cancelOrder($orderId);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($cancelDate);
+    }
+    
+    /**
+     * Description:订单支付
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function hotel9(Request $request)
+    {
+        $orderId = $request->input('orderId');
+        try {
+            $HotelOrder = new HotelOrder();
+            $status = $HotelOrder->payOrder($orderId);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess();
+    }
+    
+    /**
+     * Description:关键字搜索
+     *
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/6/29 0029
+     */
+    public function hotel10(Request $request)
+    {
+        $keywords = $request->input('keywords');
+        try {
+            $HotelOrder = new HotelOrder();
+            $data = $HotelOrder->getHotelByKeywords($keywords);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($data);
     }
 }
