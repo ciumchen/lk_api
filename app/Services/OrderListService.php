@@ -54,16 +54,16 @@ class OrderListService
      */
     public function assocUnique(array $arr, string $key)
     {
-        $tmp_arr = array();
+        $tmpArr = array();
         foreach ($arr as $k => $v)
         {
-            if (in_array($v[$key], $tmp_arr))
+            if (in_array($v[$key], $tmpArr))
             {
                 //搜索$v[$key]是否在$tmp_arr数组中存在，若存在返回true
                 unset($arr[$k]);
             } else
             {
-                $tmp_arr[] = $v[$key];
+                $tmpArr[] = $v[$key];
             }
         }
         return $arr;
