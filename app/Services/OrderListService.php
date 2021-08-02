@@ -33,7 +33,7 @@ class OrderListService
                 $val['numeric'] = substr_replace($val['numeric'], '****', 3, 4);
             }
 
-            $val['businessName'] = $businessArr[$val['business_uid']]['name'] ?? '商家已下架';
+            $val['business_name'] = $businessArr[$val['business_uid']]['name'] ?? '商家已下架';
         }
 
         //按created_at 排序

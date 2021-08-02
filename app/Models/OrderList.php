@@ -61,8 +61,6 @@ class OrderList extends Model
                             $item->name = '话费' . $item->name;
                             break;
                         case '美团':
-                            $item->status = 1;
-                            break;
                         case '录单':
                             $item->status = $item->ostatus == 2 ? 1 : 0;
                             break;
