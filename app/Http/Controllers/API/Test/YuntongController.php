@@ -11,16 +11,23 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Class YuntongController 云通支付接口测试类
+ *
  * @package App\Http\Controllers\api\Test
  */
 class YuntongController extends Controller
 {
-
-
+    /**
+     * 测试启用
+     */
+    public function __construct()
+    {
+        die('测试接口');
+    }
+    
     //
     public function index(Request $request)
     {
-        $url=null;
+        $url = null;
         dump($url);
         dump(empty($url));
         dump(url(''));
@@ -35,9 +42,10 @@ class YuntongController extends Controller
         /*TODO:尝试日志操作*/
 //        Log::channel('')->debug('');
     }
-
+    
     /**
      * 订单支付接口测试
+     *
      * @param Request $request
      */
     public function pay(Request $request)
@@ -72,9 +80,10 @@ class YuntongController extends Controller
             dd($e->getMessage());
         }
     }
-
+    
     /**
      * 订单状态主动查询接口测试
+     *
      * @param Request $request
      */
     public function order_status(Request $request)
@@ -101,9 +110,10 @@ class YuntongController extends Controller
             dd($e->getMessage());
         }
     }
-
+    
     /**
      * 订单退款测试
+     *
      * @param Request $request
      */
     public function order_refund(Request $request)
@@ -129,9 +139,10 @@ class YuntongController extends Controller
             dd($e->getMessage());
         }
     }
-
+    
     /**
      * 异步通知测试
+     *
      * @param Request $request
      */
     public function notify(Request $request)
@@ -139,7 +150,7 @@ class YuntongController extends Controller
         $Pay = new YuntongPay();
         try {
             $json = $request->getContent();
-            Log::debug('YuntongPay_notify_post.log', ['getContent=' . $json]);
+            Log::debug('YuntongPay_notify_post.log', ['getContent='.$json]);
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
 //$data =array:8 [
@@ -160,8 +171,7 @@ class YuntongController extends Controller
 //            throw $e;
         }
     }
-
-
+    
     public function order(Request $request)
     {
         $YuntongPayController = new YuntongPayController();
@@ -181,6 +191,4 @@ class YuntongController extends Controller
         dump(array_diff_key($res, $trade_order_keys));
         dd($res);
     }
-
-
 }

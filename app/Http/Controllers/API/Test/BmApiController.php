@@ -27,6 +27,13 @@ use Bmapi\Api\Air\LinesList;
  */
 class BmApiController extends Controller
 {
+    /**
+     * 测试启用
+     */
+    public function __construct()
+    {
+        die('测试接口');
+    }
     
     /**
      * 水电煤商品列表查询测试

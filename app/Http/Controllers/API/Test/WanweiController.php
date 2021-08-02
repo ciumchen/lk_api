@@ -16,6 +16,13 @@ use Wanwei\Http\ShowapiRequest;
 
 class WanweiController extends Controller
 {
+    /**
+     * 测试启用
+     */
+    public function __construct()
+    {
+        die('测试接口');
+    }
     
     //
     public function test()

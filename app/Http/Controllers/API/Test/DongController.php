@@ -14,6 +14,14 @@ use Illuminate\Http\Request;
 
 class DongController extends Controller
 {
+    /**
+     * 测试启用
+     */
+    public function __construct()
+    {
+        die('测试接口');
+    }
+    
     //
     public function orderTest(Request $request)
     {
