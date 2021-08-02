@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Transfer;
+namespace App\Http\Controllers\API\Transfer;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;

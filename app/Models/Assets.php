@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Exceptions\LogicException;
+use App\Services\ConvertService;
 
 /**
  * App\Models\Assets
@@ -96,5 +98,120 @@ class Assets extends Model
 
         $this->amount = bcadd($amount,$amount_before_change, 8);
         $this->save();
+    }
+
+    /**获取用户 usdt 数据
+     * @param int $uid
+     * @return mixed
+     * @throws
+     */
+    public function getUsdtAmount(int $uid)
+    {
+        $this->isUser($uid);
+        
+        //返回
+        return Assets::where(['uid' => $uid, 'assets_type_id' => 3])->get(['amount', 'freeze_amount'])->first()->toArray();
+    }
+
+    /**计算兑换金额
+     * @param int $price
+     * @return mixed
+     * @throws
+     */
+    public function computePrice(int $price)
+    {        
+        $usdtPrice = $this->getUsdtPrice();
+        //比例
+        $ratio = 0.05;
+
+        if (!$usdtPrice)
+        {
+            throw new LogicException('usdt 金额不能为0');
+        }
+
+        //返回
+        return bcdiv($price / $usdtPrice, 1 - $ratio, 8);
+    }
+
+    /**usdt 兑换话费
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function phoneBill(array $data)
+    {
+        if (!in_array($data['price'], [50, 100]))
+        {
+            throw new LogicException('兑换话费的金额不在可选范围内');
+        }
+
+        //获取所需兑换的usdt 金额
+        $data['usdtAmount'] = $this->computePrice($data['price']);
+
+        //检查用户金额
+        $this->diffPrice($data);
+
+        return (new ConvertService())->phoneBill($data);
+    }
+
+    /**usdt 兑换美团
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function meituanBill(array $data)
+    {
+        if (!in_array($data['price'], [100, 300]))
+        {
+            throw new LogicException('兑换美团的金额不在可选范围内');
+        }
+
+        //获取所需兑换的usdt 金额
+        $data['usdtAmount'] = $this->computePrice($data['price']);
+
+        //检查用户金额
+        $this->diffPrice($data);
+
+        return (new ConvertService())->meituanBill($data);
+    }
+
+    /**获取 usdt 价格
+     * @param int $uid
+     * @return mixed
+     * @throws    
+    */
+    public function getUsdtPrice()
+    {
+        return (new Setting())->getSetting('usdt_price');
+    }
+
+    /**计算兑换所需金额和用户当前金额的差
+     * @param array $data
+     * @return mixed
+     * @throws    
+    */
+    public function diffPrice(array $data)
+    {
+        //用户usdt 金额
+        $userPrice = $this->getUsdtAmount($data['uid']);
+
+        if ($data['usdtAmount'] > $userPrice['amount'])
+        {
+            throw new LogicException('此用户所需兑换的余额不足');
+        }
+    }
+
+    /**用户是否存在
+     * @param int $uid
+     * @return mixed
+     * @throws    
+    */
+    public function isUser(int $uid)
+    {
+        $res = User::where(['id' => $uid, 'status' => 1])->exists();
+        if (!$res)
+        {
+            throw new LogicException('此用户信息不存在');
+        }
     }
 }

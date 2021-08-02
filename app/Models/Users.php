@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Carbon\Carbon;
 /**
  * App\Models\Users
  *
@@ -64,10 +64,16 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property int $market_business 市商身份，0不是，1是
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereMarketBusiness($value)
+ * @property int|null $shop_uid 商城用户uid
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereShopUid($value)
  */
 class Users extends Model
 {
     use HasFactory;
 
     protected $table = 'users';
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
+    }
 }

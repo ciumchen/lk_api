@@ -60,13 +60,13 @@ class EncourageService
                           ->first();
             if (!$invite || ($invite->status != User::STATUS_NORMAL)) {
                 $uid = $platformUid;
-                $remark = '下级消费返佣（上级账号被封禁或不存在）';
+                $remark = '一级下级消费返佣（上级账号被封禁或不存在）';
             } else {
-                $remark = '下级消费返佣';
+                $remark = '一级下级消费返佣';
                 $uid = $invite->id;
             }
             $shareScale = Setting::getSetting('share_scale_p1');
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 2);
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
             AssetsService::BalancesChange(
                 $orderNo,
                 $uid,
@@ -106,13 +106,13 @@ class EncourageService
                           ->first();
             if (!$invite || ($invite->status != User::STATUS_NORMAL)) {
                 $uid = $platformUid;
-                $remark = '下级消费返佣（上级账号被封禁或不存在）';
+                $remark = '二级下级消费返佣（上级账号被封禁或不存在）';
             } else {
-                $remark = '下级消费返佣';
+                $remark = '二级下级消费返佣';
                 $uid = $invite->id;
             }
             $shareScale = Setting::getSetting('share_scale_p2');
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 2);
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
             AssetsService::BalancesChange(
                 $orderNo,
                 $uid,
@@ -152,13 +152,13 @@ class EncourageService
                           ->first();
             if (!$invite || ($invite->status != User::STATUS_NORMAL)) {
                 $uid = $platformUid;
-                $remark = '下级消费返佣（上级账号被封禁或不存在）';
+                $remark = '三级下级消费返佣（上级账号被封禁或不存在）';
             } else {
-                $remark = '下级消费返佣';
+                $remark = '三级下级消费返佣';
                 $uid = $invite->id;
             }
             $shareScale = Setting::getSetting('share_scale_p3');
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 2);
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
             AssetsService::BalancesChange(
                 $orderNo,
                 $uid,

@@ -41,12 +41,27 @@ class OrderMobileRechargeDetails extends Model
 {
     use HasFactory;
     
+    const STATUS_DEFAULT = 0;
+    
+    const STATUS_SUCCESS = 1;
+    
+    const STATUS_CANCEL  = 9;
+    
     protected $table = 'order_mobile_recharge_details';
+    protected $appends = ['status_text'];
+    /**
+     * @var string[] 状态对应文字
+     */
+    public static $statusText = [
+        self::STATUS_DEFAULT => '充值中',
+        self::STATUS_SUCCESS => '成功',
+        self::STATUS_CANCEL  => '撤销',
+    ];
     
     /**
      * Description:
      *
-     * @param  array  $data
+     * @param array $data
      *
      * @return bool
      * @throws \Exception
@@ -71,8 +86,8 @@ class OrderMobileRechargeDetails extends Model
     /**
      * Description:批量更新状态
      *
-     * @param  array  $where
-     * @param  int    $status
+     * @param array $where
+     * @param int   $status
      *
      * @return bool|int
      * @throws \Exception
@@ -99,5 +114,13 @@ class OrderMobileRechargeDetails extends Model
     public function pMobile()
     {
         return $this->belongsTo(OrderMobileRecharge::class, 'order_mobile_id', 'id');
+    }
+    
+    public function getStatusTextAttribute($value = '')
+    {
+        if ($this->attributes[ 'status' ]) {
+            $value = self::$statusText[ $this->attributes[ 'status' ] ];
+        }
+        return $value;
     }
 }

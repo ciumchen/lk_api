@@ -32,6 +32,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //修改用户手机号
     Route::post('update-user-phone-one', 'User\UserController@updateUserPhoneOne');
     Route::post('update-user-phone-two', 'User\UserController@updateUserPhoneTwo');
+    //批量充值订单详情
+    Route::get('my-batch-details', 'User\UserOrderController@batchMobileOrderDetails');
 });
 //新增消费者统计和新增商家统计
 Route::any("addConsumer", "User\CountUserController@addConsumer");
@@ -51,8 +53,32 @@ Route::any("getUserAssetsFxJf", "User\RecordsOfConsumptionController@getUserAsse
 //用户的公益贡献接口
 Route::any("getUoserGYGX", "User\RecordsOfConsumptionController@getUoserGYGX");
 
+/********************************* 我的分享 *********************************/
+//是否为团长
+Route::any("is-manage", "User\MyShareController@isManage");
+//团员数据
+Route::any("user-share", "User\MyShareController@userShare");
+//商家数据
+Route::any("shop-share", "User\MyShareController@shopShare");
+//团员资产记录
+Route::any("users-assets", "User\MyShareController@usersAssets");
+//团长资产记录
+Route::any("heads-assets", "User\MyShareController@headsAssets");
+//团队资产记录
+Route::any("team-assets", "User\MyShareController@teamAssets");
+//团员、团队资产总奖励
+Route::any("profit-total", "User\MyShareController@profitTotal");
+//获取用户积分和lk
+Route::any("getUserLkIntegral", "User\getUserInfoController@getUserLkIntegral");
 
+//获取用户消费积分lk百分百比
+Route::any("getUserIntegralbfb", "User\getUserInfoController@getUserIntegralbfb");
 
+//获取用户商家积分lk百分百比
+Route::any("getUserShIntegralbfb", "User\getUserInfoController@getUserShIntegralbfb");
+
+//获取用户资产
+Route::any("getUserAssetInfo", "User\getUserInfoController@getUserAssetInfo");
 
 
 

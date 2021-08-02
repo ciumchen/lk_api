@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Transfer;
+namespace App\Http\Controllers\API\Transfer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

@@ -28,6 +28,14 @@ Route::any("consumer", "Order\MyShareController@Consumer");
 Route::any("merchant", "Order\MyShareController@Merchant");
 Route::any("team", "Order\MyShareController@Team");
 Route::any("mytest", "Order\MyShareController@test");
+//新分享商家
+Route::any("newFxMerchant", "Order\MyShareController@newFxMerchant");
+//查询用户分享商家累计总奖励记录
+Route::any("getUserFxshjl", "Order\MyShareController@getUserFxshjl");
+//查询二级消费
+Route::any("getTowXfUser", "Order\MyShareController@getTowXfUser");
+
+
 //当前登录用户的lk
 Route::any("getLkCount", "Order\MyShareController@getLkCount");
 //获取当前用户今日录单金额总数
@@ -61,3 +69,7 @@ Route::any('ww-video-recharge', 'Order\VideoRechargeController@rechargeWanWeiTes
 Route::any('utility-search', 'Order\UtilityController@getItemList');
 //生活缴费账单查询[斑马]
 Route::any('utility-bill', 'Order\UtilityController@checkBill');
+
+/********************** 兑换充值 **********************/
+//兑换话费回调[斑马]
+Route::any('usdt-phone', 'Order\MobileNotifyController@usdtCall');
