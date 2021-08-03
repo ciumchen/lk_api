@@ -139,7 +139,7 @@ class OrderListService
 
     //convert_logs 表状态
     const CONVERT_STATUS = [
-        0 => '待兑换',
+        0 => '待处理',
         1 => '充值中',
         2 => '成功',
         3 => '失败',
