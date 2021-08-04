@@ -103,10 +103,10 @@ class AddIntegral extends Command
             if ($orderInfo['name']!='商城订单'){
                 $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
                 $LkBlData[$field] = bcadd($lddata->$field, $orderInfo['price'], 2);//累计消费金额
-                $scddType = 1;
+                $scddType = 0;
             }else{
                 $LkBlData["other_price"] = bcadd($lddata->other_price, $orderInfo['price'], 2);//累计消费金额
-                $scddType = 0;
+                $scddType = 1;
             }
             log::info("=================打印---日志---信息--3333333333==================================");
             //控制添加积分
