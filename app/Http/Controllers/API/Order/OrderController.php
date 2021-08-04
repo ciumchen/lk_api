@@ -152,8 +152,9 @@ class OrderController extends Controller
      */
     public function userOrderList(Request $request)
     {
+        $data = $request->all();
         //返回
-        return (new OrderList())->userOrderList($request->uid);
+        return (new OrderList())->userOrderList($data);
     }
 
     /**获取商家订单列表
@@ -163,8 +164,9 @@ class OrderController extends Controller
      */
     public function shopOrderList(Request $request)
     {
+        $data = $request->all();
         //返回
-        return (new OrderList())->shopOrderList($request->uid);
+        return (new OrderList())->shopOrderList($data);
     }
 
     /**获取多人代充充值详情
@@ -174,7 +176,8 @@ class OrderController extends Controller
      */
     public function getMobileDetails(Request $request)
     {
+        $data = $request->all();
         //返回
-        return (new OrderList())->getMobileDetailsList($request->id);
+        return (new OrderList())->getMobileDetailsList($data);
     }
 }

@@ -10,20 +10,20 @@ use Illuminate\Support\Facades\DB;
 class OrderList extends Model
 {
     /**获取用户订单列表
-     * @param int $uid
+     * @param array $param
      * @return mixed
      * @throws LogicException
      */
-    public function userOrderList(int $uid)
+    public function userOrderList(array $param)
     {
         //sql 条件
         $where = [
-            'o.uid' => $uid
+            'o.uid' => $param['uid']
         ];
         //分页
         $data = [
-            'page' => $request->page ?? 1,
-            'perPage' => $request->perPage ?? 10,
+            'page' => $param['page'] ?? 1,
+            'perPage' => $param['perPage'] ?? 10,
         ];
 
         //返回
@@ -31,20 +31,20 @@ class OrderList extends Model
     }
 
     /**获取商家订单列表
-     * @param int $uid
+     * @param array $param
      * @return mixed
      * @throws LogicException
      */
-    public function shopOrderList(int $uid)
+    public function shopOrderList(array $param)
     {
         //sql 条件
         $where = [
-            'o.business_uid' => $uid
+            'o.business_uid' => $param['uid']
         ];
         //分页
         $data = [
-            'page' => $request->page ?? 1,
-            'perPage' => $request->perPage ?? 10,
+            'page' => $param['page'] ?? 1,
+            'perPage' => $param['perPage'] ?? 10,
         ];
 
         //返回
@@ -204,20 +204,20 @@ class OrderList extends Model
     }
 
     /**获取多人代充充值详情
-     * @param int $id
+     * @param array $param
      * @return mixed
      * @throws LogicException
      */
-    public function getMobileDetailsList(int $id)
+    public function getMobileDetailsList(array $param)
     {
         //分页
         $data = [
-            'page' => $request->page ?? 1,
-            'perPage' => $request->perPage ?? 10,
+            'page' => $param['page'] ?? 1,
+            'perPage' => $param['perPage'] ?? 10,
         ];
 
         //返回
-        return (new OrderList())->getMobileDetails($id, $data);
+        return (new OrderList())->getMobileDetails($param['id'], $data);
     }
 
     /**判断用户订单是否存在
