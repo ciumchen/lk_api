@@ -216,29 +216,29 @@ class AddIntegral extends Command
             $lkPer = Setting::getSetting('lk_per') ?? 300;
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
-//            log::debug("=================打印订单信息4444444444=====2222222=============================");
+            log::debug("=================打印订单信息4444444444=====2222222=============================");
             $customer->save();
-//            log::debug("=================打印订单信息4444444444=====333333333=============================");
+            log::debug("=================打印订单信息4444444444=====333333333=============================");
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-//            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
-//            log::debug("=================打印订单信息4444444444=====4444444444444444=============================");
-//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->business_uid);
-//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->profit_price);
-//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$description);
-//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$consumer_uid);
-//            log::debug("=================打印订单信息4444444444=====aaaa=============================".$orderNo);
+            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+            log::debug("=================打印订单信息4444444444=====4444444444444444=============================");
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->business_uid);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->profit_price);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$description);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$consumer_uid);
+            log::debug("=================打印订单信息4444444444=====aaaa=============================".$orderNo);
             (new OrderService())->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
-//            log::debug("=================打印订单信息4444444444=====555555555555555555=============================");
+            log::debug("=================打印订单信息4444444444=====555555555555555555=============================");
             $order->save();
             DB::commit();
             return true;
-//            log::debug("=================打印订单信息55555==================================");
+            log::debug("=================打印订单信息--成功=================================");
         } catch (\Exception $exception) {
             DB::rollBack();
 //            var_dump($exception->getMessage());
             return false;
-//            log::debug("=================打印订单信息666666==================================");
+            log::debug("=================打印订单信息--失败==================================");
         }
     }
 
