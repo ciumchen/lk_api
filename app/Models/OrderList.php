@@ -191,17 +191,20 @@ class OrderList extends Model
      */
     public function getMobileDetails(string $oid, array $data)
     {
+        $await = 10;
         //判断有无详情
         $this->isMobileDetails($oid);
 
         //返回
-        $detailsList = DB::table('order_mobile_recharge_details')
-                ->where(['order_id' => $oid])
-                ->orderBy('created_at', 'desc')
+        $detailsList = DB::table('order as o')
+                ->leftJoin('order_mobile_recharge_details as om', 'o.id', 'om.order_id')
+                ->where(['om.order_id' => $oid])
+                ->orderBy('om.created_at', 'desc')
                 ->forPage($data['page'], $data['perPage'])
-                ->get(['mobile', 'money', 'status'])
-                ->each(function ($item) {
-                    $item->status = (new OrderListService())::MOBILEDETAILS_STATUS[$item->status ?? 0];
+                ->get(['o.status as ostatus', 'om.mobile', 'om.money', 'om.status'])
+                ->each(function ($item) use ($await) {
+                    $item->status = $item->ostatus == 2 ? (new OrderListService())::MOBILEDETAILS_STATUS[$item->status] : (new OrderListService())::MOBILEDETAILS_STATUS[$await];
+                    unset($item->ostatus);
                 });
         return json_decode($detailsList, 1);
     }
