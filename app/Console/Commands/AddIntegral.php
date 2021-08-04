@@ -222,13 +222,13 @@ class AddIntegral extends Command
             log::debug("=================打印订单信息4444444444=====1111111111111=============================");
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
-            log::debug("=================打印订日志信息--aaa=============================");
+            log::debug("=================打印订日志信息--aaa=============================".$profit_ratio_offset);
             $profit_ratio = bcdiv($rebateScale[intval($profit_ratio_offset)], 100, 4);
-            log::debug("=================打印订日志信息--bbb=============================");
+            log::debug("=================打印订日志信息--bbb=============================".$profit_ratio);
             $customerIntegral = bcmul($order->price, $profit_ratio, 2);
-            log::debug("=================打印订日志信息--ccc=============================");
+            log::debug("=================打印订日志信息--ccc=============================".$customerIntegral);
             $amountBeforeChange = $customer->integral;
-            log::debug("=================打印订日志信息--ddd=============================");
+            log::debug("=================打印订日志信息--ddd=============================".$amountBeforeChange);
             $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
             log::debug("=================打印订日志信息--eee=============================");
             $lkPer = Setting::getSetting('lk_per') ?? 300;
