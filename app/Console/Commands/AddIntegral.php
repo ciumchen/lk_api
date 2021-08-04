@@ -103,8 +103,10 @@ class AddIntegral extends Command
             if ($orderInfo['name']!='商城订单'){
                 $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
                 $LkBlData[$field] = bcadd($lddata->$field, $orderInfo['price'], 2);//累计消费金额
+                $scddType = 1;
             }else{
                 $LkBlData["other_price"] = bcadd($lddata->other_price, $orderInfo['price'], 2);//累计消费金额
+                $scddType = 0;
             }
             log::info("=================打印---日志---信息--3333333333==================================");
             //控制添加积分
@@ -114,7 +116,7 @@ class AddIntegral extends Command
             if ($LkBlData['count_profit_price'] != 0) {
                 $lk_unit_price = Setting::where('key', 'lk_unit_price')->value('value');
                 if (($old_addCountProfitPrice * 0.675 / $LkBlData['count_lk']) < $lk_unit_price) {
-                    if ($this->completeOrder($orderId)){
+                    if ($this->completeOrder($orderId,$scddType)){
                         $LkBlData['count_profit_price'] = $addCountProfitPrice;
                         DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
                         return "添加积分成功";
@@ -128,7 +130,7 @@ class AddIntegral extends Command
                 }
 
             } else {
-                if ($this->completeOrder($orderId)){
+                if ($this->completeOrder($orderId,$scddType)){
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
                     return "添加积分成功";
@@ -145,7 +147,7 @@ class AddIntegral extends Command
     }
 
 
-    public function completeOrder(string $orderId,Order $orderData=null)
+    public function completeOrder(string $orderId,$scddType=0,Order $orderData=null)
     {
         try {
             if (empty($orderData)){
@@ -201,9 +203,22 @@ class AddIntegral extends Command
             $order->import_day = date("Ymd",time());
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
-            $userRebateScale = Setting::getManySetting('user_rebate_scale');
-            $businessRebateScale = Setting::getManySetting('business_rebate_scale');
-            $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+
+            if ($scddType==0){
+                $userRebateScale = Setting::getManySetting('user_rebate_scale');
+                $businessRebateScale = Setting::getManySetting('business_rebate_scale');
+                $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+            }elseif ($scddType==1){
+                $userRebateScale = intval($orderData->profit_ratio*5);
+                $businessRebateScale = intval($orderData->profit_ratio);
+                $rebateScale = array($businessRebateScale=>$userRebateScale);
+            }else{
+                log::debug("=================订单的让利比例错误=============================");
+                return false;
+            }
+
+
+
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
             log::debug("=================打印订单信息4444444444=====1111111111111=============================");
