@@ -209,25 +209,28 @@ class AddIntegral extends Command
                 $businessRebateScale = Setting::getManySetting('business_rebate_scale');
                 $rebateScale = array_combine($businessRebateScale, $userRebateScale);
             }elseif ($scddType==1){
-                $userRebateScale = intval($orderData->profit_ratio*5);
-                $businessRebateScale = intval($orderData->profit_ratio);
+                $userRebateScale = intval($order->profit_ratio*5);
+                $businessRebateScale = intval($order->profit_ratio);
                 $rebateScale = array($businessRebateScale=>$userRebateScale);
             }else{
                 log::debug("=================订单的让利比例错误=============================");
                 return false;
             }
 
-
-
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
             log::debug("=================打印订单信息4444444444=====1111111111111=============================");
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
+            log::debug("=================打印订日志信息--aaa=============================");
             $profit_ratio = bcdiv($rebateScale[intval($profit_ratio_offset)], 100, 4);
+            log::debug("=================打印订日志信息--bbb=============================");
             $customerIntegral = bcmul($order->price, $profit_ratio, 2);
+            log::debug("=================打印订日志信息--ccc=============================");
             $amountBeforeChange = $customer->integral;
+            log::debug("=================打印订日志信息--ddd=============================");
             $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
+            log::debug("=================打印订日志信息--eee=============================");
             $lkPer = Setting::getSetting('lk_per') ?? 300;
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
