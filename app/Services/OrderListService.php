@@ -27,7 +27,7 @@ class OrderListService
         {
             if (in_array($val['name'], ['油卡']) && !empty($val['numeric']))
             {
-                $val['numeric'] = substr_replace($val['numeric'], '****', -4, -8);
+                $val['numeric'] = substr_replace($val['numeric'], '****', 11, 4);
             } elseif (!empty($val['numeric']))
             {
                 $val['numeric'] = substr_replace($val['numeric'], '****', 3, 4);
