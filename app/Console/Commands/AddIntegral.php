@@ -58,7 +58,7 @@ class AddIntegral extends Command
      */
     public function handle()
     {
-//        log::info('=================自动添加积分任务===================================');
+        log::info('=================自动添加积分任务===================================');
 
         $setValue = Setting::where('key', 'consumer_integral')->value('value');
         if ($setValue == 1) {
@@ -66,12 +66,12 @@ class AddIntegral extends Command
             if ($orderInfo != null) {
                 $orderInfo = $orderInfo->toArray();
             } else {
-//                log::info('=================排队订单为空===================================');
+                log::info('=================排队订单为空===================================');
                 return "排队订单为空";
             }
 
             $orderId = $orderInfo['id'];
-//            log::info("=================打印订单信息1==================================",$orderInfo);
+            log::info("=================打印订单信息1==================================",$orderInfo);
 //            $order_no = $orderInfo['trade__order']['order_no'];
             $orderldModer = new OrderIntegralLkDistribution();
             $todaytime = strtotime(date("Y-m-d"), time());
@@ -115,9 +115,9 @@ class AddIntegral extends Command
                     }else{
                         return "添加积分失败";
                     }
-//                    log::info('=================添加积分成功1===================================');
+                    log::info('=================添加积分成功1===================================');
                 } else {
-//                    log::info('=================添加积分已达到上限数量===================================');
+                    log::info('=================添加积分已达到上限数量===================================');
                     return "添加积分已达到上限数量";
                 }
 
@@ -132,7 +132,7 @@ class AddIntegral extends Command
             }
 
         } else {
-//            log::info('=================后台未开启控单===================================');
+            log::info('=================后台未开启控单===================================');
             return "后台未开启控单";
         }
 
@@ -147,10 +147,10 @@ class AddIntegral extends Command
             }
 //            $orderData = Order::find($orderId);
             $orderService = new OrderService();
-//            log::debug("=================打印订单信息01==================================".$orderId);
+            log::debug("=================打印订单信息01==================================".$orderId);
             $orderType = $orderService->getDescription($orderId, $orderData);//订单类型
-//            log::debug("=================打印订单信息02==================================".$orderType);
-//            log::debug("=================打印订单信息03==================================",$orderData->toArray());
+            log::debug("=================打印订单信息02==================================".$orderType);
+            log::debug("=================打印订单信息03==================================",$orderData->toArray());
 //        dd($orderInfo,$orderData);
             if ($orderType == 'LR' || $orderType == 'HF' || $orderType == 'YK' || $orderType == 'MT' || $orderType == 'ZL') {
                 $dataInfo = $orderData->trade;
@@ -167,28 +167,28 @@ class AddIntegral extends Command
             } elseif ($orderType == 'CLP' || $orderType == 'CLM') {
                 $dataInfo = $orderData->convertLogs;
             } else {
-//                log::debug("=================打印订单信息3-000000==================================".$orderType);
+                log::debug("=================打印订单信息3-000000==================================".$orderType);
                 return false;
             }
         } catch (\Exception $e) {
             report($e);
             throw new LogicException('类型错误：'.$e);
-//            log::debug("=================打印订单信息3-111111==================================".$e);
+            log::debug("=================打印订单信息3-111111==================================".$e);
         }
 
         $consumer_uid = $dataInfo->user_id??$dataInfo->uid;
         $description = $orderType;
         $orderNo = $dataInfo->order_no;
 
-//        log::debug("=================打印订单信息3-2222200000000==================================".$consumer_uid);
-//        log::debug("=================打印订单信息3-22222==================================".$description);
-//        log::debug("=================打印订单信息3-22222==================================".$orderNo);
-//        log::debug("=================打印订单信息3-22222==================================",$dataInfo->toArray());
+        log::debug("=================打印订单信息3-2222200000000==================================".$consumer_uid);
+        log::debug("=================打印订单信息3-22222==================================".$description);
+        log::debug("=================打印订单信息3-22222==================================".$orderNo);
+        log::debug("=================打印订单信息3-22222==================================",$dataInfo->toArray());
 
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()->find($orderId);
-//            log::debug("=================打印订单信息3-88888==================================".$order->line_up);
+            log::debug("=================打印订单信息3-88888==================================".$order->line_up);
             if ($order->line_up != 1)
                 return false;
             $order->line_up = 0;
@@ -200,7 +200,7 @@ class AddIntegral extends Command
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
-//            log::debug("=================打印订单信息4444444444=====1111111111111=============================");
+            log::debug("=================打印订单信息4444444444=====1111111111111=============================");
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
             $profit_ratio = bcdiv($rebateScale[intval($profit_ratio_offset)], 100, 4);
