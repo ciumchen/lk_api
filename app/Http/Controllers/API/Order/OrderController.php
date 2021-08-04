@@ -152,18 +152,8 @@ class OrderController extends Controller
      */
     public function userOrderList(Request $request)
     {
-        //sql 条件
-        $where = [
-            'o.uid' => $request->uid
-        ];
-        //分页
-        $data = [
-            'page' => $request->page ?? 1,
-            'perPage' => $request->perPage ?? 10,
-        ];
-
         //返回
-        return (new OrderList())->getOrders($where, $data);
+        return (new OrderList())->userOrderList($request->uid);
     }
 
     /**获取商家订单列表
@@ -173,18 +163,8 @@ class OrderController extends Controller
      */
     public function shopOrderList(Request $request)
     {
-        //sql 条件
-        $where = [
-            'o.business_uid' => $request->uid
-        ];
-        //分页
-        $data = [
-            'page' => $request->page ?? 1,
-            'perPage' => $request->perPage ?? 10,
-        ];
-
         //返回
-        return (new OrderList())->getOrders($where, $data);
+        return (new OrderList())->shopOrderList($request->uid);
     }
 
     /**获取多人代充充值详情
@@ -194,13 +174,7 @@ class OrderController extends Controller
      */
     public function getMobileDetails(Request $request)
     {
-        //分页
-        $data = [
-            'page' => $request->page ?? 1,
-            'perPage' => $request->perPage ?? 10,
-        ];
-
         //返回
-        return (new OrderList())->getMobileDetails($request->id, $data);
+        return (new OrderList())->getMobileDetailsList($request->id);
     }
 }

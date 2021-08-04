@@ -9,6 +9,48 @@ use Illuminate\Support\Facades\DB;
 
 class OrderList extends Model
 {
+    /**获取用户订单列表
+     * @param int $uid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function userOrderList(int $uid)
+    {
+        //sql 条件
+        $where = [
+            'o.uid' => $uid
+        ];
+        //分页
+        $data = [
+            'page' => $request->page ?? 1,
+            'perPage' => $request->perPage ?? 10,
+        ];
+
+        //返回
+        return (new OrderList())->getOrders($where, $data);
+    }
+
+    /**获取商家订单列表
+     * @param int $uid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function shopOrderList(int $uid)
+    {
+        //sql 条件
+        $where = [
+            'o.business_uid' => $uid
+        ];
+        //分页
+        $data = [
+            'page' => $request->page ?? 1,
+            'perPage' => $request->perPage ?? 10,
+        ];
+
+        //返回
+        return (new OrderList())->getOrders($where, $data);
+    }
+
     /**获取订单列表
      * @param array $where
      * @param array $data
@@ -159,6 +201,23 @@ class OrderList extends Model
                     $item->status = (new OrderListService())::MOBILEDETAILS_STATUS[$item->status ?? 0];
                 });
         return json_decode($detailsList, 1);
+    }
+
+    /**获取多人代充充值详情
+     * @param int $id
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getMobileDetailsList(int $id)
+    {
+        //分页
+        $data = [
+            'page' => $request->page ?? 1,
+            'perPage' => $request->perPage ?? 10,
+        ];
+
+        //返回
+        return (new OrderList())->getMobileDetails($id, $data);
     }
 
     /**判断用户订单是否存在
