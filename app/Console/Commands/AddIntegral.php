@@ -216,7 +216,7 @@ class AddIntegral extends Command
                 log::debug("=================订单的让利比例错误=============================");
                 return false;
             }
-
+            log::debug("=================让利比例数组=============================",$rebateScale);
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
             log::debug("=================打印订单信息4444444444=====1111111111111=============================");
