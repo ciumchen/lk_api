@@ -89,7 +89,7 @@ class OrderList extends Model
                 ->leftJoin('trade_order as t', 'o.id', 't.oid')
                 ->leftJoin('recharge_logs as r', 't.order_no', 'r.order_no')
                 ->where($where)
-                ->whereIn('o.name', ['美团', '话费', '代充', '油卡', '录单'])
+                ->whereIn('o.name', ['美团', '话费', '油卡', '录单'])
                 ->get(['o.id', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'o.status as ostatus',
                     'o.business_uid', 't.numeric', 't.order_no', 'r.status'])
                 ->each(function ($item) {
@@ -99,9 +99,9 @@ class OrderList extends Model
                         case '话费':
                             $item->name = $item->name . '直充';
                             break;
-                        case '代充':
+                        /*case '代充':
                             $item->name = '话费' . $item->name;
-                            break;
+                            break;*/
                         case '美团':
                         case '录单':
                             $item->status = $item->ostatus == 2 ? 1 : 0;
@@ -131,6 +131,7 @@ class OrderList extends Model
                 ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'o.business_uid',
                     'm.status', 'm.mobile as numeric'])
                 ->each(function ($item) {
+                    $item->name = '话费' . $item->name;
                     $item->numeric = $item->numeric ?? '';
                     $item->status = (new OrderListService())::MOBILE_STATUS[$item->status];
                     $item->profit_ratio = (int)$item->profit_ratio;
