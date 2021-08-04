@@ -151,10 +151,10 @@ class OrderList extends Model
                 ->where($where)
                 ->whereIn('o.name', ['视频会员'])
                 ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.created_at', 'o.profit_ratio', 'o.business_uid',
-                    'v.status', 'v.create_type as name', 'v.account as numeric'])
+                    'o.status as ostatus', 'v.status', 'v.create_type as name', 'v.account as numeric'])
                 ->each(function ($item) {
                     $item->numeric = $item->numeric ?? '';
-                    $item->status = (new OrderListService())::VIDEO_STATUS[$item->status];
+                    $item->status = $item->ostatus == 2 ? (new OrderListService())::VIDEO_STATUS[$item->status] : (new OrderListService())::VIDEO_STATUS[10];
                     $item->name = (new OrderListService())::VIDEO_TYPE[$item->name];
                     $item->profit_ratio = (int)$item->profit_ratio;
                 });
