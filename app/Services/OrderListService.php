@@ -114,6 +114,7 @@ class OrderListService
         0 => '充值中',
         1 => '成功',
         9 => '撤销',
+        10 => '待处理'
     ];
 
     //order_video 表状态

@@ -122,6 +122,7 @@ class OrderList extends Model
      */
     public function getMobileOrder(array $where)
     {
+        $await = 10;
         //获取订单列表
         return DB::table('order as o')
                 ->leftJoin('order_mobile_recharge as m', 'o.id', 'm.order_id')
@@ -129,11 +130,11 @@ class OrderList extends Model
                 ->whereIn('o.name', ['代充', '批量代充'])
                 ->whereIn('m.create_type', [2, 3])
                 ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'o.business_uid',
-                    'm.status', 'm.mobile as numeric'])
-                ->each(function ($item) {
+                    'o.status as ostatus', 'm.status', 'm.mobile as numeric'])
+                ->each(function ($item) use ($await) {
                     $item->name = '话费' . $item->name;
                     $item->numeric = $item->numeric ?? '';
-                    $item->status = (new OrderListService())::MOBILE_STATUS[$item->status];
+                    $item->status = $item->ostatus == 2 ? (new OrderListService())::VIDEO_STATUS[$item->status] : (new OrderListService())::VIDEO_STATUS[$await];
                     $item->profit_ratio = (int)$item->profit_ratio;
                 });
     }
@@ -145,6 +146,7 @@ class OrderList extends Model
      */
     public function getVideoOrder(array $where)
     {
+        $await = 10;
         //获取订单列表
         return DB::table('order as o')
                 ->leftJoin('order_video as v', 'o.id', 'v.order_id')
@@ -152,9 +154,9 @@ class OrderList extends Model
                 ->whereIn('o.name', ['视频会员'])
                 ->get(['o.id', 'o.order_no', 'o.uid', 'o.price', 'o.created_at', 'o.profit_ratio', 'o.business_uid',
                     'o.status as ostatus', 'v.status', 'v.create_type as name', 'v.account as numeric'])
-                ->each(function ($item) {
+                ->each(function ($item) use ($await) {
                     $item->numeric = $item->numeric ?? '';
-                    $item->status = $item->ostatus == 2 ? (new OrderListService())::VIDEO_STATUS[$item->status] : (new OrderListService())::VIDEO_STATUS[10];
+                    $item->status = $item->ostatus == 2 ? (new OrderListService())::VIDEO_STATUS[$item->status] : (new OrderListService())::VIDEO_STATUS[$await];
                     $item->name = (new OrderListService())::VIDEO_TYPE[$item->name];
                     $item->profit_ratio = (int)$item->profit_ratio;
                 });
