@@ -97,9 +97,14 @@ class AddIntegral extends Command
                 5 => 'price_5',
                 10 => 'price_10',
                 20 => 'price_20',
+                "other_price" => 'other_price',
             );
-            $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
-            $LkBlData[$field] = bcadd($lddata->$field, $orderInfo['price'], 2);//累计消费金额
+            if ($orderInfo['name']!='商城订单'){
+                $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
+                $LkBlData[$field] = bcadd($lddata->$field, $orderInfo['price'], 2);//累计消费金额
+            }else{
+                $LkBlData["other_price"] = bcadd($lddata->other_price, $orderInfo['price'], 2);//累计消费金额
+            }
 
             //控制添加积分
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
