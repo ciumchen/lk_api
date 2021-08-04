@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.ins.marketing.discount.preuse request
  *

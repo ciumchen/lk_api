@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.open.mini.operation.appservice.query request
  *

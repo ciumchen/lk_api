@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.commerce.transport.intelligentize.workschedule.create request
  *

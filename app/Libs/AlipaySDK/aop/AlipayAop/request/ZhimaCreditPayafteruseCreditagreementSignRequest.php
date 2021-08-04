@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: zhima.credit.payafteruse.creditagreement.sign request
  *

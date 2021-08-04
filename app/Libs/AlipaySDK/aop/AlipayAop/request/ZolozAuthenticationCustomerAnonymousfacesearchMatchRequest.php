@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: zoloz.authentication.customer.anonymousfacesearch.match request
  *

@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: koubei.servindustry.portfolio.data.delete request
  *

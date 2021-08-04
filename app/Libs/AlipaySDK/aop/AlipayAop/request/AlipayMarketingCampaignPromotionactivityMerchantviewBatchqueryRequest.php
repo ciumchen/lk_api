@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.marketing.campaign.promotionactivity.merchantview.batchquery request
  *

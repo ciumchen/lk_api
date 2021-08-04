@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: koubei.marketing.tool.isv.merchant.query request
  *

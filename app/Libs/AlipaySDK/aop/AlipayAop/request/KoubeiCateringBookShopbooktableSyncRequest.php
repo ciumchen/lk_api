@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: koubei.catering.book.shopbooktable.sync request
  *

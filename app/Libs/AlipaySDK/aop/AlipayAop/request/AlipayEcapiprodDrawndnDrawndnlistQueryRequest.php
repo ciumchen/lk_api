@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.ecapiprod.drawndn.drawndnlist.query request
  *

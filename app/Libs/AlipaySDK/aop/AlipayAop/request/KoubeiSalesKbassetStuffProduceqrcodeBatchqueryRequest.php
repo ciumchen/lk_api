@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: koubei.sales.kbasset.stuff.produceqrcode.batchquery request
  *

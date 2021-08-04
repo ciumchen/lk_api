@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: ant.merchant.expand.assetinfo.delivery.sync request
  *

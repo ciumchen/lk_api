@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: mybank.payment.trade.deposit.verify.apply request
  *

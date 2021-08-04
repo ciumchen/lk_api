@@ -15,9 +15,7 @@ class Autoloader
     public static function autoload($className)
     {
         $path = str_replace('\\', DIRECTORY_SEPARATOR, $className);
-        $file = dirname(__DIR__).DIRECTORY_SEPARATOR.'aop'.DIRECTORY_SEPARATOR.$path.'.php';
-        dump($className);
-        dd($file);
+        $file = __DIR__.DIRECTORY_SEPARATOR.'aop'.DIRECTORY_SEPARATOR.$path.'.php';
         if (file_exists($file)) {
             require_once $file;
         }

@@ -3,9 +3,17 @@
 namespace AlipayAop;
 
 //require_once 'AopEncrypt.php';
+use AopEncrypt;
+
 //require_once 'EncryptParseItem.php';
+use EncryptParseItem;
+
 //require_once 'EncryptResponseData.php';
+use EncryptResponseData;
+
 //require_once 'SignData.php';
+use SignData;
+
 class AopClient
 {
     //应用ID

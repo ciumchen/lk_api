@@ -7,10 +7,11 @@
  * Time: 下午8:51
  */
 
+namespace AlipayAop;
+
 class EncryptResponseData
 {
     public $realContent;
-
+    
     public $returnContent;
-
-} 
+}

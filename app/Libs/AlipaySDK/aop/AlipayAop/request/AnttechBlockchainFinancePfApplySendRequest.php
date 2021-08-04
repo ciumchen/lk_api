@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: anttech.blockchain.finance.pf.apply.send request
  *

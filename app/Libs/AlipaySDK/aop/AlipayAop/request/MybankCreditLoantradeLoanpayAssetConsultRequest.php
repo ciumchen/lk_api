@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: mybank.credit.loantrade.loanpay.asset.consult request
  *

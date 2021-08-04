@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.boss.fnc.antbudget.bbaremainamount.query request
  *

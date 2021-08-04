@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.iservice.cognitive.ocr.bankcard.query request
  *

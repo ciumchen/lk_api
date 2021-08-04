@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.merchant.payforprivilege.uselog.batchquery request
  *

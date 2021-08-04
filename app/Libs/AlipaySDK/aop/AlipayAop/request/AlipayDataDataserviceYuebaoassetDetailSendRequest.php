@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.data.dataservice.yuebaoasset.detail.send request
  *

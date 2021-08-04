@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: antfortune.marketing.crowd.wshop.match request
  *

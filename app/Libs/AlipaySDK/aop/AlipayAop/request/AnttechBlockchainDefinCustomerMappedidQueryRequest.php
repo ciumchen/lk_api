@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: anttech.blockchain.defin.customer.mappedid.query request
  *

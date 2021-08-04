@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: anttech.blockchain.finance.trusple.creditgrantapply.submit request
  *

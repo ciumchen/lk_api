@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: anttech.ai.cv.ocr.vatinvoice.identify request
  *

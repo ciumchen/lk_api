@@ -7,12 +7,13 @@
  * Time: 下午8:55
  */
 
+namespace AlipayAop;
+
 class EncryptParseItem
 {
     public $startIndex;
-
+    
     public $endIndex;
-
+    
     public $encryptContent;
-
-} 
+}

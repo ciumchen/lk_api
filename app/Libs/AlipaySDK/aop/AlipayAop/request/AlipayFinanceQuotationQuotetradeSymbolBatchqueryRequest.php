@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.finance.quotation.quotetrade.symbol.batchquery request
  *

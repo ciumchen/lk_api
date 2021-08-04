@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.msaas.mediarecog.aftscvpay.transaction.initialize request
  *

@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: ssdata.dataservice.dataproperty.batchquery request
  *

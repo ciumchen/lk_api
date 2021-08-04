@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: aft.finsecure.riskplus.security.policy.query request
  *

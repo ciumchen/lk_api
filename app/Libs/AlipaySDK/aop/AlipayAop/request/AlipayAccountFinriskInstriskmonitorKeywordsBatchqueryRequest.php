@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.account.finrisk.instriskmonitor.keywords.batchquery request
  *

@@ -1,4 +1,6 @@
 <?php
+namespace AlipayAop\request;
+
 /**
  * ALIPAY API: alipay.pcredit.huabei.pcreditmerchant.productorder.apply request
  *
