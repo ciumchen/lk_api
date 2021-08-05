@@ -103,7 +103,7 @@ class UsersController extends Controller
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
 
-            Log::info("=======打印购买会员支付回调数据====1======",$data);
+//            Log::info("=======打印购买会员支付回调数据====1======",$data);
 
             if (!empty($res)) {
                 $Order = new Order();
@@ -111,7 +111,7 @@ class UsersController extends Controller
                 if ($orderInfo->price/10 != $data[ 'amount' ]) {
                     throw new Exception('付款金额与应付金额不一致');
                 }
-                Log::info("=======打印购买会员支付回调数据====2======",$data);
+//                Log::info("=======打印购买会员支付回调数据====2======",$data);
                 //验证通过修改订单支付状态
                 $orderInfo->status = 2;
                 $orderInfo->pay_status = 'succeeded';
@@ -165,7 +165,7 @@ class UsersController extends Controller
             $Pay->Notify_success();
         } catch (Exception $e) {
             DB::rollBack();
-            Log::debug('YuntongNotify-验证不通过-getLkMemberPayHd-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
+            Log::debug('YuntongNotify-购买会员支付回调-验证不通过-getLkMemberPayHd-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
             $Pay->Notify_failed();
         }
 
