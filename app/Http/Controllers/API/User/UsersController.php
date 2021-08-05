@@ -137,7 +137,7 @@ class UsersController extends Controller
             DB::commit();
             $Pay->Notify_success();
         } catch (Exception $e) {
-            Log::debug('YuntongNotify-验证不通过-bmCallback-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
+            Log::debug('YuntongNotify-验证不通过-getLkMemberPayHd-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
             $Pay->Notify_failed();
         }
 
