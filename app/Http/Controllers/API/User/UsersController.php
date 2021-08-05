@@ -134,8 +134,8 @@ class UsersController extends Controller
                 $userData2->integral = $oldamount2+2;
                 $userData2->save();
                 //添加用户积分记录
-                IntegralLogs::addLog($userData1->id,10,'开通来客会员',$oldamount1,$userData1->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
-                IntegralLogs::addLog($userData2->id,2,'开通来客会员',$oldamount2,$userData2->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
+                IntegralLogs::addLog($userData1->id,10,'开通来客会员',$oldamount1,$userData1->role,'开通来客会员',$data[ 'order_id' ],0,$userData1->id,'KTHY');
+                IntegralLogs::addLog($userData2->id,2,'开通来客会员',$oldamount2,$userData2->role,'开通来客会员',$data[ 'order_id' ],0,$userData1->id,'KTHY');
 
 
                 //给邀请人添加积分和积分记录
@@ -153,9 +153,8 @@ class UsersController extends Controller
                 $userData4->save();
 
                 //给邀请人添加积分记录
-                IntegralLogs::addLog($userData3->id,5,'开通来客会员',$oldamount3,$userData3->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData3->id,'KTHY');
-                IntegralLogs::addLog($userData4->id,1,'开通来客会员',$oldamount4,$userData4->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData3->id,'KTHY');
-
+                IntegralLogs::addLog($userData3->id,5,'开通来客会员',$oldamount3,$userData3->role,'开通来客会员',$data[ 'order_id' ],0,$userData3->id,'KTHY');
+                IntegralLogs::addLog($userData4->id,1,'开通来客会员',$oldamount4,$userData4->role,'开通来客会员',$data[ 'order_id' ],0,$userData3->id,'KTHY');
 
             } else {
                 Log::info("=======打印购买会员支付回调数据=====解析为空=====");
