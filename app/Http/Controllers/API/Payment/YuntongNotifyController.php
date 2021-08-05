@@ -48,7 +48,7 @@ class YuntongNotifyController extends Controller
             $Pay->Notify_failed();
         }
     }
-    
+
     /**
      * 更新订单为已支付
      *
@@ -141,7 +141,7 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
-    
+
     /**机票支付回調
      *
      * @param  Request  $request
@@ -167,7 +167,7 @@ class YuntongNotifyController extends Controller
             $Pay->Notify_failed();
         }
     }
-    
+
     /**更新机票信息
      *
      * @param $data
@@ -213,7 +213,7 @@ class YuntongNotifyController extends Controller
             throw $le;
         }
     }
-    
+
     /**
      * Description:
      *
@@ -244,7 +244,6 @@ class YuntongNotifyController extends Controller
                 /* 更新对应斑马订单表 */
                 $OrderService->updateSubOrder($orderInfo->id, $res, $description);
             } else {
-                DB::rollBack();
                 throw new Exception('解析为空');
             }
             DB::commit();
@@ -252,6 +251,7 @@ class YuntongNotifyController extends Controller
             $OrderService->afterCompletedOrder($orderInfo->id, $res, $description, $orderInfo);
             $Pay->Notify_success();
         } catch (Exception $e) {
+            DB::rollBack();
             Log::debug('YuntongNotify-验证不通过-bmCallback-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
             $Pay->Notify_failed();
         }

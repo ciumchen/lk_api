@@ -122,47 +122,49 @@ class UsersController extends Controller
                 $yqrOrder->pay_status = 'succeeded';
                 $yqrOrder->save();
 
-                //给用户和邀请人添加积分,添加4条积分记录
+                //给用户添加积分和积分记录
                 $userData1 = Users::where('id',$orderInfo->uid)->first();//+10
                 $userData2 = Users::where('id',$orderInfo->business_uid)->first();//+2
-                $userData3 = Users::where('id',$yqrOrder->uid)->first();//+5
-                $userData4 = Users::where('id',$yqrOrder->business_uid)->first();//+1
-
-                //变动前积分
+                //用户变动前积分
                 $oldamount1 = $userData1->integral;
                 $oldamount2 = $userData2->integral;
-                $oldamount3 = $userData3->integral;
-                $oldamount4 = $userData4->integral;
-
-                //给用户添加积分和积分
+                //给用户添加积分
                 $userData1->integral = $oldamount1+10;
                 $userData1->save();
                 $userData2->integral = $oldamount2+2;
                 $userData2->save();
+                //添加用户积分记录
+                IntegralLogs::addLog($userData1->id,10,'开通来客会员',$oldamount1,$userData1->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
+                IntegralLogs::addLog($userData2->id,2,'开通来客会员',$oldamount2,$userData2->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
+
+
+                //给邀请人添加积分和积分记录
+                $userData3 = Users::where('id',$yqrOrder->uid)->first();//+5
+                $userData4 = Users::where('id',$yqrOrder->business_uid)->first();//+1
+
+                //邀请人变动前积分
+                $oldamount3 = $userData3->integral;
+                $oldamount4 = $userData4->integral;
+
+                //给邀请人添加积分
                 $userData3->integral = $oldamount3+5;
                 $userData3->save();
                 $userData4->integral = $oldamount4+1;
                 $userData4->save();
 
-                //添加用户积分记录
-                IntegralLogs::addLog($userData1->id,10,'开通来客会员',$oldamount1,$userData1->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
-                
-                IntegralLogs::addLog($userData2->id,2,'开通来客会员',$oldamount2,$userData2->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
-
                 //给邀请人添加积分记录
                 IntegralLogs::addLog($userData3->id,5,'开通来客会员',$oldamount3,$userData3->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData3->id,'KTHY');
-
                 IntegralLogs::addLog($userData4->id,1,'开通来客会员',$oldamount4,$userData4->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData3->id,'KTHY');
 
 
             } else {
-                DB::rollBack();
                 Log::info("=======打印购买会员支付回调数据=====解析为空=====");
                 throw new Exception('解析为空');
             }
             DB::commit();
             $Pay->Notify_success();
         } catch (Exception $e) {
+            DB::rollBack();
             Log::debug('YuntongNotify-验证不通过-getLkMemberPayHd-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
             $Pay->Notify_failed();
         }
