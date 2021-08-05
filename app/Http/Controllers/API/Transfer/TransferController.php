@@ -35,6 +35,9 @@ class TransferController extends Controller
 
         $user = $request->user();
 
+        if ($user->member_status == 0) {
+            throw new LogicException('非来客会员无法提现，请购买来客会员!');
+        }
         if (!$user->isVerifiedRealName()) {
             throw new LogicException('未完成实名认证.');
         }
