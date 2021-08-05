@@ -98,9 +98,10 @@ class UsersController extends Controller
             'order_no'   => $order_no,//订单号
             'order_from' => 'alipay',//支付渠道 固定值：alipay|wx|unionpay
             'ip'         => $ip,//ip
-            'return_url' => "http://ning.catspawvideo.com/api/getLkMemberPayHd",
+//            'return_url' => "http://ning.catspawvideo.com/api/getLkMemberPayHd",
+            'return_url' => "",
         ];
-        return $payModel->payRequest($data, createNotifyUrl('api/bm-pay-notify'));
+        return $payModel->payRequest($data, createNotifyUrl('api/getLkMemberPayHd'));
 
     }
 
