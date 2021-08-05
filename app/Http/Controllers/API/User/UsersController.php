@@ -45,18 +45,10 @@ class UsersController extends Controller
             throw new LogicException('该用户已是来客会员，无需购买!');
         }
 
-//        echo "购买来客会员";
-
         //生成两条录单记录
-//
-//        'uid',
-//        'business_uid',
-//        'profit_ratio',
-//        'price',
-//        'profit_price',
-//        'status',
-//        'name',
         //给用户录单
+//        $order_no1 = createOrderNo();
+//        $order_no2 = createOrderNo();
         $order_no = createOrderNo();
 
         $data = array(
@@ -80,17 +72,14 @@ class UsersController extends Controller
                 'profit_price'=>1,
                 'status'=>1,
                 'name'=>'开通会员',
+                'member_gl_oid'=>$orderData[0]['id'],
                 'order_no'=>$order_no,
             );
             $orderData[] = Order::create($data)->toArray();
         }
 
-//        dd($orderData);
-
         //调用支付宝支付
         $payModel = new YuntongPayController();
-//        $payModel->bmPay();
-
         $data = [
             'goodsTitle' => '开通会员',
             'goodsDesc'  => '开通会员支付',//商品描述
@@ -107,10 +96,6 @@ class UsersController extends Controller
 
     //购买会员支付回调
     public function getLkMemberPayHd(Request $request){
-        $allData = $request->all();
-        Log::info("=======打印购买会员支付回调数据=====1=====",$allData);
-        Log::debug("=======打印购买会员支付回调数据=====1=====",$allData);
-//***************************************************************
         $Pay = new YuntongPay();
         $json = $request->getContent();
         DB::beginTransaction();
@@ -118,21 +103,65 @@ class UsersController extends Controller
             $data = json_decode($json, true);
             $res = $Pay->Notify($data);
 
-            Log::info("=======打印购买会员支付回调数据====2======",$data);
-            Log::debug("=======打印购买会员支付回调数据====2======",$data);
+            Log::info("=======打印购买会员支付回调数据====1======",$data);
 
             if (!empty($res)) {
                 $Order = new Order();
-                $orderInfo = $Order->getOrderByOrderNo($data[ 'order_id' ]);
-                if ($orderInfo->price != $data[ 'amount' ]) {
+                $orderInfo = $Order->getOrderByOrderNo($data[ 'order_id' ]);//用户录单记录
+                if ($orderInfo->price/10 != $data[ 'amount' ]) {
                     throw new Exception('付款金额与应付金额不一致');
                 }
-                Log::info("=======打印购买会员支付回调数据====3======",$data);
-                Log::debug("=======打印购买会员支付回调数据====3======",$data);
+                Log::info("=======打印购买会员支付回调数据====2======",$data);
+                //验证通过修改订单支付状态
+                $orderInfo->status = 2;
+                $orderInfo->pay_status = 'succeeded';
+                $orderInfo->save();
+
+                $yqrOrder = $Order::where('member_gl_oid',$orderInfo->id)->first();//邀请人录单记录
+                $yqrOrder->status = 2;
+                $yqrOrder->pay_status = 'succeeded';
+                $yqrOrder->save();
+
+                //给用户和邀请人添加积分,添加4条积分记录
+                $userData1 = Users::where('id',$orderInfo->uid)->first();//+10
+                $userData2 = Users::where('id',$orderInfo->business_uid)->first();//+2
+                $userData3 = Users::where('id',$yqrOrder->uid)->first();//+5
+                $userData4 = Users::where('id',$yqrOrder->business_uid)->first();//+1
+
+                //变动前积分
+                $oldamount1 = $userData1->integral;
+                $oldamount2 = $userData2->integral;
+                $oldamount3 = $userData3->integral;
+                $oldamount4 = $userData4->integral;
+
+                //给用户添加积分和积分
+                $userData1->integral = $oldamount1+10;
+                $userData1->save();
+                $userData2->integral = $oldamount2+2;
+                $userData2->save();
+                $userData3->integral = $oldamount3+5;
+                $userData3->save();
+                $userData4->integral = $oldamount4+1;
+                $userData4->save();
+
+                //添加用户积分记录
+                $data1 = array($userData1->id,10,'开通来客会员',$oldamount1,$userData1->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
+                IntegralLogs::addLog($data1);
+
+                $data2 = array($userData2->id,2,'开通来客会员',$oldamount2,$userData2->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData1->id,'KTHY');
+                IntegralLogs::addLog($data2);
+
+                //给邀请人添加积分记录
+                $data3 = array($userData3->id,5,'开通来客会员',$oldamount3,$userData3->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData3->id,'KTHY');
+                IntegralLogs::addLog($data3);
+
+                $data4 = array($userData4->id,1,'开通来客会员',$oldamount4,$userData4->role,'开通来客会员添加积分',$data[ 'order_id' ],0,$userData3->id,'KTHY');
+                IntegralLogs::addLog($data4);
+
+
             } else {
                 DB::rollBack();
                 Log::info("=======打印购买会员支付回调数据=====解析为空=====");
-                Log::debug("=======打印购买会员支付回调数据=====解析为空=====");
                 throw new Exception('解析为空');
             }
             DB::commit();
@@ -146,40 +175,6 @@ class UsersController extends Controller
 //***************************************************************
 
 
-    }
-
-    public function bmPayCallback(Request $request)
-    {
-        $Pay = new YuntongPay();
-        $json = $request->getContent();
-        DB::beginTransaction();
-        try {
-            $data = json_decode($json, true);
-            $res = $Pay->Notify($data);
-            if (!empty($res)) {
-                $Order = new Order();
-                $orderInfo = $Order->getOrderByOrderNo($data[ 'order_id' ]);
-                if ($orderInfo->price != $data[ 'amount' ]) {
-                    throw new Exception('付款金额与应付金额不一致');
-                }
-                /* 更新订单表以及积分 */
-                $OrderService = new OrderService();
-                $description = $OrderService->getDescription($orderInfo->id);
-                $OrderService->completeOrderTable($orderInfo->id, $orderInfo->uid, $description, $orderInfo->order_no);
-                /* 更新对应斑马订单表 */
-                $OrderService->updateSubOrder($orderInfo->id, $res, $description);
-            } else {
-                DB::rollBack();
-                throw new Exception('解析为空');
-            }
-            DB::commit();
-            /* 订单完成后续充值 */
-            $OrderService->afterCompletedOrder($orderInfo->id, $res, $description, $orderInfo);
-            $Pay->Notify_success();
-        } catch (Exception $e) {
-            Log::debug('YuntongNotify-验证不通过-bmCallback-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
-            $Pay->Notify_failed();
-        }
     }
 
 
