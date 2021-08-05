@@ -130,6 +130,7 @@ class UsersController extends Controller
                 $oldamount2 = $userData2->integral;
                 //给用户添加积分
                 $userData1->integral = $oldamount1+10;
+                $userData1->member_status = 1;//修改用户来客会员身份状态
                 $userData1->save();
                 $userData2->integral = $oldamount2+2;
                 $userData2->save();
