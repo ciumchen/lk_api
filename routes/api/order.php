@@ -73,3 +73,11 @@ Route::any('utility-bill', 'Order\UtilityController@checkBill');
 /********************** 兑换充值 **********************/
 //兑换话费回调[斑马]
 Route::any('usdt-phone', 'Order\MobileNotifyController@usdtCall');
+
+/********************** 我的订单 **********************/
+//获取用户订单
+Route::any("user-orders", "Order\OrderController@userOrderList");
+//获取商家订单
+Route::any("shop-orders", "Order\OrderController@shopOrderList");
+//获取多人代充充值详情
+Route::any("mobile-details", "Order\OrderController@getMobileDetails");
