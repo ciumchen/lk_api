@@ -2,17 +2,8 @@
 
 namespace AlipayAop;
 
-//require_once 'AopEncrypt.php';
-use AopEncrypt;
-
-//require_once 'EncryptParseItem.php';
-use EncryptParseItem;
-
-//require_once 'EncryptResponseData.php';
-use EncryptResponseData;
-
-//require_once 'SignData.php';
-use SignData;
+use AlipayAop\request\AlipayUserInfoAuthRequest;
+use Exception;
 
 class AopClient
 {
@@ -100,7 +91,7 @@ class AopClient
                 $i++;
             }
         }
-        unset ($k, $v);
+        unset($k, $v);
         return $stringToBeSigned;
     }
     
@@ -122,7 +113,7 @@ class AopClient
                 $i++;
             }
         }
-        unset ($k, $v);
+        unset($k, $v);
         return $stringToBeSigned;
     }
     
@@ -196,17 +187,15 @@ class AopClient
         $postMultipart = false;
         if (is_array($postFields) && 0 < count($postFields)) {
             foreach ($postFields as $k => $v) {
-                if ("@" != substr($v, 0, 1)) //判断是不是文件上传
-                {
+                if ("@" != substr($v, 0, 1)) { //判断是不是文件上传
                     $postBodyString .= "$k=".urlencode($this->characet($v, $this->postCharset))."&";
                     $encodeArray[ $k ] = $this->characet($v, $this->postCharset);
-                } else //文件上传用multipart/form-data，否则用www-form-urlencoded
-                {
+                } else { //文件上传用multipart/form-data，否则用www-form-urlencoded
                     $postMultipart = true;
                     $encodeArray[ $k ] = new \CURLFile(substr($v, 1));
                 }
             }
-            unset ($k, $v);
+            unset($k, $v);
             curl_setopt($ch, CURLOPT_POST, true);
             if ($postMultipart) {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $encodeArray);
@@ -289,11 +278,11 @@ class AopClient
     /**
      * 页面提交执行方法
      *
-     * @param        $request      跳转类接口的request
-     * @param string $httpmethod   提交方式,两个值可选：post、get;
-     * @param null   $appAuthToken 三方应用授权token
+     * @param AlipayUserInfoAuthRequest $request      跳转类接口的request
+     * @param string                    $httpmethod   提交方式,两个值可选：post、get;
+     * @param null                      $appAuthToken 三方应用授权token
      *
-     * @return 构建好的、签名后的最终跳转URL（GET）或String形式的form（POST）
+     * @return string 构建好的、签名后的最终跳转URL（GET）或String形式的form（POST）
      * @throws Exception
      */
     public function pageExecute($request, $httpmethod = "POST", $appAuthToken = null)
@@ -381,7 +370,7 @@ class AopClient
     protected function buildRequestForm($para_temp)
     {
         $sHtml = "<form id='alipaysubmit' name='alipaysubmit' action='".$this->gatewayUrl."?charset=".trim($this->postCharset)."' method='POST'>";
-        while (list ($key, $val) = $this->fun_adm_each($para_temp)) {
+        while (list($key, $val) = $this->fun_adm_each($para_temp)) {
             if (false === $this->checkEmpty($val)) {
                 //$val = $this->characet($val, $this->postCharset);
                 $val = str_replace("'", "&apos;", $val);
@@ -487,8 +476,12 @@ class AopClient
         try {
             $resp = $this->curl($requestUrl, $apiParams);
         } catch (Exception $e) {
-            $this->logCommunicationError($sysParams[ "method" ], $requestUrl, "HTTP_ERROR_".$e->getCode(),
-                                         $e->getMessage());
+            $this->logCommunicationError(
+                $sysParams[ "method" ],
+                $requestUrl,
+                "HTTP_ERROR_".$e->getCode(),
+                $e->getMessage()
+            );
             return false;
         }
         //解析AOP返回结果
@@ -547,7 +540,7 @@ class AopClient
      *
      * @return string
      */
-    function characet($data, $targetCharset)
+    public function characet($data, $targetCharset)
     {
         if (!empty($data)) {
             $fileType = $this->fileCharset;
@@ -561,7 +554,7 @@ class AopClient
     
     public function exec($paramsArray)
     {
-        if (!isset ($paramsArray[ "method" ])) {
+        if (!isset($paramsArray[ "method" ])) {
             trigger_error("No api name passed");
         }
         $inflector = new LtInflector;
@@ -570,7 +563,7 @@ class AopClient
         if (!class_exists($requestClassName)) {
             trigger_error("No such api: ".$paramsArray[ "method" ]);
         }
-        $session = isset ($paramsArray[ "session" ]) ? $paramsArray[ "session" ] : null;
+        $session = isset($paramsArray[ "session" ]) ? $paramsArray[ "session" ] : null;
         $req = new $requestClassName;
         foreach ($paramsArray as $paraKey => $paraValue) {
             $inflector->conf[ "separator" ] = "_";
@@ -578,7 +571,7 @@ class AopClient
             $inflector->conf[ "separator" ] = ".";
             $setterMethodName = "set".$inflector->camelize($setterMethodName);
             if (method_exists($req, $setterMethodName)) {
-                $req->$setterMethodName ($paraValue);
+                $req->$setterMethodName($paraValue);
             }
         }
         return $this->execute($req, $session);
@@ -623,7 +616,7 @@ class AopClient
         return $this->verify($this->getSignContent($params), $sign, $rsaPublicKeyFilePath, $signType);
     }
     
-    function verify($data, $sign, $rsaPublicKeyFilePath, $signType = 'RSA')
+    public function verify($data, $sign, $rsaPublicKeyFilePath, $signType = 'RSA')
     {
         if ($this->checkEmpty($this->alipayPublicKey)) {
             $pubKey = $this->alipayrsaPublicKey;
@@ -776,20 +769,20 @@ class AopClient
         return $strnull;
     }
     
-    function splitCN($cont, $n = 0, $subnum, $charset)
+    public function splitCN($cont, $n = 0, $subnum, $charset)
     {
         //$len = strlen($cont) / 3;
         $arrr = [];
         for ($i = $n; $i < strlen($cont); $i += $subnum) {
             $res = $this->subCNchar($cont, $i, $subnum, $charset);
-            if (!empty ($res)) {
+            if (!empty($res)) {
                 $arrr[] = $res;
             }
         }
         return $arrr;
     }
     
-    function subCNchar($str, $start = 0, $length, $charset = "gbk")
+    public function subCNchar($str, $start = 0, $length, $charset = "gbk")
     {
         if (strlen($str) <= $length) {
             return $str;
@@ -803,7 +796,7 @@ class AopClient
         return $slice;
     }
     
-    function parserResponseSubCode($request, $responseContent, $respObject, $format)
+    public function parserResponseSubCode($request, $responseContent, $respObject, $format)
     {
         if ("json" == $format) {
             $apiName = $request->getApiMethodName();
@@ -835,7 +828,7 @@ class AopClient
         }
     }
     
-    function parserJSONSignData($request, $responseContent, $responseJSON)
+    public function parserJSONSignData($request, $responseContent, $responseJSON)
     {
         $signData = new SignData();
         $signData->sign = $this->parserJSONSign($responseJSON);
@@ -843,7 +836,7 @@ class AopClient
         return $signData;
     }
     
-    function parserJSONSignSource($request, $responseContent)
+    public function parserJSONSignSource($request, $responseContent)
     {
         $apiName = $request->getApiMethodName();
         $rootNodeName = str_replace(".", "_", $apiName).$this->RESPONSE_SUFFIX;
@@ -860,7 +853,7 @@ class AopClient
         }
     }
     
-    function parserJSONSource($responseContent, $nodeName, $nodeIndex)
+    public function parserJSONSource($responseContent, $nodeName, $nodeIndex)
     {
         $signDataStartIndex = $nodeIndex + strlen($nodeName) + 2;
         $signIndex = strrpos($responseContent, "\"".$this->SIGN_NODE_NAME."\"");
@@ -873,12 +866,12 @@ class AopClient
         return substr($responseContent, $signDataStartIndex, $indexLen);
     }
     
-    function parserJSONSign($responseJSon)
+    public function parserJSONSign($responseJSon)
     {
         return $responseJSon->sign;
     }
     
-    function parserXMLSignData($request, $responseContent)
+    public function parserXMLSignData($request, $responseContent)
     {
         $signData = new SignData();
         $signData->sign = $this->parserXMLSign($responseContent);
@@ -886,7 +879,7 @@ class AopClient
         return $signData;
     }
     
-    function parserXMLSignSource($request, $responseContent)
+    public function parserXMLSignSource($request, $responseContent)
     {
         $apiName = $request->getApiMethodName();
         $rootNodeName = str_replace(".", "_", $apiName).$this->RESPONSE_SUFFIX;
@@ -905,7 +898,7 @@ class AopClient
         }
     }
     
-    function parserXMLSource($responseContent, $nodeName, $nodeIndex)
+    public function parserXMLSource($responseContent, $nodeName, $nodeIndex)
     {
         $signDataStartIndex = $nodeIndex + strlen($nodeName) + 1;
         $signIndex = strrpos($responseContent, "<".$this->SIGN_NODE_NAME.">");
@@ -918,7 +911,7 @@ class AopClient
         return substr($responseContent, $signDataStartIndex, $indexLen);
     }
     
-    function parserXMLSign($responseContent)
+    public function parserXMLSign($responseContent)
     {
         $signNodeName = "<".$this->SIGN_NODE_NAME.">";
         $signEndNodeName = "</".$this->SIGN_NODE_NAME.">";
@@ -955,13 +948,21 @@ class AopClient
             // 获取结果sub_code
             $responseSubCode = $this->parserResponseSubCode($request, $resp, $respObject, $this->format);
             if (!$this->checkEmpty($responseSubCode) || ($this->checkEmpty($responseSubCode) && !$this->checkEmpty($signData->sign))) {
-                $checkResult = $this->verify($signData->signSourceData, $signData->sign, $this->alipayPublicKey,
-                                             $this->signType);
+                $checkResult = $this->verify(
+                    $signData->signSourceData,
+                    $signData->sign,
+                    $this->alipayPublicKey,
+                    $this->signType
+                );
                 if (!$checkResult) {
                     if (strpos($signData->signSourceData, "\\/") > 0) {
                         $signData->signSourceData = str_replace("\\/", "/", $signData->signSourceData);
-                        $checkResult = $this->verify($signData->signSourceData, $signData->sign, $this->alipayPublicKey,
-                                                     $this->signType);
+                        $checkResult = $this->verify(
+                            $signData->signSourceData,
+                            $signData->sign,
+                            $this->alipayPublicKey,
+                            $this->signType
+                        );
                         if (!$checkResult) {
                             throw new Exception("check sign Fail! [sign=".$signData->sign.", signSourceData=".$signData->signSourceData."]");
                         }
@@ -987,8 +988,11 @@ class AopClient
     {
         $parsetItem = $this->parserEncryptJSONSignSource($request, $responseContent);
         $bodyIndexContent = substr($responseContent, 0, $parsetItem->startIndex);
-        $bodyEndContent = substr($responseContent, $parsetItem->endIndex,
-                                 strlen($responseContent) + 1 - $parsetItem->endIndex);
+        $bodyEndContent = substr(
+            $responseContent,
+            $parsetItem->endIndex,
+            strlen($responseContent) + 1 - $parsetItem->endIndex
+        );
         $bizContent = decrypt($parsetItem->encryptContent, $this->encryptKey);
         return $bodyIndexContent.$bizContent.$bodyEndContent;
     }
@@ -1033,8 +1037,11 @@ class AopClient
     {
         $parsetItem = $this->parserEncryptXMLSignSource($request, $responseContent);
         $bodyIndexContent = substr($responseContent, 0, $parsetItem->startIndex);
-        $bodyEndContent = substr($responseContent, $parsetItem->endIndex,
-                                 strlen($responseContent) + 1 - $parsetItem->endIndex);
+        $bodyEndContent = substr(
+            $responseContent,
+            $parsetItem->endIndex,
+            strlen($responseContent) + 1 - $parsetItem->endIndex
+        );
         $bizContent = decrypt($parsetItem->encryptContent, $this->encryptKey);
         return $bodyIndexContent.$bizContent.$bodyEndContent;
     }
@@ -1081,7 +1088,7 @@ class AopClient
         return $encryptParseItem;
     }
     
-    function echoDebug($content)
+    public function echoDebug($content)
     {
         if ($this->debugInfo) {
             echo "<br/>".$content;

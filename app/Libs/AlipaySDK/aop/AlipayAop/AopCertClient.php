@@ -12,6 +12,7 @@ namespace AlipayAop;
 //use EncryptParseItem;
 //use EncryptResponseData;
 //use SignData;
+use Exception;
 
 class AopCertClient
 {
@@ -97,7 +98,7 @@ class AopCertClient
     {
         $cert = file_get_contents($certPath);
         $ssl = openssl_x509_parse($cert);
-        $SN = md5(array2string(array_reverse($ssl[ 'issuer' ])).$ssl[ 'serialNumber' ]);
+        $SN = md5(AopCertification::array2string(array_reverse($ssl[ 'issuer' ])).$ssl[ 'serialNumber' ]);
         return $SN;
     }
     
@@ -121,9 +122,9 @@ class AopCertClient
             }
             if ($ssl[ $i ][ 'signatureTypeLN' ] == "sha1WithRSAEncryption" || $ssl[ $i ][ 'signatureTypeLN' ] == "sha256WithRSAEncryption") {
                 if ($SN == null) {
-                    $SN = md5(array2string(array_reverse($ssl[ $i ][ 'issuer' ])).$ssl[ $i ][ 'serialNumber' ]);
+                    $SN = md5(AopCertification::array2string(array_reverse($ssl[ $i ][ 'issuer' ])).$ssl[ $i ][ 'serialNumber' ]);
                 } else {
-                    $SN = $SN."_".md5(array2string(array_reverse($ssl[ $i ][ 'issuer' ])).$ssl[ $i ][ 'serialNumber' ]);
+                    $SN = $SN."_".md5(AopCertification::array2string(array_reverse($ssl[ $i ][ 'issuer' ])).$ssl[ $i ][ 'serialNumber' ]);
                 }
             }
         }
@@ -1131,10 +1132,12 @@ class AopCertClient
             if ($rootIndex > 0) {
                 // 内部节点对象
                 $rInnerObject = $respObject->$rootNodeName;
-            } else if ($errorIndex > 0) {
-                $rInnerObject = $respObject->$errorNodeName;
             } else {
-                return null;
+                if ($errorIndex > 0) {
+                    $rInnerObject = $respObject->$errorNodeName;
+                } else {
+                    return null;
+                }
             }
             // 存在属性则返回对应值
             if (isset($rInnerObject->sub_code)) {
@@ -1142,9 +1145,11 @@ class AopCertClient
             } else {
                 return null;
             }
-        } else if ("xml" == $format) {
-            // xml格式sub_code在同一层级
-            return $respObject->sub_code;
+        } else {
+            if ("xml" == $format) {
+                // xml格式sub_code在同一层级
+                return $respObject->sub_code;
+            }
         }
     }
     
