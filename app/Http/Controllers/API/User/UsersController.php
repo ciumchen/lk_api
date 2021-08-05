@@ -9,6 +9,7 @@ use App\Http\Requests\NewApplyBusinessRequest;
 use App\Http\Requests\RealNameRequest;
 use App\Http\Resources\IntegralLogsResources;
 use App\Http\Resources\UserResources;
+use App\Libs\Yuntong\YuntongPay;
 use App\Models\AuthLog;
 use App\Models\BusinessApply;
 use App\Models\IntegralLogs;
@@ -19,6 +20,7 @@ use App\Models\Users;
 use App\Models\UserUpdatePhoneLog;
 use App\Models\VerifyCode;
 use App\Services\BusinessService;
+use App\Services\OrderService;
 use App\Services\OssService;
 use Illuminate\Database\Eloquent\Model;
 
@@ -104,10 +106,79 @@ class UsersController extends Controller
 
     //购买会员支付回调
     public function getLkMemberPayHd(Request $request){
-        $data = $request->all();
+        $allData = $request->all();
+        Log::info("=======打印购买会员支付回调数据=====1=====",$allData);
+        Log::debug("=======打印购买会员支付回调数据=====1=====",$allData);
+//***************************************************************
+        $Pay = new YuntongPay();
+        $json = $request->getContent();
+        DB::beginTransaction();
+        try {
+            $data = json_decode($json, true);
+            $res = $Pay->Notify($data);
 
-        Log::info("=======打印购买会员支付回调数据==========",$data);
+            Log::info("=======打印购买会员支付回调数据====2======",$data);
+            Log::debug("=======打印购买会员支付回调数据====2======",$data);
 
+            if (!empty($res)) {
+                $Order = new Order();
+                $orderInfo = $Order->getOrderByOrderNo($data[ 'order_id' ]);
+                if ($orderInfo->price != $data[ 'amount' ]) {
+                    throw new Exception('付款金额与应付金额不一致');
+                }
+                Log::info("=======打印购买会员支付回调数据====3======",$data);
+                Log::debug("=======打印购买会员支付回调数据====3======",$data);
+            } else {
+                DB::rollBack();
+                Log::info("=======打印购买会员支付回调数据=====解析为空=====");
+                Log::debug("=======打印购买会员支付回调数据=====解析为空=====");
+                throw new Exception('解析为空');
+            }
+            DB::commit();
+            $Pay->Notify_success();
+        } catch (Exception $e) {
+            Log::debug('YuntongNotify-验证不通过-bmCallback-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
+            $Pay->Notify_failed();
+        }
+
+
+//***************************************************************
+
+
+    }
+
+    public function bmPayCallback(Request $request)
+    {
+        $Pay = new YuntongPay();
+        $json = $request->getContent();
+        DB::beginTransaction();
+        try {
+            $data = json_decode($json, true);
+            $res = $Pay->Notify($data);
+            if (!empty($res)) {
+                $Order = new Order();
+                $orderInfo = $Order->getOrderByOrderNo($data[ 'order_id' ]);
+                if ($orderInfo->price != $data[ 'amount' ]) {
+                    throw new Exception('付款金额与应付金额不一致');
+                }
+                /* 更新订单表以及积分 */
+                $OrderService = new OrderService();
+                $description = $OrderService->getDescription($orderInfo->id);
+                $OrderService->completeOrderTable($orderInfo->id, $orderInfo->uid, $description, $orderInfo->order_no);
+                /* 更新对应斑马订单表 */
+                $OrderService->updateSubOrder($orderInfo->id, $res, $description);
+            } else {
+                DB::rollBack();
+                throw new Exception('解析为空');
+            }
+            DB::commit();
+            /* 订单完成后续充值 */
+            $OrderService->afterCompletedOrder($orderInfo->id, $res, $description, $orderInfo);
+            $Pay->Notify_success();
+        } catch (Exception $e) {
+            Log::debug('YuntongNotify-验证不通过-bmCallback-'.$e->getMessage(), [$json.'---------'.json_encode($e)]);
+            $Pay->Notify_failed();
+        }
     }
 
 
