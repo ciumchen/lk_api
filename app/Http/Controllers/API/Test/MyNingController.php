@@ -232,6 +232,9 @@ class MyNingController extends Controller
         $amount = $request->input('amount');
         $assType = $request->input('assType');
         $assData = Assets::where('uid', $uid)->where('assets_name', $assType)->first();
+        if ($assData==''){
+            dd("用户uid不存在");
+        }
         $assData->amount = $amount;
         if ($assData->save()) {
             return "账号解封成功";
