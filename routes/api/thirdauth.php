@@ -14,5 +14,6 @@ Route::middleware(['auth:sanctum'])->group(
 // 不需要登录验证//
 ////////////////
 Route::any('alipay-notify', 'ThirdAuth\AlipayNotifyController@authNotify');
+Route::any('alipay-after-auth', 'ThirdAuth\AlipayAuthController@AlipayAfterAuth');
 
 

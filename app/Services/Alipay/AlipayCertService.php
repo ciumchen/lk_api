@@ -9,13 +9,7 @@ use Exception;
 
 class AlipayCertService
 {
-    protected $config = [
-        '' => '',
-    ];
     
-    public function __construct(array $config = null)
-    {
-    }
     
     public function getRequest()
     {
