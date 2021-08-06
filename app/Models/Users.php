@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\LogicException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;

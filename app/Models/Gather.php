@@ -13,42 +13,73 @@ class Gather extends Model
 
     protected $table = 'gather';
 
+    /**新增拼团
+     * @param int $type
+     * @return mixed
+     * @throws LogicException
+     */
+    public function setGather (int $type)
+    {
+        $date = date('Y-m-d H:i:s');
+
+        //组装数据
+        $gather = new Gather();
+        $gather->status = 0;
+        $gather->type = $type;
+        $gather->created_at = $date;
+        $gather->updated_at = $date;
+        $gather->save();
+
+        return $gather;
+    }
+
     /**获取拼团信息
      * @param Request $request
      * @return mixed
      * @throws LogicException
      */
-    public function getGatherInfo ()
+    public function getGatherList ()
     {
         //返回
         $gatherData = DB::table('gather as g')
             ->leftJoin('gather_users as gu', 'g.id', 'gu.gid')
-            ->where(['g.status' => 1])
-            ->select(DB::raw('count(gu.id) as userTotal, g.id'))
+            //->where(['g.status' => 0])
+            ->select(DB::raw('count(gu.id) as userTotal, g.id, g.status'))
             ->groupBy('g.id')
             ->get();
 
         return json_decode($gatherData, 1);
     }
 
-    /**获取用户拼团信息
-     * @param int $uid
+    /**获取拼团信息
+     * @param int $gid
      * @return mixed
      * @throws LogicException
      */
-    public function getUserAllInfo (int $uid)
+    public function getGatherInfo (int $gid)
     {
-
+        return Gather::where(['id' => $gid])->first();
     }
 
-    /**获取用户单个拼团信息
+    /**更新拼团信息
      * @param int $gid
-     * @param int $uid
+     * @param int $status
      * @return mixed
      * @throws LogicException
      */
-    public function getGatherUserInfo (int $gid, int $uid)
+    public function updGather (int $gid, int $status)
     {
+        return Gather::whereIn('id', [$gid])
+                ->update(['status' => 1, 'created_at' => date('Y-m-d H:i:s')]);
+    }
 
+    /**获取拼团用户总数
+     * @param int $gid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getGatherUserSum (int $gid)
+    {
+        return GatherUsers::where(['gid' => $gid])->count();
     }
 }

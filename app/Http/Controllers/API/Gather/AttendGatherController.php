@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Gather;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\Gather;
+use App\Services\GatherService;
 use Illuminate\Http\Request;
 
 class AttendGatherController extends Controller
@@ -17,7 +18,7 @@ class AttendGatherController extends Controller
     public function getGatherInfo ()
     {
         //返回
-        return (new Gather())->getGatherInfo();
+        return (new Gather())->getGatherList();
     }
 
     /**参加拼团
@@ -27,7 +28,10 @@ class AttendGatherController extends Controller
      */
     public function addGatherUser (Request $request)
     {
-        //判断用户金额
-        //判断用户当天次数，没人每天最多30次
+        $gid = $request->gid;
+        $uid = $request->uid;
+
+        //返回
+        return (new GatherService())->addGatherUser($gid, $uid);
     }
 }

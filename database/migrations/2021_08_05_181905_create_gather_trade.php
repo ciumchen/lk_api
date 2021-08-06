@@ -20,6 +20,7 @@ class CreateGatherTrade extends Migration
             $table->unsignedInteger('uid')->default(0)->comment('用户id');
             $table->unsignedInteger('business_uid')->default(0)->comment('商户id');
             $table->unsignedInteger('oid')->default(0)->comment('order表 id');
+            $table->string('order_no', 30)->default('')->comment('订单编号');
             $table->unsignedInteger('guid')->default(0)->comment('gather_users表 id');
             $table->unsignedDecimal('profit_ratio', 6, 3)->default(0.00)->comment('让利比列');
             $table->unsignedDecimal('price', 10, 2)->default(0.00)->comment('消费金额');
