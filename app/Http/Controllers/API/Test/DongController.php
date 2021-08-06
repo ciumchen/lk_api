@@ -178,7 +178,7 @@ class DongController extends Controller
     {
         try {
             $AlipayService = new AlipayCertService();
-            $as = $AlipayService->authByCert();
+            $as = $AlipayService->authByCertWebPage();
 //            echo $as;
             dd($as);
         } catch (\Exception $e) {
@@ -190,7 +190,7 @@ class DongController extends Controller
     {
         try {
             $AlipayService = new AlipayCertService();
-            $as = $AlipayService->authByCert();
+            $as = $AlipayService->authByCertWebPage();
             echo $as;
 //            dd($as);
         } catch (\Exception $e) {

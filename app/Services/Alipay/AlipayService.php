@@ -7,30 +7,21 @@ use AlipayAop\AopCertClient;
 use AlipayAop\request\AlipayTradeQueryRequest;
 use AlipayAop\request\AlipayUserInfoAuthRequest;
 
-class AlipayService
+class AlipayService extends AlipayBaseService
 {
     public function test()
     {
         try {
-            return $this->authByKey();
+            return $this->authByKeyWebPage();
         } catch (\Exception $e) {
             throw $e;
         }
     }
     
-    public function authByKey()
+    public function authByKeyWebPage()
     {
         try {
-            $AopClient = new AopClient();
-            $AopClient->gatewayUrl = 'https://openapi.alipay.com/gateway.do';
-            $AopClient->appId = config('alipay.app_id');
-            $AopClient->rsaPrivateKey = config('alipay.app_private_key');
-            $AopClient->alipayrsaPublicKey = config('alipay.rsa_public_key');
-            $AopClient->apiVersion = '1.0';
-            $AopClient->signType = config('alipay.sign_type');
-            $AopClient->postCharset = 'UTF-8';
-            $AopClient->return_url = 'UTF-8';
-            $AopClient->format = 'json';
+            $AopClient = $this->getAopClient();
             $request = new AlipayUserInfoAuthRequest();
             $data = [
                 'scopes' => ['auth_base'],
