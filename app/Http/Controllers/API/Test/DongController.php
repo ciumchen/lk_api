@@ -185,4 +185,16 @@ class DongController extends Controller
             throw $e;
         }
     }
+    
+    public function alipayTest3()
+    {
+        try {
+            $AlipayService = new AlipayCertService();
+            $as = $AlipayService->authByCert();
+            echo $as;
+//            dd($as);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
 }
