@@ -124,9 +124,9 @@ class UsersController extends Controller
                 $yqrOrder->pay_status = 'succeeded';
                 $yqrOrder->save();
 
-                $OrderTwoModel = new OrderTwoService();
-                $OrderTwoModel->MemberUserOrder($orderInfo->id);
-                $OrderTwoModel->MemberUserOrder($yqrOrder->id);
+                $OrderModel = new OrderService();
+                $OrderModel->MemberUserOrder($orderInfo->id);
+                $OrderModel->MemberUserOrder($yqrOrder->id);
 
             } else {
                 Log::info("=======打印购买会员支付回调数据=====解析为空=====");
