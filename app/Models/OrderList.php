@@ -70,11 +70,23 @@ class OrderList extends Model
         //usdt 兑换话费、美团
         $convertData = json_decode($this->getConvertOrder($where), 1);
 
+        //order表开通会员订单
+        $orderData = json_decode($this->getOrderKTHY($where), 1);
+
         //合并订单
-        $orderArr = array_merge($tradeData, $mobileData, $videoData, $convertData);
+        $orderArr = array_merge($tradeData, $mobileData, $videoData, $convertData,$orderData);
 
         //返回
         return (new OrderListService())->result($orderArr, $data);
+    }
+
+    //获取order表开团会员订单
+    public function getOrderKTHY($where){
+        $await = 10;
+        //获取订单列表
+        return DB::table('order')->where($where)
+            ->get(['id', 'order_no', 'uid', 'price', 'name', 'created_at', 'profit_ratio', 'business_uid',
+                'status']);
     }
 
     /**获取trade_order 订单列表
