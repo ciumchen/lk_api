@@ -116,6 +116,7 @@ class UsersController extends Controller
                 //验证通过修改订单支付状态
                 $orderInfo->status = 2;
                 $orderInfo->pay_status = 'succeeded';
+                $orderInfo->member_status = 1;//修改用户来客会员身份状态
                 $orderInfo->save();
 
                 $yqrOrder = $Order::where('member_gl_oid',$orderInfo->id)->first();//邀请人录单记录
@@ -153,7 +154,6 @@ class UsersController extends Controller
         $OrderService->MemberUserOrder($oid1);
         $OrderService->MemberUserOrder($oid2);
 
-        var_dump($oid1,$oid2);
     }
 
 //    //购买会员支付回调

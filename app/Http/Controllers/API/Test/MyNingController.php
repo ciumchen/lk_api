@@ -229,11 +229,12 @@ class MyNingController extends Controller
     public function xfUserAssetFH(Request $request)
     {
         $uid = $request->input('uid');
-        $amount = $request->input('amount');
-        $assType = $request->input('assType');
+        $amount = $request->input('amount');//资产数量
+        $assType = $request->input('assType');//资产类型：usdt/iets
+
         $assData = Assets::where('uid', $uid)->where('assets_name', $assType)->first();
         if ($assData==''){
-            dd("用户uid不存在");
+            dd($uid."用户资产记录不存在");
         }
         $assData->amount = $amount;
         if ($assData->save()) {
