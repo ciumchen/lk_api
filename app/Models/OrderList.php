@@ -71,7 +71,8 @@ class OrderList extends Model
         $convertData = json_decode($this->getConvertOrder($where), 1);
 
         //order表开通会员订单
-        $orderData = json_decode($this->getOrderKTHY($where), 1);
+        $uid = $where['o.uid'];
+        $orderData = json_decode($this->getOrderKTHY($uid), 1);
 
         //合并订单
         $orderArr = array_merge($tradeData, $mobileData, $videoData, $convertData,$orderData);
@@ -81,10 +82,9 @@ class OrderList extends Model
     }
 
     //获取order表开团会员订单
-    public function getOrderKTHY($where){
-        $await = 10;
+    public function getOrderKTHY($uid){
         //获取订单列表
-        return DB::table('order')->where($where)
+        return DB::table('order')->where('uid',$uid)
             ->get(['id', 'order_no', 'uid', 'price', 'name', 'created_at', 'profit_ratio', 'business_uid',
                 'status']);
     }
