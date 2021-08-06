@@ -61,6 +61,7 @@ class UserResources extends JsonResource
             'sign'                     => $this->sign,
             'real_name'                => $this->real_name,
             'qrcode'                   => $qrcode_url,
+            'member_status'            => $this->member_status,
         ];
     }
 }
