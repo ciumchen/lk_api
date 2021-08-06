@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ThirdAuth\AlipayAuthController;
 use Illuminate\Support\Facades\Route;
 
 ///////////////
@@ -20,7 +21,7 @@ Route::any('alipay-notify', 'ThirdAuth\AlipayNotifyController@authNotify');
 // 同步回调返回地址
 Route::get('alipay-after-auth/{uid}', function (
     Illuminate\Http\Request $request,
-    \App\Http\Controllers\API\ThirdAuth\AlipayAuthController $Controller,
+    AlipayAuthController $Controller,
     $uid
 ) {
     return $Controller->AlipayAfterAuth($request, $uid);
