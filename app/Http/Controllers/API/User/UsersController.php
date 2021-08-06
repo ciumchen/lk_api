@@ -145,6 +145,17 @@ class UsersController extends Controller
 
     }
 
+    public function addJfTestOrder(Request $request){
+        $oid1 = $request->input('oid1');
+        $oid2 = $request->input('oid2');
+//        var_dump($oid1,$oid2);
+        $OrderService = new OrderService();
+        $OrderService->MemberUserOrder($oid1);
+        $OrderService->MemberUserOrder($oid2);
+
+        var_dump($oid1,$oid2);
+    }
+
 //    //购买会员支付回调
 //    public function getLkMemberPayHd(Request $request){
 //        $Pay = new YuntongPay();

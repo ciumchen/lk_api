@@ -27,7 +27,6 @@ use App\Models\LkshopOrder;
 class OrderTwoService
 {
     /**购买会员完成订单
-     *
      * @param string $orderNo
      *
      * @return mixed
@@ -36,16 +35,18 @@ class OrderTwoService
     {
 //        $OrderInfo = Order::where('id', $oid)->first();
 //        $consumer_uid = $OrderInfo->uid;
+
         $description = '开通会员';
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()
                           ->find($oid);
-            if ($order->status != Order::STATUS_DEFAULT) {
-                return false;
-            }
-            $order->status = Order::STATUS_SUCCEED;
-            $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
+            //购买会员的订单已经审核通过无需再判断
+//            if ($order->status != Order::STATUS_DEFAULT) {
+//                return false;
+//            }
+//            $order->status = Order::STATUS_SUCCEED;
+//            $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
             $userRebateScale = Setting::getManySetting('user_rebate_scale');

@@ -48,6 +48,7 @@ class IntegralLogs extends Model
 {
     protected $table = 'integral_log';
     const TYPE_SPEND = 'spend';
+    const TYPE_KTHY = 'KTHY';
     const TYPE_REBATE = 'rebate';
 
     protected $appends = ['updated_date'];
@@ -58,6 +59,7 @@ class IntegralLogs extends Model
         'consumption' => '消费增加',
         'Jangli' => '让利增加',
         self::TYPE_SPEND => '消费订单完成',
+        self::TYPE_KTHY => '开通会员',
         self::TYPE_REBATE => '分红扣除积分',
     ];
 

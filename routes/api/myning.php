@@ -87,3 +87,6 @@ Route::any("plInsertUserImages", 'Test\MyNingController@plInsertUserImages');
 //批量修改商家门头照
 Route::any("plUpdateUserShimg2", 'Test\MyNingController@plUpdateUserShimg2');
 
+
+//购买会员支付完成添加积分测试
+Route::any("addJfTestOrder", 'User\UsersController@addJfTestOrder');
