@@ -113,10 +113,14 @@ class UsersController extends Controller
                     throw new Exception('付款金额与应付金额不一致');
                 }
 //                Log::info("=======打印购买会员支付回调数据====2======",$data);
+                //更新用户会员身份，member_gl_oid
+                $gmUser = Users::find($orderInfo->uid);
+                $gmUser->member_status = 1;
+                $gmUser->save();//修改用户来客会员身份状态
+
                 //验证通过修改订单支付状态
                 $orderInfo->status = 2;
                 $orderInfo->pay_status = 'succeeded';
-                $orderInfo->member_status = 1;//修改用户来客会员身份状态
                 $orderInfo->save();
 
                 $yqrOrder = $Order::where('member_gl_oid',$orderInfo->id)->first();//邀请人录单记录
