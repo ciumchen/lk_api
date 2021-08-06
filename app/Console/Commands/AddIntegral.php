@@ -92,15 +92,23 @@ class AddIntegral extends Command
 
             $lddata = $orderldModer::where('day', $todaytime)->first();
             $id = $lddata->id;
-
+//            log::info("=================打印---日志---信息--11111111111==================================");
             $profit_ratio = array(
                 5 => 'price_5',
                 10 => 'price_10',
                 20 => 'price_20',
+                "other_price" => 'other_price',
             );
-            $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
-            $LkBlData[$field] = bcadd($lddata->$field, $orderInfo['price'], 2);//累计消费金额
-
+//            log::info("=================打印---日志---信息--22222222222==================================");
+            if ($orderInfo['name']!='商城订单'){
+                $field = $profit_ratio[floor($orderInfo['profit_ratio'])];
+                $LkBlData[$field] = bcadd($lddata->$field, $orderInfo['price'], 2);//累计消费金额
+                $scddType = 0;
+            }else{
+                $LkBlData["other_price"] = bcadd($lddata->other_price, $orderInfo['price'], 2);//累计消费金额
+                $scddType = 1;
+            }
+//            log::info("=================打印---日志---信息--3333333333==================================");
             //控制添加积分
             $addCountProfitPrice = bcadd($LkBlData['count_profit_price'], $orderInfo['profit_price'], 2);
             $old_addCountProfitPrice = $LkBlData['count_profit_price'];
@@ -108,7 +116,7 @@ class AddIntegral extends Command
             if ($LkBlData['count_profit_price'] != 0) {
                 $lk_unit_price = Setting::where('key', 'lk_unit_price')->value('value');
                 if (($old_addCountProfitPrice * 0.675 / $LkBlData['count_lk']) < $lk_unit_price) {
-                    if ($this->completeOrder($orderId)){
+                    if ($this->completeOrder($orderId,$scddType)){
                         $LkBlData['count_profit_price'] = $addCountProfitPrice;
                         DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
                         return "添加积分成功";
@@ -122,7 +130,7 @@ class AddIntegral extends Command
                 }
 
             } else {
-                if ($this->completeOrder($orderId)){
+                if ($this->completeOrder($orderId,$scddType)){
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
                     return "添加积分成功";
@@ -132,14 +140,14 @@ class AddIntegral extends Command
             }
 
         } else {
-//            log::info('=================后台未开启控单===================================');
+            log::info('=================后台未开启控单===================================');
             return "后台未开启控单";
         }
 
     }
 
 
-    public function completeOrder(string $orderId,Order $orderData=null)
+    public function completeOrder(string $orderId,$scddType=0,Order $orderData=null)
     {
         try {
             if (empty($orderData)){
@@ -167,13 +175,13 @@ class AddIntegral extends Command
             } elseif ($orderType == 'CLP' || $orderType == 'CLM') {
                 $dataInfo = $orderData->convertLogs;
             } else {
-//                log::debug("=================打印订单信息3-000000==================================".$orderType);
+                log::debug("=================打印订单信息3-000000========错误==========================".$orderType);
                 return false;
             }
         } catch (\Exception $e) {
             report($e);
             throw new LogicException('类型错误：'.$e);
-//            log::debug("=================打印订单信息3-111111==================================".$e);
+            log::debug("=================打印订单信息3-111111========错误==========================".$e);
         }
 
         $consumer_uid = $dataInfo->user_id??$dataInfo->uid;
@@ -195,18 +203,35 @@ class AddIntegral extends Command
             $order->import_day = date("Ymd",time());
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
-            $userRebateScale = Setting::getManySetting('user_rebate_scale');
-            $businessRebateScale = Setting::getManySetting('business_rebate_scale');
-            $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+
+            if ($scddType==0){
+                $userRebateScale = Setting::getManySetting('user_rebate_scale');
+                $businessRebateScale = Setting::getManySetting('business_rebate_scale');
+                $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+            }elseif ($scddType==1){
+                $userRebateScale = intval($order->profit_ratio*5);
+                $businessRebateScale = intval($order->profit_ratio);
+                $rebateScale = array($businessRebateScale=>$userRebateScale);
+            }else{
+                log::debug("=================订单的让利比例错误=============================");
+                return false;
+            }
+//            log::debug("=================让利比例数组=============================".$scddType);
+//            log::debug("=================让利比例数组=============================",$rebateScale);
             //通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()->find($order->uid);
 //            log::debug("=================打印订单信息4444444444=====1111111111111=============================");
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
+//            log::debug("=================打印订日志信息--aaa=============================".$profit_ratio_offset);
             $profit_ratio = bcdiv($rebateScale[intval($profit_ratio_offset)], 100, 4);
+//            log::debug("=================打印订日志信息--bbb=============================".$profit_ratio);
             $customerIntegral = bcmul($order->price, $profit_ratio, 2);
+//            log::debug("=================打印订日志信息--ccc=============================".$customerIntegral);
             $amountBeforeChange = $customer->integral;
+//            log::debug("=================打印订日志信息--ddd=============================".$amountBeforeChange);
             $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
+//            log::debug("=================打印订日志信息--eee=============================");
             $lkPer = Setting::getSetting('lk_per') ?? 300;
             //更新LK
             $customer->lk = bcdiv($customer->integral, $lkPer, 0);
@@ -215,7 +240,7 @@ class AddIntegral extends Command
 //            log::debug("=================打印订单信息4444444444=====333333333=============================");
             IntegralLogs::addLog($customer->id, $customerIntegral, IntegralLogs::TYPE_SPEND, $amountBeforeChange, 1, '消费者完成订单', $orderNo, 0, $consumer_uid, $description);
             //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
-//            $this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);
+//            //$this->addInvitePoints($order->business_uid, $order->profit_price, $description, $consumer_uid, $orderNo);//不使用这个添加积分，用下面的OrderService的方法添加积分
 //            log::debug("=================打印订单信息4444444444=====4444444444444444=============================");
 //            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->business_uid);
 //            log::debug("=================打印订单信息4444444444=====aaaa=============================".$order->profit_price);
@@ -227,12 +252,12 @@ class AddIntegral extends Command
             $order->save();
             DB::commit();
             return true;
-//            log::debug("=================打印订单信息55555==================================");
+//            log::debug("=================打印订单信息--成功=================================");
         } catch (\Exception $exception) {
             DB::rollBack();
 //            var_dump($exception->getMessage());
             return false;
-//            log::debug("=================打印订单信息666666==================================");
+            log::debug("=================打印订单信息--失败==================================");
         }
     }
 

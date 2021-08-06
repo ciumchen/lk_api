@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\API\Assets;
 
+use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\Assets;
 use App\Models\ConvertLogs;
+use App\Models\Users;
 use Illuminate\Http\Request;
 
 /** 兑换充值 **/
@@ -41,7 +43,11 @@ class ConvertController extends Controller
     public function phoneBill(Request $request)
     {
         $data = $request->all();
-
+        $uid = $request->input('uid');
+        $member_status = Users::where('id',$uid)->value('member_status');
+        if ($member_status == 0) {
+            throw new LogicException('非来客会员无法使用兑换话费，请购买来客会员!');
+        }
         //返回
         return (new Assets())->phoneBill($data);
     }
@@ -54,7 +60,11 @@ class ConvertController extends Controller
     public function meituanBill(Request $request)
     {
         $data = $request->all();
-
+        $uid = $request->input('uid');
+        $member_status = Users::where('id',$uid)->value('member_status');
+        if ($member_status == 0) {
+            throw new LogicException('非来客会员无法使用兑换美团，请购买来客会员!');
+        }
         //返回
         return (new Assets())->meituanBill($data);
     }

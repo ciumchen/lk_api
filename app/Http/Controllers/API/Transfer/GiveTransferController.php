@@ -47,6 +47,9 @@ class GiveTransferController extends Controller
         }
 
         $user = $request->user();
+        if ($user->member_status == 0) {
+            throw new LogicException('非来客会员无法赠送，请购买来客会员!');
+        }
 //dd($user);
         if (User::STATUS_NORMAL != $user->status) {
             throw new LogicException('账户异常','2004');
