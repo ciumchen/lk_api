@@ -13,11 +13,11 @@ Route::middleware(['auth:sanctum'])->group(
         Route::any('alipay-auth-h5', 'ThirdAuth\AlipayAuthController@getAuthUrlH5');
     }
 );
+/** ************************************************************************** **/
 /////////////////
 // 不需要登录验证//
 ////////////////
 Route::any('alipay-notify', 'ThirdAuth\AlipayNotifyController@authNotify');
-//Route::any('alipay-after-auth', 'ThirdAuth\AlipayAuthController@AlipayAfterAuth');
 // 同步回调返回地址
 Route::get('alipay-after-auth/{uid}', function (
     Illuminate\Http\Request $request,
