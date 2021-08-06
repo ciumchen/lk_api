@@ -86,7 +86,7 @@ class OrderList extends Model
         //获取订单列表
         return DB::table('order')->where('uid',$uid)
             ->get(['id', 'order_no', 'uid', 'price', 'name', 'created_at', 'profit_ratio', 'business_uid',
-                'status']);
+                'status','member_gl_oid']);
     }
 
     /**获取trade_order 订单列表
