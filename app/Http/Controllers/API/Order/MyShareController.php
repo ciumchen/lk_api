@@ -291,12 +291,13 @@ class MyShareController extends Controller
         }else{
             return response()->json(['code'=>0, 'msg'=>'参数grade错误', 'data' => '']);
         }
-        $userList = Users::where('invite_uid',$uid)->get(['id','phone','member_head']);
+        $userList = Users::where('invite_uid',$uid)->get(['id','phone','member_head','member_status']);
         if ($userList!='[]'){
             $data = array();
             foreach ($userList->toArray() as $k=>$v){
                 $data[$k]['uid'] = $v['id'];
                 $data[$k]['phone'] = $v['phone'];
+                $data[$k]['member_status'] = $v['member_status'];
                 //消费总额
                 $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('price');
 //                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->sum('price');
