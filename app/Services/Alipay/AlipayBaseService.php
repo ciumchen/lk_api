@@ -8,6 +8,16 @@ use Exception;
 
 class AlipayBaseService
 {
+    /**
+     * WEB网页跳转授权URL
+     */
+    const ALIPAY_WEB_OPEN_URL = 'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm';
+    
+    /**
+     * H5点击跳转链接
+     */
+    const ALIPAY_H5_CLICK_URL = 'alipays://platformapi/startapp';
+    
     protected static $config = [
         'app_id'                  => '',
         'alipay_public_cert_path' => '',
@@ -138,5 +148,43 @@ class AlipayBaseService
             throw $e;
         }
         return $AopClient;
+    }
+    
+    /**
+     * Description:生成完整的WEB授权链接
+     *
+     * @param string $return_url 同步回调地址
+     *
+     * @return string
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/7 0007
+     */
+    public function getWebOpenUrl($return_url = '')
+    {
+        $auth_data = [
+            'app_id'       => config('alipay.app_id'),
+            'scope'        => 'auth_user',
+            'redirect_uri' => $return_url,
+        ];
+        return self::ALIPAY_WEB_OPEN_URL.'?'.urldecode(http_build_query($auth_data));
+    }
+    
+    /**
+     * Description:生成H5跳转授权链接
+     *
+     * @param $return_url
+     *
+     * @return string
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/7 0007
+     */
+    public function getH5ClickUrl($return_url)
+    {
+        $open_url = $this->getWebOpenUrl($return_url);
+        $alipay_data = [
+            'appId' => '20000067',
+            'url'   => urlencode($open_url),
+        ];
+        return self::ALIPAY_H5_CLICK_URL.'?'.urldecode(http_build_query($alipay_data));
     }
 }

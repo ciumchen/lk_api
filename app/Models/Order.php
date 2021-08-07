@@ -65,6 +65,7 @@ use App\Exceptions\LogicException;
  * @package App\Models
  * @property-read \App\Models\LkshopOrder|null    $lkshopOrder
  * @property-read \App\Models\ConvertLogs|null    $convertLogs
+ * @property-read \App\Models\OrderHotel|null $hotel
  */
 class Order extends Model
 {

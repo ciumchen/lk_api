@@ -5,6 +5,7 @@ namespace App\Services\Alipay;
 use AlipayAop\AopCertClient;
 use AlipayAop\request\AlipayTradeQueryRequest;
 use AlipayAop\request\AlipayUserInfoAuthRequest;
+use App\Models\UserAlipayAuthToken;
 use Exception;
 
 class AlipayCertService extends AlipayBaseService
@@ -13,8 +14,16 @@ class AlipayCertService extends AlipayBaseService
     {
     }
     
+    public function saveUserAuthCode()
+    {
+    }
     
+    public function userBinding($uid)
+    {
+        $auth_code = UserAlipayAuthToken::getUserAuthCode($uid);
+    }
     
+    /************************** example **********************************/
     public function authByCertWebPage()
     {
         try {

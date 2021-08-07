@@ -7,6 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\LogicException;
 use App\Services\MyShareService;
 
+/**
+ * App\Models\MyShare
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|MyShare newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MyShare newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MyShare query()
+ * @mixin \Eloquent
+ */
 class MyShare extends Model
 {
     use HasFactory;
