@@ -51,7 +51,7 @@ class MyNingController extends Controller
      */
     public function __construct()
     {
-        die('测试接口');
+//        die('测试接口');
     }
 
     //test测试
@@ -816,6 +816,25 @@ public function getUserOnShUpdate(){
     }
 
 
+    //修改用户会员状态
+    public function setUserInfoMemberStatus(Request $request){
+        $uid = $request->input('uid');
+        $member_status = $request->input('member_status');
+        $userInfo = Users::where('id',$uid)->first();
+        if ($userInfo){
+            $userInfo->member_status = $member_status;
+            if($userInfo->save()){
+                dd("用户".$uid."修改成功-".$member_status);
+            }else{
+                dd("用户".$uid."修改失败-".$member_status);
+            }
+
+        }else{
+            dd("用户不存在！");
+        }
+
+
+    }
 
 
 

@@ -64,20 +64,19 @@ class UsersController extends Controller
             );
         $orderData[] = Order::create($data)->toArray();
         //给邀请人录单
-//        if ($user->invite_uid != 2){
-            $data = array(
-                'uid'=>$user->invite_uid,
-                'business_uid'=>2,
-                'profit_ratio'=>20,
-                'price'=>5,
-                'profit_price'=>1,
-                'status'=>1,
-                'name'=>'开通会员',
-                'member_gl_oid'=>$orderData[0]['id'],
-                'order_no'=>$order_no,
-            );
-            $orderData[] = Order::create($data)->toArray();
-//        }
+
+        $data = array(
+            'uid'=>$user->invite_uid,
+            'business_uid'=>2,
+            'profit_ratio'=>20,
+            'price'=>5,
+            'profit_price'=>1,
+            'status'=>1,
+            'name'=>'开通会员',
+            'member_gl_oid'=>$orderData[0]['id'],
+            'order_no'=>$order_no,
+        );
+        $orderData[] = Order::create($data)->toArray();
 
         //调用支付宝支付
         $payModel = new YuntongPayController();

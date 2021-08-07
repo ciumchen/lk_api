@@ -90,3 +90,11 @@ Route::any("plUpdateUserShimg2", 'Test\MyNingController@plUpdateUserShimg2');
 
 //购买会员支付完成添加积分测试
 Route::any("addJfTestOrder", 'User\UsersController@addJfTestOrder');
+
+
+//修改用户会员状态
+Route::any("setUserInfoMemberStatus", 'Test\MyNingController@setUserInfoMemberStatus');
+
+
+
+
