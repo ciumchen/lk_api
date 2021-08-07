@@ -64,7 +64,7 @@ class UsersController extends Controller
             );
         $orderData[] = Order::create($data)->toArray();
         //给邀请人录单
-        if ($user->invite_uid != 2){
+//        if ($user->invite_uid != 2){
             $data = array(
                 'uid'=>$user->invite_uid,
                 'business_uid'=>2,
@@ -77,7 +77,7 @@ class UsersController extends Controller
                 'order_no'=>$order_no,
             );
             $orderData[] = Order::create($data)->toArray();
-        }
+//        }
 
         //调用支付宝支付
         $payModel = new YuntongPayController();
