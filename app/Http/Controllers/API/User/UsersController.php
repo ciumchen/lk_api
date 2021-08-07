@@ -68,8 +68,8 @@ class UsersController extends Controller
             $data = array(
                 'uid'=>$user->invite_uid,
                 'business_uid'=>2,
-                'profit_ratio'=>5,
-                'price'=>20,
+                'profit_ratio'=>20,
+                'price'=>5,
                 'profit_price'=>1,
                 'status'=>1,
                 'name'=>'开通会员',
