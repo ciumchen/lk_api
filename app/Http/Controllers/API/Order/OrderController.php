@@ -94,7 +94,7 @@ class OrderController extends Controller
         $bOrder = $request->input('bOrder', false);
 
         $data = (new Order())
-            ->leftJoin('trade_order', function($join){
+            ->join('trade_order', function($join){
                 $join->on('order.id', 'trade_order.oid');
             })
             ->when(!$bOrder,function($query) use ($user) {
