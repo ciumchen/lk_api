@@ -21,4 +21,16 @@ class GatherTrade extends Model
     {
         return GatherTrade::insert($data);
     }
+
+    /**更新拼团未中奖用户录单记录
+     * @param array $where
+     * @param array $data
+     * @return mixed
+     * @throws LogicException
+     */
+    public function updGatherTrade (array $where, array $data)
+    {
+        return GatherTrade::where($where)
+                ->update($data);
+    }
 }

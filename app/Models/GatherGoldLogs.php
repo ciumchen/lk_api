@@ -48,7 +48,7 @@ class GatherGoldLogs extends Model
      */
     public function updGatherGold (int $gid, int $status)
     {
-        return GatherGoldLogs::whereIn('gid', [$gid])
+        return GatherGoldLogs::where('gid', $gid)
             ->update(['status' => $status, 'updated_at' => date('Y-m-d H:i:s')]);
     }
 

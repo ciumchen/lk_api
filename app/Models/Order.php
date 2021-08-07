@@ -685,7 +685,7 @@ class Order extends Model
     public function getGatherOrder (array $data)
     {
         return Order::whereIn('order_no', $data)
-            ->get(['id as oid', 'uid', 'business_uid', 'order_no']);
+                ->get(['id as oid', 'order_no', 'uid']);
     }
 
     /**

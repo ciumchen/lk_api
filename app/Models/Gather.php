@@ -69,8 +69,8 @@ class Gather extends Model
      */
     public function updGather (int $gid, int $status)
     {
-        return Gather::whereIn('id', [$gid])
-                ->update(['status' => 1, 'created_at' => date('Y-m-d H:i:s')]);
+        return Gather::where('id', $gid)
+                ->update(['status' => $status, 'created_at' => date('Y-m-d H:i:s')]);
     }
 
     /**获取拼团用户总数
