@@ -112,7 +112,7 @@ class AlipayBaseService
             $AopCertClient->postCharset = self::$config[ 'charset' ];
             $AopCertClient->format = self::$config[ 'format' ];
             //是否校验自动下载的支付宝公钥证书，如果开启校验要保证支付宝根证书在有效期内
-            $AopCertClient->isCheckAlipayPublicCert = true;
+            $AopCertClient->isCheckAlipayPublicCert = false;
             //调用getPublicKey从支付宝公钥证书中提取公钥
             $AopCertClient->alipayrsaPublicKey = $AopCertClient->getPublicKey($alipayCertPath);
             //调用getCertSN获取证书序列号

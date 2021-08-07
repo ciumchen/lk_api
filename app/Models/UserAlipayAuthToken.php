@@ -48,10 +48,41 @@ class UserAlipayAuthToken extends Model
      */
     public static function getUserAuthCode($uid)
     {
-        return UserAlipayAuthToken::whereUid($uid)->where('')->value('auth_code');
+        return UserAlipayAuthToken::whereUid($uid)
+                                  ->where(
+                                      'created_at',
+                                      '>',
+                                      date('Y-m-d H:i:s', strtotime('-1 days'))
+                                  )
+                                  ->where('is_used', '=', '0')
+                                  ->value('auth_code');
     }
     
+    /**
+     * Description:
+     *
+     * @param int    $uid
+     * @param string $auth_code
+     * @param string $app_id
+     * @param string $source
+     * @param string $scope
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/7 0007
+     */
     public function saveAuthCode($uid, $auth_code, $app_id, $source, $scope)
     {
+        try {
+            $this->uid = $uid;
+            $this->auth_code = $auth_code;
+            $this->app_id = $app_id;
+            $this->source = $source;
+            $this->scope = $scope;
+            $this->save();
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $this->id;
     }
 }

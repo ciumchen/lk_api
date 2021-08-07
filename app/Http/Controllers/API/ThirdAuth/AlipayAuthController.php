@@ -10,11 +10,6 @@ use App\Services\Alipay\AlipayCertService;
 class AlipayAuthController extends Controller
 {
     /**
-     * @var string
-     */
-    protected $service = AlipayCertService::class;
-    
-    /**
      * Description:H5获取授权链接
      *
      * @param \Illuminate\Http\Request $request
@@ -27,10 +22,11 @@ class AlipayAuthController extends Controller
     {
         $user = $request->user();
         $uid = $user->id;
+        $AlipayCertService = new AlipayCertService();
         $return_url = route('h5-auth', ['uid' => $uid]);
         $return_data = [];
-        $return_data[ 'open_url' ] = (new $this->service)->getWebOpenUrl($return_url);
-        $return_data[ 'click_url' ] = (new $this->service)->getH5ClickUrl($return_url);
+        $return_data[ 'open_url' ] = $AlipayCertService->getWebOpenUrl($return_url);
+        $return_data[ 'click_url' ] = $AlipayCertService->getH5ClickUrl($return_url);
         return apiSuccess($return_data);
     }
     
@@ -39,7 +35,15 @@ class AlipayAuthController extends Controller
     public function alipayAfterAuth(Request $request, $uid)
     {
         $data = $request->all();
-        
+        $data = [
+            'uid'       => 9596,
+            'auth_code' => '78a5ac5bac61469b8947589de7a2SX92',
+            'app_id'    => '2021002166656043',
+            'source'    => 'alipay_wallet',
+            'scope'     => 'auth_user',
+        ];
+        $AlipayCertService = new AlipayCertService();
+        $AlipayCertService->saveUserAuthCode($data);
         dump($data);
         dd($uid);
         return view('alipay-after-auth');
@@ -49,6 +53,8 @@ class AlipayAuthController extends Controller
     {
         $user = $request->user();
         $uid = $user->id;
-        
+        $AlipayCertService = new AlipayCertService();
+        $res = $AlipayCertService->userBinding($uid);
+        dd($res);
     }
 }
