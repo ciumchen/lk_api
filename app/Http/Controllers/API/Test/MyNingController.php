@@ -45,15 +45,15 @@ use App\Models\TtshopUser;
 
 class MyNingController extends Controller
 {
-    
+
     /**
      * 测试启用
      */
     public function __construct()
     {
-        die('测试接口');
+//        die('测试接口');
     }
-    
+
     //test测试
     public function UpdateBusinessApply(Request $request)
     {
