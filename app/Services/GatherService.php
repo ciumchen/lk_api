@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
-ini_set('max_execution_time', 200);
+ini_set('max_execution_time', 600);
 
 class GatherService
 {
@@ -26,12 +26,12 @@ class GatherService
      */
     public function addGatherUser (int $gid, int $uid)
     {
-        $userRatio = 20;
+        $userRatio = 100;
         $userSum = (new Gather())->getGatherUserSum($gid);
         //判断拼团是否达到开团人数
         if ($userSum == $userRatio)
         {
-            throw new LogicException('本拼团参团人数已满');
+            return json_encode(['code' => 200, 'msg' => '本拼团参团人数已满！']);
         }
         //判断用户金额
 
@@ -44,6 +44,7 @@ class GatherService
             (new GatherGoldLogs())->setGatherGold($gid, $uid, $gatherUsersData->id);
             //判断是否开团、开奖
             $this->isMaxGatherUser($gid, $userRatio);
+
         } catch (\Exception $e) {
             throw $e;
         }
@@ -64,13 +65,13 @@ class GatherService
         $gatherSum = (new GatherUsers())->getGatherUserSum($gid, $uid);
         if ($gatherSum >= $gatherRatio)
         {
-            throw new LogicException('本场次拼团活动已超过最大可参与次数5次');
+            return json_encode(['code' => 200, 'msg' => '本场次拼团活动已超过最大可参与次数5次！']);
         }
 
         $gatherAllSum = (new GatherUsers())->getUserAllSum($uid);
         if ($gatherAllSum >= $gatherAllRatio)
         {
-            throw new LogicException('已超过每天最大可参与次数30次');
+            return json_encode(['code' => 200, 'msg' => '已超过每天最大可参与次数30次！']);
         }
     }
 
@@ -93,7 +94,7 @@ class GatherService
                 //更新用户参团的拼团状态
                 (new GatherGoldLogs())->updGatherGold($gid, $status);
                 //开启拼团
-                $this->lotteryDraw($gid);
+                $this->quietlyExecute($gid);
             } catch (\Exception $e) {
                 throw $e;
             }
@@ -266,11 +267,6 @@ class GatherService
         $this->completeOrderGather($orderList);
 
         //更新未中奖用户录单拼团记录信息
-        /*foreach ($orderList as $list)
-        {
-            (new GatherTrade())->updGatherTrade(['order_no' => $list['order_no']], ['oid' => $list['oid']]);
-        }*/
-
         $this->updGatherTrade($orderList);
     }
 
@@ -298,5 +294,43 @@ class GatherService
         {
             (new GatherOrderService())->completeOrderGatger($data['oid'], $data['uid'], 'PT', $data['order_no']);
         }
+    }
+
+    /**先返回前端提示，程序继续执行
+     * @param int $gid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function quietlyExecute (int $gid)
+    {
+        ob_end_clean();
+        ob_start();
+        //Windows服务器需要加上这行。
+        //echo str_repeat(" ",4096);
+        //返回结果给ajax
+        echo json_encode(['code' => 200, 'msg' => '开团成功，敬请期待开奖！']);
+        // get the size of the output
+        $size = ob_get_length();
+        // send headers to tell the browser to close the connection
+        header("Content-Length: $size");
+        header('Connection: close');
+        header("HTTP/1.1 200 OK");
+        header("Content-Type: application/json;charset=utf-8");
+        ob_end_flush();
+        if(ob_get_length())
+            ob_flush();
+        flush();
+        if (function_exists("fastcgi_finish_request"))
+        {
+            //响应完成, 立即返回到前端,关闭连接
+            fastcgi_finish_request();
+        }
+        //在关闭连接后，继续运行php脚本
+        ignore_user_abort(true);
+        //no time limit，不设置超时时间（根据实际情况使用）
+        set_time_limit(0);
+
+        //录单自动审核、加积分
+        $this->lotteryDraw($gid);
     }
 }
