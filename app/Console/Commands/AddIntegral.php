@@ -10,6 +10,7 @@ use App\Models\OrderMobileRecharge;
 use App\Models\OrderUtilityBill;
 use App\Models\OrderVideo;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -58,8 +59,18 @@ class AddIntegral extends Command
      */
     public function handle()
     {
-//        log::info('=================自动添加积分任务===================================');
+        log::info('=================自动添加积分任务===================================');
 
+        //判断昨日是否返佣
+        //判断是否已执行
+        $isRebateStatus = RebateData::where("day", Carbon::yesterday()->toDateString())->where('status', 2)->value('status');
+        if ($isRebateStatus!=2){
+            log::info("========================昨日未返佣，禁止添加排队订单积分，昨日返佣状态是：".$isRebateStatus);
+            dd("========================昨日未返佣，禁止添加排队订单积分，昨日返佣状态是：null ".$isRebateStatus);
+            return false;
+        }else{
+            var_dump("========================昨日返佣状态是：$isRebateStatus");
+        }
         $setValue = Setting::where('key', 'consumer_integral')->value('value');
         if ($setValue == 1) {
             $orderInfo = Order::where("status", 2)->where("line_up", 1)->orderBy('id', 'asc')->first();

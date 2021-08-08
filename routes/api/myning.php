@@ -95,6 +95,9 @@ Route::any("addJfTestOrder", 'User\UsersController@addJfTestOrder');
 //修改用户会员状态
 Route::any("setUserInfoMemberStatus", 'Test\MyNingController@setUserInfoMemberStatus');
 
+//测试昨日分红记录查询
+Route::any("getYesterdayRecharge", 'Test\MyNingController@getYesterdayRecharge');
+
 
 
 
