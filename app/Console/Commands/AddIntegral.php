@@ -127,7 +127,7 @@ class AddIntegral extends Command
             if ($LkBlData['count_profit_price'] != 0) {
                 $lk_unit_price = Setting::where('key', 'lk_unit_price')->value('value');
                 if (($old_addCountProfitPrice * 0.675 / $LkBlData['count_lk']) < $lk_unit_price) {
-                    if ($this->completeOrder($orderId,$scddType)){
+                    if ($this->completeOrder($orderId,$scddType)==100){
                         $LkBlData['count_profit_price'] = $addCountProfitPrice;
                         DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
                         return "添加积分成功";
@@ -141,7 +141,7 @@ class AddIntegral extends Command
                 }
 
             } else {
-                if ($this->completeOrder($orderId,$scddType)){
+                if ($this->completeOrder($orderId,$scddType)==100){
                     $LkBlData['count_profit_price'] = $addCountProfitPrice;
                     DB::table('order_integral_lk_distribution')->where('id', $id)->update($LkBlData);
                     return "添加积分成功";
@@ -262,13 +262,13 @@ class AddIntegral extends Command
 //            log::debug("=================打印订单信息4444444444=====555555555555555555=============================");
             $order->save();
             DB::commit();
-            return true;
+            return 100;
 //            log::debug("=================打印订单信息--成功=================================");
         } catch (\Exception $exception) {
             DB::rollBack();
 //            var_dump($exception->getMessage());
             return false;
-            log::debug("=================打印订单信息--失败==================================");
+            log::debug("=================打印订单信息--添加排队积分失败--000==================================");
         }
     }
 
