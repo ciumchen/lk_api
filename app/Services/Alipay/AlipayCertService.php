@@ -131,14 +131,27 @@ class AlipayCertService extends AlipayBaseService
             $Request->setGrantType('authorization_code');
             $Result = $AopCertClient->execute($Request);
             $responseNode = str_replace(".", "_", $Request->getApiMethodName())."_response";
-            dd($Result);
-            if (!isset($Result->$responseNode) || $Result->$responseNode->code != 10000) {
+            if (!isset($Result->$responseNode)) {
                 throw new Exception('授权令牌获取失败'.json_encode($Result));
             }
         } catch (Exception $e) {
             Log::debug('Error:Alipay-AccessToken:'.$e->getMessage());
             throw $e;
         }
+        /**
+         * {
+         * "alipay_system_oauth_token_response": {
+         * "access_token": "authusrB60dec6d4f49f42269a82df627e4f3X28"
+         * "alipay_user_id": "20880069462546073717281152811428"
+         * "expires_in": 1296000
+         * "re_expires_in": 2592000
+         * "refresh_token": "authusrB9f61405980104b5fa7cb38eb9d950X28"
+         * "user_id": "2088412397910280"
+         * }
+         * "alipay_cert_sn": "dc1bda7ed3c81023cf6e6e4e59a9b99e"
+         * "sign": "H7Iw3gsgC/s5WAGoQmfnR2h6CotzbN67beEKLDbI6Ic3i0BoRbTRW9XkZfQ12nJZWH1SeHxaaJIf4ZWjCr8Ii8TjcYZtgbr0ZfY/yJd5g/saGT3UBCKF6/fDKy9Hg42eHfihR80G1DBTbR2zaXU3if7QBE09sCMXNoNzjsXJI04Fsr16YuFG3kMV9OZ4sFVu2mSOp1YDjalAdq01hyAzPy000V7KIPaxn/85VPOYNBsRnNRB7aZKHzVvinbuemDaS8x8wyFRM1WZlyz59Hxow5Q6UXB4E0HgmLCdUbtE6RW6sGA607g8NBfpK8Ni0aqCPbLvp5KgCYmX7rjxUyQ== "
+         * }
+         */
         return $Result->$responseNode;
     }
     
@@ -167,6 +180,7 @@ class AlipayCertService extends AlipayBaseService
             $UserToken->expires_in = $access_token_arr[ 'expires_in' ];
             $UserToken->re_expires_in = $access_token_arr[ 're_expires_in' ];
             $UserToken->refresh_token = $access_token_arr[ 'refresh_token' ];
+            $UserToken->alipay_alipay_user_id = $access_token_arr[ 'alipay_user_id' ];
             $UserToken->save();
         } catch (Exception $e) {
             throw $e;
