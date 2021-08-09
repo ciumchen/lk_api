@@ -53,6 +53,7 @@ class AlipayAuthController extends Controller
             $AlipayCertService->saveUserAuthCode($data);
             $AlipayCertService->userBinding($uid);
         } catch (Exception $e) {
+            throw $e;
             throw new LogicException($e->getMessage());
         }
         return view('alipay-after-auth');
