@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\ThirdAuth;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\UserAlipayAuthToken;
+use Exception;
 use Illuminate\Http\Request;
 use App\Services\Alipay\AlipayCertService;
 
@@ -57,7 +58,7 @@ class AlipayAuthController extends Controller
         $AlipayCertService = new AlipayCertService();
         try {
             $AlipayCertService->saveUserAuthCode($data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
         return view('alipay-after-auth');
@@ -80,9 +81,9 @@ class AlipayAuthController extends Controller
             $AlipayCertService = new AlipayCertService();
             $res = $AlipayCertService->userBinding($uid);
             if (!$res) {
-                throw new \Exception('用户授权信息获取失败');
+                throw new Exception('用户授权信息获取失败');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
     }
@@ -105,9 +106,9 @@ class AlipayAuthController extends Controller
             $AlipayCertService = new AlipayCertService();
             $res = $AlipayCertService->userBindingCheck($uid);
             if (!$res) {
-                throw new \Exception('未绑定');
+                throw new Exception('未绑定');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
         return apiSuccess('', '绑定成功');
