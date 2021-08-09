@@ -131,6 +131,7 @@ class AlipayCertService extends AlipayBaseService
             $Request->setGrantType('authorization_code');
             $Result = $AopCertClient->execute($Request);
             $responseNode = str_replace(".", "_", $Request->getApiMethodName())."_response";
+            dd($Result);
             if (!isset($Result->$responseNode) || $Result->$responseNode->code != 10000) {
                 throw new Exception('授权令牌获取失败'.json_encode($Result));
             }
