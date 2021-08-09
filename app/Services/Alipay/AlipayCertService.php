@@ -202,7 +202,7 @@ class AlipayCertService extends AlipayBaseService
         try {
             $AopCertClient = $this->getAopCertClient();
             $request = new AlipayUserInfoShareRequest();
-            $result = $AopCertClient->execute($request, $access_token);
+            $Result = $AopCertClient->execute($request, $access_token);
             $responseNode = str_replace(".", "_", $request->getApiMethodName())."_response";
             if (!isset($Result->$responseNode) || $Result->$responseNode->code != 10000) {
                 throw new Exception('用户信息获取失败'.json_encode($result));
@@ -211,7 +211,7 @@ class AlipayCertService extends AlipayBaseService
             Log::debug('Alipay-Error:'.$e->getMessage());
             throw  $e;
         }
-        return $result->$responseNode;
+        return $Result->$responseNode;
     }
     
     
