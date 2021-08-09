@@ -53,7 +53,6 @@ class AlipayAuthController extends Controller
             $AlipayCertService->saveUserAuthCode($data);
             $AlipayCertService->userBinding($uid);
         } catch (Exception $e) {
-            throw $e;
             throw new LogicException($e->getMessage());
         }
         return view('alipay-after-auth');
@@ -79,7 +78,6 @@ class AlipayAuthController extends Controller
                 throw new Exception('用户授权信息获取失败');
             }
         } catch (Exception $e) {
-//            throw $e;
             throw new LogicException($e->getMessage());
         }
     }
@@ -87,7 +85,7 @@ class AlipayAuthController extends Controller
     public function test()
     {
         $AlipayCertService = new AlipayCertService();
-        $res = $AlipayCertService->getUserAccessTokenByAuthCode('fb1746d7254043d78b00ca54ee80VX92');
+        $res = $AlipayCertService->getUserAccessTokenByAuthCode('3fb73a3f17e54665b425f76a830fSD92');
         dd($res);
     }
     

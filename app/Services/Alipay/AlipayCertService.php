@@ -85,9 +85,9 @@ class AlipayCertService extends AlipayBaseService
         } catch (Exception $e) {
             Log::debug('Error:Alipay-AuthCode:'.$e->getMessage());
             throw $e;
-//            return false;
+            return false;
         }
-//        return true;
+        return true;
     }
     
     /**
