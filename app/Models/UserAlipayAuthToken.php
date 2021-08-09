@@ -73,7 +73,7 @@ class UserAlipayAuthToken extends Model
         } catch (\Exception $e) {
             return null;
         }
-        return $userToken->value('auth_code');
+        return $userToken->auth_code;
     }
     
     /**
