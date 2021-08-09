@@ -66,6 +66,10 @@ use Carbon\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereMarketBusiness($value)
  * @property int|null $shop_uid 商城用户uid
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereShopUid($value)
+ * @property string $alipay_user_id 用户支付宝ID
+ * @property string $alipay_account 用户支付宝账户
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayAccount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayUserId($value)
  */
 class Users extends Model
 {

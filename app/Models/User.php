@@ -87,6 +87,10 @@ use Illuminate\Support\Facades\Log;
  * @method static Builder|User whereMarketBusiness($value)
  * @property int|null $shop_uid 商城用户uid
  * @method static Builder|User whereShopUid($value)
+ * @property string $alipay_user_id 用户支付宝ID
+ * @property string $alipay_account 用户支付宝账户
+ * @method static Builder|User whereAlipayAccount($value)
+ * @method static Builder|User whereAlipayUserId($value)
  */
 class User extends Authenticatable
 {

@@ -47,6 +47,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Shop whereUid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Shop whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int|null $import_day 导入日期
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereImportDay($value)
  */
 class Shop extends Model
 {

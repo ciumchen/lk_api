@@ -15,11 +15,17 @@ use Illuminate\Support\Carbon;
  * @method static Builder|UserAlipayAuthToken query()
  * @mixin \Eloquent
  * @property int         $id
- * @property int         $uid       用户ID
- * @property string      $auth_code 支付宝用户授权后的auth_code
- * @property string      $app_id    用户授权APPID
- * @property string      $source    用户授权source
- * @property string      $scope     用户授权scope
+ * @property int         $uid            用户ID
+ * @property string      $auth_code      支付宝用户授权后的auth_code
+ * @property string      $app_id         用户授权APPID
+ * @property string      $source         用户授权source
+ * @property string      $scope          用户授权scope
+ * @property int         $is_used        是否已被使用过:0未使用,1已使用
+ * @property string      $alipay_user_id 用户支付宝UID
+ * @property string      $access_token   用户访问令牌
+ * @property int         $expires_in     访问令牌的有效时间，单位是秒
+ * @property string      $refresh_token  刷新令牌。通过该令牌可以刷新access_token
+ * @property int         $re_expires_in  刷新令牌的有效时间，单位是秒
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static Builder|UserAlipayAuthToken whereAppId($value)
@@ -30,6 +36,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder|UserAlipayAuthToken whereSource($value)
  * @method static Builder|UserAlipayAuthToken whereUid($value)
  * @method static Builder|UserAlipayAuthToken whereUpdatedAt($value)
+ * @method static Builder|UserAlipayAuthToken whereAccessToken($value)
+ * @method static Builder|UserAlipayAuthToken whereAlipayUserId($value)
+ * @method static Builder|UserAlipayAuthToken whereExpiresIn($value)
+ * @method static Builder|UserAlipayAuthToken whereIsUsed($value)
+ * @method static Builder|UserAlipayAuthToken whereReExpiresIn($value)
+ * @method static Builder|UserAlipayAuthToken whereRefreshToken($value)
  */
 class UserAlipayAuthToken extends Model
 {
@@ -48,14 +60,20 @@ class UserAlipayAuthToken extends Model
      */
     public static function getUserAuthCode($uid)
     {
-        return UserAlipayAuthToken::whereUid($uid)
-                                  ->where(
-                                      'created_at',
-                                      '>',
-                                      date('Y-m-d H:i:s', strtotime('-1 days'))
-                                  )
-                                  ->where('is_used', '=', '0')
-                                  ->value('auth_code');
+        try {
+            $userToken = UserAlipayAuthToken::whereUid($uid)
+                                            ->where(
+                                                'created_at',
+                                                '>',
+                                                date('Y-m-d H:i:s', strtotime('-1 days'))
+                                            )
+                                            ->where('is_used', '=', '0');
+            $userToken->is_used = 1;
+            $userToken->save();
+        } catch (\Exception $e) {
+            return null;
+        }
+        return $userToken->value('auth_code');
     }
     
     /**

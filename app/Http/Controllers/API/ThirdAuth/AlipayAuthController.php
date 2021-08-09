@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\ThirdAuth;
 
+use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\UserAlipayAuthToken;
 use Illuminate\Http\Request;
@@ -30,11 +31,22 @@ class AlipayAuthController extends Controller
         return apiSuccess($return_data);
     }
     
-    //授权成功后同步回调
-    /*TODO:保存用户ID和auth_code*/
+    /**
+     * Description:授权成功后同步回调
+     *
+     * @param Request $request
+     * @param int     $uid
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|mixed
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/9 0009
+     */
     public function alipayAfterAuth(Request $request, $uid)
     {
         $data = $request->all();
+        $data[ 'uid' ] = $uid;
+        //*******
         $data = [
             'uid'       => 9596,
             'auth_code' => '78a5ac5bac61469b8947589de7a2SX92',
@@ -43,18 +55,61 @@ class AlipayAuthController extends Controller
             'scope'     => 'auth_user',
         ];
         $AlipayCertService = new AlipayCertService();
-        $AlipayCertService->saveUserAuthCode($data);
-        dump($data);
-        dd($uid);
+        try {
+            $AlipayCertService->saveUserAuthCode($data);
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
         return view('alipay-after-auth');
     }
     
+    /**
+     * Description:用户绑定查询
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/9 0009
+     */
     public function userBinding(Request $request)
     {
-        $user = $request->user();
-        $uid = $user->id;
-        $AlipayCertService = new AlipayCertService();
-        $res = $AlipayCertService->userBinding($uid);
-        dd($res);
+        try {
+            $user = $request->user();
+            $uid = $user->id;
+            $AlipayCertService = new AlipayCertService();
+            $res = $AlipayCertService->userBinding($uid);
+            if (!$res) {
+                throw new \Exception('用户授权信息获取失败');
+            }
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+    }
+    
+    /**
+     * Description:用户绑定查询
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/9 0009
+     */
+    public function userBindingCheck(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $uid = $user->id;
+            $AlipayCertService = new AlipayCertService();
+            $res = $AlipayCertService->userBindingCheck($uid);
+            if (!$res) {
+                throw new \Exception('未绑定');
+            }
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess('', '绑定成功');
     }
 }

@@ -6,8 +6,11 @@ use AlipayAop\AopCertClient;
 use AlipayAop\request\AlipaySystemOauthTokenRequest;
 use AlipayAop\request\AlipayTradeQueryRequest;
 use AlipayAop\request\AlipayUserInfoAuthRequest;
+use AlipayAop\request\AlipayUserInfoShareRequest;
+use App\Models\User;
 use App\Models\UserAlipayAuthToken;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class AlipayCertService extends AlipayBaseService
 {
@@ -26,6 +29,7 @@ class AlipayCertService extends AlipayBaseService
      *                    'scope'     => $scope,
      *                    ]
      *
+     * @throws \Exception
      * @author lidong<947714443@qq.com>
      * @date   2021/8/7 0007
      */
@@ -44,7 +48,10 @@ class AlipayCertService extends AlipayBaseService
             $UserAlipayAuthToken = new  UserAlipayAuthToken();
             $UserAlipayAuthToken->saveAuthCode($uid, $auth_code, $app_id, $source, $scope);
         } catch (Exception $e) {
+//            throw $e;
+            return false;
         }
+        return true;
     }
     
     /**
@@ -52,7 +59,7 @@ class AlipayCertService extends AlipayBaseService
      *
      * @param $uid
      *
-     * @return mixed
+     * @return bool
      * @throws \Exception
      * @author lidong<947714443@qq.com>
      * @date   2021/8/7 0007
@@ -62,16 +69,60 @@ class AlipayCertService extends AlipayBaseService
         try {
             $auth_code = UserAlipayAuthToken::getUserAuthCode($uid);
             if (!$auth_code) {
-                throw new Exception('授权信息获取失败');
+                throw new Exception('授权码获取失败');
             }
-            $user_alipay_info = $this->getUserAccessTokenByAuthCode($auth_code);
-            dd($user_alipay_info);
+            //code 换取 token
+            $access_token_info = $this->getUserAccessTokenByAuthCode($auth_code);
+            Log::debug('getUserAccessTokenByAuthCode-', [json_encode($access_token_info)]);
+            $token_arr = json_decode(json_encode($access_token_info), true);
+            $this->updateAccessToken($uid, $token_arr);
+            // token 获取用户信息
+            $user_info = $this->getUserInfoByAccessToken($access_token_info->access_token);
+            $Users = User::findOrFail($uid);
+            $Users->alipay_user_id = $user_info->user_id;
+            $Users->alipay_nickname = $user_info->nick_name;
+            $Users->alipay_avatar = $user_info->avatar;
+            $Users->save();
         } catch (Exception $e) {
-            throw $e;
+            Log::debug('Error:Alipay-AuthCode:'.$e->getMessage());
+//            throw $e;
+            return false;
         }
-        return $auth_code;
+        return true;
     }
     
+    /**
+     * Description:
+     *
+     * @param $uid
+     *
+     * @return bool
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/9 0009
+     */
+    public function userBindingCheck($uid)
+    {
+        try {
+            $user = User::findOrFail($uid);
+            if (!$user->alipay_user_id) {
+                throw new Exception('alipay_user_id miss');
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Description:通过auth_code换取access_token
+     *
+     * @param $auth_code
+     *
+     * @return string
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/9 0009
+     */
     public function getUserAccessTokenByAuthCode($auth_code)
     {
         try {
@@ -81,20 +132,107 @@ class AlipayCertService extends AlipayBaseService
             $Request->setGrantType('authorization_code');
             $Result = $AopCertClient->execute($Request);
             $responseNode = str_replace(".", "_", $Request->getApiMethodName())."_response";
-//            dd($Request->$responseNode);
-//            dd($responseNode);
             $resultCode = $Result->$responseNode->code;
             if (!empty($resultCode) && $resultCode != 10000) {
-                echo "失败";
-            } else {
-                echo "成功";
+                throw new Exception('授权令牌获取失败');
             }
+        } catch (Exception $e) {
+            Log::debug('Error:Alipay-AccessToken:'.$e->getMessage());
+            throw $e;
+        }
+        return $Result->$responseNode;
+    }
+    
+    /**
+     * Description:更新accessTOKEN到数据库
+     *
+     * @param string                               $uid
+     * @param array                                $access_token_arr
+     * @param \App\Models\UserAlipayAuthToken|null $UserToken
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/9 0009
+     */
+    public function updateAccessToken(string $uid, array $access_token_arr, UserAlipayAuthToken $UserToken = null)
+    {
+        try {
+            if (empty($access_token_arr)) {
+                throw new Exception('用户token信息为空');
+            }
+            if (empty($UserToken)) {
+                $UserToken = UserAlipayAuthToken::whereUid($uid)->first();
+            }
+            $UserToken->access_token = $access_token_arr[ 'access_token' ];
+            $UserToken->alipay_user_id = $access_token_arr[ 'user_id' ];
+            $UserToken->expires_in = $access_token_arr[ 'expires_in' ];
+            $UserToken->re_expires_in = $access_token_arr[ 're_expires_in' ];
+            $UserToken->refresh_token = $access_token_arr[ 'refresh_token' ];
+            $UserToken->save();
         } catch (Exception $e) {
             throw $e;
         }
-        return $responseNode;
     }
     
+    /**
+     * Description:用accessTOKEN换取用户信息
+     *
+     * @param $access_token
+     *
+     * @return \$1|false|mixed|\SimpleXMLElement
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/9 0009
+     */
+    public function getUserInfoByAccessToken($access_token)
+    {
+        try {
+            $AopCertClient = $this->getAopCertClient();
+            $request = new AlipayUserInfoShareRequest();
+            $result = $AopCertClient->execute($request, $access_token);
+            $responseNode = str_replace(".", "_", $request->getApiMethodName())."_response";
+            $resultCode = $result->$responseNode->code;
+            if (empty($resultCode) || $resultCode != 10000) {
+                throw new Exception('用户信息获取失败');
+            }
+        } catch (Exception $e) {
+            Log::debug('Alipay-Error:'.$e->getMessage());
+            throw  $e;
+        }
+        return $result->$responseNode;
+    }
+    
+    
+    /**
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     */
     /************************** example **********************************/
     public function authByCertWebPage()
     {
