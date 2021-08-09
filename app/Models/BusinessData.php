@@ -117,4 +117,13 @@ class BusinessData extends Model
     {
         return $this->belongsTo(BusinessApply::class, 'business_apply_id','id');
     }
+
+    /**获取所有商家
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getBusiness()
+    {
+        return BusinessData::where(['status' => 1, 'is_status' => 2])->get(['uid', 'name']);
+    }
 }

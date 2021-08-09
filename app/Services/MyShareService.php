@@ -173,7 +173,7 @@ class MyShareService
                     ->when($role, function ($query) use($where) {
                         return $query->where('role', $where['users.role']);
                     })
-                    ->get(['id', 'avatar', 'phone', 'member_head']);
+                    ->get(['id', 'avatar', 'phone', 'member_head','member_status']);
         $userArr = json_decode($userList, 1);
         $uids = array_column($userArr, 'id');
 
@@ -185,7 +185,7 @@ class MyShareService
                         ->groupBy('uid')
                         ->get();
         $sumPrice = array_column(json_decode($orderPrice, 1), null, 'uid');
-        
+
         //消费总奖励
         $orderProfit = DB::table('order')
                         ->select(DB::raw('uid, cast(sum(profit_price) as decimal(10,2)) as totalProfit'))
@@ -199,6 +199,7 @@ class MyShareService
         //组装数据
         foreach ($userArr as $key => $val)
         {
+            $userArr[$key]['member_status'] = $val['member_status'];
             $userArr[$key]['phone'] = substr_replace($val['phone'],'****',3,4);
             $userArr[$key]['totalPrice'] = sprintf('%.2f', $sumPrice[$val['id']]['totalPrice'] ?? 0);
             $userArr[$key]['totalAssets'] = sprintf('%.2f', !empty($sumAssets[$val['id']]) ? $sumAssets[$val['id']]['totalProfit'] * $ratio : 0);
@@ -257,7 +258,7 @@ class MyShareService
                         ->groupBy('business_uid')
                         ->get();
         $sumPrice = array_column(json_decode($orderPrice, 1), null, 'business_uid');
-        
+
         //消费总奖励
         $orderProfit = DB::table('order')
                         ->select(DB::raw('business_uid, cast(sum(profit_price) as decimal(10,2)) as totalProfit'))
@@ -299,7 +300,7 @@ class MyShareService
                         ->where(['status' => $where['order.status']])
                         ->whereIn('business_uid', $uids)
                         ->sum('profit_price');
-        
+
         $totalList = [
             'totalProfit' => sprintf('%.2f', $totalProfit),
             'totalAssets' => sprintf('%.2f', $totalAssets * $ratio),
@@ -331,7 +332,7 @@ class MyShareService
         //获取资产记录列表
         $assetsData = $this->commonAss($where, $param);
         $assetsList = json_decode($assetsData, 1);
-        
+
         //总数据
         $integralList = $assetsList;
 
@@ -413,7 +414,7 @@ class MyShareService
                     ->get(['id', 'avatar', 'phone', 'member_head']);
         $userArr = json_decode($userList, 1);
         $uids = array_column($userArr, 'id');
-        
+
         //商家总让利
         return DB::table('order')
                 ->where(['status' => 2])
@@ -468,7 +469,7 @@ class MyShareService
                         $item->name = '让利积分';
                     });
     }
-    
+
 
     /**获取用户分享团长总金额
     * @param array $where

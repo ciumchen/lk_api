@@ -47,6 +47,9 @@ class GiveIetsController extends Controller
         }
 
         $user = $request->user();
+        if ($user->member_status == 0) {
+            throw new LogicException('请先开通来客会员!');
+        }
 
         if (User::STATUS_NORMAL != $user->status) {
             throw new LogicException('账户异常','2004');

@@ -222,13 +222,14 @@ class MyShareController extends Controller
         $userId = $request->input('uid');//获取当前用户的id
         $userInfo = Users::where('id',$userId)->first();
         //查询当前用户所有分享的商家
-        $userList = DB::table('users')->where('invite_uid',$userId)->where('role',2)->get(['id','phone','member_head'])->toArray();
+        $userList = DB::table('users')->where('invite_uid',$userId)->where('role',2)->get(['id','phone','member_head','member_status'])->toArray();
         foreach ($userList as $k=>$v){
             //今日让利奖励
             $today = date('Y-m-d',time());
             //不判断是否是非盟主，查询当前id商家的所有录单,business_uid
             $tuanYuanData[$k]['uid'] = $v->id;
             $tuanYuanData[$k]['phone'] = $v->phone;
+            $tuanYuanData[$k]['member_status'] = $v->member_status;
 
             //统计每个商户的今日录单的实际让利金额，判断当前用户是盟主就乘0.035，非盟主就乘0.02
             $profit_price = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)->sum('profit_price');//实际让利金额
@@ -290,12 +291,13 @@ class MyShareController extends Controller
         }else{
             return response()->json(['code'=>0, 'msg'=>'参数grade错误', 'data' => '']);
         }
-        $userList = Users::where('invite_uid',$uid)->get(['id','phone','member_head']);
+        $userList = Users::where('invite_uid',$uid)->get(['id','phone','member_head','member_status']);
         if ($userList!='[]'){
             $data = array();
             foreach ($userList->toArray() as $k=>$v){
                 $data[$k]['uid'] = $v['id'];
                 $data[$k]['phone'] = $v['phone'];
+                $data[$k]['member_status'] = $v['member_status'];
                 //消费总额
                 $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->where('id','>=',40136)->sum('price');
 //                $data[$k]['total_consumption'] = Order::where('uid',$v['id'])->where('status',2)->sum('price');

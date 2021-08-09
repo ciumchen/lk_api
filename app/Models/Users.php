@@ -76,6 +76,15 @@ class Users extends Model
     use HasFactory;
 
     protected $table = 'users';
+    protected $fillable = [
+        'invite_uid',
+        'phone',
+        'username',
+        'salt',
+        'code_invite',
+        'member_status',
+        'updated_at',
+    ];
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');

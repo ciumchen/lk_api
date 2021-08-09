@@ -13,6 +13,7 @@ use App\Models\OrderIntegralLkDistribution;
 use App\Models\OrderMobileRecharge;
 use App\Models\OrderUtilityBill;
 use App\Models\OrderVideo;
+use App\Models\RebateData;
 use App\Models\TradeOrder;
 use App\Models\User;
 use App\Models\UserIdImg;
@@ -45,24 +46,24 @@ use App\Models\TtshopUser;
 
 class MyNingController extends Controller
 {
-    
+
     /**
      * 测试启用
      */
     public function __construct()
     {
-        die('测试接口');
+//        die('测试接口');
     }
-    
+
     //test测试
     public function UpdateBusinessApply(Request $request)
     {
         $uid = $request->input('uid');
         $status = $request->input('status');
-        $re = BusinessApply::where('uid',$uid)->update(array('status'=>$status));
-        if ($re){
+        $re = BusinessApply::where('uid', $uid)->update(array('status' => $status));
+        if ($re) {
             echo "修改成功";
-        }else{
+        } else {
             echo "修改失败";
         }
     }
@@ -114,7 +115,7 @@ class MyNingController extends Controller
                 //获取订单类型
                 $orderService = new OrderService_test();
                 $orderType = $orderService->getDescription($v->id);//订单类型
-                (new OrderService_test())->pushCompleteOrder($v->id,$orderNo,$v->uid,$orderType);
+                (new OrderService_test())->pushCompleteOrder($v->id, $orderNo, $v->uid, $orderType);
             }
 
             return "<h4>今次自动完成审核20条记录，总共还有<font color='red'>" . ($count - 20) . "</font>条订单还需要审核</h4>";
@@ -128,7 +129,7 @@ class MyNingController extends Controller
     }
 
     //获取订单号
-    public function getOrderInfoOrderNo(string $orderId,Order $orderData=null)
+    public function getOrderInfoOrderNo(string $orderId, Order $orderData = null)
     {
         try {
             if (empty($orderData)) {
@@ -168,15 +169,15 @@ class MyNingController extends Controller
 //        $consumer_uid = $dataInfo->user_id ?? $dataInfo->uid;
 //        $description = $orderType;
 //        $orderNo = $dataInfo->order_no;
-        if (empty($dataInfo->order_no)){
-            $orderNo = TradeOrder::where('oid',$orderId)->value('order_no');
-        }else{
+        if (empty($dataInfo->order_no)) {
+            $orderNo = TradeOrder::where('oid', $orderId)->value('order_no');
+        } else {
             $orderNo = $dataInfo->order_no;
         }
         return $orderNo;
     }
 
-        //修改用户手机号
+    //修改用户手机号
     public function updateUserPhone(Request $request)
     {
         $uid = $request->input('uid');
@@ -238,9 +239,13 @@ class MyNingController extends Controller
     public function xfUserAssetFH(Request $request)
     {
         $uid = $request->input('uid');
-        $amount = $request->input('amount');
-        $assType = $request->input('assType');
+        $amount = $request->input('amount');//资产数量
+        $assType = $request->input('assType');//资产类型：usdt/iets
+
         $assData = Assets::where('uid', $uid)->where('assets_name', $assType)->first();
+        if ($assData == '') {
+            dd($uid . "用户资产记录不存在");
+        }
         $assData->amount = $amount;
         if ($assData->save()) {
             return "账号解封成功";
@@ -316,7 +321,7 @@ class MyNingController extends Controller
         $role = $request->input('role');
         $num = $request->input('num');
 
-        if($userId && $role && $num ){
+        if ($userId && $role && $num) {
             //        var_dump($userId,$role,$num);
 //        echo '扣除用户积分接口<br/><br/>参数：uid用户的uid<br/>role=1表示删除消费者积分，role=2表示删除商家积分<br/>num=要删除的积分<br/><br/>操作结果：<br/><br/>';
             $userInfo = Users::where('id', $userId)->first();
@@ -332,19 +337,19 @@ class MyNingController extends Controller
                 } elseif ($role == 2) {
                     $userInfo->business_integral = $userInfo->business_integral - $num;
                     if ($userInfo->save()) {
-                        $data[] =  "扣除成功<br/>扣除uid=" . $userId . " 的用户商家积分，" . $num . "积分<br/>";
+                        $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户商家积分，" . $num . "积分<br/>";
                     }
                 } else {
-                    $data[] =  '扣除积分失败<br/>';
+                    $data[] = '扣除积分失败<br/>';
                 }
             } else {
-                $data[] =  '该uid用户不存在<br/>';
+                $data[] = '该uid用户不存在<br/>';
             }
-        }else{
-            $data[] =  "参数错误<br/>";
+        } else {
+            $data[] = "参数错误<br/>";
         }
 
-        $this->returnView($data,'myning-test');
+        $this->returnView($data, 'myning-test');
 
 
     }
@@ -387,14 +392,14 @@ class MyNingController extends Controller
         $end = $request->input('end');
         ini_set("max_execution_time", 0);
         set_time_limit(0);
-        $shopUserData = TtshopUser::get(['id','binding']);
+        $shopUserData = TtshopUser::get(['id', 'binding']);
         $i = 0;
         foreach ($shopUserData->toArray() as $v) {
             $userInfo = Users::where('phone', $v['binding'])->first();
             if ($userInfo != '') {
                 $userInfo->shop_uid = $v['id'];
                 $re = $userInfo->save();
-                if ($re){
+                if ($re) {
                     $i++;
                 }
 
@@ -428,35 +433,36 @@ class MyNingController extends Controller
 //        }
 
 
-
     }
 
     //修改用户商家身份
-    public function updateUserInfoRole(Request $request){
+    public function updateUserInfoRole(Request $request)
+    {
         $phone = $request->input('phone');
         $role = $request->input('role');
-        $userInfo = Users::where('phone',$phone)->first();
-        if ($userInfo!=''){
+        $userInfo = Users::where('phone', $phone)->first();
+        if ($userInfo != '') {
             $userInfo->role = $role;
-            if($userInfo->save()){
+            if ($userInfo->save()) {
                 dd('修改成功');
-            }else{
+            } else {
                 dd('修改失败');
             }
-        }else{
+        } else {
             dd('用户不存在');
         }
 
     }
 
     //修改商家申请后没有插入商家表的记录
-    public function insertUserBuinssData(Request $request){
+    public function insertUserBuinssData(Request $request)
+    {
         $uid = $request->input('uid');
         $business_apply_id = $request->input('business_apply_id');
         $main_business = $request->input('main_business');
 
-        $businessApplyData = BusinessApply::where('id',$business_apply_id)->first();
-        if ($businessApplyData){
+        $businessApplyData = BusinessApply::where('id', $business_apply_id)->first();
+        if ($businessApplyData) {
             $businessDataModel = new BusinessData();
             $businessDataModel->uid = $uid;
             $businessDataModel->business_apply_id = $business_apply_id;
@@ -467,40 +473,40 @@ class MyNingController extends Controller
 
             $businessDataModel->category_id = 2;
             $businessDataModel->is_status = 2;
-            if ($businessApplyData->work){
+            if ($businessApplyData->work) {
                 $businessDataModel->main_business = $businessApplyData->work;
-            }else{
+            } else {
                 $businessDataModel->main_business = $main_business;
             }
-            if ($businessDataModel->save()){
+            if ($businessDataModel->save()) {
                 dd('添加商家信息成功');
-            }else{
+            } else {
                 dd('添加商家信息失败');
             }
 
-        }else{
+        } else {
             dd('商家申请记录不存在');
         }
-
-
-
 
 
     }
 
     //test视图模板测试
-    public function myningtest(){
-        return view('test',['title' => '测试模板']);
+    public function myningtest()
+    {
+        return view('test', ['title' => '测试模板']);
 
     }
 
-    public function getTable(Request $request){
+    public function getTable(Request $request)
+    {
         $data = $request->all();
         dd($data);
     }
 
     //视图弹框
-    public function returnView($data,$url){
+    public function returnView($data, $url)
+    {
         echo "<style>
 a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;position: relative;display: inline-block;margin-bottom: 0;padding: 6px 12px;cursor: pointer;-webkit-transition: all;transition: all;
     -webkit-transition-timing-function: linear;transition-timing-function: linear;-webkit-transition-duration: .2s;transition-duration: .2s;text-align: center;
@@ -508,21 +514,22 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
 }</style>";
         echo "<div style = 'text-align:center;margin: 100px auto;font-size: 20px'>";
 //dd($data);
-        foreach ($data as $v){
-            echo $v."<br/>";
+        foreach ($data as $v) {
+            echo $v . "<br/>";
         }
         echo "<a href='$url'>返回</a>";
         echo "</div>";
     }
 
     //修改导入让利金额
-    public function xgcount_profit_price(){
+    public function xgcount_profit_price()
+    {
         //count_profit_price
-        $data = OrderIntegralLkDistribution::where('id',37)->first();
+        $data = OrderIntegralLkDistribution::where('id', 37)->first();
         $data->count_profit_price = 81894.11;
-        if ($data->save()){
+        if ($data->save()) {
             dd('修改成功');
-        }else{
+        } else {
             dd('修改失败');
         }
     }
@@ -573,29 +580,30 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
 //    }
 
 
-    public function getOderIdByDescription($desc,$order_no){
-        $Order =  new Order();
+    public function getOderIdByDescription($desc, $order_no)
+    {
+        $Order = new Order();
         try {
             $oid = '';
-            switch ($desc){
+            switch ($desc) {
                 case 'MZL':
-                $oid = (new OrderMobileRecharge())->where('order_no',$order_no)->value('order_id');
-                break;
+                    $oid = (new OrderMobileRecharge())->where('order_no', $order_no)->value('order_id');
+                    break;
                 case 'SHOP':
-                $oid = (new LkshopOrder())->where('order_no',$order_no)->value('oid');
-                break;
+                    $oid = (new LkshopOrder())->where('order_no', $order_no)->value('oid');
+                    break;
                 case 'UB':
-                $oid = (new OrderUtilityBill())->where('order_no',$order_no)->value('order_id');
-                break;
+                    $oid = (new OrderUtilityBill())->where('order_no', $order_no)->value('order_id');
+                    break;
                 case 'AT':
-                $oid = (new OrderAirTrade())->where('order_no',$order_no)->value('oid');
-                break;
+                    $oid = (new OrderAirTrade())->where('order_no', $order_no)->value('oid');
+                    break;
                 case 'VC':
-                $oid = (new OrderVideo())->where('order_no',$order_no)->value('order_id');
-                break;
+                    $oid = (new OrderVideo())->where('order_no', $order_no)->value('order_id');
+                    break;
                 default:
-                $oid = (new TradeOrder())->where('order_no',$order_no)->value('oid');
-                break;
+                    $oid = (new TradeOrder())->where('order_no', $order_no)->value('oid');
+                    break;
 
             }
             return $oid;
@@ -716,18 +724,19 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
 //************************************************************************************
 
 //批量修改非商家的用户的商家身份为1
-public function getUserOnShUpdate(){
-    set_time_limit(0);
-    ini_set('max_execution_time', '0');
-        $userData = Users::where('role',2)->get();
+    public function getUserOnShUpdate()
+    {
+        set_time_limit(0);
+        ini_set('max_execution_time', '0');
+        $userData = Users::where('role', 2)->get();
 //        dd(count($userData->toArray()));
-    $i=0;
-        foreach($userData->toArray() as $k=>$v){
-            $userSh = BusinessData::where('uid',$v['id'])->first();
-            if ($userSh==null){
-                echo $v['id'].'<br/>';
-                $userInfo = Users::where('id',$v['id'])->first();
-                $userInfo->role =1;
+        $i = 0;
+        foreach ($userData->toArray() as $k => $v) {
+            $userSh = BusinessData::where('uid', $v['id'])->first();
+            if ($userSh == null) {
+                echo $v['id'] . '<br/>';
+                $userInfo = Users::where('id', $v['id'])->first();
+                $userInfo->role = 1;
                 $userInfo->save();
                 $i++;
             }
@@ -736,89 +745,119 @@ public function getUserOnShUpdate(){
         }
         var_dump($i);
 
-}
+    }
 
     //批量生成图片记录
-    public function plInsertUserImages(){
+    public function plInsertUserImages()
+    {
         set_time_limit(0);
         ini_set('max_execution_time', '0');
         $count = BusinessData::count();
-        $i = 0;$j = 0;
+        $i = 0;
+        $j = 0;
         $shData = BusinessData::get()->toArray();
         $userIdImgMode = new UserIdImg();
-        foreach ($shData as $k=>$v){
-            if(!UserIdImg::where('uid',$v['uid'])->where('business_apply_id',$v['business_apply_id'])->exists()){
-                $data['uid']=$v['uid'];
-                $data['business_apply_id']=$v['business_apply_id'];
+        foreach ($shData as $k => $v) {
+            if (!UserIdImg::where('uid', $v['uid'])->where('business_apply_id', $v['business_apply_id'])->exists()) {
+                $data['uid'] = $v['uid'];
+                $data['business_apply_id'] = $v['business_apply_id'];
                 $userIdImgMode->create($data);
                 $j++;
             }
             $i++;
         }
-        dump($count,$i,$j);
+        dump($count, $i, $j);
 
 
-}
+    }
 
     //修改商城导入时间
-    public function setShopOrderTime(Request $request){
+    public function setShopOrderTime(Request $request)
+    {
         $time = $request->input('time');
-        if ($time < 1627200000 && $time!=''){
+        if ($time < 1627200000 && $time != '') {
             dd("重置导入订单的时间不能小于 1627200000");
         }
-        $mch_orderData = LkshopOrderLog::where('type','mch_order')->first();
-        $a1688_orderData = LkshopOrderLog::where('type','1688_order')->first();
+        $mch_orderData = LkshopOrderLog::where('type', 'mch_order')->first();
+        $a1688_orderData = LkshopOrderLog::where('type', '1688_order')->first();
         $mch_orderData->order_id = $time;
         $a1688_orderData->order_id = $time;
-        if ($mch_orderData->save() && $a1688_orderData->save()){
+        if ($mch_orderData->save() && $a1688_orderData->save()) {
             dd('重置成功1111111111');
-        }else{
+        } else {
             dd('重置失败0000000000');
         }
 
     }
 
     //批量修改商家门头照
-    public function plUpdateUserShimg2(){
+    public function plUpdateUserShimg2()
+    {
         set_time_limit(0);
         ini_set('max_execution_time', '0');
 
-        $shDataCount = BusinessData::where('banners','!=','')->count();
-        $shDataInfo = BusinessData::where('banners','!=','')->get();
+        $shDataCount = BusinessData::where('banners', '!=', '')->count();
+        $shDataInfo = BusinessData::where('banners', '!=', '')->get();
 
         $i = 0;
         $errorShId = array();
-        if ($shDataCount > 0){
+        if ($shDataCount > 0) {
             $businessApplyModel = new BusinessApply();
-            foreach ($shDataInfo->toArray() as $k=>$v){
-                $OneDaTa = $businessApplyModel::where('id',$v['business_apply_id'])->first();
-                if ($OneDaTa){
+            foreach ($shDataInfo->toArray() as $k => $v) {
+                $OneDaTa = $businessApplyModel::where('id', $v['business_apply_id'])->first();
+                if ($OneDaTa) {
                     $OneDaTa->img2 = $v['banners'];
-                    if($OneDaTa->save()){
+                    if ($OneDaTa->save()) {
                         $i++;
-                    }else{
+                    } else {
                         $errorShId['id1'][] = $v['id'];
                     }
-                }else{
+                } else {
                     $errorShId['id2'][] = $v['id'];
                 }
             }
-        }else{
+        } else {
             dd('没有相关记录');
         }
-        dd($shDataCount,$i,$errorShId);
+        dd($shDataCount, $i, $errorShId);
 
 
     }
 
 
+    //修改用户会员状态
+    public function setUserInfoMemberStatus(Request $request)
+    {
+        $uid = $request->input('uid');
+        $member_status = $request->input('member_status');
+        $userInfo = Users::where('id', $uid)->first();
+        if ($userInfo) {
+            $userInfo->member_status = $member_status;
+            if ($userInfo->save()) {
+                dd("用户" . $uid . "修改成功-" . $member_status);
+            } else {
+                dd("用户" . $uid . "修改失败-" . $member_status);
+            }
+
+        } else {
+            dd("用户不存在！");
+        }
 
 
+    }
 
-
-
-
-
+    //测试昨日分红记录查询
+    public function getYesterdayRecharge()
+    {
+//判断是否已执行
+        $isRebateStatus = RebateData::where("day", Carbon::yesterday()->toDateString())->where('status', 2)->value('status');
+                dd($isRebateStatus);
+        if($isRebate)
+        {
+            echo "昨日数据已分红 \n";
+            return false;
+        }
+    }
 
 
 }
