@@ -20,12 +20,15 @@
     </style>
 </head>
 <style>
-    #div1{text-align:center;margin: 100px auto;}
-    table{margin: 50px auto;}
+    #div1{text-align:center;margin: 100px 0 50px 0;}
+    #div2{text-align:center;}
+    table{margin: 10px auto;}
     table,tr,td{border:1px solid black;}
     .td1{width: 130px;}
     td{height: 70px;}
     select{border: #cccccc 1px solid !important;}
+    .td2{text-align: left;}
+    .span1{color: red;font-weight: bold;}
 </style>
 <body>
 
@@ -45,7 +48,7 @@
                     <td style="text-align: left">
 
                         <div>
-                            <br/>用户是uid2和6当前积分和lk统计数据 <br><br/>
+                            <br/>用户是uid=2和6和15873当前积分和lk统计数据 <br><br/>
                             @foreach($data['userInfo'] as $key_2 => $arr)
                                 @foreach($arr as $key => $value)
                                     {{$key}} === {{$value}}
@@ -60,6 +63,15 @@
 {{--                        </select>--}}
                     </td>
                 </tr>
+                <tr>
+                    <td><span class="span1">操作步骤：</span></td>
+                    <td class="td2"><span class="span1">
+                        步骤一：先修改消费者lk单价为0，<br>
+                        步骤二：晚上0点分红完成后再清空用户的积分和lk<br>
+                        步骤三：将消费者lk单价修改回来</span>
+
+                    </td>
+                </tr>
 
                 <tr>
                     <td colspan="2" style="padding: 20px"><input type="submit" name="submit" style="width: 220px;height: 40px;background: #7db2ec !important;" value="一键清空"></td>
@@ -68,7 +80,7 @@
             </table>
             </form>
         </div>
-        <div id="div1">
+        <div id="div2">
             <form action="setUserLkdj" method="get">
             <table width="600px"height="50px">
                 <tr>

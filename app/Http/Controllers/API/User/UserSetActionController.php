@@ -40,7 +40,7 @@ class UserSetActionController extends Controller
     //手动清空用户lk--html页面
     public function qkSetUserLkAction(Request $request){
         $data['lkdj'] = Setting::where('key','lk_unit_price')->value('value');
-        $userData = Users::find([2,6])->toArray();
+        $userData = Users::find([2,6,15873])->toArray();
 //        dd($userData);
         foreach ($userData as $k=>$v){
             $userinfo[$k]['用户uid'] = $v['id'];
