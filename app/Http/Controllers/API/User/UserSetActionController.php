@@ -88,7 +88,7 @@ class UserSetActionController extends Controller
             return response()->json(['code' => 0, 'msg' => '修改失败']);
         }
 
-        $this->returnView(array("清除uid2和6消费者积分、商家积分、消费者lk、商家lk，操作成功！"),'qkSetUserLkAction');
+        $this->returnView(array("清空用户积分和lk，操作成功！"),'qkSetUserLkAction');
 
     }
 

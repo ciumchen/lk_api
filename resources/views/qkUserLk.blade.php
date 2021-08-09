@@ -74,7 +74,9 @@
                 </tr>
 
                 <tr>
-                    <td colspan="2" style="padding: 20px"><input type="submit" name="submit" style="width: 220px;height: 40px;background: #7db2ec !important;" value="一键清空"></td>
+                    <td colspan="2" style="padding: 20px">
+                        <button onclick="javascript:return warning()" style="width: 220px;height: 40px;background: #7db2ec !important;color:#fff">一键清空</button>
+{{--                        <input type="submit" name="submit" style="width: 220px;height: 40px;background: #7db2ec !important;" value="一键清空"></td>--}}
                 </tr>
 
             </table>
@@ -98,7 +100,17 @@
 
 </body>
 
-<script type="text/javascript">
+<script>
+    function warning(){
+        if(confirm('确定要清空用户积分和lk吗？')==true){
+            return true;
+
+        }else{
+            return false;
+
+        }
+
+    }
 
 </script>
 </html>
