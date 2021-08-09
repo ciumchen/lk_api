@@ -47,14 +47,6 @@ class AlipayAuthController extends Controller
     {
         $data = $request->all();
         $data[ 'uid' ] = $uid;
-        //*******
-//        $data = [
-//            'uid'       => 9596,
-//            'auth_code' => '78a5ac5bac61469b8947589de7a2SX92',
-//            'app_id'    => '2021002166656043',
-//            'source'    => 'alipay_wallet',
-//            'scope'     => 'auth_user',
-//        ];
         $AlipayCertService = new AlipayCertService();
         try {
             $AlipayCertService->saveUserAuthCode($data);
