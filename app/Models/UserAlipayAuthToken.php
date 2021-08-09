@@ -64,7 +64,7 @@ class UserAlipayAuthToken extends Model
         try {
             $userToken = UserAlipayAuthToken::whereUid($uid)
                                             ->where(
-                                                'created_at',
+                                                'updated_at',
                                                 '>',
                                                 date('Y-m-d H:i:s', strtotime('-1 days'))
                                             )
@@ -98,15 +98,27 @@ class UserAlipayAuthToken extends Model
     public function saveAuthCode($uid, $auth_code, $app_id, $source, $scope)
     {
         try {
-            $this->uid = $uid;
-            $this->auth_code = $auth_code;
-            $this->app_id = $app_id;
-            $this->source = $source;
-            $this->scope = $scope;
-            $this->save();
+            $info = UserAlipayAuthToken::whereUid($uid)->first();
+            if ($info) {
+                $info->is_used = 0;
+                $info->auth_code = $auth_code;
+                $info->app_id = $app_id;
+                $info->source = $source;
+                $info->scope = $scope;
+                $info->save();
+                $id = $info->id;
+            } else {
+                $this->uid = $uid;
+                $this->auth_code = $auth_code;
+                $this->app_id = $app_id;
+                $this->source = $source;
+                $this->scope = $scope;
+                $this->save();
+                $id = $this->id;
+            }
         } catch (Exception $e) {
             throw $e;
         }
-        return $this->id;
+        return $id;
     }
 }
