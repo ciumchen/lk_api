@@ -20,7 +20,7 @@
     </style>
 </head>
 <style>
-    #div1{text-align:center;margin: 100px 0 50px 0;}
+    #div1{text-align:center;margin: 20px 0 50px 0;}
     #div2{text-align:center;}
     table{margin: 10px auto;}
     table,tr,td{border:1px solid black;}
