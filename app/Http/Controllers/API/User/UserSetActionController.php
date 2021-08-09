@@ -81,6 +81,13 @@ class UserSetActionController extends Controller
             $userData6->lk = 0;
             $userData6->business_lk = 0;
             $userData6->save();
+
+            $userData15873 = Users::find(15873);
+            $userData15873->integral = 0;
+            $userData15873->business_integral = 0;
+            $userData15873->lk = 0;
+            $userData15873->business_lk = 0;
+            $userData15873->save();
             DB::commit();
         } catch (Exception $exception) {
             DB::rollBack();
