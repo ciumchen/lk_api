@@ -8,6 +8,7 @@ use App\Models\UserAlipayAuthToken;
 use Exception;
 use Illuminate\Http\Request;
 use App\Services\Alipay\AlipayCertService;
+use function Symfony\Component\Translation\t;
 
 class AlipayAuthController extends Controller
 {
@@ -52,6 +53,7 @@ class AlipayAuthController extends Controller
             $AlipayCertService->saveUserAuthCode($data);
             $AlipayCertService->userBinding($uid);
         } catch (Exception $e) {
+            throw $e;
             throw new LogicException($e->getMessage());
         }
         return view('alipay-after-auth');
@@ -77,8 +79,16 @@ class AlipayAuthController extends Controller
                 throw new Exception('用户授权信息获取失败');
             }
         } catch (Exception $e) {
+//            throw $e;
             throw new LogicException($e->getMessage());
         }
+    }
+    
+    public function test()
+    {
+        $AlipayCertService = new AlipayCertService();
+        $res = $AlipayCertService->getUserAccessTokenByAuthCode('fb1746d7254043d78b00ca54ee80VX92');
+        dd($res);
     }
     
     /**

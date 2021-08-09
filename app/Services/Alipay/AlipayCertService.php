@@ -48,7 +48,6 @@ class AlipayCertService extends AlipayBaseService
             $UserAlipayAuthToken = new  UserAlipayAuthToken();
             $UserAlipayAuthToken->saveAuthCode($uid, $auth_code, $app_id, $source, $scope);
         } catch (Exception $e) {
-//            throw $e;
             return false;
         }
         return true;
@@ -85,10 +84,10 @@ class AlipayCertService extends AlipayBaseService
             $Users->save();
         } catch (Exception $e) {
             Log::debug('Error:Alipay-AuthCode:'.$e->getMessage());
-//            throw $e;
-            return false;
+            throw $e;
+//            return false;
         }
-        return true;
+//        return true;
     }
     
     /**
@@ -132,9 +131,8 @@ class AlipayCertService extends AlipayBaseService
             $Request->setGrantType('authorization_code');
             $Result = $AopCertClient->execute($Request);
             $responseNode = str_replace(".", "_", $Request->getApiMethodName())."_response";
-            $resultCode = $Result->$responseNode->code;
-            if (!empty($resultCode) && $resultCode != 10000) {
-                throw new Exception('授权令牌获取失败');
+            if (!isset($Result->$responseNode) || $Result->$responseNode->code != 10000) {
+                throw new Exception('授权令牌获取失败'.json_encode($Result));
             }
         } catch (Exception $e) {
             Log::debug('Error:Alipay-AccessToken:'.$e->getMessage());
@@ -191,9 +189,8 @@ class AlipayCertService extends AlipayBaseService
             $request = new AlipayUserInfoShareRequest();
             $result = $AopCertClient->execute($request, $access_token);
             $responseNode = str_replace(".", "_", $request->getApiMethodName())."_response";
-            $resultCode = $result->$responseNode->code;
-            if (empty($resultCode) || $resultCode != 10000) {
-                throw new Exception('用户信息获取失败');
+            if (!isset($Result->$responseNode) || $Result->$responseNode->code != 10000) {
+                throw new Exception('用户信息获取失败'.json_encode($result));
             }
         } catch (Exception $e) {
             Log::debug('Alipay-Error:'.$e->getMessage());

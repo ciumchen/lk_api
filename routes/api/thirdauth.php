@@ -14,6 +14,7 @@ Route::middleware(['auth:sanctum'])->group(
         // 用戶綁定
         Route::post('alipay-bind', 'ThirdAuth\AlipayAuthController@userBinding');
         Route::post('alipay-bind-check', 'ThirdAuth\AlipayAuthController@userBindingCheck');
+        Route::post('test', 'ThirdAuth\AlipayAuthController@test');
     }
 );
 /** ************************************************************************** **/

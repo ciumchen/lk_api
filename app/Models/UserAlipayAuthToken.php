@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -67,10 +68,15 @@ class UserAlipayAuthToken extends Model
                                                 '>',
                                                 date('Y-m-d H:i:s', strtotime('-1 days'))
                                             )
-                                            ->where('is_used', '=', '0');
+                                            ->where('is_used', '=', '0')
+                                            ->orderByDesc('created_at')
+                                            ->first();
+            if (empty($userToken)) {
+                throw new Exception('UserAlipayAuthToken-无数据');
+            }
             $userToken->is_used = 1;
             $userToken->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
         return $userToken->auth_code;
@@ -98,7 +104,7 @@ class UserAlipayAuthToken extends Model
             $this->source = $source;
             $this->scope = $scope;
             $this->save();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $this->id;
