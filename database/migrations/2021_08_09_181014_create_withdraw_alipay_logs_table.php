@@ -13,7 +13,7 @@ class CreateWithdrawAlipayLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('withdraw_alipay_logs', function (Blueprint $table) {
+        Schema::create('withdraw_cash_logs', function (Blueprint $table) {
             $table->id();
             $table->string('balance_type', 20)->default('')->comment('本平台内提现账户类型:来拼金或可提现余额');
             $table->string('channel', 20)->default('')->comment('提现渠道:支付宝或微信');
@@ -38,6 +38,7 @@ class CreateWithdrawAlipayLogsTable extends Migration
             $table->text('failed_reason')->nullable()->comment('提现失败原因');
             $table->timestamps();
         });
+        DB::statement('ALTER TABLE `withdraw_cash_logs` comment "现金提现记录表";');
     }
     
     /**

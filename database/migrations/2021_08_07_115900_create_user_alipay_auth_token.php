@@ -29,6 +29,7 @@ class CreateUserAlipayAuthToken extends Migration
             $table->integer('re_expires_in')->default(0)->comment('刷新令牌的有效时间，单位是秒');
             $table->timestamps();
         });
+        DB::statement('ALTER TABLE `user_alipay_auth_token` comment "用户支付宝Access_token表";');
     }
     
     /**
