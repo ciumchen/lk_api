@@ -43,7 +43,7 @@ class Gather extends Model
         //返回
         $gatherData = DB::table('gather as g')
             ->leftJoin('gather_users as gu', 'g.id', 'gu.gid')
-            //->where(['g.status' => 0])
+            ->where(['g.status' => 0])
             ->select(DB::raw('count(gu.id) as userTotal, g.id, g.status'))
             ->groupBy('g.id')
             ->get();
@@ -70,7 +70,7 @@ class Gather extends Model
     public function updGather (int $gid, int $status)
     {
         return Gather::where('id', $gid)
-                ->update(['status' => $status, 'created_at' => date('Y-m-d H:i:s')]);
+                ->update(['status' => $status, 'updated_at' => date('Y-m-d H:i:s')]);
     }
 
     /**获取拼团用户总数
@@ -81,5 +81,25 @@ class Gather extends Model
     public function getGatherUserSum (int $gid)
     {
         return GatherUsers::where(['gid' => $gid])->count();
+    }
+
+    /**获取未开启的拼团信息
+     * @param int $status
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getNoOpen (int $status)
+    {
+        return Gather::where(['status' => $status])->get(['id', 'created_at']);
+    }
+
+    /**格式化输出日期
+     * Prepare a date for array / JSON serialization.
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

@@ -403,7 +403,7 @@ class GatherOrderService
                         $description = 'MZL';
                         break;
                     default:
-                        ;
+                        break;
 //                        $description = 'HF';
                 }
             }
@@ -450,7 +450,7 @@ class GatherOrderService
      */
     public function completeOrderGatger(int $id, int $consumer_uid, string $description, string $orderNo)
     {
-        //DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $order = Order::find($id);
             if ($order->status != Order::STATUS_DEFAULT) {
@@ -502,9 +502,10 @@ class GatherOrderService
             //返佣
             $this->encourage($order, $customer, $business, $orderNo);
             $order->save();
-            //DB::commit();
+            DB::commit();
         } catch (Exception $exception) {
-            //DB::rollBack();
+            DB::rollBack();
+            throw $exception;
         }
     }
 }

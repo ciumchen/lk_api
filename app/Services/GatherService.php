@@ -3,18 +3,18 @@
 namespace App\Services;
 
 use App\Exceptions\LogicException;
+use App\Jobs\SendGatherLottery;
 use App\Models\Gather;
 use App\Models\GatherGoldLogs;
 use App\Models\GatherShoppingCard;
 use App\Models\GatherTrade;
 use App\Models\GatherUsers;
 use App\Models\Order;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Log;
-
-ini_set('max_execution_time', 600);
 
 class GatherService
 {
@@ -26,13 +26,16 @@ class GatherService
      */
     public function addGatherUser (int $gid, int $uid)
     {
-        $userRatio = 100;
+        $userRatio = Setting::getSetting('gather_users_ number') ?? 100;
+        //$userRatio = 10;
         $userSum = (new Gather())->getGatherUserSum($gid);
+
         //判断拼团是否达到开团人数
-        if ($userSum == $userRatio)
+        if ($userSum >= $userRatio)
         {
             return json_encode(['code' => 200, 'msg' => '本拼团参团人数已满！']);
         }
+
         //判断用户金额
 
         try {
@@ -44,7 +47,6 @@ class GatherService
             (new GatherGoldLogs())->setGatherGold($gid, $uid, $gatherUsersData->id);
             //判断是否开团、开奖
             $this->isMaxGatherUser($gid, $userRatio);
-
         } catch (\Exception $e) {
             throw $e;
         }
@@ -94,14 +96,11 @@ class GatherService
                 //更新用户参团的拼团状态
                 (new GatherGoldLogs())->updGatherGold($gid, $status);
                 //开启拼团
-                $this->quietlyExecute($gid);
+                //$this->quietlyExecute($gid);
+                $this->lotteryDraw($gid);
             } catch (\Exception $e) {
                 throw $e;
             }
-        } else
-        {
-            //72H 仍未满足开团人数，直接关闭该拼团
-            //$gatherData = (new Gather())->getGatherInfo();
         }
     }
 
@@ -112,7 +111,7 @@ class GatherService
      */
     public function lotteryDraw (int $gid)
     {
-        $numRatio = 5;
+        $numRatio = Setting::getSetting('gather_luck_number') ?? 5;
         $gatherStatus = 3;
 
         //获取平团用户数据
@@ -132,9 +131,6 @@ class GatherService
             //获奖操作
             $this->awardUsers($guids);
 
-            //未获奖操作
-            $this->noAwardUsers($diffGuids);
-
             //更新来拼金状态
             (new GatherGoldLogs())->updGatherGoldType($diffGuids, 0);
 
@@ -147,6 +143,9 @@ class GatherService
             //新增拼团
             $gatherInfo = (new Gather())->getGatherInfo($gid);
             (new Gather())->setGather($gatherInfo->type);
+
+            //未获奖操作
+            $this->noAwardUsers($diffGuids);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -197,7 +196,6 @@ class GatherService
     public function noAwardUsers (array $data)
     {
         $date = date('Y-m-d H:i:s');
-
         $price = 20;
         $profitRatio = 5;
         $name = '拼团补贴';
@@ -226,6 +224,7 @@ class GatherService
             $val['to_status'] = 0;
             $val['line_up'] = 0;
             $val['order_no'] = $orderNo;
+            $val['description'] = 'PT';
             $val['created_at'] = $date;
             $val['updated_at'] = $date;
             $orderNoData[] = $orderNo;
@@ -264,10 +263,15 @@ class GatherService
         $orderList = json_decode($orderInfo, 1);
 
         //录单自动审核、加积分
-        $this->completeOrderGather($orderList);
+        //$this->completeOrderGather($orderList);
 
         //更新未中奖用户录单拼团记录信息
-        $this->updGatherTrade($orderList);
+        //$this->updGatherTrade($orderList);
+        foreach ($orderList as $list)
+        {
+            $jobs = new SendGatherLottery($list);
+            $jobs->dispatch($jobs);
+        }
     }
 
     /**更新未中奖用户录单拼团记录信息
@@ -275,12 +279,16 @@ class GatherService
      * @return mixed
      * @throws LogicException
      */
-    public function updGatherTrade (array $gatherTradeData)
+    /*public function updGatherTrade (array $gatherTradeData)
     {
         foreach ($gatherTradeData as $list)
         {
             (new GatherTrade())->updGatherTrade(['order_no' => $list['order_no']], ['oid' => $list['oid']]);
         }
+    }*/
+    public function updGatherTrade (array $gatherTradeData)
+    {
+        (new GatherTrade())->updGatherTrade(['order_no' => $gatherTradeData['order_no']], ['oid' => $gatherTradeData['oid']]);
     }
 
     /**未获奖用户录单后续操作
@@ -288,49 +296,15 @@ class GatherService
      * @return mixed
      * @throws LogicException
      */
-    public function completeOrderGather (array $orderData)
+    /*public function completeOrderGather (array $orderData)
     {
         foreach ($orderData as $data)
         {
             (new GatherOrderService())->completeOrderGatger($data['oid'], $data['uid'], 'PT', $data['order_no']);
         }
-    }
-
-    /**先返回前端提示，程序继续执行
-     * @param int $gid
-     * @return mixed
-     * @throws LogicException
-     */
-    public function quietlyExecute (int $gid)
+    }*/
+    public function completeOrderGather (array $orderData)
     {
-        ob_end_clean();
-        ob_start();
-        //Windows服务器需要加上这行。
-        //echo str_repeat(" ",4096);
-        //返回结果给ajax
-        echo json_encode(['code' => 200, 'msg' => '开团成功，敬请期待开奖！']);
-        // get the size of the output
-        $size = ob_get_length();
-        // send headers to tell the browser to close the connection
-        header("Content-Length: $size");
-        header('Connection: close');
-        header("HTTP/1.1 200 OK");
-        header("Content-Type: application/json;charset=utf-8");
-        ob_end_flush();
-        if(ob_get_length())
-            ob_flush();
-        flush();
-        if (function_exists("fastcgi_finish_request"))
-        {
-            //响应完成, 立即返回到前端,关闭连接
-            fastcgi_finish_request();
-        }
-        //在关闭连接后，继续运行php脚本
-        ignore_user_abort(true);
-        //no time limit，不设置超时时间（根据实际情况使用）
-        set_time_limit(0);
-
-        //录单自动审核、加积分
-        $this->lotteryDraw($gid);
+        (new GatherOrderService())->completeOrderGatger($orderData['oid'], $orderData['uid'], 'PT', $orderData['order_no']);
     }
 }

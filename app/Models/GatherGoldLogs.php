@@ -63,4 +63,46 @@ class GatherGoldLogs extends Model
         return GatherGoldLogs::whereIn('guid', $data)
             ->update(['type' => $type, 'updated_at' => date('Y-m-d H:i:s')]);
     }
+
+    /**获取用户来拼金信息
+     * @param int $uid
+     * @param int $page
+     * @param int $perPage
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getGatherGold (int $uid, int $page, int $perPage)
+    {
+        return GatherGoldLogs::where(['uid' => $uid])
+            ->orderBy('created_at', 'desc')
+            ->forPage($page ?? 1, $perPage ?? 10)
+            ->get()
+            ->each(function ($item) {
+                $item->status = self::GATHER_STATUS[$item->status];
+                $item->type = self::GATHERGOLD_TYPE[$item->type];
+            });
+    }
+
+    //拼团状态
+    const GATHER_STATUS = [
+        0 => '关闭',
+        1 => '开启',
+        3 => '终止',
+    ];
+
+    //来拼金状态
+    const GATHERGOLD_TYPE = [
+        0 => '退还',
+        1 => '扣除',
+    ];
+
+    /**格式化输出日期
+     * Prepare a date for array / JSON serialization.
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

@@ -33,4 +33,14 @@ class GatherTrade extends Model
         return GatherTrade::where($where)
                 ->update($data);
     }
+
+    /**格式化输出日期
+     * Prepare a date for array / JSON serialization.
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }
