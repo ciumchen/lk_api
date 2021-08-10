@@ -8,5 +8,10 @@
 </head>
 <body>
 <a href="javascript:window.opener=null;window.open('','_self');window.close();">关闭</a>
+@if($auth_status)
+    这是一个{{dump($auth_status)}}
+@else
+    这TM是啥？{{ dump($auth_status)}}
+@endif
 </body>
 </html>

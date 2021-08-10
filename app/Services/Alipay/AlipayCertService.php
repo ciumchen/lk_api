@@ -86,7 +86,7 @@ class AlipayCertService extends AlipayBaseService
             $Users = User::findOrFail($uid);
             $Users->alipay_user_id = $user_info->user_id;
             $Users->alipay_nickname = $user_info->nick_name ?? '';
-            $Users->alipay_avatar = $user_info->avatar;
+            $Users->alipay_avatar = $user_info->avatar ?? '';
             $Users->save();
         } catch (Exception $e) {
             Log::debug('Error:Alipay-AuthCode:'.$e->getMessage());
