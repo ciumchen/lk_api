@@ -82,6 +82,7 @@ class AlipayCertService extends AlipayBaseService
             $this->updateAccessToken($uid, $token_arr);
             // token 获取用户信息
             $user_info = $this->getUserInfoByAccessToken($access_token_info->access_token);
+            Log::debug('Alipay-$user_info'.json_encode($user_info));
             $Users = User::findOrFail($uid);
             $Users->alipay_user_id = $user_info->user_id;
             $Users->alipay_nickname = $user_info->nick_name;
