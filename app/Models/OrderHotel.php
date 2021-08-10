@@ -71,6 +71,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|OrderHotel whereUpdatedAt($value)
  * @method static Builder|OrderHotel whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Order $orders
  */
 class OrderHotel extends Model
 {

@@ -52,7 +52,8 @@
     "files": [
       "app/helpers.php",
       "app/Libs/BmApi/autoload.php",
-      "app/Libs/Wanwei/Autoloader.php"
+      "app/Libs/Wanwei/Autoloader.php",
+      "app/Libs/AlipaySDK/autoload.php"
     ],
     "classmap": [
       "database"

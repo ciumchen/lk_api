@@ -7,6 +7,14 @@ use App\Services\OrderListService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\OrderList
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderList newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderList newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|OrderList query()
+ * @mixin \Eloquent
+ */
 class OrderList extends Model
 {
     /**获取用户订单列表

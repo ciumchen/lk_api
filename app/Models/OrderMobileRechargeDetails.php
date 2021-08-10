@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\DB;
  * @mixin \Eloquent
  * @method static Builder|OrderMobileRechargeDetails whereOrderNo($value)
  * @method static Builder|OrderMobileRechargeDetails whereTradeNo($value)
+ * @property-read mixed $status_text
  */
 class OrderMobileRechargeDetails extends Model
 {

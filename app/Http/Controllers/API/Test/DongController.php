@@ -6,6 +6,8 @@ use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderMobileRechargeDetails;
+use App\Services\Alipay\AlipayCertService;
+use App\Services\Alipay\AlipayService;
 use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
 use App\Services\SignInService;
@@ -158,5 +160,41 @@ class DongController extends Controller
             throw $e;
         }
         return apiSuccess($res);
+    }
+    
+    public function alipayTest()
+    {
+//        dd('11');
+        try {
+            $AlipayService = new AlipayService();
+            $as = $AlipayService->test();
+            dd($as);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+    
+    public function alipayTest2()
+    {
+        try {
+            $AlipayService = new AlipayCertService();
+            $as = $AlipayService->authByCertWebPage();
+//            echo $as;
+            dd($as);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+    
+    public function alipayTest3()
+    {
+        try {
+            $AlipayService = new AlipayCertService();
+            $as = $AlipayService->authByCertWebPage();
+            echo $as;
+//            dd($as);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 }
