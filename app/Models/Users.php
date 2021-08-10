@@ -76,6 +76,8 @@ use Carbon\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayAvatar($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayNickname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereMemberStatus($value)
+ * @property string $balance_tuan 拼团金额账户
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereBalanceTuan($value)
  */
 class Users extends Model
 {

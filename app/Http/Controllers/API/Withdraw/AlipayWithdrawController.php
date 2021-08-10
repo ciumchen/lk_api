@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 
 class AlipayWithdrawController extends Controller
 {
-    //生成提现订单
-    public function payUser()
+// 发起提现请求
+    public function payUser(Request $request)
     {
+        $user = $request->user();
+        $channel = $request->input('channel');
+        $withdraw_id = $request->input('withdraw_id');
+        /*TODO:提现到支付宝*/
     }
-    // 发起提现请求
     //接收返回
 }

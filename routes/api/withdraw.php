@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 ///////////////
 Route::middleware(['auth:sanctum'])->group(
     function () {
-        Route::post('set-withdraw-order', 'Withdraw\WithdrawController@payUser');
+        Route::post('set-tuan-withdraw-order', 'Withdraw\WithdrawController@setTuanOrder');
         Route::post('alipay-withdraw', 'Withdraw\Withdraw@payUser');
     }
 );
