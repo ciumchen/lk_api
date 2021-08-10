@@ -91,6 +91,12 @@ use Illuminate\Support\Facades\Log;
  * @property string $alipay_account 用户支付宝账户
  * @method static Builder|User whereAlipayAccount($value)
  * @method static Builder|User whereAlipayUserId($value)
+ * @property int|null $member_status 来客会员状态，0普通用户，1会员
+ * @property string $alipay_nickname 用户支付宝昵称
+ * @property string $alipay_avatar 用户支付宝头像
+ * @method static Builder|User whereAlipayAvatar($value)
+ * @method static Builder|User whereAlipayNickname($value)
+ * @method static Builder|User whereMemberStatus($value)
  */
 class User extends Authenticatable
 {

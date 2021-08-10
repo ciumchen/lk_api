@@ -43,6 +43,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|UserAlipayAuthToken whereIsUsed($value)
  * @method static Builder|UserAlipayAuthToken whereReExpiresIn($value)
  * @method static Builder|UserAlipayAuthToken whereRefreshToken($value)
+ * @property string $alipay_alipay_user_id 用户支付宝alipay_user_id
+ * @method static Builder|UserAlipayAuthToken whereAlipayAlipayUserId($value)
  */
 class UserAlipayAuthToken extends Model
 {

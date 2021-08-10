@@ -70,6 +70,12 @@ use Carbon\Carbon;
  * @property string $alipay_account 用户支付宝账户
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayAccount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayUserId($value)
+ * @property int|null $member_status 来客会员状态，0普通用户，1会员
+ * @property string $alipay_nickname 用户支付宝昵称
+ * @property string $alipay_avatar 用户支付宝头像
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereAlipayNickname($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereMemberStatus($value)
  */
 class Users extends Model
 {

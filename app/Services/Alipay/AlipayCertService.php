@@ -12,14 +12,19 @@ use App\Models\UserAlipayAuthToken;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Description:支付宝证书模式连接操作类
+ *
+ * Class AlipayCertService
+ *
+ * @package App\Services\Alipay
+ * @author  lidong<947714443@qq.com>
+ * @date    2021/8/10 0010
+ */
 class AlipayCertService extends AlipayBaseService
 {
-    public function getRequest()
-    {
-    }
-    
     /**
-     * Description:
+     * Description:保存用户授权信息
      *
      * @param array $data [
      *                    'uid'       => $uid,
@@ -91,9 +96,9 @@ class AlipayCertService extends AlipayBaseService
     }
     
     /**
-     * Description:
+     * Description:用户支付宝绑定状态查询
      *
-     * @param $uid
+     * @param int $uid 用户ID
      *
      * @return bool
      * @author lidong<947714443@qq.com>
@@ -156,17 +161,17 @@ class AlipayCertService extends AlipayBaseService
     }
     
     /**
-     * Description:更新accessTOKEN到数据库
+     * Description:更新 accessToken 到数据库
      *
-     * @param string                               $uid
+     * @param int                                  $uid
      * @param array                                $access_token_arr
      * @param \App\Models\UserAlipayAuthToken|null $UserToken
      *
-     * @throws \Exception
+     * @return bool
      * @author lidong<947714443@qq.com>
      * @date   2021/8/9 0009
      */
-    public function updateAccessToken(string $uid, array $access_token_arr, UserAlipayAuthToken $UserToken = null)
+    public function updateAccessToken(int $uid, array $access_token_arr, UserAlipayAuthToken $UserToken = null)
     {
         try {
             if (empty($access_token_arr)) {
@@ -174,6 +179,9 @@ class AlipayCertService extends AlipayBaseService
             }
             if (empty($UserToken)) {
                 $UserToken = UserAlipayAuthToken::whereUid($uid)->first();
+            }
+            if (empty($UserToken)) {
+                throw new Exception('用户没有授权数据');
             }
             $UserToken->access_token = $access_token_arr[ 'access_token' ];
             $UserToken->alipay_user_id = $access_token_arr[ 'user_id' ];
@@ -183,8 +191,10 @@ class AlipayCertService extends AlipayBaseService
             $UserToken->alipay_alipay_user_id = $access_token_arr[ 'alipay_user_id' ];
             $UserToken->save();
         } catch (Exception $e) {
-            throw $e;
+            Log::debug('Error:Alipay-updateAccessToken-'.$e->getMessage());
+            return false;
         }
+        return true;
     }
     
     /**
@@ -192,7 +202,7 @@ class AlipayCertService extends AlipayBaseService
      *
      * @param $access_token
      *
-     * @return \$1|false|mixed|\SimpleXMLElement
+     * @return $1|false|mixed|\SimpleXMLElement
      * @throws \Exception
      * @author lidong<947714443@qq.com>
      * @date   2021/8/9 0009
@@ -205,13 +215,17 @@ class AlipayCertService extends AlipayBaseService
             $Result = $AopCertClient->execute($request, $access_token);
             $responseNode = str_replace(".", "_", $request->getApiMethodName())."_response";
             if (!isset($Result->$responseNode) || $Result->$responseNode->code != 10000) {
-                throw new Exception('用户信息获取失败'.json_encode($result));
+                throw new Exception('用户信息获取失败'.json_encode($Result));
             }
         } catch (Exception $e) {
             Log::debug('Alipay-Error:'.$e->getMessage());
             throw  $e;
         }
         return $Result->$responseNode;
+    }
+    
+    public function payToUser()
+    {
     }
     
     

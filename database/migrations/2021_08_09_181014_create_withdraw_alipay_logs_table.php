@@ -23,12 +23,13 @@ class CreateWithdrawAlipayLogsTable extends Migration
             $table->string('alipay_account')->default('')->comment('用户支付宝账户');
             $table->string('alipay_nickname')->default('')->comment('用户支付宝昵称');
             $table->string('alipay_avatar')->default('')->comment('用户支付宝头像');
+            $table->string('real_name')->default('')->comment('用户真实姓名');
             $table->decimal('handling_ratio', 5, 2)->default(0.00)->comment('手续费比例');
             $table->decimal('handling_price', 15, 2)->default(0.00)->comment('手续费');
             $table->decimal('actual_amount', 5, 2)->default(0.00)->comment('实际到账金额');
             $table->decimal('balance_fee', 15, 2)->default(0.00)->comment('提现后账户余额');
             $table->tinyInteger('status')->default(1)->comment('交易状态:1处理中,2成功,3失败');
-            $table->text('remark')->nullable()->comment('备注');
+            $table->text('remark')->nullable()->comment('业务备注');
             $table->text('failed_reason')->nullable()->comment('提现失败原因');
             $table->timestamps();
         });

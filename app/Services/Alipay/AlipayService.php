@@ -7,6 +7,16 @@ use AlipayAop\AopCertClient;
 use AlipayAop\request\AlipayTradeQueryRequest;
 use AlipayAop\request\AlipayUserInfoAuthRequest;
 
+/**
+ * Description:支付宝公钥模式
+ *
+ * Class AlipayService
+ *
+ * @package App\Services\Alipay
+ * @author  lidong<947714443@qq.com>
+ * @date    2021/8/10 0010
+ */
+
 class AlipayService extends AlipayBaseService
 {
     public function test()

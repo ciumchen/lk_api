@@ -49,6 +49,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property int|null $import_day 导入日期
  * @method static \Illuminate\Database\Eloquent\Builder|Shop whereImportDay($value)
+ * @property int|null $member_gl_oid 购买来客会员邀请人订单关联用户订单oid
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereMemberGlOid($value)
  */
 class Shop extends Model
 {
