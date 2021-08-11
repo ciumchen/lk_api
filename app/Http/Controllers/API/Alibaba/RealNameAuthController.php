@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Alibaba;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessApply;
 use App\Services\Alibaba\AlibabaOcrService;
+use App\Services\OssService;
 use Illuminate\Http\Request;
 
 class RealNameAuthController extends Controller
@@ -14,9 +15,9 @@ class RealNameAuthController extends Controller
     public function AlibabaTest(Request $request)
     {
         $file = $request->input('file');
-//        dd($file);
-        $redata = (new AlibabaOcrService())->getOCR($file);
-
+        $imgUrl = OssService::base64Upload($file,'ocr/');
+        $ossImgUrl = env('OSS_URL').$imgUrl;
+        $redata = (new AlibabaOcrService())->getOCR($ossImgUrl);
         if ($redata){
             return response()->json(['code' => 1, 'msg' => json_decode($redata,true)]);
         }else{
