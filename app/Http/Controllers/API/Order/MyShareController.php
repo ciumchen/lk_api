@@ -230,6 +230,7 @@ class MyShareController extends Controller
             $tuanYuanData[$k]['uid'] = $v->id;
             $tuanYuanData[$k]['phone'] = $v->phone;
             $tuanYuanData[$k]['member_status'] = $v->member_status;
+            $tuanYuanData[$k]['member_head'] = $v->member_head;
 
             //统计每个商户的今日录单的实际让利金额，判断当前用户是盟主就乘0.035，非盟主就乘0.02
             $profit_price = Order::where('business_uid',$v->id)->where('status',2)->where('created_at','>=',$today)->sum('profit_price');//实际让利金额
