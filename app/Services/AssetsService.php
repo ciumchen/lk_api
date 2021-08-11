@@ -9,6 +9,7 @@ use App\Models\AssetsType;
 use App\Models\User;
 use ERC20\ERC20;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\Types\False_;
 use quarkblockchain\QkNodeRPC;
 
 class AssetsService
@@ -225,9 +226,23 @@ class AssetsService
         return false;
     }
     
+    /**
+     * Description:修改USDT余额
+     *
+     * @param int $change_times
+     *
+     * @return bool
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/11 0011
+     */
     public function exchangeUSDTRatio($change_times = 1)
     {
-        $sql = "UPDATE assets SET amount = (amount * 6.5 ), freeze_amount = (freeze_amount * 6.5)WHERE assets_type_id = 3;";
-        DB::getPdo()->exec($sql);
+        $sql = "UPDATE assets SET amount = (amount * 6.5 ), freeze_amount = (freeze_amount * 6.5)WHERE assets_type_id = 3 and change_times <{$change_times};";
+        try {
+            DB::getPdo()->exec($sql);
+        } catch (\Exception $e) {
+            return false;
+        }
+        return true;
     }
 }
