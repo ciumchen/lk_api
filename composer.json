@@ -53,7 +53,8 @@
       "app/helpers.php",
       "app/Libs/BmApi/autoload.php",
       "app/Libs/Wanwei/Autoloader.php",
-      "app/Libs/AlipaySDK/autoload.php"
+      "app/Libs/AlipaySDK/autoload.php",
+      "app/Libs/AlibabaOCR/autoload.php"
     ],
     "classmap": [
       "database"
