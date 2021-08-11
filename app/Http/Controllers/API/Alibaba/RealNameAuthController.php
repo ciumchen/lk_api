@@ -44,11 +44,10 @@ class RealNameAuthController extends Controller
             $userLog->second = $userLog->second+1;
             $userLog->save();
 
-        }elseif ($userLog->second > 3){
+        }elseif ($userLog->second >= 3){
             return response()->json(['code' => 0, 'msg' => '每天只能认证3次！']);
         }
-
-
+        
         //上传图片到oss
         $img_just_url = OssService::base64Upload($img_just,'ocr/');
         $img_back_url = OssService::base64Upload($img_back,'ocr/');
