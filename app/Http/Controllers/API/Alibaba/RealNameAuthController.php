@@ -21,9 +21,11 @@ class RealNameAuthController extends Controller
     {
         $uid = $request->input('uid');
         $img_just = $request->input('img_just');//正面身份证
-        $img_back = $request->input('img_back');//反面身份证
-        if($uid=='' || $img_just=='' || $img_back='')
+        $img_back = $request->input('img_back');//反面身份证 img_back
+
+        if($uid=='' || $img_just=='' || $img_back==''){
             return response()->json(['code' => 0, 'msg' => '参数不能为空！']);
+        }
 
         $userInfo = Users::find($uid);
         if ($userInfo==''){
@@ -31,7 +33,6 @@ class RealNameAuthController extends Controller
         }
 
         //上传图片到oss
-        dd($img_back);
         $img_just_url = OssService::base64Upload($img_just,'ocr/');
         $img_back_url = OssService::base64Upload($img_back,'ocr/');
 
