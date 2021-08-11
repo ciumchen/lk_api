@@ -56,6 +56,7 @@ class RealNameAuthController extends Controller
                     DB::beginTransaction();
                     try {
                         $userInfo->real_name = $reArr['name'];
+                        $userInfo->is_auth = 2;
                         $userInfo->save();
                         $userImg = RealNameAuth::where('uid',$uid)->first();
                         if ($userImg==null){
