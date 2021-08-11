@@ -3,31 +3,32 @@
 namespace App\Services;
 
 use App\Exceptions\LogicException;
-
-
 use App\Models\Assets;
 use App\Models\AssetsLogs;
 use App\Models\AssetsType;
 use App\Models\User;
 use ERC20\ERC20;
+use Illuminate\Support\Facades\DB;
 use quarkblockchain\QkNodeRPC;
 
 class AssetsService
 {
     /**获取资产
-     * @param User $user
+     *
+     * @param User       $user
      * @param AssetsType $assetType
-     * @param bool $isLock
+     * @param bool       $isLock
+     *
      * @return Assets
      */
     public static function getBalanceData(User $user, AssetsType $assetType, bool $isLock = false)
     {
         $assets = Assets::where('uid', $user->id)
-            ->where('assets_type_id', $assetType->id)
-            ->when($isLock, function ($query) {
-                return $query->lockForUpdate();
-            })
-            ->first();
+                        ->where('assets_type_id', $assetType->id)
+                        ->when($isLock, function ($query) {
+                            return $query->lockForUpdate();
+                        })
+                        ->first();
         if (null === $assets) {
             $assets = new Assets();
             $assets->uid = $user->id;
@@ -37,19 +38,17 @@ class AssetsService
             $assets->freeze_amount = 0;
             $assets->save();
         }
-
         return $assets;
     }
-
-
+    
     public static function give_iets_getBalanceData(User $user, AssetsType $assetType, bool $isLock = false)
     {
         $assets = Assets::where('uid', $user->id)
-            ->where('assets_type_id', $assetType->id)
-            ->when($isLock, function ($query) {
-                return $query->lockForUpdate();
-            })
-            ->first();
+                        ->where('assets_type_id', $assetType->id)
+                        ->when($isLock, function ($query) {
+                            return $query->lockForUpdate();
+                        })
+                        ->first();
         if (null === $assets) {
             $assets = new Assets();
             $assets->uid = $user->id;
@@ -59,14 +58,14 @@ class AssetsService
             $assets->freeze_amount = 0;
             $assets->save();
         }
-
         return $assets;
     }
-
+    
     /**
-     * @param int $uid
+     * @param int        $uid
      * @param AssetsType $assetType
-     * @param $amount
+     * @param            $amount
+     *
      * @return array
      * @throws LogicException
      */
@@ -76,31 +75,37 @@ class AssetsService
         //当前余额
         $assets = self::getBalanceData($user, $assetType, true);
         $beforeAmount = $assets->getRawOriginal('amount');
-
         $afterAmount = bcadd($beforeAmount, $amount, 18);
         if (bccomp($afterAmount, 0, 18) < 0) {
             throw new LogicException('余额不足');
         }
-
         $assets->amount = $afterAmount;
         $assets->save();
-
         return ['amount_before_change' => $beforeAmount, 'amount_after_change' => $afterAmount];
     }
-
+    
     /**
-     * @param int $uid
+     * @param int        $uid
      * @param AssetsType $assetType
-     * @param string $assets_name
-     * @param $amount
-     * @param string $operate_type
-     * @param null $remark
-     * @param null $tx_hash
+     * @param string     $assets_name
+     * @param            $amount
+     * @param string     $operate_type
+     * @param null       $remark
+     * @param null       $tx_hash
+     *
      * @return mixed
      * @throws LogicException
      */
-    public static function BalancesChange($orderNo,int $uid, AssetsType $assetType, string $assets_name,$amount, string $operate_type, $remark = null,$tx_hash = null)
-    {
+    public static function BalancesChange(
+        $orderNo,
+        int $uid,
+        AssetsType $assetType,
+        string $assets_name,
+        $amount,
+        string $operate_type,
+        $remark = null,
+        $tx_hash = null
+    ) {
         $info = self::changeWithoutLog($uid, $assetType, $amount);
         //写入日志
         $balancesLogs = new AssetsLogs();
@@ -109,20 +114,22 @@ class AssetsService
         $balancesLogs->uid = $uid;
         $balancesLogs->operate_type = $operate_type;
         $balancesLogs->amount = $amount;
-        $balancesLogs->amount_before_change = $info['amount_before_change'];
+        $balancesLogs->amount_before_change = $info[ 'amount_before_change' ];
         $balancesLogs->tx_hash = $tx_hash;
         $balancesLogs->ip = request()->server('HTTP_ALI_CDN_REAL_IP', request()->ip());
-        $balancesLogs->user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'],0,255,'utf-8') : '';
+        $balancesLogs->user_agent = isset($_SERVER[ 'HTTP_USER_AGENT' ]) ? mb_substr($_SERVER[ 'HTTP_USER_AGENT' ], 0,
+                                                                                     255, 'utf-8') : '';
         $balancesLogs->remark = $remark;
         $balancesLogs->order_no = $orderNo;
         $balancesLogs->save();
         return $balancesLogs->id;
     }
-
-
+    
     /**
      * 检查托管地址余额.
+     *
      * @param $num
+     *
      * @return bool
      * @throws \EthereumRPC\Exception\ConnectionException
      * @throws \EthereumRPC\Exception\ContractABIException
@@ -136,22 +143,19 @@ class AssetsService
         $asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
         $contract = $asset->contract_address;
         $urlArr = parse_url(env('WITHDRAW_RPC_HOST'));
-
         //实例化节点对象
-        $qkNode = new QkNodeRPC($urlArr['host'], $urlArr['port']);
+        $qkNode = new QkNodeRPC($urlArr[ 'host' ], $urlArr[ 'port' ]);
         $erc = new ERC20($qkNode);
         $token = $erc->token($contract);
         //托管地址（发送方）
         $payer = env('WITHDRAW_ADDRESS');
         $payerBalance = $token->balanceOf($payer);
-
         if (bccomp($payerBalance, bcadd($num, 1000, 8), 0) < 0) {
             return false;
         }
-
         return true;
     }
-
+    
     /**
      * 转出.
      *
@@ -174,9 +178,8 @@ class AssetsService
         $asset = AssetsType::where('assets_name', AssetsType::DEFAULT_ASSETS_NAME)->first();
         $contract = $asset->contract_address;
         $urlArr = parse_url(env('WITHDRAW_RPC_HOST'));
-
         //实例化节点对象
-        $qkNode = new QkNodeRPC($urlArr['host'], $urlArr['port']);
+        $qkNode = new QkNodeRPC($urlArr[ 'host' ], $urlArr[ 'port' ]);
         $erc = new ERC20($qkNode);
         $token = $erc->token($contract);
         //托管地址（发送方）
@@ -184,29 +187,26 @@ class AssetsService
         //转账
         $data = $token->encodedTransferData($address, $amount);
         $transaction = $qkNode->personal()->transaction($payer, $contract)
-            ->amount('0')
-            ->data($data);
+                              ->amount('0')
+                              ->data($data);
         $transaction->gas(90000, '0.0000001');
         $txId = $transaction->send(env('WITHDRAW_PASSWORD'));
-
         if ($txId && 66 == strlen($txId)) {
             //返回交易hashco
             return $txId;
         }
-
         return false;
     }
-
+    
     //iets提现
-    public function AssetsTransfer($amount, $address,$assetsTypeNmae)
+    public function AssetsTransfer($amount, $address, $assetsTypeNmae)
     {
         //合约地址
         $asset = AssetsType::where('assets_name', $assetsTypeNmae)->first();
         $contract = $asset->contract_address;
         $urlArr = parse_url(env('WITHDRAW_RPC_HOST'));
-
         //实例化节点对象
-        $qkNode = new QkNodeRPC($urlArr['host'], $urlArr['port']);
+        $qkNode = new QkNodeRPC($urlArr[ 'host' ], $urlArr[ 'port' ]);
         $erc = new ERC20($qkNode);
         $token = $erc->token($contract);
         //托管地址（发送方）
@@ -214,16 +214,20 @@ class AssetsService
         //转账
         $data = $token->encodedTransferData($address, $amount);
         $transaction = $qkNode->personal()->transaction($payer, $contract)
-            ->amount('0')
-            ->data($data);
+                              ->amount('0')
+                              ->data($data);
         $transaction->gas(90000, '0.0000001');
         $txId = $transaction->send(env('WITHDRAW_PASSWORD'));
-
         if ($txId && 66 == strlen($txId)) {
             //返回交易hashco
             return $txId;
         }
-
         return false;
+    }
+    
+    public function exchangeUSDTRatio($change_times = 1)
+    {
+        $sql = "UPDATE assets SET amount = (amount * 6.5 ), freeze_amount = (freeze_amount * 6.5)WHERE assets_type_id = 3;";
+        DB::getPdo()->exec($sql);
     }
 }
