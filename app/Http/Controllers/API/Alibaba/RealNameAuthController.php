@@ -40,11 +40,11 @@ class RealNameAuthController extends Controller
             $data = array('uid'=>$uid,"day"=>$today,"second"=>1);
             RealNameAuthLog::create($data);
 
-        }elseif ($userLog!=null && $userLog->second <=3){
+        }elseif ($userLog!=null && $userLog->second <3){
             $userLog->second = $userLog->second+1;
             $userLog->save();
 
-        }elseif ($userLog->second >= 3){
+        }elseif ($userLog->second > 3){
             return response()->json(['code' => 0, 'msg' => '每天只能认证3次！']);
         }
 
