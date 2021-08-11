@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Alibaba;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RealNameAuthRequest;
 use App\Models\BusinessApply;
 use App\Models\RealNameAuth;
 use App\Models\User;
@@ -13,19 +14,18 @@ use App\Services\Alibaba\AlibabaOcrService;
 use App\Services\OssService;
 use Illuminate\Http\Request;
 use DB;
+use Exception;
 class RealNameAuthController extends Controller
 {
 
     //用户身份证ocr验证
-    public function AlibabaOcrCheckImg(Request $request)
+    public function AlibabaOcrCheckImg(RealNameAuthRequest $request)
     {
         $uid = $request->input('uid');
         $img_just = $request->input('img_just');//正面身份证
         $img_back = $request->input('img_back');//反面身份证 img_back
-
-        if($uid=='' || $img_just=='' || $img_back==''){
-            return response()->json(['code' => 0, 'msg' => '参数不能为空！']);
-        }
+        $username = $request->input('username');
+        $user_num = $request->input('user_num');
 
         $userInfo = Users::find($uid);
         if ($userInfo==''){
@@ -43,6 +43,13 @@ class RealNameAuthController extends Controller
         if ($redata){
             $reArr = json_decode($redata,true);
             if ($reArr['success']){
+                if ($username!=$reArr['name']){
+                    return response()->json(['code' => 0, 'msg' => '名字和身份证不一致！']);
+                }
+                if ($user_num!=$reArr['num']){
+                    return response()->json(['code' => 0, 'msg' => '身份证号码和身份证不一致！']);
+                }
+
                 $age =  date('Y') - substr($reArr['num'], 6, 4) + (date('md') >= substr($reArr['num'], 10, 4) ? 1 : 0);
                 if ($age>=16){
                     //保存用户信息
