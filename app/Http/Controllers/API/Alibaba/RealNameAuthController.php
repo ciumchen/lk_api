@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RealNameAuthRequest;
 use App\Models\BusinessApply;
 use App\Models\RealNameAuth;
+use App\Models\RealNameAuthLog;
 use App\Models\User;
 use App\Models\Users;
 use App\Models\UserUpdatePhoneLogSd;
@@ -31,6 +32,22 @@ class RealNameAuthController extends Controller
         if ($userInfo==''){
             return response()->json(['code' => 0, 'msg' => '用户不存在！']);
         }
+
+        //验证用户今日ocr认证次数
+        $today = date('Y-m-d',time());
+        $userLog = RealNameAuthLog::where('uid',$uid)->where('day',$today)->first();
+        if ($userLog==null){
+            $data = array('uid'=>$uid,"day"=>$today,"second"=>1);
+            RealNameAuthLog::created($data);
+
+        }elseif ($userLog!=null && $userLog->second <=3){
+            $userLog->second = $userLog->second+1;
+            $userLog->save();
+
+        }elseif ($userLog->second >= 3){
+            return response()->json(['code' => 0, 'msg' => '每天只能认证3次！']);
+        }
+
 
         //上传图片到oss
         $img_just_url = OssService::base64Upload($img_just,'ocr/');
