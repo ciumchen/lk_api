@@ -65,7 +65,7 @@ class AddIntegral extends Command
         //判断是否已执行
         $isRebateStatus = RebateData::where("day", Carbon::yesterday()->toDateString())->where('status', 2)->value('status');
         if ($isRebateStatus!=2){
-            log::info("========================昨日未返佣，禁止添加排队订单积分，昨日返佣状态是：".$isRebateStatus);
+//            log::info("========================昨日未返佣，禁止添加排队订单积分，昨日返佣状态是：".$isRebateStatus);
             dd("========================昨日未返佣，禁止添加排队订单积分，昨日返佣状态是：null ".$isRebateStatus);
             return false;
         }else{
