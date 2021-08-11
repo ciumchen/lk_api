@@ -16,6 +16,8 @@ use App\Services\OssService;
 use Illuminate\Http\Request;
 use DB;
 use Exception;
+use Illuminate\Support\Facades\Log;
+
 class RealNameAuthController extends Controller
 {
 
@@ -28,6 +30,14 @@ class RealNameAuthController extends Controller
         $username = $request->input('username');
         $user_num = $request->input('user_num');
 
+        Log::info("=================================================");
+        Log::info("=================================================".$uid);
+        Log::info("=================================================".$img_just);
+        Log::info("=================================================".$img_back);
+        Log::info("=================================================".$username);
+        Log::info("=================================================".$user_num);
+
+        Log::info("=================================================");
         $userInfo = Users::find($uid);
         if ($userInfo==''){
             return response()->json(['code' => 0, 'msg' => '用户不存在！']);
@@ -47,7 +57,7 @@ class RealNameAuthController extends Controller
         }elseif ($userLog->second >= 3){
             return response()->json(['code' => 0, 'msg' => '每天只能认证3次！']);
         }
-        
+
         //上传图片到oss
         $img_just_url = OssService::base64Upload($img_just,'ocr/');
         $img_back_url = OssService::base64Upload($img_back,'ocr/');
