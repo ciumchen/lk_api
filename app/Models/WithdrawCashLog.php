@@ -161,15 +161,16 @@ class WithdrawCashLog extends BaseModel
      * @author lidong<947714443@qq.com>
      * @date   2021/8/10 0010
      */
-    public function setCanWithdrawOrder(User $user, $money, $order_no)
+    public function setCanWithdrawOrder(User $user, Assets $Assets, $money, $order_no)
     {
         try {
-            /*TODO:计算余额*/
-            $this->balance_type = self::BALANCE_PIN_TUAN;
-            $this->balance_fee = '';
+            $this->balance_type = self::BALANCE_CAN_WITHDRAW;
+            $this->balance_fee = $Assets->amount - $money;
+            $this->setOrder($user, $money, $order_no);
         } catch (Exception $e) {
             throw $e;
         }
+        return $this;
     }
     
     /**

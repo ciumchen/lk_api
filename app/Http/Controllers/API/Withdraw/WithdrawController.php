@@ -46,5 +46,16 @@ class WithdrawController extends Controller
         return apiSuccess($order);
     }
     
-    
+    public function setCanOrder(Request $request)
+    {
+        $user = $request->user();
+        $money = $request->input('money');
+        try {
+            $Withdraw = new WithdrawCashService();
+            $order = $Withdraw->setCanWithdrawOrder($user->id, $money);
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($order);
+    }
 }
