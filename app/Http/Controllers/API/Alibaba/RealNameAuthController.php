@@ -17,7 +17,11 @@ class RealNameAuthController extends Controller
 //        dd($file);
         $redata = (new AlibabaOcrService())->getOCR($file);
 
-        dd($redata);
+        if ($redata){
+            return response()->json(['code' => 1, 'msg' => json_decode($redata,true)]);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '身份证验证失败！']);
+        }
 
 
 
