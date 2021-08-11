@@ -137,6 +137,7 @@ class WithdrawCashLog extends BaseModel
             $this->actual_amount = $money - $handling_price;
             $this->handling_ratio = $handling_ratio;
             $this->handling_price = $handling_price;
+            $this->real_name = $user->real_name;
             $this->alipay_user_id = $user->alipay_user_id;
             $this->alipay_account = $user->alipay_account;
             $this->alipay_avatar = $user->alipay_avatar;

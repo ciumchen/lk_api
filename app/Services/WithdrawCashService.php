@@ -65,6 +65,9 @@ class WithdrawCashService
         if ($money % 100) {
             throw new Exception('提现金额只能是100的倍数');
         }
+        if (empty($User->real_name)) {
+            throw new Exception('请先进行实名认证');
+        }
         if ($User->balance_tuan < $money) {
             throw new Exception('账户余额不足');
         }
