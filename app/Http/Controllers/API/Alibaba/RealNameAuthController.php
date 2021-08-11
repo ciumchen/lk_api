@@ -2,38 +2,85 @@
 
 namespace App\Http\Controllers\API\Alibaba;
 
+use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessApply;
+use App\Models\RealNameAuth;
+use App\Models\User;
+use App\Models\Users;
+use App\Models\UserUpdatePhoneLogSd;
 use App\Services\Alibaba\AlibabaOcrService;
 use App\Services\OssService;
 use Illuminate\Http\Request;
-
+use DB;
 class RealNameAuthController extends Controller
 {
 
-    //test测试
-    public function AlibabaTest(Request $request)
+    //用户身份证ocr验证
+    public function AlibabaOcrCheckImg(Request $request)
     {
-        $file = $request->input('file');
-        $imgUrl = OssService::base64Upload($file,'ocr/');
-        $ossImgUrl = env('OSS_URL').$imgUrl;
+        $uid = $request->input('uid');
+        $img_just = $request->input('img_just');//正面身份证
+        $img_back = $request->input('img_back');//反面身份证
+        if($uid=='' || $img_just=='' || $img_back='')
+            return response()->json(['code' => 0, 'msg' => '参数不能为空！']);
+
+        $userInfo = Users::find($uid);
+        if ($userInfo==''){
+            return response()->json(['code' => 0, 'msg' => '用户不存在！']);
+        }
+
+        //上传图片到oss
+        dd($img_back);
+        $img_just_url = OssService::base64Upload($img_just,'ocr/');
+        $img_back_url = OssService::base64Upload($img_back,'ocr/');
+
+        $ossImgUrl = env('OSS_URL').$img_just_url;
+//        var_dump($ossImgUrl);
+        //身份证ocr验证
         $redata = (new AlibabaOcrService())->getOCR($ossImgUrl);
         if ($redata){
-            return response()->json(['code' => 1, 'msg' => json_decode($redata,true)]);
+            $reArr = json_decode($redata,true);
+            if ($reArr['success']){
+                $age =  date('Y') - substr($reArr['num'], 6, 4) + (date('md') >= substr($reArr['num'], 10, 4) ? 1 : 0);
+                if ($age>=16){
+                    //保存用户信息
+                    DB::beginTransaction();
+                    try {
+                        $userInfo->real_name = $reArr['name'];
+                        $userInfo->save();
+                        $userImg = RealNameAuth::where('uid',$uid)->first();
+                        if ($userImg==null){
+                            $data = array('uid'=>$uid,'name'=>$reArr['name'],"num_id"=>$reArr['num'],'img_just'=>$img_just_url,'img_back'=>$img_back_url,'status'=>1);
+                            RealNameAuth::create($data);
+                        }else{
+                            $userImg->name = $reArr['name'];
+                            $userImg->num_id = $reArr['num'];
+                            $userImg->img_just = $img_just_url;
+                            $userImg->img_back = $img_back_url;
+                            $userImg->status = 1;
+                            $userImg->save();
+                        }
+                        DB::commit();
+                    } catch (Exception $exception) {
+                        DB::rollBack();
+                        return response()->json(['code' => 0, 'msg' => '身份证验证失败！']);
+                    }
+                    return response()->json(['code' => 1, 'msg' => '身份证验证成功！']);
+
+                }else{
+                    return response()->json(['code' => 0, 'msg' => '身份证验证未满16周岁！']);
+                }
+
+            }else{
+                return response()->json(['code' => 0, 'msg' => '身份证验证失败！']);
+            }
+
         }else{
             return response()->json(['code' => 0, 'msg' => '身份证验证失败！']);
         }
 
 
-
-//        $uid = $request->input('uid');
-//        $status = $request->input('status');
-//        $re = BusinessApply::where('uid', $uid)->update(array('status' => $status));
-//        if ($re) {
-//            echo "修改成功";
-//        } else {
-//            echo "修改失败";
-//        }
     }
 
 
