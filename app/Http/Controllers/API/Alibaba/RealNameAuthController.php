@@ -34,11 +34,11 @@ class RealNameAuthController extends Controller
         }
 
         //验证用户今日ocr认证次数
-        $today = date('Y-m-d',time());
+        $today = date('Ymd',time());
         $userLog = RealNameAuthLog::where('uid',$uid)->where('day',$today)->first();
         if ($userLog==null){
             $data = array('uid'=>$uid,"day"=>$today,"second"=>1);
-            RealNameAuthLog::created($data);
+            RealNameAuthLog::create($data);
 
         }elseif ($userLog!=null && $userLog->second <=3){
             $userLog->second = $userLog->second+1;

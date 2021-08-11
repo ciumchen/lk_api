@@ -13,8 +13,8 @@ class RealNameAuthLog extends Model
     protected $table = 'real_name_auth_log';
     protected $fillable = [
         'uid',
-        'name',
-        'num_id',
+        'day',
+        'second',
         'status',
         'img_just',
         'img_back',
