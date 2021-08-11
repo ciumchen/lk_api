@@ -78,6 +78,7 @@ class GatherGoldLogs extends Model
             ->forPage($page ?? 1, $perPage ?? 10)
             ->get()
             ->each(function ($item) {
+                $item->money = (int)$item->money;
                 $item->status = self::GATHER_STATUS[$item->status];
                 $item->type = self::GATHERGOLD_TYPE[$item->type];
             });

@@ -135,6 +135,75 @@ class GatherUsers extends Model
                 ->count();
     }
 
+    /**获取用户拼团及中奖信息
+     * @param array $data
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getGatherInfo (array $data)
+    {
+        //设置结束拼团时间戳
+        $diffTime = 72 * 3600;
+        //拼团总人数
+        $userRatio = Setting::getSetting('gather_users_ number') ?? 100;
+        $param = [
+            'diffTime'  => $diffTime,
+            'userRatio' => $userRatio,
+        ];
+        $status = $data['status'] == 0 ? true : false;
+
+        //获取拼团未开始、已开始及已终止信息
+        $gatherList = DB::table('gather as g')
+            ->join('gather_users as gu', 'g.id', 'gu.gid')
+            ->when($status, function ($query) {
+                return $query->where(['g.status' => 0]);
+            }, function ($query) {
+                return $query->whereIn('g.status', [1, 3]);
+            })
+            ->where(['gu.uid' => $data['uid']])
+            ->orderBy('gu.created_at', 'desc')
+            ->groupBy('g.id')
+            ->forPage($data['page'] ?? 1, $data['perPage'] ?? 10)
+            ->select(DB::raw('count(gu.id) as total, g.id as gid, g.created_at, g.status, g.type, g.status, gu.type as guType'))
+            ->get()
+            ->each(function ($item) use ($param) {
+                if (!$item->status)
+                {
+                    $item->onStatus = '已参与';
+                } else
+                {
+                    $item->onStatus = self::USER_TYPE[$item->guType];
+                }
+                $item->userSum = count(json_decode($this->getGatherUserList($item->gid), 1));
+                $item->type = self::GATHER_TYPE[$item->type] ?? '';
+                $item->surplusTime = $item->status != 0 ? '已结束' : (int)(strtotime($item->created_at) + $param['diffTime'] - time()) / 3600;
+                unset($item->created_at, $item->guType);
+            });
+
+        return json_decode($gatherList, 1);
+    }
+
+    /**获取拼团中奖信息
+     * @param int $gid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getGatherLottery (int $gid)
+    {
+        //获取拼团获奖用户
+        $userLottery = GatherUsers::where(['gid' => $gid, 'type' => 1])->get();
+        $uids = array_column(json_decode($userLottery, 1), 'uid');
+
+        //获取用户信息
+        $userData = Users::whereIn('id', $uids)->get(['id', 'avatar', 'phone'])
+            ->each(function ($item) {
+                $item->phone = substr_replace($item->phone, '****', 3, 4);
+                $item->content = '100元来客购物卡';
+            });
+
+        return json_decode($userData, 1);
+    }
+
     /**格式化输出日期
      * Prepare a date for array / JSON serialization.
      * @param  \DateTimeInterface  $date
@@ -144,4 +213,16 @@ class GatherUsers extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    const USER_TYPE = [
+        0 => '未中奖',
+        1 => '已中奖',
+    ];
+
+    const GATHER_TYPE = [
+        1 => '话费',
+        2 => '美团',
+        3 => '油卡',
+        4 => '录单',
+    ];
 }

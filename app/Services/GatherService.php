@@ -11,10 +11,7 @@ use App\Models\GatherTrade;
 use App\Models\GatherUsers;
 use App\Models\Order;
 use App\Models\Setting;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Exception;
-use Illuminate\Support\Facades\Log;
 
 class GatherService
 {

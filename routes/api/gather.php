@@ -7,3 +7,7 @@ Route::any('gather-info', 'Gather\AttendGatherController@getGatherInfo');
 Route::any('add-gather', 'Gather\AttendGatherController@addGatherUser');
 //获取用户来拼金
 Route::any('user-gold', 'Gather\AttendGatherController@getGatherGold');
+//获取用户拼团信息
+Route::any('user-gather', 'Gather\GatherUserController@getGatherInfo');
+//获取用户拼团获奖信息
+Route::any('gather-lottery', 'Gather\GatherUserController@getGatherLottery');

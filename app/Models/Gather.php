@@ -40,13 +40,28 @@ class Gather extends Model
      */
     public function getGatherList ()
     {
+        //设置结束拼团时间戳
+        $diffTime = 72 * 3600;
+        //拼团总人数
+        $userRatio = Setting::getSetting('gather_users_ number') ?? 100;
+        $data = [
+            'diffTime'  => $diffTime,
+            'userRatio' => $userRatio,
+        ];
         //返回
         $gatherData = DB::table('gather as g')
             ->leftJoin('gather_users as gu', 'g.id', 'gu.gid')
             ->where(['g.status' => 0])
-            ->select(DB::raw('count(gu.id) as userTotal, g.id, g.status'))
+            ->select(DB::raw('count(gu.id) as userTotal, g.id, g.status, g.type, g.created_at'))
             ->groupBy('g.id')
-            ->get();
+            ->get()
+            ->each(function ($item) use ($data){
+                //$item->surplusTime = (strtotime($item->created_at) + $diffTime - time()) / 3600;
+                $item->surplusTime = intdiv(strtotime($item->created_at) + $data['diffTime'] - time(), 3600);
+                $item->userRatio = (int)$data['userRatio'];
+                $item->type = self::GATHER_TYPE[$item->type] ?? '';
+                unset($item->created_at);
+            });
 
         return json_decode($gatherData, 1);
     }
@@ -102,4 +117,11 @@ class Gather extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    const GATHER_TYPE = [
+        1 => '话费',
+        2 => '美团',
+        3 => '油卡',
+        4 => '录单',
+    ];
 }
