@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Withdraw;
 
 use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\WithdrawCashLog;
 use App\Services\Alipay\AlipayCertService;
 use App\Services\WithdrawCashService;
@@ -49,11 +50,17 @@ class AlipayWithdrawController extends Controller
         } catch (Exception $e) {
             Log::debug('提现失败:AlipayWithdraw', [$e->getMessage()]);
             $failed = json_decode($e->getMessage());
-            if (isset($failed->sub_msg)) {
-                $Withdraw = WithdrawCashLog::findOrFail($withdraw_id);
-                $Withdraw->failed_reason = $failed->sub_msg;
+            $Withdraw = WithdrawCashLog::findOrFail($withdraw_id);
+            if (isset($failed->alipay_fund_trans_uni_transfer_response)) {
+                $res = $failed->alipay_fund_trans_uni_transfer_response;
+                $Withdraw->failed_reason = $res->sub_msg;
                 $Withdraw->status = WithdrawCashLog::STATUS_FAILED;
                 $Withdraw->save();
+            }
+            try {
+                (new WithdrawCashService())->refundsBalance($withdraw_id, $Withdraw);
+            } catch (Exception $e) {
+                Log::debug('提现失败退款失败:AlipayWithdrawRefunds', [$e->getMessage()]);
             }
             throw new LogicException('提现失败');
         }

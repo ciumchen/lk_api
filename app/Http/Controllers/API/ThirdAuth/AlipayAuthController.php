@@ -50,15 +50,17 @@ class AlipayAuthController extends Controller
         $data[ 'uid' ] = $uid;
         $AlipayCertService = new AlipayCertService();
         $status = true;
+        $msg = '支付宝绑定成功';
         try {
             $AlipayCertService->saveUserAuthCode($data);
             $AlipayCertService->userBinding($uid);
         } catch (Exception $e) {
             $status = false;
+            $msg = $e->getMessage();
 //            throw $e;
 //            throw new LogicException($e->getMessage());
         }
-        return view('alipay-after-auth', ['auth_status' => $status]);
+        return view('alipay-after-auth', ['auth_status' => $status, 'msg' => $msg]);
     }
     
     /**

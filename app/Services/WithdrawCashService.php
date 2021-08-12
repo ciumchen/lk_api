@@ -172,4 +172,78 @@ class WithdrawCashService
             throw new Exception('账户余额不足');
         }
     }
+    
+    /**
+     * Description:
+     *
+     * @param                                  $withdraw_id
+     * @param \App\Models\WithdrawCashLog|null $Withdraw
+     *
+     * @return bool
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/12 0012
+     */
+    public function refundsBalance($withdraw_id, WithdrawCashLog $Withdraw = null)
+    {
+        try {
+            if (empty($Withdraw)) {
+                $Withdraw = WithdrawCashLog::findOrFail($withdraw_id);
+            }
+            switch ($Withdraw) {
+                case WithdrawCashLog::BALANCE_PIN_TUAN:
+                    $this->refundsTuanBalance($withdraw_id, $Withdraw);
+                    break;
+                case WithdrawCashLog::BALANCE_CAN_WITHDRAW:
+                    $this->refundsCanBalance($withdraw_id, $Withdraw);
+                    break;
+                default:
+                    throw new Exception('未知类型提现');
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
+    }
+    
+    /**
+     * Description:拼团金充值失败退款
+     *
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/12 0012
+     */
+    public function refundsTuanBalance($withdraw_id, WithdrawCashLog $Withdraw = null)
+    {
+        try {
+            if (empty($Withdraw)) {
+                $Withdraw = WithdrawCashLog::findOrFail($withdraw_id);
+            }
+            $User = User::findOrFail($Withdraw->user_id);
+            $User->balance_tuan = floatval($User->balance_tuan) + floatval($Withdraw->money);
+            $User->save();
+        } catch (Exception $e) {
+        }
+    }
+    
+    /**
+     * Description:补贴提现失败退款
+     *
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/12 0012
+     */
+    public function refundsCanBalance($withdraw_id, WithdrawCashLog $Withdraw = null)
+    {
+        try {
+            if (empty($Withdraw)) {
+                $Withdraw = WithdrawCashLog::findOrFail($withdraw_id);
+            }
+            $User = User::findOrFail($Withdraw->user_id);
+            $assetsType = AssetsType::where("assets_name", AssetsType::DEFAULT_ASSETS_NAME)->first();
+            $Balance = AssetsService::getBalanceData($User, $assetsType);
+            $Balance->amount = floatval($Balance->amount) + floatval($Withdraw->money);
+            $Balance->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
 }

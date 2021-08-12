@@ -52,7 +52,7 @@
             <div
                     style="font-size: 0.4rem;margin-top: 0.426666rem;display: flex;justify-content: center;align-items: center;">
                 <img id="success" src="" style="width: 0.426666rem;height: 0.426666rem;margin-right: 0.2rem;"/>
-                支付宝绑定成功
+                {{$msg}}
             </div>
             <div
                     style="font-size: 0.346666rem;margin-top: 0.426666rem;display: flex;justify-content: center;align-items: center;color: #666666;">
@@ -65,7 +65,7 @@
             <div
                     style="font-size: 0.4rem;margin-top: 0.426666rem;display: flex;justify-content: center;align-items: center;">
                 <img id="error" src='' style="width: 0.426666rem;height: 0.426666rem;margin-right: 0.2rem;"/>
-                支付宝绑定失败
+                {{$msg}}
             </div>
             <div
                     style="font-size: 0.346666rem;margin-top: 0.426666rem;display: flex;justify-content: center;align-items: center;color: #666666;">

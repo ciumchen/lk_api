@@ -80,7 +80,7 @@ class AlipayCertService extends AlipayBaseService
             $access_token_info = $this->getUserAccessTokenByAuthCode($auth_code);
             Log::debug('getUserAccessTokenByAuthCode-', [json_encode($access_token_info)]);
             $token_arr = json_decode(json_encode($access_token_info), true);
-            $auth_info = UserAlipayAuthToken::whereAlipayUserId($access_token_info[ 'user_id' ]);
+            $auth_info = UserAlipayAuthToken::whereAlipayUserId($access_token_info->user_id);
             if (!empty($auth_info) && $auth_info->uid != $uid) {
                 throw new Exception('该支付宝已绑定了其它用户');
             }
