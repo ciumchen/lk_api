@@ -65,6 +65,11 @@ use App\Exceptions\LogicException;
  * @package App\Models
  * @property-read \App\Models\LkshopOrder|null    $lkshopOrder
  * @property-read \App\Models\ConvertLogs|null    $convertLogs
+ * @property-read \App\Models\OrderHotel|null $hotel
+ * @property int|null $import_day 导入日期
+ * @method static Builder|Order whereImportDay($value)
+ * @property int|null $member_gl_oid 购买来客会员邀请人订单关联用户订单oid
+ * @method static Builder|Order whereMemberGlOid($value)
  */
 class Order extends Model
 {

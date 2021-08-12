@@ -20,6 +20,9 @@ class IetsWithdrawalController extends Controller
      */
     public function __invoke(Request $request)
     {
+
+        return response()->json(['code'=>0, 'msg'=>'系统维护中，请等待!']);
+
         $this->validate($request, [
             'amount' => ['bail', 'required', 'numeric', 'regex:#\A(\d+)(.\d{0,8})?\z#'],
             'address' => ['bail', 'required'],
