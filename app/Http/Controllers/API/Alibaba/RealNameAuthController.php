@@ -20,6 +20,21 @@ use Illuminate\Support\Facades\Log;
 
 class RealNameAuthController extends Controller
 {
+    //查询用户身份证验证状态信息
+    public function getUserOcrInfo(Request $request){
+        $uid = $request->input('uid');
+        $userImg = RealNameAuth::where('uid',$uid)->first();
+        if ($userImg){
+            $data['name'] = $userImg->name;
+            $data['status'] = $userImg->status;
+            $data['num_id'] =  substr($userImg->num_id, 0, 3).'******'.substr($userImg->num_id, 15);
+
+
+            return response()->json(['code' => 1, 'msg' => $data]);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '未实名认证！']);
+        }
+    }
 
     //用户身份证ocr验证
     public function AlibabaOcrCheckImg(RealNameAuthRequest $request)
@@ -29,14 +44,6 @@ class RealNameAuthController extends Controller
         $img_back = $request->input('img_back');//反面身份证 img_back
         $username = $request->input('username');
         $user_num = $request->input('user_num');
-//
-//        Log::info("=================================================");
-//        Log::info("=================================================".$uid);
-//        Log::info("=================================================".$img_just);
-//        Log::info("=================================================".$img_back);
-//        Log::info("=================================================".$username);
-//        Log::info("=================================================".$user_num);
-//        Log::info("=================================================");
 
         $userInfo = Users::find($uid);
         if ($userInfo==''){
