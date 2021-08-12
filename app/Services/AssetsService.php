@@ -241,6 +241,7 @@ class AssetsService
         try {
             DB::getPdo()->exec($sql);
         } catch (\Exception $e) {
+            echo $e->getMessage();
             return false;
         }
         return true;

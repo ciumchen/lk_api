@@ -15,7 +15,7 @@ class AddChangeTimesToAssets extends Migration
     {
         Schema::table('assets', function (Blueprint $table) {
             //
-            $table->integer('changes_times')->default(0)->comment('资产变更次数');
+            $table->integer('change_times')->default(0)->comment('资产变更次数');
         });
     }
     
@@ -28,7 +28,7 @@ class AddChangeTimesToAssets extends Migration
     {
         Schema::table('assets', function (Blueprint $table) {
             //
-            $table->dropColumn('changes_times');
+            $table->dropColumn('change_times');
         });
     }
 }
