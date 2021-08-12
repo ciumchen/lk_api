@@ -14,6 +14,7 @@ class WithdrawController extends Controller
     {
         $user = $request->user();
         $money = $request->input('money');
+        $v_code = $request->input('v_code');
         try {
             setTuanWithdrawOrder();
         } catch (\Exception $e) {
@@ -37,9 +38,10 @@ class WithdrawController extends Controller
     {
         $user = $request->user();
         $money = $request->input('money');
+        $v_code = $request->input('v_code');
         try {
             $Withdraw = new WithdrawCashService();
-            $order = $Withdraw->setTuanWithdrawOrder($user->id, $money);
+            $order = $Withdraw->setTuanWithdrawOrder($user->id, $money, $v_code);
         } catch (\Exception $e) {
             throw new LogicException($e->getMessage());
         }
@@ -50,9 +52,10 @@ class WithdrawController extends Controller
     {
         $user = $request->user();
         $money = $request->input('money');
+        $v_code = $request->input('v_code');
         try {
             $Withdraw = new WithdrawCashService();
-            $order = $Withdraw->setCanWithdrawOrder($user->id, $money);
+            $order = $Withdraw->setCanWithdrawOrder($user->id, $money, $v_code);
         } catch (\Exception $e) {
             throw new LogicException($e->getMessage());
         }

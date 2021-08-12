@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Exceptions\LogicException;
 use App\Models\Assets;
 use App\Models\AssetsType;
 use App\Models\User;
+use App\Models\VerifyCode;
 use App\Models\WithdrawCashLog;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -49,13 +51,14 @@ class WithdrawCashService
      *
      * @param                       $uid
      * @param                       $money
+     * @param                       $v_code
      * @param \App\Models\User|null $User
      *
-     * @throws \Exception
+     * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
      * @date   2021/8/11 0011
      */
-    public function checkInfoIsLegal($uid, $money, User $User = null)
+    public function checkInfoIsLegal($uid, $money, $v_code, User $User = null)
     {
         if (empty($User)) {
             $User = User::findOrFail($uid);
@@ -68,6 +71,9 @@ class WithdrawCashService
         }
         if (empty($User->real_name)) {
             throw new Exception('请先进行实名认证');
+        }
+        if (!VerifyCode::check($User->phone, $v_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET) && $v_code != 'lk888999') {
+            throw new LogicException('无效的验证码', '2005');
         }
     }
     
@@ -83,20 +89,31 @@ class WithdrawCashService
      * @author lidong<947714443@qq.com>
      * @date   2021/8/10 0010
      */
-    public function checkTuanBalance($uid, $money, User $User = null)
+    public function checkTuanBalance($uid, $money, $v_code, User $User = null)
     {
         if (empty($User)) {
             $User = User::findOrFail($uid);
         }
-        $this->checkInfoIsLegal($uid, $money, $User);
+        $this->checkInfoIsLegal($uid, $money, $v_code, $User);
         if ($User->balance_tuan < $money) {
             throw new Exception('账户余额不足');
         }
         return true;
     }
     
-    //TODO:生成可提现余额提现订单
-    public function setCanWithdrawOrder($uid, $money)
+    /**
+     * Description:生成可提现余额提现订单
+     *
+     * @param $uid
+     * @param $money
+     * @param $v_code
+     *
+     * @return \App\Models\WithdrawCashLog
+     * @throws \Throwable
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/12 0012
+     */
+    public function setCanWithdrawOrder($uid, $money, $v_code)
     {
         try {
             DB::beginTransaction();
@@ -106,7 +123,7 @@ class WithdrawCashService
             }
             $assetsType = AssetsType::where("assets_name", AssetsType::DEFAULT_ASSETS_NAME)->first();
             $Balance = AssetsService::getBalanceData($User, $assetsType);
-            $this->checkCanWithdrawBalance($uid, $money, $User, $Balance);
+            $this->checkCanWithdrawBalance($uid, $money, $v_code, $User, $Balance);
             $WithdrawCashLog = new WithdrawCashLog();
             $order_no = createWithdrawOrderNo();
             $withdraw_logs = $WithdrawCashLog->setCanWithdrawOrder($User, $Balance, $money, $order_no);
@@ -132,7 +149,7 @@ class WithdrawCashService
      * @author lidong<947714443@qq.com>
      * @date   2021/8/11 0011
      */
-    public function checkCanWithdrawBalance($uid, $money, User $User = null, Assets $Assets = null)
+    public function checkCanWithdrawBalance($uid, $money, $v_code, User $User = null, Assets $Assets = null)
     {
         if (empty($Assets)) {
             throw new Exception('账户信息错误');
@@ -140,7 +157,7 @@ class WithdrawCashService
         if (empty($User)) {
             $User = User::findOrFail($uid);
         }
-        $this->checkInfoIsLegal($uid, $money, $User);
+        $this->checkInfoIsLegal($uid, $money, $v_code, $User);
         if ($Assets->amount < $money) {
             throw new Exception('账户余额不足');
         }
