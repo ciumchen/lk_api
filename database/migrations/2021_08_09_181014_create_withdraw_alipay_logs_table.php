@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateWithdrawAlipayLogsTable extends Migration
 {
@@ -20,13 +21,13 @@ class CreateWithdrawAlipayLogsTable extends Migration
             $table->decimal('money', 15, 2)->default(0.00)->comment('提现金额');
             $table->bigInteger('user_id')->default(0)->comment('用户ID');
             $table->string('alipay_user_id', 20)->default('')->comment('提现支付宝UID');
-            $table->string('alipay_account')->default('')->comment('用户支付宝账户');
-            $table->string('order_no')->default('')->comment('提现订单号');
-            $table->string('alipay_nickname')->default('')->comment('用户支付宝昵称');
+            $table->string('alipay_account', 50)->default('')->comment('用户支付宝账户');
+            $table->string('order_no', 40)->default('')->comment('提现订单号');
+            $table->string('alipay_nickname', 50)->default('')->comment('用户支付宝昵称');
             $table->string('alipay_avatar')->default('')->comment('用户支付宝头像');
-            $table->string('real_name')->default('')->comment('用户真实姓名');
-            $table->string('out_trade_no')->default('')->comment('转账单号[支付宝返回]');
-            $table->string('pay_fund_order_id')->default('')->comment('支付资金流水号[支付宝返回]');
+            $table->string('real_name', 50)->default('')->comment('用户真实姓名');
+            $table->string('out_trade_no', 32)->default('')->comment('转账单号[支付宝返回]');
+            $table->string('pay_fund_order_id', 32)->default('')->comment('支付资金流水号[支付宝返回]');
             $table->timestamp('trans_date', 0)->nullable()->comment('订单支付时间[支付宝返回]');
             $table->string('alipay_status', 32)->default('')->comment('状态[支付宝返回]');
             $table->decimal('handling_ratio', 5, 2)->default(0.00)->comment('手续费比例');

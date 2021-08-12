@@ -97,6 +97,8 @@ use Illuminate\Support\Facades\Log;
  * @method static Builder|User whereAlipayAvatar($value)
  * @method static Builder|User whereAlipayNickname($value)
  * @method static Builder|User whereMemberStatus($value)
+ * @property string $balance_tuan 拼团金额账户
+ * @method static Builder|User whereBalanceTuan($value)
  */
 class User extends Authenticatable
 {

@@ -3,6 +3,7 @@
 namespace App\Services\Alipay;
 
 use AlipayAop\AopCertClient;
+use AlipayAop\request\AlipayFundTransUniTransferRequest;
 use AlipayAop\request\AlipaySystemOauthTokenRequest;
 use AlipayAop\request\AlipayTradeQueryRequest;
 use AlipayAop\request\AlipayUserInfoAuthRequest;
@@ -225,8 +226,51 @@ class AlipayCertService extends AlipayBaseService
         return $Result->$responseNode;
     }
     
-    public function payToUser()
+    public function payToUser($alipay_user_id, $real_name, $order_no, $money, $remark)
     {
+        try {
+            $payee_info = [
+                'identity'      => $alipay_user_id,
+                'identity_type' => 'ALIPAY_USER_ID',
+                'name'          => $real_name,
+            ];
+            $business_params = [
+                'sub_biz_scene ' => 'REDPACKET',
+            ];
+            $sign_data = [
+                'ori_sign'       => '',
+                'ori_sign_type'  => '',
+                'ori_char_set'   => '',
+                'partner_id'     => '',
+                'ori_app_id'     => '',
+                'ori_out_biz_no' => '',
+            ];
+            $data = [
+                'out_biz_no'        => $order_no,
+                'trans_amount'      => $money,
+                'product_code'      => 'TRANS_ACCOUNT_NO_PWD',
+                'biz_scene'         => 'DIRECT_TRANSFER',
+                'order_title'       => '提现到账',
+                'original_order_id' => '',
+                'payee_info'        => $payee_info,
+                'remark'            => $remark,
+                'business_params'   => json_encode($business_params),
+                'sign_data'         => array_filter($sign_data),
+            ];
+            $data = array_filter($data);
+            $AopCertClient = $this->getAopCertClient();
+            $request = new AlipayFundTransUniTransferRequest();
+            $request->setBizContent(json_encode($data));
+            $Result = $AopCertClient->execute($request);
+            $responseNode = str_replace(".", "_", $request->getApiMethodName())."_response";
+            if (!isset($Result->$responseNode) || $Result->$responseNode->code != 10000) {
+                throw new Exception(json_encode($Result));
+            }
+        } catch (Exception $e) {
+            Log::debug('Alipay-Error:FundTransfer-'.$e->getMessage());
+            throw $e;
+        }
+        return $Result->$responseNode;
     }
     
     

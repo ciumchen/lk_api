@@ -30,8 +30,8 @@ if (!function_exists('encrypt_password')) {
      */
     function encrypt_password($phone, $password, $salt)
     {
-        $hashedPassword = hash('sha256', 'lk_app' . $phone . $password);
-        return hash('sha256', 'lk_app_' . $phone . $hashedPassword . $salt);
+        $hashedPassword = hash('sha256', 'lk_app'.$phone.$password);
+        return hash('sha256', 'lk_app_'.$phone.$hashedPassword.$salt);
     }
 }
 if (!function_exists('request_ip')) {
@@ -75,7 +75,7 @@ if (!function_exists('ali_oss_url')) {
             }
             $host = $host ?: sprintf('https://%s.%s', config('ali.oss.sts.bucket'), config('ali.oss.sts.endpoint'));
         }
-        return rtrim($host, '/') . '/' . ltrim($path, '/');
+        return rtrim($host, '/').'/'.ltrim($path, '/');
     }
 }
 if (!function_exists('rtrim_zero')) {
@@ -99,7 +99,7 @@ if (!function_exists('rtrim_zero')) {
                 unset($arr[ 1 ]);
             }
         }
-        return (string)implode('.', $arr);
+        return (string) implode('.', $arr);
     }
 }
 if (!function_exists('format_decimal')) {
@@ -150,7 +150,7 @@ if (!function_exists('cat_nest_order_sn')) {
      */
     function cat_nest_order_sn()
     {
-        return date('YmdHis') . sprintf('%05s', mt_rand(1, 99999));
+        return date('YmdHis').sprintf('%05s', mt_rand(1, 99999));
     }
 }
 if (!function_exists('apiSuccess')) {
@@ -180,7 +180,20 @@ if (!function_exists('createOrderNo')) {
      */
     function createOrderNo()
     {
-        return "PY_" . date("YmdHis") . rand(100000, 999999);
+        return "PY_".date("YmdHis").rand(100000, 999999);
+    }
+}
+if (!function_exists('createWithdrawOrderNo')) {
+    /**
+     * Description:提现单号生成
+     *
+     * @return string
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/10 0010
+     */
+    function createWithdrawOrderNo()
+    {
+        return "TX_".date("YmdHis").rand(100000, 999999);
     }
 }
 if (!function_exists('createNotifyUrl')) {
