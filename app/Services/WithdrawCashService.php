@@ -18,8 +18,10 @@ class WithdrawCashService
      *
      * @param $uid
      * @param $money
+     * @param $v_code
      *
      * @return \App\Models\WithdrawCashLog
+     * @throws \App\Exceptions\LogicException
      * @throws \Throwable
      * @author lidong<947714443@qq.com>
      * @date   2021/8/10 0010
@@ -63,14 +65,20 @@ class WithdrawCashService
         if (empty($User)) {
             $User = User::findOrFail($uid);
         }
+        if (empty($v_code)) {
+            throw new Exception('请填写验证码');
+        }
+        if (empty($User->real_name)) {
+            throw new Exception('请先进行实名认证');
+        }
+        if (empty($User->alipay_user_id)) {
+            throw new Exception('请先绑定支付宝');
+        }
         if ($money < 100) {
             throw new Exception('提现金额不能小于100');
         }
         if ($money % 100) {
             throw new Exception('提现金额只能是100的倍数');
-        }
-        if (empty($User->real_name)) {
-            throw new Exception('请先进行实名认证');
         }
         if (!VerifyCode::check($User->phone, $v_code, VerifyCode::TYPE_WITHDRAW_TO_WALLET) && $v_code != 'lk888999') {
             throw new LogicException('无效的验证码', '2005');
@@ -82,10 +90,11 @@ class WithdrawCashService
      *
      * @param                       $uid
      * @param                       $money
+     * @param                       $v_code
      * @param \App\Models\User|null $User
      *
      * @return bool
-     * @throws \Exception
+     * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
      * @date   2021/8/10 0010
      */
