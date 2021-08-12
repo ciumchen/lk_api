@@ -37,7 +37,9 @@ class SendGatherLottery implements ShouldQueue
     {
         if (!empty($this->orderData))
         {
+            //更新未中奖用户录单数据
             $gatherService->updGatherTrade($this->orderData->orderData);
+            //自动审核未中奖用户录单、加积分
             $gatherService->completeOrderGather($this->orderData->orderData);
         } else
         {

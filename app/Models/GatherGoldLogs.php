@@ -84,6 +84,33 @@ class GatherGoldLogs extends Model
             });
     }
 
+    /**获取用户来拼金扣除总和
+     * @param int $uid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function minusUserGold (int $uid)
+    {
+        return GatherGoldLogs::where(['uid' => $uid, 'type' => 1])
+                ->sum('money');
+    }
+
+    /**更新用户来拼金账户余额
+     * @param int $ratio
+     * @param array $userData
+     * @return mixed
+     * @throws LogicException
+     */
+    public function updUsersGold (int $ratio, array $userData)
+    {
+        foreach ($userData as $val)
+        {
+            $users = Users::find($val['id']);
+            $users->integral = $val['integral'] - $ratio;
+            $users->save();
+        }
+    }
+
     //拼团状态
     const GATHER_STATUS = [
         0 => '关闭',

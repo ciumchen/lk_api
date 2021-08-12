@@ -23,17 +23,27 @@ class GatherService
      */
     public function addGatherUser (int $gid, int $uid)
     {
+        //获取设置拼团总人数
         $userRatio = Setting::getSetting('gather_users_ number') ?? 100;
         //$userRatio = 10;
+        //获取当前拼团人数
         $userSum = (new Gather())->getGatherUserSum($gid);
+        //获取用户来拼金总数
+        $userGoldSum = (new GatherUsers())->getUserGold($uid);
+        //获取用户来拼金扣减总数
+        $minusSum = (new GatherGoldLogs())->minusUserGold($uid);
 
         //判断拼团是否达到开团人数
         if ($userSum >= $userRatio)
         {
-            return json_encode(['code' => 200, 'msg' => '本拼团参团人数已满！']);
+            return json_encode(['code' => 10000, 'msg' => '本拼团参团人数已满！']);
         }
 
         //判断用户金额
+        if ($minusSum > $userGoldSum)
+        {
+            return json_encode(['code' => 10000, 'msg' => '账户来拼金余额已不足，请及时充值！']);
+        }
 
         try {
             //判断用户当天当场次最多5次，每人每天最多30次
@@ -164,6 +174,10 @@ class GatherService
         $gatherUserList = (new GatherUsers())->getGatherUserArr($data);
         $gatherUserData = json_decode($gatherUserList, 1);
 
+        //获取中奖用户来拼金账户余额
+        $uidDict = array_column($gatherUserData, 'uid');
+        $userGoldData = (new GatherUsers())->getUsersGold($uidDict);
+
         //获奖用户新增购物卡
         foreach ($gatherUserData as &$val)
         {
@@ -175,8 +189,12 @@ class GatherService
             unset($val['id']);
         }
 
+        //更新用户来拼金余额
+        (new GatherGoldLogs())->updUsersGold($moneyRatio, $userGoldData);
+
         DB::beginTransaction();
         try {
+            //新增中奖用户购物卡记录
             (new GatherShoppingCard())->setGatherShoppingCard($gatherUserData);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -264,6 +282,7 @@ class GatherService
 
         //更新未中奖用户录单拼团记录信息
         //$this->updGatherTrade($orderList);
+        //把订单数据加到队列，执行录单自动审核、加积分，更新未中奖用户录单拼团记录信息
         foreach ($orderList as $list)
         {
             $jobs = new SendGatherLottery($list);

@@ -204,6 +204,27 @@ class GatherUsers extends Model
         return json_decode($userData, 1);
     }
 
+    /**获取用户来拼金额度
+     * @param int $uid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getUserGold (int $uid)
+    {
+        return Users::where(['id' => $uid])->value('integral');
+    }
+
+    /**获取用户来拼金额度
+     * @param array $uidData
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getUsersGold (array $uidData)
+    {
+        $userGoldList = Users::whereIn('id', $uidData)->get(['id', 'integral']);
+        return json_decode($userGoldList, 1);
+    }
+
     /**格式化输出日期
      * Prepare a date for array / JSON serialization.
      * @param  \DateTimeInterface  $date
