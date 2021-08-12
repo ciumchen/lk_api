@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 class UserAssetsInfoController extends Controller
 {
     public function getUserAssetsInfo(Request $request){
+
+        return response()->json(['code'=>0, 'msg'=>'系统维护中，请等待!']);
+
+
         $uid = $request->input('uid');
         $zhbl = Setting::where('key','usdt_iets_subscription_ratio')->value('value');
         if ($zhbl != '' && strstr($zhbl,'|') != false) {

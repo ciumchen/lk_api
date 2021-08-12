@@ -29,7 +29,6 @@ class RealNameAuthController extends Controller
             $data['status'] = $userImg->status;
             $data['num_id'] =  substr($userImg->num_id, 0, 3).'******'.substr($userImg->num_id, 15);
 
-
             return response()->json(['code' => 1, 'msg' => $data]);
         }else{
             return response()->json(['code' => 0, 'msg' => '未实名认证！']);
