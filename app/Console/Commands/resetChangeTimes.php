@@ -20,7 +20,7 @@ class resetChangeTimes extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = '重置转换次数';
     
     /**
      * Create a new command instance.
