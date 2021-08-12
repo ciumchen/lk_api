@@ -56,6 +56,8 @@ class UserResources extends JsonResource
             'invite_uid'               => $this->invite_uid,
             'invite_phone'             => $this->inviteUserData->phone,
             'sex'                      => $this->sex,
+            'alipay_nickname'          => $this->alipay_nickname,
+            'alipay_avatar'            => $this->alipay_avatar,
             'sex_text'                 => $this->sex_text,
             'birth'                    => $this->birth,
             'sign'                     => $this->sign,

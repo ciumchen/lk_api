@@ -226,6 +226,20 @@ class AlipayCertService extends AlipayBaseService
         return $Result->$responseNode;
     }
     
+    /**
+     * Description: 发起转账请求
+     *
+     * @param $alipay_user_id
+     * @param $real_name
+     * @param $order_no
+     * @param $money
+     * @param $remark
+     *
+     * @return \$1|false|mixed|\SimpleXMLElement
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/12 0012
+     */
     public function payToUser($alipay_user_id, $real_name, $order_no, $money, $remark)
     {
         try {
