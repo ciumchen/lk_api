@@ -24,7 +24,7 @@ class WithdrawCashService
      * @author lidong<947714443@qq.com>
      * @date   2021/8/10 0010
      */
-    public function setTuanWithdrawOrder($uid, $money)
+    public function setTuanWithdrawOrder($uid, $money, $v_code)
     {
         try {
             DB::beginTransaction();
@@ -32,7 +32,7 @@ class WithdrawCashService
             if (empty($User)) {
                 throw new Exception('未找到用户信息');
             }
-            $this->checkTuanBalance($uid, $money, $User);
+            $this->checkTuanBalance($uid, $money, $v_code, $User);
             $WithdrawCashLog = new WithdrawCashLog();
             $order_no = createWithdrawOrderNo();
             $withdraw_logs = $WithdrawCashLog->setPinTuanOrder($User, $money, $order_no);
@@ -142,10 +142,11 @@ class WithdrawCashService
      *
      * @param                         $uid
      * @param                         $money
+     * @param                         $v_code
      * @param \App\Models\User|null   $User
      * @param \App\Models\Assets|null $Assets
      *
-     * @throws \Exception
+     * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
      * @date   2021/8/11 0011
      */
