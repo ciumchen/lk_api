@@ -211,7 +211,7 @@ class GatherUsers extends Model
      */
     public function getUserGold (int $uid)
     {
-        return Users::where(['id' => $uid])->value('integral');
+        return Users::where(['id' => $uid])->value('balance_tuan');
     }
 
     /**获取用户来拼金额度
@@ -221,7 +221,7 @@ class GatherUsers extends Model
      */
     public function getUsersGold (array $uidData)
     {
-        $userGoldList = Users::whereIn('id', $uidData)->get(['id', 'integral']);
+        $userGoldList = Users::whereIn('id', $uidData)->get(['id', 'balance_tuan']);
         return json_decode($userGoldList, 1);
     }
 

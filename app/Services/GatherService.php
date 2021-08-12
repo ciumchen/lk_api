@@ -74,13 +74,13 @@ class GatherService
         $gatherSum = (new GatherUsers())->getGatherUserSum($gid, $uid);
         if ($gatherSum >= $gatherRatio)
         {
-            return json_encode(['code' => 200, 'msg' => '本场次拼团活动已超过最大可参与次数5次！']);
+            return json_encode(['code' => 10000, 'msg' => '本场次拼团活动已超过最大可参与次数5次！']);
         }
 
         $gatherAllSum = (new GatherUsers())->getUserAllSum($uid);
         if ($gatherAllSum >= $gatherAllRatio)
         {
-            return json_encode(['code' => 200, 'msg' => '已超过每天最大可参与次数30次！']);
+            return json_encode(['code' => 10000, 'msg' => '已超过每天最大可参与次数30次！']);
         }
     }
 
@@ -279,7 +279,6 @@ class GatherService
 
         //录单自动审核、加积分
         //$this->completeOrderGather($orderList);
-
         //更新未中奖用户录单拼团记录信息
         //$this->updGatherTrade($orderList);
         //把订单数据加到队列，执行录单自动审核、加积分，更新未中奖用户录单拼团记录信息
