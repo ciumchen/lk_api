@@ -82,6 +82,12 @@ class RealNameAuthController extends Controller
                     return response()->json(['code' => 0, 'msg' => '身份证号码和身份证不一致！']);
                 }
 
+                //查询身份证是否已经验证过
+                $sfzInfo = RealNameAuth::where('name',$reArr['name'])->where('num_id',$reArr['num'])->first();
+                if ($sfzInfo!=null){
+                    return response()->json(['code' => 0, 'msg' => '身份证已经被使用！']);
+                }
+
                 $age =  date('Y') - substr($reArr['num'], 6, 4) + (date('md') >= substr($reArr['num'], 10, 4) ? 1 : 0);
                 if ($age>=16){
                     //保存用户信息

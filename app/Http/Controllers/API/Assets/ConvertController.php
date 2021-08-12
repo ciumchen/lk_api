@@ -49,7 +49,8 @@ class ConvertController extends Controller
             throw new LogicException('非来客会员无法使用兑换话费，请购买来客会员!');
         }
         //返回
-        return (new Assets())->phoneBill($data);
+        //return (new Assets())->phoneBill($data);
+        return json_encode(['code' => 10000, 'msg' => '暂停兑换，服务优化中！']);
     }
 
     /**usdt 兑换美团
@@ -66,7 +67,8 @@ class ConvertController extends Controller
             throw new LogicException('非来客会员无法使用兑换美团，请购买来客会员!');
         }
         //返回
-        return (new Assets())->meituanBill($data);
+        //return (new Assets())->meituanBill($data);
+        return json_encode(['code' => 10000, 'msg' => '暂停兑换，服务优化中！']);
     }
 
     /**用户兑换记录列表
