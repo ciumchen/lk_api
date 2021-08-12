@@ -78,14 +78,11 @@ class AlipayCertService extends AlipayBaseService
                 throw new Exception('授权码获取失败');
             }
             //code 换取 token
-//            $access_token_info = $this->getUserAccessTokenByAuthCode($auth_code);
-            $access_token_info = json_decode('{"access_token":"authusrBc1b540f4b59e4c04b96a307560a6cB80","alipay_user_id":"20881038820813146192777761611480","expires_in":1296000,"re_expires_in":2592000,"refresh_token":"authusrBd801a002aaa54749b94cf8e0ff2a3X80","user_id":"2088532266296801"}');
+            $access_token_info = $this->getUserAccessTokenByAuthCode($auth_code);
+//            $access_token_info = json_decode('{"access_token":"authusrBc1b540f4b59e4c04b96a307560a6cB80","alipay_user_id":"20881038820813146192777761611480","expires_in":1296000,"re_expires_in":2592000,"refresh_token":"authusrBd801a002aaa54749b94cf8e0ff2a3X80","user_id":"2088532266296801"}');
             Log::debug('getUserAccessTokenByAuthCode-', [json_encode($access_token_info)]);
             $token_arr = json_decode(json_encode($access_token_info), true);
-            dump($access_token_info->user_id);
             $auth_info = UserAlipayAuthToken::whereAlipayUserId($access_token_info->user_id)->first();
-//            throw new Exception(json_encode($auth_info).'--'.json_encode($access_token_info));
-            dump($auth_info);
             if (!empty($auth_info) && $auth_info->uid != $uid) {
                 throw new Exception('该支付宝已绑定了其他来客账号');
             }
