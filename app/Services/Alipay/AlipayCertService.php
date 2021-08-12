@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\UserAlipayAuthToken;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use function AlibabaCloud\Client\json;
 
 /**
  * Description:支付宝证书模式连接操作类
@@ -81,8 +82,9 @@ class AlipayCertService extends AlipayBaseService
             Log::debug('getUserAccessTokenByAuthCode-', [json_encode($access_token_info)]);
             $token_arr = json_decode(json_encode($access_token_info), true);
             $auth_info = UserAlipayAuthToken::whereAlipayUserId($access_token_info->user_id);
+            throw new Exception(json_encode($auth_info));
             if (!empty($auth_info) && $auth_info->uid != $uid) {
-                throw new Exception('该支付宝已绑定了其它用户');
+                throw new Exception('该支付宝已绑定了其他来客账号');
             }
             $this->updateAccessToken($uid, $token_arr);
             // token 获取用户信息
