@@ -21,7 +21,6 @@ use App\Models\VerifyCode;
 use App\Services\BusinessService;
 use App\Services\OssService;
 use Illuminate\Database\Eloquent\Model;
-
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -29,9 +28,9 @@ use PDOException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+
 class UserController extends Controller
 {
-
     /**申请成为商家
      *
      * @param ApplyBusinessRequest $request
@@ -47,8 +46,9 @@ class UserController extends Controller
         if ($user->role == User::ROLE_BUSINESS) {
             throw new LogicException('已是商家无需再次申请');
         }
-        if (BusinessApply::where('uid', $user->id)->whereIn('status', [BusinessApply::DEFAULT_STATUS,
-                                                                       BusinessApply::BY_STATUS,
+        if (BusinessApply::where('uid', $user->id)->whereIn('status', [
+            BusinessApply::DEFAULT_STATUS,
+            BusinessApply::BY_STATUS,
         ])->exists()) {
             throw new LogicException('已申请成为商家，请等待审核结果');
         }
@@ -60,7 +60,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 0, 'msg' => '申请成功']);
     }
-
+    
     //新申请商家
     public function newApplyBusiness(NewApplyBusinessRequest $request)
     {
@@ -70,12 +70,12 @@ class UserController extends Controller
         if ($user->role == User::ROLE_BUSINESS) {
             throw new LogicException('已是商家无需再次申请');
         }
-        if (BusinessApply::where('uid', $user->id)->whereIn('status', [BusinessApply::DEFAULT_STATUS,
-                                                                       BusinessApply::BY_STATUS,
+        if (BusinessApply::where('uid', $user->id)->whereIn('status', [
+            BusinessApply::DEFAULT_STATUS,
+            BusinessApply::BY_STATUS,
         ])->exists()) {
             throw new LogicException('已申请成为商家，请等待审核结果');
         }
-
         try {
             //写入申请商家数据
             BusinessService::newSubmitApply($request, $user);
@@ -84,7 +84,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 1, 'msg' => '申请成功']);
     }
-
+    
     /**提交实名认证
      *
      * @param RealNameRequest $request
@@ -104,12 +104,12 @@ class UserController extends Controller
         }
         try {
             AuthLog::create([
-                'uid'                => $user->id,
-                'id_card'            => $request->id_card,
-                'name'               => $request->name,
-                'id_card_img'        => $request->id_card_img,
-                'id_card_people_img' => $request->id_card_people_img,
-            ]);
+                                'uid'                => $user->id,
+                                'id_card'            => $request->id_card,
+                                'name'               => $request->name,
+                                'id_card_img'        => $request->id_card_img,
+                                'id_card_people_img' => $request->id_card_people_img,
+                            ]);
         } catch (PDOException $e) {
             report($e);
             throw new LogicException('提交失败，请重试');
@@ -118,7 +118,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 0, 'msg' => '提交成功']);
     }
-
+    
     /**
      * 获取用户详情
      *
@@ -151,7 +151,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 0, 'data' => new UserResources($user)]);
     }
-
+    
     /**获取积分记录
      *
      * @param Request $request
@@ -174,7 +174,7 @@ class UserController extends Controller
             ->get();
         return response()->json(['code' => 0, 'msg' => '获取成功', 'data' => IntegralLogsResources::collection($data)]);
     }
-
+    
     /**
      * @param \Illuminate\Http\Request $request
      *
@@ -198,7 +198,7 @@ class UserController extends Controller
         if ($new_invite_user->status != 1) {
             throw new LogicException('邀请人状态为非正常状态不可修改');
         }
-        if ($new_invite_user->id>$user->id) {
+        if ($new_invite_user->id > $user->id) {
             throw new LogicException('邀请人的注册时间不能比你的注册时间晚');
         }
         try {
@@ -213,8 +213,7 @@ class UserController extends Controller
         ];
         return response()->json($return);
     }
-
-
+    
     /**
      * 修改头像
      * TODO:修改头像
@@ -239,7 +238,7 @@ class UserController extends Controller
             $avatar = OssService::base64Upload($avatar, 'avatar/');
             $user->avatar = $avatar;
             $user->save();
-            $avatar_url = env('OSS_URL') . $avatar;
+            $avatar_url = env('OSS_URL').$avatar;
         } catch (LogicException $e) {
             throw new LogicException('');
         }
@@ -250,7 +249,7 @@ class UserController extends Controller
         ];
         return response()->json($data);
     }
-
+    
     /**
      * 修改个性签名
      *
@@ -277,7 +276,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
-
+    
     /**
      * 修改姓名
      *
@@ -288,6 +287,7 @@ class UserController extends Controller
      */
     public function changeRealName(Request $request)
     {
+        throw new LogicException('真实姓名只能通过实名认证获取');
         $real_name = $request->input('real_name');
         $user = $request->user();
         try {
@@ -308,7 +308,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
-
+    
     /**
      * 修改性别
      *
@@ -332,7 +332,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
-
+    
     /**
      * 修改生日
      *
@@ -354,7 +354,7 @@ class UserController extends Controller
         }
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
-
+    
     /**
      * 修改密码
      *
@@ -377,100 +377,89 @@ class UserController extends Controller
         $user->changePassword($new_password);
         return response()->json(['code' => 0, 'msg' => '修改成功']);
     }
-
+    
     //修改用户手机号--验证当前密码
-    public function updateUserPhoneOne(Request $request){
+    public function updateUserPhoneOne(Request $request)
+    {
         $this->validate($request, [
-            'password' => ['bail', 'required'],
+            'password'    => ['bail', 'required'],
             'verify_code' => ['bail', 'required'],
-        ], [
-            'phone' => '密码',
-            'verify_code' => '验证码',
-        ]);
-
+        ],              [
+                            'phone'       => '密码',
+                            'verify_code' => '验证码',
+                        ]);
         $user = $request->user();
 //        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
 //            throw new LogicException('无效的验证码',0);
 //        }
         if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE)) {
-            throw new LogicException('无效的验证码',0);
+            throw new LogicException('无效的验证码', 0);
         }
-
 //        dd(optional($user)->verifyPassword($request->password));
         if (optional($user)->verifyPassword($request->password)) {
             return response()->json(['code' => 1, 'msg' => '验证密码成功']);
-        }else{
+        } else {
             return response()->json(['code' => 0, 'msg' => '验证密码失败']);
         }
-
-
-
     }
-
+    
     //修改用户手机号
-    public function updateUserPhoneTwo(Request $request){
+    public function updateUserPhoneTwo(Request $request)
+    {
         $this->validate($request, [
             'password' => ['bail', 'required'],
-            'phone' => ['bail', 'required'],
-            'rephone' => ['bail', 'required'],
-//            'verify_code' => ['bail', 'required'],
-        ], [
-            'password' => '密码',
-            'phone' => '手机号',
-            'rephone' => '确认手机号',
-//            'verify_code' => '验证码',
-        ]);
-        $phone = $request->input('phone');//新手机号
-        $rephone = $request->input('rephone');//确认手机号
+            'phone'    => ['bail', 'required'],
+            'rephone'  => ['bail', 'required'],
+            //            'verify_code' => ['bail', 'required'],
+        ],              [
+                            'password' => '密码',
+                            'phone'    => '手机号',
+                            'rephone'  => '确认手机号',
+                            //            'verify_code' => '验证码',
+                        ]);
+        $phone = $request->input('phone');      //新手机号
+        $rephone = $request->input('rephone');  //确认手机号
         $password = $request->input('password');//密码
-        if(preg_match('/^1[3-9]\d{9}$/', $phone)!=1){
-            throw new LogicException('手机号格式不合法',0);
+        if (preg_match('/^1[3-9]\d{9}$/', $phone) != 1) {
+            throw new LogicException('手机号格式不合法', 0);
         }
-        if(preg_match('/^1[3-9]\d{9}$/', $rephone)!=1){
-            throw new LogicException('确认手机号格式不合法',0);
+        if (preg_match('/^1[3-9]\d{9}$/', $rephone) != 1) {
+            throw new LogicException('确认手机号格式不合法', 0);
         }
-        if ($phone!=$rephone){
-            throw new LogicException('手机号和确认手机号不一致',0);
+        if ($phone != $rephone) {
+            throw new LogicException('手机号和确认手机号不一致', 0);
         }
         $user = $request->user();
-
         if (User::STATUS_NORMAL != $user->status) {
-            throw new LogicException('账户异常',0);
+            throw new LogicException('账户异常', 0);
         }
-
-        if($user->phone == $phone){
-            throw new LogicException('更换的手机号不能跟当前绑定的手机号相同',0);
+        if ($user->phone == $phone) {
+            throw new LogicException('更换的手机号不能跟当前绑定的手机号相同', 0);
         }
-
         $phoneUser = User::where('phone', $phone)->first();
-        if ($phoneUser != ''){
-            throw new LogicException('该手机号已被其他帐号使用，请更换其他手机号',0);
+        if ($phoneUser != '') {
+            throw new LogicException('该手机号已被其他帐号使用，请更换其他手机号', 0);
         }
-
 //        if (!VerifyCode::updateUserPhonCheck($user->phone, $request->verify_code, VerifyCode::TYPE_UPDATE_USER_PHONE) && $request->verify_code != 'lk888999') {
 //            throw new LogicException('无效的验证码',0);
 //        }
-
         $userDataLogModel = new UserUpdatePhoneLog;
-        $userDataLog = $userDataLogModel::where('user_id',$user->id)->orderBy('updated_at','desc')->first();
-        if ($userDataLog!='' && ((time()-$userDataLog->time) <= 86400)){
+        $userDataLog = $userDataLogModel::where('user_id', $user->id)->orderBy('updated_at', 'desc')->first();
+        if ($userDataLog != '' && ((time() - $userDataLog->time) <= 86400)) {
             return response()->json(['code' => 0, 'msg' => '24小时只能修改一次']);
-        }else{
+        } else {
             DB::beginTransaction();
             try {
                 $userDataLogModel->user_id = $user->id;
                 $userDataLogModel->time = time();
                 $userDataLogModel->edit_to_phone = $user->phone.'=>'.$phone;
                 $userDataLogModel->save();
-
-                $userInfo = User::where('id',$user->id)->first();
+                $userInfo = User::where('id', $user->id)->first();
                 $userInfo->phone = $phone;
                 $userInfo->save();
-
 //                log::debug("=================修改用户手机号==================================".$password);
 ////                //修改密码 $password
 //                $userInfo->changePassword2($password);
-
                 DB::commit();
             } catch (Exception $exception) {
                 DB::rollBack();
@@ -479,10 +468,5 @@ class UserController extends Controller
             }
             return response()->json(['code' => 1, 'msg' => '修改成功']);
         }
-
     }
-
-
-
-
 }
