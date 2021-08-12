@@ -237,7 +237,25 @@ class AssetsService
      */
     public function exchangeUSDTRatio($change_times = 1)
     {
-        $sql = "UPDATE assets SET amount = (amount * 6.5 ), freeze_amount = (freeze_amount * 6.5)WHERE assets_type_id = 3 and change_times <{$change_times};";
+        $sql = "UPDATE assets SET amount = (amount * 6.5 ), freeze_amount = (freeze_amount * 6.5),  change_times = (change_times+1) WHERE assets_type_id = 3 and change_times <{$change_times};";
+        try {
+            DB::getPdo()->exec($sql);
+        } catch (\Exception $e) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Description:重置修改次数
+     *
+     * @return bool
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/12 0012
+     */
+    public function resetChangeTimes()
+    {
+        $sql = "UPDATE assets SET change_times = 0 WHERE assets_type_id = 3 ;";
         try {
             DB::getPdo()->exec($sql);
         } catch (\Exception $e) {
