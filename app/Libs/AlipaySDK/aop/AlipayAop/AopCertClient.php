@@ -611,7 +611,9 @@ class AopCertClient
         //解析AOP返回结果
         $respWellFormed = false;
         // 将返回结果转换本地文件编码
-        $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+        if ($this->postCharset != $this->fileCharset) {
+            $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+        }
         $signData = null;
         if ("json" == $this->format) {
             $respObject = json_decode($r);
@@ -642,11 +644,15 @@ class AopCertClient
             if ("json" == $this->format) {
                 $resp = $this->encryptJSONSignSource($request, $resp);
                 // 将返回结果转换本地文件编码
-                $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                if ($this->postCharset != $this->fileCharset) {
+                    $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                }
                 $respObject = json_decode($r);
             } else {
                 $resp = $this->encryptXMLSignSource($request, $resp);
-                $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                if ($this->postCharset != $this->fileCharset) {
+                    $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                }
                 $disableLibxmlEntityLoader = libxml_disable_entity_loader(true);
                 $respObject = @ simplexml_load_string($r);
                 libxml_disable_entity_loader($disableLibxmlEntityLoader);
@@ -1081,7 +1087,9 @@ class AopCertClient
                         return false;
                     }
                     // 将返回结果转换本地文件编码
-                    $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                    if ($this->postCharset != $this->fileCharset) {
+                        $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                    }
                     $respObject = json_decode($r);
                     $resultCode = $respObject->alipay_open_app_alipaycert_download_response->code;
                     $certContent = $respObject->alipay_open_app_alipaycert_download_response->alipay_cert_content;
