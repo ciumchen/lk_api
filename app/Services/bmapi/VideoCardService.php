@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 
 class VideoCardService extends BaseService
 {
-    
     public function updateRechargeLogs($data, $type = '')
     {
         $type = 'VC';
@@ -180,7 +179,7 @@ class VideoCardService extends BaseService
                 throw new Exception('订单信息不存在');
             }
             if ($Order->video->pay_status != '0') {
-                throw new Exception('订单 ' . $Order->order_no . ' 无法充值');
+                throw new Exception('订单 '.$Order->order_no.' 无法充值');
             }
             $bill = $this->billRequest($Order->video->account, $Order->video->item_id, $Order->order_no);
             /* 视频订单状态更新 */
@@ -196,8 +195,7 @@ class VideoCardService extends BaseService
         return $bill;
     }
     
-    /**
-     * TODO:更新视频订单
+    /**更新视频订单
      * 处理回调
      *
      * @param $data
@@ -228,7 +226,7 @@ class VideoCardService extends BaseService
             $rechargeInfo->updated_at = $data[ 'timestamp' ];
             $rechargeInfo->save();
         } catch (Exception $e) {
-            Log::debug('banMaNotify-Error:' . $e->getMessage(), [json_encode($data)]);
+            Log::debug('banMaNotify-Error:'.$e->getMessage(), [json_encode($data)]);
             throw $e;
         }
     }

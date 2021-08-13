@@ -132,6 +132,20 @@ class WithdrawCashLog extends BaseModel
     }
     
     /**
+     * Description:
+     *
+     * @param $uid
+     *
+     * @return \App\Models\WithdrawCashLog|Builder|Model|\Illuminate\Database\Query\Builder|object|null
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/13 0013
+     */
+    public static function getLastLogsCreateTime($uid)
+    {
+        return WithdrawCashLog::whereUserId($uid)->orderByDesc('created_at')->value('created_at')->toDateTimeString();
+    }
+    
+    /**
      * Description:生成提现订单
      *
      * @param \App\Models\User $user
@@ -160,7 +174,6 @@ class WithdrawCashLog extends BaseModel
             $this->alipay_avatar = $user->alipay_avatar;
             $this->alipay_nickname = $user->alipay_nickname;
             $this->status = 1;
-            /*TODO:真实姓名*/
             $this->save();
         } catch (Exception $e) {
             throw $e;

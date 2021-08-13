@@ -90,6 +90,11 @@ class WithdrawCashService
         if ((WithdrawCashLog::getTodayMoneyCount($uid) + $money) > 2000) {
             throw new Exception('今日提现已达上限');
         }
+        $last_time = WithdrawCashLog::getLastLogsCreateTime($uid);
+        $time_cal = time() - strtotime($last_time);
+        if ($time_cal < 3600) {
+            throw new Exception('两次提现间隔不能低于1小时');
+        }
     }
     
     /**

@@ -741,8 +741,7 @@ class OrderService
     }
 
     /**
-     * Description:
-     * TODO:判断订单类型
+     * Description:判断订单类型
      *
      * @param                          $order_id
      *
@@ -964,7 +963,6 @@ class OrderService
                     if ($description == 'HF' || $description == 'ZL') {
                         $MobileService->recharge($order_id, $Order->order_no);
                     } else {
-                        /* TODO:多账号代充 */
                         $MobileService->manyRecharge($order_id, $Order);
                     }
                     break;
