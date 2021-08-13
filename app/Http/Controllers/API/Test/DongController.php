@@ -16,15 +16,55 @@ use Illuminate\Http\Request;
 
 class DongController extends Controller
 {
+    public static $isIconvEnabled;
+    
+    public static $iconvOptions;
+    
     /**
      * 测试启用
      */
     public function __construct()
     {
-        dd(iconv('UTF-8', 'GBK', '这特么是什么GBK'));
-        dd(iconv('UTF8', 'GBK//IGNORE', '这特么是什么GBK'));
-        dd(iconv('UTF8', 'UTF8//IGNORE', '这特么是什么UTF-8'));
+        dump(self::getIsIconvEnabled());
+        dump(iconv('UTF-8', 'GBK', '这特么是什么GBK'));
+//        dump(iconv('UTF8', 'GBK//IGNORE', '这特么是什么GBK'));
+        dump(iconv('UTF-8', 'GBK//IGNORE', '这特么是什么GBK'));
+        dump(iconv('UTF-8', 'UTF-8//IGNORE', '这特么是什么UTF-8'));
         die('测试接口');
+    }
+    
+    public static function getIsIconvEnabled()
+    {
+        if (isset(self::$isIconvEnabled)) {
+            return self::$isIconvEnabled;
+        }
+        // Assume no problems with iconv
+        self::$isIconvEnabled = true;
+        // Fail if iconv doesn't exist
+        if (!function_exists('iconv')) {
+            self::$isIconvEnabled = false;
+        } else {
+            if (!@iconv('UTF-8', 'UTF-16LE', 'x')) {
+                // Sometimes iconv is not working, and e.g. iconv('UTF-8', 'UTF-16LE', 'x') just returns false,
+                self::$isIconvEnabled = false;
+            } else {
+                if (defined('PHP_OS') && @stristr(PHP_OS, 'AIX') && defined('ICONV_IMPL') && (@strcasecmp(
+                            ICONV_IMPL,
+                            'unknown'
+                        ) == 0) && defined('ICONV_VERSION') && (@strcasecmp(
+                            ICONV_VERSION,
+                            'unknown'
+                        ) == 0)) {
+                    // CUSTOM: IBM AIX iconv() does not work
+                    self::$isIconvEnabled = false;
+                }
+            }
+        }
+        // Deactivate iconv default options if they fail (as seen on IMB i)
+        if (self::$isIconvEnabled && !@iconv('UTF-8', 'UTF-16LE'.self::$iconvOptions, 'x')) {
+            self::$iconvOptions = '';
+        }
+        return self::$isIconvEnabled;
     }
     
     //
