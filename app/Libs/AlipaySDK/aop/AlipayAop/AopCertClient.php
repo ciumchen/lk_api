@@ -613,6 +613,8 @@ class AopCertClient
         // 将返回结果转换本地文件编码
         if ($this->postCharset != $this->fileCharset) {
             $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+        } else {
+            $r = $resp;
         }
         $signData = null;
         if ("json" == $this->format) {
@@ -646,12 +648,16 @@ class AopCertClient
                 // 将返回结果转换本地文件编码
                 if ($this->postCharset != $this->fileCharset) {
                     $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                } else {
+                    $r = $resp;
                 }
                 $respObject = json_decode($r);
             } else {
                 $resp = $this->encryptXMLSignSource($request, $resp);
                 if ($this->postCharset != $this->fileCharset) {
                     $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                } else {
+                    $r = $resp;
                 }
                 $disableLibxmlEntityLoader = libxml_disable_entity_loader(true);
                 $respObject = @ simplexml_load_string($r);
@@ -1089,6 +1095,8 @@ class AopCertClient
                     // 将返回结果转换本地文件编码
                     if ($this->postCharset != $this->fileCharset) {
                         $r = iconv($this->postCharset, $this->fileCharset."//IGNORE", $resp);
+                    } else {
+                        $r = $resp;
                     }
                     $respObject = json_decode($r);
                     $resultCode = $respObject->alipay_open_app_alipaycert_download_response->code;
@@ -1097,7 +1105,7 @@ class AopCertClient
                         $cert = base64_decode($certContent);
                         $certCheck = true;
                         if (!empty($this->alipayRootCertContent) && $this->isCheckAlipayPublicCert) {
-                            $certCheck = isTrusted($cert, $this->alipayRootCertContent);
+                            $certCheck = AopCertification::isTrusted($cert, $this->alipayRootCertContent);
                         }
                         if ($certCheck) {
                             $pkey = openssl_pkey_get_public($cert);
