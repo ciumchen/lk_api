@@ -21,7 +21,8 @@ class DongController extends Controller
      */
     public function __construct()
     {
-        dump(iconv('UTF-8', 'UTF-8//IGNORE', '这特么是什么'));
+        dump(iconv('UTF-8', 'GBK//IGNORE', '这特么是什么GBK'));
+        dump(iconv('UTF-8', 'UTF-8//IGNORE', '这特么是什么UTF-8'));
         die('测试接口');
     }
     
