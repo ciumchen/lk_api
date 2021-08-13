@@ -25,3 +25,4 @@ nginx.htaccess
 .phpstorm.meta.php
 .php-cs-fixer.cache
 psalm.xml
+.user.ini
