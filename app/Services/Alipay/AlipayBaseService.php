@@ -5,6 +5,7 @@ namespace App\Services\Alipay;
 use AlipayAop\AopCertClient;
 use AlipayAop\AopClient;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class AlipayBaseService
 {
@@ -111,6 +112,7 @@ class AlipayBaseService
             $AopCertClient->apiVersion = self::$config[ 'api_version' ];
             $AopCertClient->postCharset = self::$config[ 'charset' ];
             $AopCertClient->format = self::$config[ 'format' ];
+            Log::debug('Alipay-config:Error-'.json_encode(self::$config));
             //是否校验自动下载的支付宝公钥证书，如果开启校验要保证支付宝根证书在有效期内
             $AopCertClient->isCheckAlipayPublicCert = false;
             //调用getPublicKey从支付宝公钥证书中提取公钥
