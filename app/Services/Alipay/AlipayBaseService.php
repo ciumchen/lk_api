@@ -32,7 +32,7 @@ class AlipayBaseService
         'app_private_key'         => '',
         'salt'                    => '',
         'api_version'             => '1.0',
-        'charset'                 => 'UTF8',
+        'charset'                 => 'UTF-8',
         'format'                  => 'json',
     ];
     
