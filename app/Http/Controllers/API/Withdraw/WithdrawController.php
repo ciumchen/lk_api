@@ -9,21 +9,6 @@ use Illuminate\Http\Request;
 
 class WithdrawController extends Controller
 {
-    //
-    public function setWithDrawOrder(Request $request)
-    {
-        $user = $request->user();
-        $money = $request->input('money');
-        $v_code = $request->input('v_code');
-        try {
-            setTuanWithdrawOrder();
-        } catch (\Exception $e) {
-            throw new LogicException($e->getMessage());
-        }
-    }
-    
-    //生成提现订单
-    
     /**
      * Description:生成拼团金提现订单
      *
@@ -48,6 +33,17 @@ class WithdrawController extends Controller
         return apiSuccess($order);
     }
     
+    /**
+     * Description:生成可体现额度[补贴]提现订单
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @throws \Throwable
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/13 0013
+     */
     public function setCanOrder(Request $request)
     {
         $user = $request->user();

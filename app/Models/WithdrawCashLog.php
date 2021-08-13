@@ -115,6 +115,23 @@ class WithdrawCashLog extends BaseModel
     ];
     
     /**
+     * Description:查询今天已经提现的额度
+     *
+     * @param $uid
+     *
+     * @return int|mixed
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/13 0013
+     */
+    public static function getTodayMoneyCount($uid)
+    {
+        return WithdrawCashLog::whereUserId($uid)
+                              ->where('status', '=', '2')
+                              ->whereBetween('created_at', [date('Y-m-d').' 00:00:00', date('Y-m-d H:i:s')])
+                              ->sum('money');
+    }
+    
+    /**
      * Description:生成提现订单
      *
      * @param \App\Models\User $user
