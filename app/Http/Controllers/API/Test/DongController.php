@@ -25,7 +25,7 @@ class DongController extends Controller
      */
     public function __construct()
     {
-        dump(self::getIsIconvEnabled());
+        dd(self::getIsIconvEnabled());
         dump(iconv('UTF-8', 'GBK', '这特么是什么GBK'));
 //        dump(iconv('UTF8', 'GBK//IGNORE', '这特么是什么GBK'));
         dump(iconv('UTF-8', 'GBK//IGNORE', '这特么是什么GBK'));
