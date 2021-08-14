@@ -150,16 +150,16 @@ class GatherUsers extends Model
             'diffTime'  => $diffTime,
             'userRatio' => $userRatio,
         ];
-        $status = $data['status'] == 0 ? true : false;
+        //$status = $data['status'] == 0 ? true : false;
 
         //获取拼团未开始、已开始及已终止信息
         $gatherList = DB::table('gather as g')
             ->join('gather_users as gu', 'g.id', 'gu.gid')
-            ->when($status, function ($query) {
+            /*->when($status, function ($query) {
                 return $query->where(['g.status' => 0]);
             }, function ($query) {
                 return $query->whereIn('g.status', [1, 3]);
-            })
+            })*/
             ->where(['gu.uid' => $data['uid']])
             ->orderBy('gu.created_at', 'desc')
             ->groupBy('g.id')
