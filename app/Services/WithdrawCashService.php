@@ -81,11 +81,12 @@ class WithdrawCashService
         if ($money < 100) {
             throw new Exception('提现金额不能小于100');
         }
-        if ($money > 500 && !in_array($uid, [8, 9596])) {
+//        if ($money > 500 && !in_array($uid, [8, 9596])) {
+        if ($money > 500) {
             throw new Exception('单笔提现最高500');
         }
-        if ($money % 100) {
-            throw new Exception('提现金额只能是100的倍数');
+        if ($money % 10) {
+            throw new Exception('提现金额只能是10的倍数');
         }
         if ((WithdrawCashLog::getTodayMoneyCount($uid) + $money) > 2000) {
             throw new Exception('今日提现已达上限');
