@@ -93,8 +93,8 @@ class WithdrawCashLog extends BaseModel
      * @var string[] 账户类型对应文字
      */
     public static $balanceText = [
-        self::BALANCE_PIN_TUAN     => '拼呗金',
-        self::BALANCE_CAN_WITHDRAW => '可提现额度',
+        self::BALANCE_PIN_TUAN     => '来拼金',
+        self::BALANCE_CAN_WITHDRAW => '补贴金',
     ];
     
     /**
