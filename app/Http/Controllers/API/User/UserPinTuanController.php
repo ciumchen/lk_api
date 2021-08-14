@@ -32,11 +32,10 @@ class UserPinTuanController extends Controller
     }
 
     //使用70%usdt补贴金充值来拼金
-    public function UserUsdtDhLpj(Request $request){
+    public function UserUsdtDhLpj(ReUserPinTuan $request){
         $user = $request->user();
         $ip = $request->input('ip');
         $money = $request->input('money');
-        $ip != '' ?: $ip = '183.150.'.rand(1,255).'.'.rand(1,255);
         //查询70%usdt
         $userAssets = Assets::where('uid',$user->id)->where('assets_type_id',3)->first();
         if ($userAssets->amount>=$money){
@@ -90,12 +89,11 @@ class UserPinTuanController extends Controller
     }
 
     //购买来拼金
-    public function UserBuyLpj(Request $request)
+    public function UserBuyLpj(ReUserPinTuan $request)
     {
         $user = $request->user();
         $ip = $request->input('ip');
         $money = $request->input('money');
-        $ip != '' ?: $ip = '183.150.'.rand(1,255).'.'.rand(1,255);
 
         $order_no = createOrderNo();
         //创建充值记录
@@ -127,8 +125,8 @@ class UserPinTuanController extends Controller
 
     }
 
-    //购买会员支付回调
-    public function getUserBuyLpjHd(UserPinTuan $request)
+    //购买来拼金支付回调
+    public function getUserBuyLpjHd(Request $request)
     {
         $Pay = new YuntongPay();
         $json = $request->getContent();
