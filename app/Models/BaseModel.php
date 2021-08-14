@@ -28,7 +28,7 @@ class BaseModel extends Model
      */
     public function getCreateTimeAttribute($value)
     {
-        if ($this->attributes[ self::CREATED_AT ]) {
+        if (isset($this->attributes[ self::CREATED_AT ]) && !empty($this->attributes[ self::CREATED_AT ])) {
             $value = Carbon::createFromFormat(
                 'Y-m-d\TH:i:s.vv\Z',
                 date('Y-m-d\TH:i:s.vv\Z', strtotime($this->attributes[ self::CREATED_AT ]))
@@ -48,7 +48,7 @@ class BaseModel extends Model
      */
     public function getUpdateTimeAttribute($value)
     {
-        if ($this->attributes[ self::UPDATED_AT ]) {
+        if (isset($this->attributes[ self::UPDATED_AT ]) && !empty($this->attributes[ self::UPDATED_AT ])) {
             $value = Carbon::createFromFormat(
                 'Y-m-d\TH:i:s.vv\Z',
                 date('Y-m-d\TH:i:s.vv\Z', strtotime($this->attributes[ self::CREATED_AT ]))
