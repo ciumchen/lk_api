@@ -278,7 +278,7 @@ class WithdrawCashService
         $WithdrawCashLog = new WithdrawCashLog();
         $page = intval($page) > 1 ? $page - 1 : 0;
         $limit = $limit ?? 10;
-        $list = $WithdrawCashLog::whereUserId($uid)->skip($page * $limit)->take($limit)->get();
+        $list = $WithdrawCashLog::whereUserId($uid)->orderByDesc('id')->skip($page * $limit)->take($limit)->get();
         return $list;
     }
 }
