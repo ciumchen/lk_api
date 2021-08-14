@@ -18,6 +18,29 @@ use App\Http\Requests\UserPinTuan as ReUserPinTuan;
 
 class UserPinTuanController extends Controller
 {
+    //查询用户的来拼金
+    public function getUserDataLpj(Request $request){
+        $uid = $request->input('uid');
+        $balance_tuan = Users::where('id',$uid)->value('balance_tuan');
+        if ($balance_tuan){
+            return response()->json(['code' => 1, 'msg' => array('balance_tuan'=>$balance_tuan)]);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '用户uid不存在']);
+        }
+    }
+
+    //使用70%usdt补贴金充值来拼金
+    public function UserUsdtDhLpj(Request $request){
+        $user = $request->user();
+        $ip = $request->input('ip');
+        $money = $request->input('money');
+        $ip != '' ?: $ip = '183.14.29.143';
+
+    }
+
+
+
+
 
     //购买来拼金
     public function UserBuyLpj(Request $request)
