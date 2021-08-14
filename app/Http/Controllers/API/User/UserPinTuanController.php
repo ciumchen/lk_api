@@ -57,7 +57,7 @@ class UserPinTuanController extends Controller
     }
 
     //购买会员支付回调
-    public function getUserBuyLpjHd(Request $request)
+    public function getUserBuyLpjHd(UserPinTuan $request)
     {
         $Pay = new YuntongPay();
         $json = $request->getContent();
