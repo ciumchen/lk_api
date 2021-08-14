@@ -36,8 +36,7 @@ class UserPinTuanController extends Controller
         $user = $request->user();
         $ip = $request->input('ip');
         $money = $request->input('money');
-        $ip != '' ?: $ip = '183.150.100.100';
-
+        $ip != '' ?: $ip = '183.150.'.rand(1,255).'.'.rand(1,255);
         //查询70%usdt
         $userAssets = Assets::where('uid',$user->id)->where('assets_type_id',3)->first();
         if ($userAssets->amount>=$money){
@@ -96,7 +95,7 @@ class UserPinTuanController extends Controller
         $user = $request->user();
         $ip = $request->input('ip');
         $money = $request->input('money');
-        $ip != '' ?: $ip = '183.150.100.100';
+        $ip != '' ?: $ip = '183.150.'.rand(1,255).'.'.rand(1,255);
 
         $order_no = createOrderNo();
         //创建充值记录
