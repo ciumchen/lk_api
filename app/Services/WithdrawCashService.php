@@ -203,7 +203,7 @@ class WithdrawCashService
             if (empty($Withdraw)) {
                 $Withdraw = WithdrawCashLog::findOrFail($withdraw_id);
             }
-            switch ($Withdraw) {
+            switch ($Withdraw->balance_type) {
                 case WithdrawCashLog::BALANCE_PIN_TUAN:
                     $this->refundsTuanBalance($withdraw_id, $Withdraw);
                     break;

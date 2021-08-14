@@ -240,7 +240,7 @@ class WithdrawCashLog extends BaseModel
     public function getStatusTextAttribute($value)
     {
         $value = '';
-        if (isset($this->attributes[ 'status' ])) {
+        if ($this->attributes[ 'status' ]) {
             $value = self::$statusText[ $this->attributes[ 'status' ] ] ?: '未知';
         }
         return $value;
@@ -258,7 +258,7 @@ class WithdrawCashLog extends BaseModel
     public function getChannelTextAttribute($value)
     {
         $value = '';
-        if (isset($this->attributes[ 'channel' ])) {
+        if ($this->attributes[ 'channel' ]) {
             $value = self::$channelText[ $this->attributes[ 'channel' ] ] ?: '未知';
         }
         return $value;
@@ -276,7 +276,7 @@ class WithdrawCashLog extends BaseModel
     public function getBalanceTypeTextAttribute($value)
     {
         $value = '';
-        if (isset($this->attributes[ 'balance_type' ])) {
+        if ($this->attributes[ 'balance_type' ]) {
             $value = self::$balanceText[ $this->attributes[ 'balance_type' ] ] ?: '未知';
         }
         return $value;
