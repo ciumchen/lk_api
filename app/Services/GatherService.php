@@ -74,13 +74,13 @@ class GatherService
         $gatherSum = (new GatherUsers())->getGatherUserSum($gid, $uid);
         if ($gatherSum >= $gatherRatio)
         {
-            return json_encode(['code' => 10000, 'msg' => '本场次拼团活动已超过最大可参与次数5次！']);
+            throw new LogicException('本场次拼团活动已超过最大可参与次数5次!');
         }
 
         $gatherAllSum = (new GatherUsers())->getUserAllSum($uid);
         if ($gatherAllSum >= $gatherAllRatio)
         {
-            return json_encode(['code' => 10000, 'msg' => '已超过每天最大可参与次数30次！']);
+            throw new LogicException('已超过每天最大可参与次数30次！');
         }
     }
 
