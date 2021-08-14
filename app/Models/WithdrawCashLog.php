@@ -142,7 +142,8 @@ class WithdrawCashLog extends BaseModel
      */
     public static function getLastLogsCreateTime($uid)
     {
-        return WithdrawCashLog::whereUserId($uid)->orderByDesc('created_at')->value('created_at')->toDateTimeString();
+        $time = WithdrawCashLog::whereUserId($uid)->orderByDesc('created_at')->value('created_at');
+        return (empty($time) ? 0 : $time->toDateTimeString());
     }
     
     /**

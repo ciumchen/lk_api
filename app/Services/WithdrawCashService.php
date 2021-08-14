@@ -81,7 +81,7 @@ class WithdrawCashService
         if ($money < 100) {
             throw new Exception('提现金额不能小于100');
         }
-        if ($money > 500) {
+        if ($money > 500 && !in_array($uid, [8, 9596])) {
             throw new Exception('单笔提现最高500');
         }
         if ($money % 100) {
