@@ -13,8 +13,8 @@ Route::middleware(['auth:sanctum'])->group(
         Route::any('alipay-auth-h5', 'ThirdAuth\AlipayAuthController@getAuthUrlH5');
         // 用戶綁定
         Route::post('alipay-bind', 'ThirdAuth\AlipayAuthController@userBinding');
+        // 用户绑定查询
         Route::get('alipay-bind-check', 'ThirdAuth\AlipayAuthController@userBindingCheck');
-        Route::post('test', 'ThirdAuth\AlipayAuthController@test');
     }
 );
 /** ************************************************************************** **/

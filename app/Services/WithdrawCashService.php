@@ -10,6 +10,8 @@ use App\Models\VerifyCode;
 use App\Models\WithdrawCashLog;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class WithdrawCashService
 {
@@ -258,5 +260,25 @@ class WithdrawCashService
         } catch (Exception $e) {
             throw $e;
         }
+    }
+    
+    /**
+     * Description:
+     *
+     * @param int      $uid
+     * @param int|null $page
+     * @param int|null $limit
+     *
+     * @return WithdrawCashLog[]|Builder[]|Collection
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/14 0014
+     */
+    public function getUserWithdrawLog($uid, $page = 1, $limit = 10)
+    {
+        $WithdrawCashLog = new WithdrawCashLog();
+        $page = intval($page) > 1 ? $page - 1 : 0;
+        $limit = $limit ?? 10;
+        $list = $WithdrawCashLog::whereUserId($uid)->skip($page * $limit)->take($limit)->get();
+        return $list;
     }
 }
