@@ -11,6 +11,7 @@ use App\Services\WithdrawCashService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use function AlibabaCloud\Client\json;
 
 class AlipayWithdrawController extends Controller
 {
@@ -60,7 +61,7 @@ class AlipayWithdrawController extends Controller
             try {
                 (new WithdrawCashService())->refundsBalance($withdraw_id, $Withdraw);
             } catch (Exception $e) {
-                Log::debug('提现失败退款失败:AlipayWithdrawRefunds', [$e->getMessage()]);
+                Log::debug('提现失败退款失败:AlipayWithdrawRefunds', [json_encode($e)]);
             }
             throw new LogicException('提现失败');
         }
