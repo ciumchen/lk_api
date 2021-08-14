@@ -176,7 +176,7 @@ class GatherUsers extends Model
                 }
                 $item->userSum = count(json_decode($this->getGatherUserList($item->gid), 1));
                 $item->type = self::GATHER_TYPE[$item->type] ?? '';
-                $item->surplusTime = $item->status != 0 ? '已结束' : (int)(strtotime($item->created_at) + $param['diffTime'] - time()) / 3600;
+                $item->surplusTime = $item->status != 0 ? '已结束' : intdiv(strtotime($item->created_at) + $param['diffTime'] - time(), 3600);
                 unset($item->created_at, $item->guType);
             });
 
