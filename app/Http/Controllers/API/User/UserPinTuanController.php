@@ -73,6 +73,7 @@ class UserPinTuanController extends Controller
                     'money_before_change' => $oldAmount,
                     'order_no' => $order_no,
                     'remark' => '兑换来拼金',
+                    'status' => 2,
                 );
                 UserPinTuan::create($data);
 
