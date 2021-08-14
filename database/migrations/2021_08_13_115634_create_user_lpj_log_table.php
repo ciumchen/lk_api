@@ -21,6 +21,7 @@ class CreateUserLpjLogTable extends Migration
             $table->decimal('money_before_change', 15, 2)->default(0.00)->comment('变动前来拼金');
             $table->string('order_no', 40)->default('')->comment('充值订单号');
             $table->tinyInteger('status')->default(1)->comment('充值状态:1处理中,2成功,3失败');
+            $table->text('remark')->nullable()->comment('备注');
             $table->timestamps();
         });
     }

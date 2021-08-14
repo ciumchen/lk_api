@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\Controller;
 use App\Libs\Yuntong\YuntongPay;
+use App\Models\Assets;
+use App\Models\AssetsLogs;
 use App\Models\Order;
 use App\Models\UserPinTuan;
 use App\Models\Users;
@@ -36,6 +38,55 @@ class UserPinTuanController extends Controller
         $money = $request->input('money');
         $ip != '' ?: $ip = '183.14.29.143';
 
+        //查询70%usdt
+        $userAssets = Assets::where('uid',$user->id)->where('assets_type_id',3)->first();
+        if ($userAssets->amount>=$money){
+            $oldAmount = $userAssets->amount;
+            $order_no = createOrderNo();
+            DB::beginTransaction();
+            try {
+                //扣除70%usdt和添加资产变动记录
+                $userAssets->amount = $oldAmount-$money;
+                $userAssets->save();
+
+                $data = array(
+                    'assets_type_id' => 3,
+                    'assets_name' => 'usdt',
+                    'uid' => $user->id,
+                    'operate_type' => 'recharge_lpj',
+                    'amount' => $money,
+                    'amount_before_change' => $oldAmount,
+                    'order_no' => $order_no,
+                    'ip' => $ip,
+                    'remark' => '兑换来拼金',
+                    'user_agent' => 'recharge_lpj',
+                );
+                AssetsLogs::create($data);
+                //更新用户来拼金额度和来拼金记录
+                $user->balance_tuan = $user->balance_tuan+$money;
+                $user->save();
+
+                $data = array(
+                    'uid' => $user->id,
+                    'operate_type' => 'recharge',
+                    'money' => $money,
+                    'money_before_change' => $oldAmount,
+                    'order_no' => $order_no,
+                    'remark' => '兑换来拼金',
+                );
+                UserPinTuan::create($data);
+
+                DB::commit();
+                return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json(['code' => 0, 'msg' => '补贴金兑换失败']);
+            }
+        }else{
+            return response()->json(['code' => 0, 'msg' => '补贴金余额不足']);
+        }
+
+
     }
 
 
@@ -58,6 +109,7 @@ class UserPinTuanController extends Controller
             'money' => $money,
             'money_before_change' => $user->balance_tuan,
             'order_no' => $order_no,
+            'remark' => '支付宝充值',
         );
         $lpjLog = UserPinTuan::create($data);
 
