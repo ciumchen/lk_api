@@ -20,7 +20,7 @@ class CreateGatherGoldLogs extends Migration
             $table->unsignedInteger('uid')->default(0)->comment('用户id');
             $table->unsignedInteger('guid')->default(0)->comment('gather_users表 id');
             $table->unsignedDecimal('money', 10, 2)->default(0.00)->comment('参团来拼金金额');
-            $table->tinyInteger('status')->default(1)->comment('拼团状态：0 停止；1 开启');
+            $table->tinyInteger('status')->default(1)->comment('拼团状态：0 开团中；1 开奖中；3 已终止');
             $table->tinyInteger('type')->default(1)->comment('是否扣减：0 否；1 是');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
