@@ -31,6 +31,17 @@ class UserPinTuanController extends Controller
         }
     }
 
+    //查询用户的来70%usdt可兑换余额
+    public function getUserDataUsdtYE(Request $request){
+        $uid = $request->input('uid');
+        $amount = Assets::where('uid',$uid)->where('assets_type_id',3)->value('amount');
+        if ($amount){
+            return response()->json(['code' => 1, 'msg' => array('usdt_amount'=>$amount)]);
+        }else{
+            return response()->json(['code' => 0, 'msg' => '用户uid资产不存在']);
+        }
+    }
+
     //使用70%usdt补贴金充值来拼金
     public function UserUsdtDhLpj(ReUserPinTuan $request){
         $user = $request->user();
