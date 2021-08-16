@@ -233,7 +233,7 @@ class GatherUsers extends Model
     public function getAdvanceGold (int $uid)
     {
         //获取用户来拼金总数
-        $userGoldSum = (new GatherUsers())->getUserGold($uid);
+        $userGoldSum = $this->getUserGold($uid);
         //获取用户来拼金扣减总数
         $minusSum = (new GatherGoldLogs())->minusUserGold($uid);
 
