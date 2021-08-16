@@ -21,7 +21,10 @@ Route::middleware(['auth:sanctum'])->group(
 /////////////////
 // 不需要登录验证//
 ////////////////
+//异步回调地址
 Route::any('alipay-notify', 'ThirdAuth\AlipayNotifyController@authNotify');
+//消息通知地址
+Route::any('alipay-msg-notify', 'ThirdAuth\AlipayNotifyController@authNotify');
 // 同步回调返回地址
 Route::get('alipay-after-auth/{uid}', function (
     Illuminate\Http\Request $request,
