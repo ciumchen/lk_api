@@ -22,7 +22,7 @@ class CreateUserAlipayAuthTokenLastChange extends Migration
             $table->string('alipay_alipay_user_id', 50)->default('')->comment('用户支付宝alipay_user_id');
             $table->timestamps();
         });
-        DB::statement('ALTER TABLE `user_alipay_auth_token_last_change` comment "用户支付宝授权记录表";');
+        DB::statement('ALTER TABLE `user_alipay_auth_last_change` comment "用户支付宝授权记录表";');
     }
     
     /**
