@@ -1,4 +1,7 @@
 <?php
+
+namespace Constant;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,14 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-namespace Constant;
+
 /**
  * HTTP Schema常量
  */
-class HttpSchema {
+class HttpSchema
+{
     //HTTP
     const HTTP = "http://";
+    
     //HTTPS
     const HTTPS = "https://";
-
 }

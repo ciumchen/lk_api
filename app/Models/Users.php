@@ -78,6 +78,10 @@ use Carbon\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereMemberStatus($value)
  * @property string $balance_tuan 拼团金额账户
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereBalanceTuan($value)
+ * @property string $balance_allowance 可提现额度[补贴]
+ * @property string $balance_consume 再消费额度
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereBalanceAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereBalanceConsume($value)
  */
 class Users extends Model
 {

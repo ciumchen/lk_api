@@ -1,4 +1,7 @@
 <?php
+
+namespace Http;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,19 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-namespace Http;
 
 use Util\HttpUtil;
+
 /**
-*httpClient对象
-*/
+ *httpClient对象
+ */
 class HttpClient
 {
-	private static $connectTimeout = 30000;//30 second
-	private static $readTimeout	= 80000;//80 second
-
-	public static function execute($request)
-	{
-		return HttpUtil::send($request, self::$readTimeout, self::$connectTimeout);
-	}
+    private static $connectTimeout = 30000;//30 second
+    
+    private static $readTimeout = 80000;   //80 second
+    
+    public static function execute($request)
+    {
+        return HttpUtil::send($request, self::$readTimeout, self::$connectTimeout);
+    }
 }

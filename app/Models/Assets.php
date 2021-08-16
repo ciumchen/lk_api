@@ -30,6 +30,8 @@ use App\Services\ConvertService;
  * @method static \Illuminate\Database\Eloquent\Builder|Assets whereUid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Assets whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $change_times 资产变更次数
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereChangeTimes($value)
  */
 class Assets extends Model
 {

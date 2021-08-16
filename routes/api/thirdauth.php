@@ -15,6 +15,8 @@ Route::middleware(['auth:sanctum'])->group(
         Route::post('alipay-bind', 'ThirdAuth\AlipayAuthController@userBinding');
         // 用户绑定查询
         Route::get('alipay-bind-check', 'ThirdAuth\AlipayAuthController@userBindingCheck');
+        // 用户最后一次授权查询
+        Route::get('alipay-auth-last-check', 'ThirdAuth\AlipayAuthController@getUserLastAuth');
     }
 );
 /** ************************************************************************** **/

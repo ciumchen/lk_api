@@ -119,4 +119,16 @@ class AlipayAuthController extends Controller
         }
         return apiSuccess('', '绑定成功');
     }
+    
+    public function getUserLastAuth(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $AlipayCertService = new AlipayCertService();
+            $res = $AlipayCertService->changeAlipayAuthCheck($user->id);
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess();
+    }
 }

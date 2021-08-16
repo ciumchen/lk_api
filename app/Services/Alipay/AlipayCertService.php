@@ -8,7 +8,9 @@ use AlipayAop\request\AlipaySystemOauthTokenRequest;
 use AlipayAop\request\AlipayTradeQueryRequest;
 use AlipayAop\request\AlipayUserInfoAuthRequest;
 use AlipayAop\request\AlipayUserInfoShareRequest;
+use App\Models\Setting;
 use App\Models\User;
+use App\Models\UserAlipayAuthLastChange;
 use App\Models\UserAlipayAuthToken;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -291,6 +293,34 @@ class AlipayCertService extends AlipayBaseService
             throw $e;
         }
         return $Result->$responseNode;
+    }
+    
+    /**
+     * Description:提现间隔检查
+     *
+     * @param $uid
+     *
+     * @return bool
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/16 0016
+     */
+    public function changeAlipayAuthCheck($uid)
+    {
+        try {
+            $last_change_time = UserAlipayAuthLastChange::getLastLog($uid);
+            $spacing = Setting::getSetting('auth_spacing');
+            if ($last_change_time != 0) {
+                $last_change_time = strtotime($last_change_time);
+                $spacing_days = ceil((time() - $last_change_time) / (24 * 3600));
+                if ($spacing_days < $spacing) {
+                    throw new Exception("距离上次修改时间为{$spacing_days}天,每次修改间隔为{$spacing}天");
+                }
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
     }
     
     

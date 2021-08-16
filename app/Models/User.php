@@ -99,6 +99,10 @@ use Illuminate\Support\Facades\Log;
  * @method static Builder|User whereMemberStatus($value)
  * @property string $balance_tuan 拼团金额账户
  * @method static Builder|User whereBalanceTuan($value)
+ * @property string $balance_allowance 可提现额度[补贴]
+ * @property string $balance_consume 再消费额度
+ * @method static Builder|User whereBalanceAllowance($value)
+ * @method static Builder|User whereBalanceConsume($value)
  */
 class User extends Authenticatable
 {

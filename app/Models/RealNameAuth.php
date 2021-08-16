@@ -6,6 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
+/**
+ * App\Models\RealNameAuth
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|RealNameAuth newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RealNameAuth newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RealNameAuth query()
+ * @mixin \Eloquent
+ */
 class RealNameAuth extends Model
 {
     use HasFactory;

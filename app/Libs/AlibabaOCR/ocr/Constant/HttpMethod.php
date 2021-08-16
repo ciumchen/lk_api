@@ -1,4 +1,7 @@
 <?php
+
+namespace Constant;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,19 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-namespace Constant;
+
 /**
  * HTTP方法常量
  */
-class HttpMethod {
+class HttpMethod
+{
     //GET
     const GET = "GET";
+    
     //POST
     const POST = "POST";
+    
     //PUT
     const PUT = "PUT";
+    
     //DELETE
     const DELETE = "DELETE";
-	//HEAD
+    
+    //HEAD
     const HEAD = "HEAD";
 }
