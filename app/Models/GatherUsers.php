@@ -211,7 +211,7 @@ class GatherUsers extends Model
      */
     public function getUserGold (int $uid)
     {
-        return Users::where(['id' => $uid])->value('balance_tuan');
+        return Users::where(['id' => $uid, 'status' => 1])->value('balance_tuan');
     }
 
     /**获取用户来拼金额度
@@ -232,15 +232,13 @@ class GatherUsers extends Model
      */
     public function getAdvanceGold (int $uid)
     {
-        //用户拼团冻结总额
-        $gatherGold = GatherGoldLogs::where(['uid' => $uid, 'type' => 1])
-                        ->sum('money');
-        //用户来拼金总额
-        $userGold = Users::where(['id' => $uid, 'status' => 1])
-                    ->value('balance_tuan');
+        //获取用户来拼金总数
+        $userGoldSum = (new GatherUsers())->getUserGold($uid);
+        //获取用户来拼金扣减总数
+        $minusSum = (new GatherGoldLogs())->minusUserGold($uid);
 
         //用户可提现总额
-        return bcsub($userGold, $gatherGold, 2);
+        return bcsub($userGoldSum, $minusSum, 2);
     }
 
     /**格式化输出日期
