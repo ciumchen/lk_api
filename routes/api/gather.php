@@ -11,3 +11,5 @@ Route::any('user-gold', 'Gather\AttendGatherController@getGatherGold');
 Route::any('user-gather', 'Gather\GatherUserController@getGatherInfo');
 //获取用户拼团获奖信息
 Route::any('gather-lottery', 'Gather\GatherUserController@getGatherLottery');
+//获取用户拼团来拼金可提现总额
+Route::any('advance-gold', 'Gather\GatherUserController@getAdvanceGold');

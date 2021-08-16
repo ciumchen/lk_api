@@ -225,6 +225,24 @@ class GatherUsers extends Model
         return json_decode($userGoldList, 1);
     }
 
+    /**获取用户拼团来拼金总额
+     * @param int $uid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getAdvanceGold (int $uid)
+    {
+        //用户拼团冻结总额
+        $gatherGold = GatherGoldLogs::where(['uid' => $uid, 'type' => 1])
+                        ->sum('money');
+        //用户来拼金总额
+        $userGold = Users::where(['id' => $uid, 'status' => 1])
+                    ->value('balance_tuan');
+
+        //用户可提现总额
+        return bcsub($userGold, $gatherGold, 2);
+    }
+
     /**格式化输出日期
      * Prepare a date for array / JSON serialization.
      * @param  \DateTimeInterface  $date

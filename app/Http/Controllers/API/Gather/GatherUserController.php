@@ -29,4 +29,14 @@ class GatherUserController extends Controller
     {
         return (new GatherUsers())->getGatherLottery($request->gid);
     }
+
+    /**获取用户拼团来拼金可提现总额
+     * @param Request $request
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getAdvanceGold (Request $request)
+    {
+        return (new GatherUsers())->getAdvanceGold($request->uid);
+    }
 }
