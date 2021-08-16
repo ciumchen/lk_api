@@ -39,7 +39,7 @@ class UserPinTuanDataController extends Controller
         $uid = $request->input('uid');
         $money = Users::where('id',$uid)->value('gather_card');
 
-        return response()->json(['code'=>1, 'msg'=>'获取成功', 'money' => $money]);
+        return response()->json(['code'=>1, 'msg'=>'获取用户的来购物卡余额成功', 'money' => $money]);
     }
 
 

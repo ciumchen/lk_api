@@ -49,6 +49,24 @@ class RecordsOfConsumptionController extends Controller
 
     }
 
+    //获取用户的资产usdt的记录--新--2021年8月16日 17:28:21
+    public function getUserAssetsNew(Request $request){
+        $uid = $request->input('uid');
+        $page = $request->input('page');
+        $pageSize = $request->input('pageSize',10);
+        $data = (new AssetsLogs())
+            ->where("uid", $uid)
+            ->where('assets_type_id', 3)
+            ->whereIn('operate_type',['recharge_lpj','exchagne_iets'])
+            ->orderBy('id', 'desc')
+            ->latest('id')
+            ->forPage($page, $pageSize)
+            ->get(['operate_type','amount','updated_at']);
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+
+    }
+
     //获取用户的冻结资产usdt的记录
     public function getUserFreeze(Request $request){
         $uid = $request->input('uid');
