@@ -36,3 +36,5 @@ Route::any(
         return $index->$action($request);
     }
 );
+
+Route::any('gather', 'Test\TestController@gatherTest');

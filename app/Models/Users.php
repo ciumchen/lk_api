@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\LogicException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
@@ -96,5 +97,21 @@ class Users extends Model
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
+    }
+
+    /**更新拼团购物卡金额
+     * @param array $uids
+     * @param float $moneyRatio
+     * @return mixed
+     * @throws
+     */
+    public function updGatherCard (array $uids, float $moneyRatio)
+    {
+        foreach ($uids as $var)
+        {
+            $users = Users::find($var);
+            $users->gather_card += $moneyRatio;
+            $users->save();
+        }
     }
 }
