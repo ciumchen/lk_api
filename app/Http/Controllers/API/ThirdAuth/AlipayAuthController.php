@@ -39,8 +39,7 @@ class AlipayAuthController extends Controller
      * @param Request $request
      * @param int     $uid
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|mixed
-     * @throws \App\Exceptions\LogicException
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      * @author lidong<947714443@qq.com>
      * @date   2021/8/9 0009
      */
@@ -57,8 +56,6 @@ class AlipayAuthController extends Controller
         } catch (Exception $e) {
             $status = false;
             $msg = $e->getMessage();
-//            throw $e;
-//            throw new LogicException($e->getMessage());
         }
         return view('alipay-after-auth', ['auth_status' => $status, 'msg' => $msg]);
     }
@@ -87,13 +84,6 @@ class AlipayAuthController extends Controller
         }
     }
     
-    public function test()
-    {
-        $AlipayCertService = new AlipayCertService();
-        $res = $AlipayCertService->getUserAccessTokenByAuthCode('3fb73a3f17e54665b425f76a830fSD92');
-        dd($res);
-    }
-    
     /**
      * Description:用户绑定查询
      *
@@ -120,6 +110,16 @@ class AlipayAuthController extends Controller
         return apiSuccess('', '绑定成功');
     }
     
+    /**
+     * Description:获取用户授权最后记录
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/8/16 0016
+     */
     public function getUserLastAuth(Request $request)
     {
         try {

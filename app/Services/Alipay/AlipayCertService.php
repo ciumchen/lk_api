@@ -97,10 +97,18 @@ class AlipayCertService extends AlipayBaseService
             $Users->alipay_nickname = $user_info->nick_name ?? '';
             $Users->alipay_avatar = $user_info->avatar ?? '';
             $Users->save();
+            //授权记录
+            $AuthLog = new UserAlipayAuthLastChange();
+            $AuthLog->saveLog(
+                $uid,
+                $user_info->user_id,
+                $user_info->nick_name ?? '',
+                $user_info->avatar ?? '',
+                $user_info->alipay_user_id ?? ''
+            );
         } catch (Exception $e) {
             Log::debug('Error:Alipay-AuthCode:'.$e->getMessage());
             throw $e;
-            return false;
         }
         return true;
     }
