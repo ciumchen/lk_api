@@ -18,6 +18,9 @@ Route::post('getUserBuyLpjHd', 'User\UserPinTuanController@getUserBuyLpjHd');
 //查询用户的来拼金
 Route::any('getUserDataLpj', 'User\UserPinTuanController@getUserDataLpj');
 
+//查询用户的来拼金充值记录
+Route::any('getUserDataLpjLog', 'User\UserPinTuanDataController@getUserDataLpjLog');
+
 
 
 
