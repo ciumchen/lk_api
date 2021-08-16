@@ -24,8 +24,8 @@ Route::any('getUserDataLpjLog', 'User\UserPinTuanDataController@getUserDataLpjLo
 //查询用户的来70%usdt可兑换余额
 Route::any('getUserDataUsdtYE', 'User\UserPinTuanController@getUserDataUsdtYE');
 
-
-
+//查询用户的来购物卡余额
+Route::any('getUserShoppingCardMoney', 'User\UserPinTuanDataController@getUserShoppingCardMoney');
 
 
 

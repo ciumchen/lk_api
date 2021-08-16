@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Libs\Yuntong\YuntongPay;
 use App\Models\Assets;
 use App\Models\AssetsLogs;
+use App\Models\GatherShoppingCard;
 use App\Models\Order;
 use App\Models\UserPinTuan;
 use App\Models\Users;
@@ -31,6 +32,14 @@ class UserPinTuanDataController extends Controller
             ->forPage($page, 10)
             ->get();
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+    }
+
+    //查询用户的来购物卡余额
+    public function getUserShoppingCardMoney(Request $request){
+        $uid = $request->input('uid');
+        $money = Users::where('id',$uid)->value('gather_card');
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'money' => $money]);
     }
 
 
