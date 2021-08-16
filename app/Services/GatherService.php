@@ -11,6 +11,7 @@ use App\Models\GatherTrade;
 use App\Models\GatherUsers;
 use App\Models\Order;
 use App\Models\Setting;
+use App\Models\Users;
 use Illuminate\Support\Facades\DB;
 
 class GatherService
@@ -196,6 +197,8 @@ class GatherService
         try {
             //新增中奖用户购物卡记录
             (new GatherShoppingCard())->setGatherShoppingCard($gatherUserData);
+            //更新用户购物卡金额
+            (new Users())->updGatherCard($uidDict, $moneyRatio);
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;

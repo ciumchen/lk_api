@@ -77,4 +77,20 @@ class Users extends Model
     {
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
     }
+
+    /**更新拼团购物卡金额
+     * @param array $uids
+     * @param float $moneyRatio
+     * @return mixed
+     * @throws
+     */
+    public function updGatherCard (array $uids, float $moneyRatio)
+    {
+        foreach ($uids as $var)
+        {
+            $users = Users::find($var);
+            $users->gather_card += $moneyRatio;
+            $users->save();
+        }
+    }
 }
