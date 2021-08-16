@@ -179,5 +179,70 @@ class UserPinTuanController extends Controller
 
     }
 
+    //购物卡兑换代充话费
+    public function ShoppingCardDhDchf(Request $request){
+        $user = $request->user();
+        $ip = $request->input('ip');
+        $money = $request->input('money');
+        //查询用户购物卡余额
+        if ($user->gather_card < $money){
+            return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+        }
+        dd($user->toArray());
+
+
+        $userAssets = Assets::where('uid',$user->id)->where('assets_type_id',3)->first();
+        if ($userAssets->amount>=$money){
+            $oldAmount = $userAssets->amount;
+            $order_no = createOrderNo();
+            DB::beginTransaction();
+            try {
+                //扣除70%usdt和添加资产变动记录
+                $userAssets->amount = $oldAmount-$money;
+                $userAssets->save();
+
+                $data = array(
+                    'assets_type_id' => 3,
+                    'assets_name' => 'usdt',
+                    'uid' => $user->id,
+                    'operate_type' => 'recharge_lpj',
+                    'amount' => $money,
+                    'amount_before_change' => $oldAmount,
+                    'order_no' => $order_no,
+                    'ip' => $ip,
+                    'remark' => '兑换来拼金',
+                    'user_agent' => 'recharge_lpj',
+                );
+                AssetsLogs::create($data);
+                //更新用户来拼金额度和来拼金记录
+                $user->balance_tuan = $user->balance_tuan+$money;
+                $user->save();
+
+                $data = array(
+                    'uid' => $user->id,
+                    'operate_type' => 'recharge',
+                    'money' => $money,
+                    'money_before_change' => $oldAmount,
+                    'order_no' => $order_no,
+                    'remark' => '兑换来拼金',
+                    'status' => 2,
+                );
+                UserPinTuan::create($data);
+
+                DB::commit();
+                return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json(['code' => 0, 'msg' => '补贴金兑换失败']);
+            }
+        }else{
+            return response()->json(['code' => 0, 'msg' => '补贴金余额不足']);
+        }
+
+
+
+
+    }
+
 
 }
