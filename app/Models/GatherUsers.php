@@ -149,6 +149,7 @@ class GatherUsers extends Model
         $param = [
             'diffTime'  => $diffTime,
             'userRatio' => $userRatio,
+            'uid'       => $data['uid']
         ];
         //$status = $data['status'] == 0 ? true : false;
 
@@ -167,12 +168,15 @@ class GatherUsers extends Model
             ->select(DB::raw('count(gu.id) as total, g.id as gid, g.created_at, g.status, g.type, g.status, gu.type as guType'))
             ->get()
             ->each(function ($item) use ($param) {
+                //用户是否中奖
+                $isLottery = $this->getUserLottery($param['uid'], $item->gid);
                 if (!$item->status)
                 {
                     $item->onStatus = '已参与';
                 } else
                 {
-                    $item->onStatus = self::USER_TYPE[$item->guType];
+                    //$item->onStatus = self::USER_TYPE[$item->guType];
+                    $item->onStatus = $isLottery ? self::USER_TYPE[1] : self::USER_TYPE[0];
                 }
                 $item->userSum = count(json_decode($this->getGatherUserList($item->gid), 1));
                 $item->type = self::GATHER_TYPE[$item->type] ?? '';
@@ -252,6 +256,17 @@ class GatherUsers extends Model
             'minusSum'    => sprintf('%.2f', $minusSum),
             'diffGold'    => $diffGold,
         ];
+    }
+
+    /**获取用户拼团是否中奖
+     * @param int $uid
+     * @param int $gid
+     * @return mixed
+     * @throws
+     */
+    public function getUserLottery (int $uid, int $gid)
+    {
+        return GatherUsers::where(['uid' => $uid, 'gid' => $gid, 'type' => 1])->exists();
     }
 
     /**格式化输出日期
