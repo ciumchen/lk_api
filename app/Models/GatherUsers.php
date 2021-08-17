@@ -15,7 +15,6 @@ class GatherUsers extends Model
 
     /**新增用户来拼金记录
      * @param int $gid
-     * @param int $guid
      * @param int $uid
      * @return mixed
      * @throws LogicException
