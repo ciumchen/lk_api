@@ -748,9 +748,6 @@ class MobileRechargeService extends BaseService
             $gwkData->status = 2;
             $gwkData->save();
 
-            //审核订单通过、添加排队
-
-
         } catch (Exception $e) {
             throw $e;
         }

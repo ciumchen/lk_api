@@ -321,7 +321,7 @@ class UserPinTuanController extends Controller
 
                 //通过审核添加积分，更新order 表审核状态
                 $oid = Order::where('order_no',$data[ 'outer_tid' ])->value('id');
-                (new OrderService())->MemberUserOrder($oid,'ZL');
+                (new OrderService())->addOrderIntegral($oid);
 
             }
         } catch (Exception $e) {

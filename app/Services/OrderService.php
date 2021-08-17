@@ -186,7 +186,7 @@ class OrderService
     }
 
     //直接传oid完成订单积分添加
-    public function returnOrder($oid)
+    public function addOrderIntegral($oid)
     {
         DB::beginTransaction();
         try {
