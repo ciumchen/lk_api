@@ -238,7 +238,13 @@ class GatherUsers extends Model
         $minusSum = (new GatherGoldLogs())->minusUserGold($uid);
 
         //用户可提现总额
-        return bcsub($userGoldSum, $minusSum, 2);
+        $diffGold = bcsub($userGoldSum, $minusSum, 2);
+        //返回
+        return [
+            'userGoldSum' => $userGoldSum,
+            'minusSum'    => sprintf('%.2f', $minusSum),
+            'diffGold'    => $diffGold,
+        ];
     }
 
     /**格式化输出日期
