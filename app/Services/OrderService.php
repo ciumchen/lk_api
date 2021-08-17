@@ -31,12 +31,12 @@ class OrderService
      *
      * @return mixed
      */
-    public function MemberUserOrder($oid)
+    public function MemberUserOrder($oid,$description = 'KTHY')
     {
 //        $OrderInfo = Order::where('id', $oid)->first();
 //        $consumer_uid = $OrderInfo->uid;
 
-        $description = 'KTHY';
+//        $description = 'KTHY';
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()

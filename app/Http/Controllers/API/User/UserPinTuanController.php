@@ -18,6 +18,7 @@ use App\Models\UserShoppingCardDhLog;
 use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
 use App\Services\OrderTwoService;
+use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -262,10 +263,73 @@ class UserPinTuanController extends Controller
     //购物卡兑换话费支付回调
     public function gwkDhHfHd(Request $request)
     {
-        $allData = $request->all();
-//        $json = json_decode($data,true);
-        Log::info("============接收购物卡兑换话费回调数据打印======================",$allData);
+        $data = $request->all();
+        Log::info("============接收购物卡兑换话费回调数据打印======================",$data);
+//        UserShoppingCardDhLog::where()-
         //更新order 表审核状态
         //(new OrderService())->completeBmOrder($data['orderNo']);
+
+        $MobileRecharge = new OrderMobileRecharge();
+        $ShoppingModel = new UserShoppingCardDhLog();
+        try {
+            if (empty($data)) {
+                throw new Exception('手机充值回调数据为空');
+            }
+            $PayBill = new PayBill();
+            if (!$PayBill->checkSign($data)) {
+                throw new Exception('验签不通过');
+            }
+            //单号充值
+            $rechargeInfo = $MobileRecharge->where('order_no', $data[ 'outer_tid' ])
+                ->first();
+            if (empty($rechargeInfo)) {
+                throw new Exception('未查询到订单数据');
+            }
+            //更新充值记录表数据
+            if (!empty($rechargeInfo)) {
+                $rechargeInfo->status = $data[ 'recharge_state' ];
+                $rechargeInfo->trade_no = $data[ 'tid' ];
+                $rechargeInfo->updated_at = $data[ 'timestamp' ];
+                $rechargeInfo->save();
+            }
+            //更新兑换记录数据
+            $ShoppingInfo = $ShoppingModel->where('order_no', $data[ 'outer_tid' ])
+                ->first();
+            if (empty($ShoppingInfo)) {
+                throw new Exception('未查询到兑换数据');
+            }
+            if (!empty($ShoppingInfo)) {
+                switch ($data[ 'recharge_state' ]) {
+                    case 0:
+                        $status = 3;
+                        break;
+                    case 1:
+                        $status = 2;
+                        break;
+                    case 9:
+                        $status = 3;
+                        break;
+                    default:
+                        $status = 3;
+                        break;
+                }
+                $ShoppingInfo->status = $status;
+                $ShoppingInfo->updated_at = $data[ 'timestamp' ];
+                $ShoppingInfo->save();
+
+                //通过审核添加积分，更新order 表审核状态
+                $oid = Order::where('order_no',$data[ 'outer_tid' ])->value('id');
+                (new OrderService())->MemberUserOrder($oid,'ZL');
+
+            }
+        } catch (Exception $e) {
+            Log::debug('gwkDhHfHd-Error:'.$e->getMessage(), [json_encode($data)]);
+            throw $e;
+        }
     }
+
+
+
+
+
 }
