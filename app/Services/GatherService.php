@@ -104,7 +104,6 @@ class GatherService
                 //更新用户参团的拼团状态
                 (new GatherGoldLogs())->updGatherGold($gid, $status);
                 //开启拼团
-                //$this->quietlyExecute($gid);
                 $this->lotteryDraw($gid);
             } catch (\Exception $e) {
                 throw $e;
