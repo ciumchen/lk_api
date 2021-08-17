@@ -28,41 +28,44 @@ use App\Http\Requests\UserPinTuan as ReUserPinTuan;
 class UserPinTuanController extends Controller
 {
     //查询用户的来拼金
-    public function getUserDataLpj(Request $request){
+    public function getUserDataLpj(Request $request)
+    {
         $uid = $request->input('uid');
-        $balance_tuan = Users::where('id',$uid)->value('balance_tuan');
-        if ($balance_tuan){
-            return response()->json(['code' => 1, 'msg' => array('balance_tuan'=>$balance_tuan)]);
-        }else{
+        $balance_tuan = Users::where('id', $uid)->value('balance_tuan');
+        if ($balance_tuan) {
+            return response()->json(['code' => 1, 'msg' => array('balance_tuan' => $balance_tuan)]);
+        } else {
             return response()->json(['code' => 0, 'msg' => '用户uid不存在']);
         }
     }
 
     //查询用户的来70%usdt可兑换余额
-    public function getUserDataUsdtYE(Request $request){
+    public function getUserDataUsdtYE(Request $request)
+    {
         $uid = $request->input('uid');
-        $amount = Assets::where('uid',$uid)->where('assets_type_id',3)->value('amount');
-        if ($amount){
-            return response()->json(['code' => 1, 'msg' => array('usdt_amount'=>$amount)]);
-        }else{
+        $amount = Assets::where('uid', $uid)->where('assets_type_id', 3)->value('amount');
+        if ($amount) {
+            return response()->json(['code' => 1, 'msg' => array('usdt_amount' => $amount)]);
+        } else {
             return response()->json(['code' => 0, 'msg' => '用户uid资产不存在']);
         }
     }
 
     //使用70%usdt补贴金充值来拼金
-    public function UserUsdtDhLpj(ReUserPinTuan $request){
+    public function UserUsdtDhLpj(ReUserPinTuan $request)
+    {
         $user = $request->user();
         $ip = $request->input('ip');
         $money = $request->input('money');
         //查询70%usdt
-        $userAssets = Assets::where('uid',$user->id)->where('assets_type_id',3)->first();
-        if ($userAssets->amount>=$money){
+        $userAssets = Assets::where('uid', $user->id)->where('assets_type_id', 3)->first();
+        if ($userAssets->amount >= $money) {
             $oldAmount = $userAssets->amount;
             $order_no = createOrderNo();
             DB::beginTransaction();
             try {
                 //扣除70%usdt和添加资产变动记录
-                $userAssets->amount = $oldAmount-$money;
+                $userAssets->amount = $oldAmount - $money;
                 $userAssets->save();
 
                 $data = array(
@@ -79,7 +82,7 @@ class UserPinTuanController extends Controller
                 );
                 AssetsLogs::create($data);
                 //更新用户来拼金额度和来拼金记录
-                $user->balance_tuan = $user->balance_tuan+$money;
+                $user->balance_tuan = $user->balance_tuan + $money;
                 $user->save();
 
                 $data = array(
@@ -99,7 +102,7 @@ class UserPinTuanController extends Controller
                 DB::rollBack();
                 return response()->json(['code' => 0, 'msg' => '补贴金兑换失败']);
             }
-        }else{
+        } else {
             return response()->json(['code' => 0, 'msg' => '补贴金余额不足']);
         }
 
@@ -187,50 +190,43 @@ class UserPinTuanController extends Controller
     }
 
     //购物卡兑换代充话费
-    public function ShoppingCardDhDchf(Request $request){
+    public function ShoppingCardDhDchf(Request $request)
+    {
         $user = $request->user();
-        $ip = $request->input('ip');
+//        $ip = $request->input('ip');
         $money = $request->input('money');
         $mobile = $request->input('mobile');
-
-//        $money = 0.01;
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
             throw new LogicException('手机号格式不正确');
         }
-//        if (!in_array($money, [50, 100, 200])) {
-//            throw new LogicException('话费充值金额不在可选值范围内');
-//        }
+
         //查询用户购物卡余额
-        if ($user->gather_card < $money){
+        if ($user->gather_card < $money) {
             return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
         }
-//        dd($user->toArray());
-
         DB::beginTransaction();
-        try
-        {
+        try {
             //生成order录单
             $order_no = createOrderNo();
-            $profit_ratio = Setting::where('key','set_business_rebate_scale_zl')->value('value');//代充让利比例
-            $date = date("Y-m-d H:i:s",time());
-            $profit_price = $money*$profit_ratio/100;
-            $integral = floor($money*0.25*100)/100;
+            $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
+            $date = date("Y-m-d H:i:s", time());
+            $profit_price = $money * $profit_ratio / 100;
 
             $arr = array(
-                'uid'          => $user->id,
+                'uid' => $user->id,
                 'business_uid' => 2,
                 'profit_ratio' => $profit_ratio,
-                'price'        => $money,
+                'price' => $money,
                 'profit_price' => $profit_price,
-                'name'         => '代充',
-                'created_at'   => $date,
-                'status'       => '1',
-                'state'        => '1',
-                'pay_status'   => 'await',
-                'remark'       => '',
-                'order_no'     => $order_no,
+                'name' => '代充',
+                'created_at' => $date,
+                'status' => '1',
+                'state' => '1',
+                'pay_status' => 'succeeded',
+                'remark' => '',
+                'order_no' => $order_no,
             );
             $orderData = Order::create($arr);
 
@@ -245,69 +241,30 @@ class UserPinTuanController extends Controller
             );
             UserShoppingCardDhLog::create($dataLog);
 
-
-            //调用代充支付
-
-            //接收话费支付回调，更改购买卡余额和记录、审核订单通过、添加排队
+            //扣除用户购物卡余额
+            $user->gather_card = $user->gather_card - $money;
+            $user->save();
 
             //新增充值记录
-            $re = (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money,$orderData->id);
-//            dd($re);
+            (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderData->id);
             //调用话费充值
-            (new MobileRechargeService)->convertRecharge($order_no);
+            (new MobileRechargeService)->GwkConvertRecharge($order_no);
 
-
-
-        } catch (Exception $e)
-        {
+        } catch (Exception $e) {
             throw $e;
             DB::rollBack();
         }
         DB::commit();
         return json_encode(['code' => 200, 'msg' => '兑换话费充值成功']);
 
-
-
-
-
-        //调用代充话费接口充值话费
-
-        //获取代充回调结果
-
-        //添加购物卡消费记录
-
-        //扣除购物卡余额
-
-
-
     }
 
-
-    /**usdt 兑换
-     * @param array $data
-     * @return mixed
-     * @throws
-     */
-    public function commonConvert(array $data)
+    //购物卡兑换话费支付回调
+    public function gwkDhHfHd($data)
     {
-        //插入数据到兑换记录
-        (new ConvertLogs())->setConvert($data);
-
-        //插入数据到变动记录
-        (new ConvertLogs())->setAssetsLogs($data);
-
-        //更新用户资产数据
-        (new ConvertLogs())->updAssets($data);
-
-        //order 表增加订单记录
-        $ratio = Setting::getSetting('set_business_rebate_scale_cl');
-        $profitPrice = $data['price'] * $ratio / 100;
-        $order = (new Order())->setOrderSelf($data['uid'], 2, $ratio, $data['price'], $profitPrice,
-            $data['orderNo'], $data['orderName'], 1, 'await', 'convert');
-        //更新convert_logs 表 oid 字段
-        (new ConvertLogs)->updOid($order->order_no, $order->id);
-
+        $json = json_decode($data,true);
+        Log::info("============接收购物卡兑换话费回调数据打印======================",$json);
         //更新order 表审核状态
-        (new OrderService())->completeBmOrder($data['orderNo']);
+        //(new OrderService())->completeBmOrder($data['orderNo']);
     }
 }

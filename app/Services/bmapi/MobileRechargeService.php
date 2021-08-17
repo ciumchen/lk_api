@@ -5,6 +5,7 @@ namespace App\Services\bmapi;
 use App\Models\ConvertLogs;
 use App\Models\OrderMobileRechargeDetails;
 use App\Models\Setting;
+use App\Models\UserShoppingCardDhLog;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -672,6 +673,26 @@ class MobileRechargeService extends BaseService
         return true;
     }
 
+    //购物卡兑换代充
+    public function GwkConvertRecharge($order_no)
+    {
+        $MobileOrder = new OrderMobileRecharge();
+        //获取订单数据
+        $mobileOrderInfo = $MobileOrder->where('order_no', $order_no)
+                                       ->first();
+        //回调地址
+        $notifyUrl = url('/api/gwkDhHfHd');
+        try {
+            /* 调用充值 */
+            $bill = $this->bmMobileRecharge($mobileOrderInfo->mobile, $mobileOrderInfo->money, $order_no, $notifyUrl);
+            /* 更新订单 */
+            $this->GwkUpdMobileOrder($order_no, $bill);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
+    }
+
     /**usdt 兑换手机充值订单表更新
      *
      * @param string                               $order_no       订单号
@@ -697,6 +718,38 @@ class MobileRechargeService extends BaseService
             $MobileRecharge->pay_status = $bill[ 'payState' ];
             $MobileRecharge->goods_title = $bill[ 'itemName' ];
             $MobileRecharge->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    //购物卡兑换代充更新订单数据
+    public function GwkUpdMobileOrder($order_no, $bill, OrderMobileRecharge $MobileRecharge = null)
+    {
+        //获取订单数据
+        if ($MobileRecharge == null) {
+            $MobileRecharge = OrderMobileRecharge::where('order_no', $order_no)
+                                                 ->first();
+        }
+        try {
+            $MobileRecharge->mobile = $bill[ 'rechargeAccount' ];
+            $MobileRecharge->money = $bill[ 'saleAmount' ];
+            $MobileRecharge->order_no = $bill[ 'outerTid' ];
+            $MobileRecharge->updated_at = $bill[ 'operateTime' ];
+            $MobileRecharge->trade_no = $bill[ 'billId' ];
+            $MobileRecharge->status = $bill[ 'rechargeState' ];
+            $MobileRecharge->pay_status = $bill[ 'payState' ];
+            $MobileRecharge->goods_title = $bill[ 'itemName' ];
+            $MobileRecharge->save();
+
+            //更新购物卡记录表状态
+            $gwkData = UserShoppingCardDhLog::where('order_no',$order_no)->first();
+            $gwkData->status = 2;
+            $gwkData->save();
+
+            //审核订单通过、添加排队
+
+
         } catch (Exception $e) {
             throw $e;
         }

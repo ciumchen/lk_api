@@ -18,6 +18,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //支付回调 getLkMemberPayHd
 Route::post('getUserBuyLpjHd', 'User\UserPinTuanController@getUserBuyLpjHd');
 
+//购物卡兑换话费支付回调 getLkMemberPayHd
+Route::post('gwkDhHfHd', 'User\UserPinTuanController@gwkDhHfHd');
+
 //查询用户的来拼金
 Route::any('getUserDataLpj', 'User\UserPinTuanController@getUserDataLpj');
 
