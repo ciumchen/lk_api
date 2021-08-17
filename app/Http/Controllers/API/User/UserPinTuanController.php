@@ -193,7 +193,7 @@ class UserPinTuanController extends Controller
         $money = $request->input('money');
         $mobile = $request->input('mobile');
 
-        $money = 0.01;
+//        $money = 0.01;
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
