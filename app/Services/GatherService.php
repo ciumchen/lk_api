@@ -41,7 +41,7 @@ class GatherService
         }
 
         //判断用户金额
-        if ($minusSum > $userGoldSum)
+        if ($userGoldSum < $minusSum)
         {
             return json_encode(['code' => 10000, 'msg' => '账户来拼金余额已不足，请及时充值！']);
         }
