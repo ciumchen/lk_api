@@ -260,10 +260,11 @@ class UserPinTuanController extends Controller
     }
 
     //购物卡兑换话费支付回调
-    public function gwkDhHfHd($data)
+    public function gwkDhHfHd(Request $request)
     {
-        $json = json_decode($data,true);
-        Log::info("============接收购物卡兑换话费回调数据打印======================",$json);
+        $allData = $request->all();
+//        $json = json_decode($data,true);
+        Log::info("============接收购物卡兑换话费回调数据打印======================",$allData);
         //更新order 表审核状态
         //(new OrderService())->completeBmOrder($data['orderNo']);
     }
