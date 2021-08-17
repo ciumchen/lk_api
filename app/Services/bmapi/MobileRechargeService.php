@@ -56,7 +56,7 @@ class MobileRechargeService extends BaseService
         DB::commit();
         return Order::find($order_id);
     }
-    
+
     /**
      * @param \App\Models\User $user
      * @param string           $mobile
@@ -92,7 +92,7 @@ class MobileRechargeService extends BaseService
         Db::commit();
         return Order::find($order_id);
     }
-    
+
     /**
      * Description: 创建批量代充订单
      *
@@ -151,7 +151,7 @@ class MobileRechargeService extends BaseService
         DB::commit();
         return $Order;
     }
-    
+
     /**
      * Description:批量代充验证
      *
@@ -184,7 +184,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 话费代充订单数据创建
      *
@@ -214,7 +214,7 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-    
+
     /**
      * trade_order 表代充订单数据创建
      *
@@ -251,7 +251,7 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-    
+
     /**
      * TradeOrder 表数据组装
      *
@@ -290,7 +290,7 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-    
+
     /**
      * Order 表数据组装
      *
@@ -321,7 +321,7 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-    
+
     /**
      * 斑马手机充值检查
      * 订单生成前调用
@@ -348,7 +348,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 回调处理订单状态
      *
@@ -407,7 +407,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**
      * 订单充值
      * 付款成功后调用
@@ -433,7 +433,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * Description:多账号代充
      *
@@ -483,7 +483,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 手机充值
      *
@@ -517,7 +517,7 @@ class MobileRechargeService extends BaseService
         }
         return $bill;
     }
-    
+
     /**
      * 生成手机充值订单
      *
@@ -549,7 +549,7 @@ class MobileRechargeService extends BaseService
         }
         return $MobileOrder;
     }
-    
+
     /**
      * 手机充值订单表更新
      *
@@ -579,7 +579,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**
      * Description:
      *
@@ -614,7 +614,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**usdt 兑换生成手机充值订单
      *
      * @param string $order_no 订单号
@@ -625,7 +625,7 @@ class MobileRechargeService extends BaseService
      * @return \App\Models\OrderMobileRecharge
      * @throws \Exception
      */
-    public function addMobileOrder($order_no, $uid, $mobile, $money)
+    public function addMobileOrder($order_no, $uid, $mobile, $money,$order_id=0)
     {
         $date = Carbon::now();
         $MobileOrder = new OrderMobileRecharge();
@@ -633,7 +633,7 @@ class MobileRechargeService extends BaseService
             $MobileOrder->mobile = $mobile;
             $MobileOrder->money = $money;
             $MobileOrder->create_type = 9;
-            $MobileOrder->order_id = 0;
+            $MobileOrder->order_id = $order_id;
             $MobileOrder->order_no = $order_no;
             $MobileOrder->created_at = $date;
             $MobileOrder->updated_at = $date;
@@ -644,7 +644,7 @@ class MobileRechargeService extends BaseService
         }
         return $MobileOrder;
     }
-    
+
     /**usdt 兑换订单充值
      * 减usdt 成功后调用
      *
@@ -671,7 +671,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**usdt 兑换手机充值订单表更新
      *
      * @param string                               $order_no       订单号
@@ -701,7 +701,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**兑换话费回调处理订单状态
      *
      * @param array $data
@@ -763,7 +763,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     public function getBatchDetails($order_id, $uid = 0, $field = [])
     {
         try {

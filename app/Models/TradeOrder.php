@@ -65,6 +65,28 @@ class TradeOrder extends Model
     use HasFactory;
 
     protected $table = 'trade_order';
+    protected $fillable = [
+        'user_id',
+        'title',
+        'price',
+        'num',
+        'numeric',
+        'telecom',
+        'pay_time',
+        'end_time',
+        'modified_time',
+        'status',
+        'order_from',
+        'order_no',
+        'need_fee',
+        'profit_ratio',
+        'profit_price',
+        'integral',
+        'description',
+        'oid',
+        'created_at',
+        'updated_at',
+    ];
 
     /**
      * 生成订单号
