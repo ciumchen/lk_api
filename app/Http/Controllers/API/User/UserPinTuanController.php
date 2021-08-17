@@ -249,6 +249,7 @@ class UserPinTuanController extends Controller
             //新增充值记录
             (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderData->id);
             //调用话费充值
+            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
             (new MobileRechargeService)->GwkConvertRecharge($order_no);
 
         } catch (Exception $e) {
@@ -264,7 +265,8 @@ class UserPinTuanController extends Controller
     public function gwkDhHfHd(Request $request)
     {
         $data = $request->all();
-        Log::info("============接收购物卡兑换话费回调数据打印======================",$data);
+        Log::info("============接收购物卡兑换话费回调数据打印1111111======================");
+        Log::info("============接收购物卡兑换话费回调数据打印22222222======================",$data);
 //        UserShoppingCardDhLog::where()-
         //更新order 表审核状态
         //(new OrderService())->completeBmOrder($data['orderNo']);

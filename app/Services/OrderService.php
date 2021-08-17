@@ -26,17 +26,17 @@ use App\Models\LkshopOrder;
 
 class OrderService
 {
+
     /**购买会员完成订单
      * @param string $orderNo
-     *
      * @return mixed
      */
-    public function MemberUserOrder($oid,$description = 'KTHY')
+    public function MemberUserOrder($oid)
     {
 //        $OrderInfo = Order::where('id', $oid)->first();
 //        $consumer_uid = $OrderInfo->uid;
 
-//        $description = 'KTHY';
+        $description = 'KTHY';
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()
@@ -122,6 +122,84 @@ class OrderService
             if ($order->status != Order::STATUS_DEFAULT) {
                 return false;
             }
+            $order->status = Order::STATUS_SUCCEED;
+            $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
+            $order->updated_at = date("Y-m-d H:i:s");
+            //用户应返还几分比例
+            $userRebateScale = Setting::getManySetting('user_rebate_scale');
+            $businessRebateScale = Setting::getManySetting('business_rebate_scale');
+            $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+            //判断控单是否开启
+            $setValue = Setting::where('key', 'consumer_integral')
+                               ->value('value');
+            if ($setValue == 1) {
+                $order->line_up = 1;
+                $customer = User::find($order->uid);
+                //按比例计算实际获得积分
+                $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
+                $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
+                $order->to_be_added_integral = bcmul($order->price, $profit_ratio, 2);
+            } else {
+                //通过，给用户加积分、更新LK
+                $customer = User::lockForUpdate()
+                                ->find($order->uid);
+                //按比例计算实际获得积分
+                $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
+                $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
+                $customerIntegral = bcmul($order->price, $profit_ratio, 2);
+                $amountBeforeChange = $customer->integral;
+                $customer->integral = bcadd($customer->integral, $customerIntegral, 2);
+                $lkPer = Setting::getSetting('lk_per') ?? 300;
+                //更新LK
+                $customer->lk = bcdiv($customer->integral, $lkPer, 0);
+                $customer->save();
+                IntegralLogs::addLog(
+                    $customer->id,
+                    $customerIntegral,
+                    IntegralLogs::TYPE_SPEND,
+                    $amountBeforeChange,
+                    1,
+                    '消费者完成订单',
+                    $orderNo,
+                    0,
+                    $consumer_uid,
+                    $description
+                );
+                //开启邀请补贴活动，添加邀请人积分，否则添加uid2用的商户积分
+                $this->addInvitePoints(
+                    $order->business_uid,
+                    $order->profit_price,
+                    $description,
+                    $consumer_uid,
+                    $orderNo
+                );
+            }
+            $business = User::find($order->business_uid);
+            //返佣
+            $this->encourage($order, $customer, $business, $orderNo);
+            $order->save();
+            DB::commit();
+        } catch (Exception $exception) {
+            DB::rollBack();
+            var_dump($exception->getMessage());
+        }
+    }
+
+    //直接传oid完成订单积分添加
+    public function returnOrder($oid)
+    {
+        DB::beginTransaction();
+        try {
+            $order = Order::lockForUpdate()
+                          ->find($oid);
+            if ($order->status != Order::STATUS_DEFAULT) {
+                return false;
+            }
+
+            $consumer_uid = $order->uid;
+            $description = $order->description;
+            $orderNo = $order->order_no;
+
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
