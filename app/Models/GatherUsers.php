@@ -180,7 +180,14 @@ class GatherUsers extends Model
                 unset($item->created_at, $item->guType);
             });
 
-        return json_decode($gatherList, 1);
+        $gatherArr = json_decode($gatherList, 1);
+        //用户当天参团次数
+        $userGatherSum = $this->getUserAllSum($data['uid']);
+        //返回
+        return [
+            'gatherArr'     => $gatherArr,
+            'userGatherDay' => $userGatherSum,
+        ];
     }
 
     /**获取拼团中奖信息
@@ -263,7 +270,7 @@ class GatherUsers extends Model
     ];
 
     const GATHER_TYPE = [
-        1 => '话费',
+        1 => '100元来客购物卡',
         2 => '美团',
         3 => '油卡',
         4 => '录单',
