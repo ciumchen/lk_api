@@ -23,6 +23,7 @@ class RecordsOfConsumptionController extends Controller
         $data = (new Order())
             ->where("uid", $uid)
             ->where('status', 2)
+            ->whereNotIn('name', ['拼团补贴'])
             ->orderBy('updated_at', 'desc')
             ->latest('id')
             ->forPage($page, $pageSize)
