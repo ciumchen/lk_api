@@ -410,6 +410,7 @@ class Order extends Model
         'order_no',
         'member_gl_oid',
         'pay_status',
+        'description',
     ];
 
     public function Trade_Order()

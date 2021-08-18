@@ -837,6 +837,9 @@ class OrderService
             $Order = Order::find($order_id);
         }
         try {
+            if (!empty($Order->description)){
+                $description = $Order->description;
+            }
             if (empty($Order)) {
                 throw new Exception('订单数据为空');
             }

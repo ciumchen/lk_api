@@ -676,7 +676,7 @@ class MobileRechargeService extends BaseService
     //购物卡兑换代充
     public function GwkConvertRecharge($order_no)
     {
-        Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口22222============");
+        //Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口22222============");
         $MobileOrder = new OrderMobileRecharge();
         //获取订单数据
         $mobileOrderInfo = $MobileOrder->where('order_no', $order_no)
@@ -741,6 +741,7 @@ class MobileRechargeService extends BaseService
             $MobileRecharge->status = $bill[ 'rechargeState' ];
             $MobileRecharge->pay_status = $bill[ 'payState' ];
             $MobileRecharge->goods_title = $bill[ 'itemName' ];
+            $MobileRecharge->create_type = 2;
             $MobileRecharge->save();
 
             //更新购物卡记录表状态

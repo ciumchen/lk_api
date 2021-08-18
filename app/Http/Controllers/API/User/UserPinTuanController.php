@@ -228,8 +228,30 @@ class UserPinTuanController extends Controller
                 'pay_status' => 'succeeded',
                 'remark' => '',
                 'order_no' => $order_no,
+                'description' => 'ZL',
             );
             $orderData = Order::create($arr);
+
+            //创建TradeOrder表记录
+            $arr = array(
+                'user_id' => $user->id,
+                'title' => '代充',
+                'telecom' => '代充',
+                'price' => $money,
+                'num' => 1,
+                'numeric' => $mobile,
+                'status' => "succeeded",
+                'order_from' => 'gwk',
+                'order_no' => $order_no,
+                'need_fee' => $money,
+                'profit_ratio' => $profit_ratio,
+                'profit_price' => $profit_price,
+                'integral' => $money*0.25,
+                'description' => 'ZL',
+                'oid' => $orderData->id,
+
+            );
+            $orderData = TradeOrder::create($arr);
 
             //生成购物卡兑换订单
             $dataLog = array(
@@ -249,7 +271,7 @@ class UserPinTuanController extends Controller
             //新增充值记录
             (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderData->id);
             //调用话费充值
-            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
+//            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
             (new MobileRechargeService)->GwkConvertRecharge($order_no);
 
         } catch (Exception $e) {
@@ -265,12 +287,6 @@ class UserPinTuanController extends Controller
     public function gwkDhHfHd(Request $request)
     {
         $data = $request->all();
-        Log::info("============接收购物卡兑换话费回调数据打印1111111======================");
-        Log::info("============接收购物卡兑换话费回调数据打印22222222======================",$data);
-//        UserShoppingCardDhLog::where()-
-        //更新order 表审核状态
-        //(new OrderService())->completeBmOrder($data['orderNo']);
-
         $MobileRecharge = new OrderMobileRecharge();
         $ShoppingModel = new UserShoppingCardDhLog();
         try {
