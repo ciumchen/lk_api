@@ -34,11 +34,11 @@ class Gather extends Model
     }
 
     /**获取拼团信息
-     * @param Request $request
+     * @param int $uid
      * @return mixed
      * @throws LogicException
      */
-    public function getGatherList ()
+    public function getGatherList (int $uid)
     {
         //设置结束拼团时间戳
         $diffTime = 72 * 3600;
@@ -47,6 +47,7 @@ class Gather extends Model
         $data = [
             'diffTime'  => $diffTime,
             'userRatio' => $userRatio,
+            'uid'       => $uid,
         ];
         //返回
         $gatherData = DB::table('gather as g')
@@ -60,6 +61,7 @@ class Gather extends Model
                 $item->surplusTime = intdiv(strtotime($item->created_at) + $data['diffTime'] - time(), 3600);
                 $item->userRatio = (int)$data['userRatio'];
                 $item->type = self::GATHER_TYPE[$item->type] ?? '';
+                $item->userCount = (new GatherUsers())->getUserOneSum($item->id, $data['uid']);
                 unset($item->created_at);
             });
 

@@ -16,10 +16,10 @@ class AttendGatherController extends Controller
      * @return mixed
      * @throws LogicException
      */
-    public function getGatherInfo ()
+    public function getGatherInfo (Request $request)
     {
         //返回
-        return (new Gather())->getGatherList();
+        return (new Gather())->getGatherList($request->uid);
     }
 
     /**参加拼团

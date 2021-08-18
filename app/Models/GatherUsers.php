@@ -134,6 +134,18 @@ class GatherUsers extends Model
                 ->count();
     }
 
+    /**获取用户单个拼团参团总数
+     * @param int $gid
+     * @param int $uid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getUserOneSum (int $gid, int $uid)
+    {
+        return GatherUsers::where(['gid' => $gid, 'uid' => $uid])
+            ->count();
+    }
+
     /**获取用户拼团及中奖信息
      * @param array $data
      * @return mixed
