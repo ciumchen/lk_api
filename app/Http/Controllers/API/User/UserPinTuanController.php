@@ -231,6 +231,7 @@ class UserPinTuanController extends Controller
                 'description' => 'ZL',
             );
             $orderData = Order::create($arr);
+            $orderId = $orderData->id;
 
             //创建TradeOrder表记录
             $arr = array(
@@ -248,10 +249,10 @@ class UserPinTuanController extends Controller
                 'profit_price' => $profit_price,
                 'integral' => $money*0.25,
                 'description' => 'ZL',
-                'oid' => $orderData->id,
+                'oid' => $orderId,
 
             );
-            $orderData = TradeOrder::create($arr);
+            TradeOrder::create($arr);
 
             //生成购物卡兑换订单
             $dataLog = array(
@@ -269,7 +270,7 @@ class UserPinTuanController extends Controller
             $user->save();
 
             //新增充值记录
-            (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderData->id);
+            (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
             //调用话费充值
 //            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
             (new MobileRechargeService)->GwkConvertRecharge($order_no);
