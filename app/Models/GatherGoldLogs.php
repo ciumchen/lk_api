@@ -92,6 +92,7 @@ class GatherGoldLogs extends Model
     public function minusUserGold (int $uid)
     {
         return GatherGoldLogs::where(['uid' => $uid, 'type' => 1])
+                ->whereNotIn('status', [3])
                 ->sum('money');
     }
 
