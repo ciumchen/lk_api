@@ -73,7 +73,8 @@ class GatherService
         $gatherRatio = 5;
         $gatherAllRatio = 30;
         $gatherSum = (new GatherUsers())->getGatherUserSum($gid, $uid);
-        if ($gatherSum >= $gatherRatio)
+        $userCount = (new GatherUsers())->getUserOneSum($gid, $uid);
+        if ($gatherSum >= $gatherRatio || $userCount >=$gatherRatio)
         {
             throw new LogicException('本场次拼团活动已超过最大可参与次数5次!');
         }
