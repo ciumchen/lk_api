@@ -214,6 +214,11 @@ class UserPinTuanController extends Controller
             $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
             $date = date("Y-m-d H:i:s", time());
             $profit_price = $money * $profit_ratio / 100;
+            $integralArr = array(
+                5=>0.25,
+                10=>0.5,
+                20=>1,
+            );
 
             $arr = array(
                 'uid' => $user->id,
@@ -247,7 +252,7 @@ class UserPinTuanController extends Controller
                 'need_fee' => $money,
                 'profit_ratio' => $profit_ratio,
                 'profit_price' => $profit_price,
-                'integral' => $money*0.25,
+                'integral' => $money*$integralArr[$profit_ratio],
                 'description' => 'ZL',
                 'oid' => $orderId,
 
@@ -286,6 +291,169 @@ class UserPinTuanController extends Controller
 
     //购物卡兑换话费支付回调
     public function gwkDhHfHd(Request $request)
+    {
+        $data = $request->all();
+        $MobileRecharge = new OrderMobileRecharge();
+        $ShoppingModel = new UserShoppingCardDhLog();
+        try {
+            if (empty($data)) {
+                throw new Exception('手机充值回调数据为空');
+            }
+            $PayBill = new PayBill();
+            if (!$PayBill->checkSign($data)) {
+                throw new Exception('验签不通过');
+            }
+            //单号充值
+            $rechargeInfo = $MobileRecharge->where('order_no', $data[ 'outer_tid' ])
+                ->first();
+            if (empty($rechargeInfo)) {
+                throw new Exception('未查询到订单数据');
+            }
+            //更新充值记录表数据
+            if (!empty($rechargeInfo)) {
+                $rechargeInfo->status = $data[ 'recharge_state' ];
+                $rechargeInfo->trade_no = $data[ 'tid' ];
+                $rechargeInfo->updated_at = $data[ 'timestamp' ];
+                $rechargeInfo->save();
+            }
+            //更新兑换记录数据
+            $ShoppingInfo = $ShoppingModel->where('order_no', $data[ 'outer_tid' ])
+                ->first();
+            if (empty($ShoppingInfo)) {
+                throw new Exception('未查询到兑换数据');
+            }
+            if (!empty($ShoppingInfo)) {
+                switch ($data[ 'recharge_state' ]) {
+                    case 0:
+                        $status = 3;
+                        break;
+                    case 1:
+                        $status = 2;
+                        break;
+                    case 9:
+                        $status = 3;
+                        break;
+                    default:
+                        $status = 3;
+                        break;
+                }
+                $ShoppingInfo->status = $status;
+                $ShoppingInfo->updated_at = $data[ 'timestamp' ];
+                $ShoppingInfo->save();
+
+                //通过审核添加积分，更新order 表审核状态
+                $oid = Order::where('order_no',$data[ 'outer_tid' ])->value('id');
+                (new OrderService())->addOrderIntegral($oid);
+
+            }
+        } catch (Exception $e) {
+            Log::debug('gwkDhHfHd-Error:'.$e->getMessage(), [json_encode($data)]);
+            throw $e;
+        }
+    }
+
+    //购物卡兑换美团
+    public function ShoppingCardDhMt(Request $request)
+    {
+        $user = $request->user();
+//        $ip = $request->input('ip');
+        $money = $request->input('money');
+        $mobile = $request->input('mobile');
+
+        $reg = '/^1[3456789]\d{9}$/';
+        if (preg_match($reg, $mobile) < 1)
+        {
+            throw new LogicException('手机号格式不正确');
+        }
+
+        //查询用户购物卡余额
+        if ($user->gather_card < $money) {
+            return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+        }
+        DB::beginTransaction();
+        try {
+            //生成order录单
+            $order_no = createOrderNo();
+            $profit_ratio = Setting::where('key', 'set_business_rebate_scale_mt')->value('value');//美团让利比例
+            $date = date("Y-m-d H:i:s", time());
+            $profit_price = $money * $profit_ratio / 100;
+            $integralArr = array(
+                5=>0.25,
+                10=>0.5,
+                20=>1,
+            );
+
+            $arr = array(
+                'uid' => $user->id,
+                'business_uid' => 2,
+                'profit_ratio' => $profit_ratio,
+                'price' => $money,
+                'profit_price' => $profit_price,
+                'name' => '美团',
+                'created_at' => $date,
+                'status' => '1',
+                'state' => '1',
+                'pay_status' => 'succeeded',
+                'remark' => '',
+                'order_no' => $order_no,
+                'description' => 'MT',
+            );
+            $orderData = Order::create($arr);
+            $orderId = $orderData->id;
+
+            //创建TradeOrder表记录
+            $arr = array(
+                'user_id' => $user->id,
+                'title' => '美团卡充值',
+                'telecom' => '美团卡',
+                'price' => $money,
+                'num' => 1,
+                'numeric' => $mobile,
+                'status' => "succeeded",
+                'order_from' => 'gwk',
+                'order_no' => $order_no,
+                'need_fee' => $money,
+                'profit_ratio' => $profit_ratio,
+                'profit_price' => $profit_price,
+                'integral' => $money*$integralArr[$profit_ratio],
+                'description' => 'MT',
+                'oid' => $orderId,
+
+            );
+            TradeOrder::create($arr);
+
+            //生成购物卡兑换订单
+            $dataLog = array(
+                'uid' => $user->id,
+                'operate_type' => 'exchange_mt',
+                'money' => $money,
+                'money_before_change' => $user->gather_card,
+                'order_no' => $order_no,
+                'remark' => '美团',
+            );
+            UserShoppingCardDhLog::create($dataLog);
+
+            //扣除用户购物卡余额
+            $user->gather_card = $user->gather_card - $money;
+            $user->save();
+
+            //新增充值记录
+            (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
+            //调用话费充值
+//            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
+            //(new MobileRechargeService)->GwkConvertRecharge($order_no);
+
+        } catch (Exception $e) {
+            throw $e;
+            DB::rollBack();
+        }
+        DB::commit();
+        return json_encode(['code' => 200, 'msg' => '兑换话费充值成功']);
+
+    }
+
+    //购物卡兑换话费支付回调
+    public function gwkDhMtHd(Request $request)
     {
         $data = $request->all();
         $MobileRecharge = new OrderMobileRecharge();

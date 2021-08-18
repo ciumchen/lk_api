@@ -12,6 +12,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //使用购物卡兑换代充话费
     Route::any('ShoppingCardDhDchf', 'User\UserPinTuanController@ShoppingCardDhDchf');
 
+    //使用购物卡兑换美团卡
+    Route::any('ShoppingCardDhMt', 'User\UserPinTuanController@ShoppingCardDhMt');
+
 
 });
 
