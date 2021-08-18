@@ -40,8 +40,10 @@ class SendGatherLottery implements ShouldQueue
             sleep(10);
             //更新未中奖用户录单数据
             $gatherService->updGatherTrade($this->orderData->orderData);
+            \Log::info('QUEUE队列：', $this->orderData->orderData);
             //自动审核未中奖用户录单、加积分
             $gatherService->completeOrderGather($this->orderData->orderData);
+            \Log::info('录单队列：', $this->orderData->orderData);
         } else
         {
             return json_encode(['code' => 200, 'msg' => '本拼团已完成开奖！']);
