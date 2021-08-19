@@ -214,6 +214,9 @@ if (!function_exists('createNotifyUrl')) {
         if (strpos($notify_url, 'lk.catspawvideo.com') !== false) {
             $notify_url = str_replace('http://', 'https://', $notify_url);
         }
+        if (strpos($notify_url, 'lk-api.laikego.cn') !== false) {
+            $notify_url = str_replace('http://', 'https://', $notify_url);
+        }
         return $notify_url;
     }
 }
