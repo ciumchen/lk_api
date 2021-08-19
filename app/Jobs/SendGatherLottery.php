@@ -44,7 +44,7 @@ class SendGatherLottery implements ShouldQueue
             $gatherService->completeOrderGather($this->orderData->orderData);
         } else
         {
-            return json_encode(['code' => 200, 'msg' => '本拼团已完成开奖！']);
+            throw new LogicException('本拼团已完成开奖！');
         }
     }
 }
