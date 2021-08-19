@@ -13,7 +13,6 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Users;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class GatherService
 {
@@ -42,10 +41,10 @@ class GatherService
         }
 
         //判断用户金额
-        /*if ($userGoldSum <= $minusSum)
+        if ($userGoldSum <= $minusSum)
         {
             return json_encode(['code' => 10000, 'msg' => '账户来拼金余额已不足，请及时充值！']);
-        }*/
+        }
 
         try {
             //判断用户当天当场次最多5次，每人每天最多30次
@@ -288,7 +287,6 @@ class GatherService
         //把订单数据加到队列，执行录单自动审核、加积分，更新未中奖用户录单拼团记录信息
         foreach ($orderList as $list)
         {
-            Log::info('订单列表：', $list);
             $jobs = new SendGatherLottery($list);
             $jobs->dispatch($jobs);
         }
