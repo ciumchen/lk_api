@@ -250,7 +250,7 @@ class UserPinTuanController extends Controller
                 'order_from' => 'gwk',
                 'order_no' => $order_no,
                 'need_fee' => $money,
-                'profit_ratio' => $profit_ratio,
+                'profit_ratio' => $profit_ratio/100,
                 'profit_price' => $profit_price,
                 'integral' => $money*$integralArr[$profit_ratio],
                 'description' => 'ZL',
@@ -359,6 +359,7 @@ class UserPinTuanController extends Controller
 //        $ip = $request->input('ip');
         $money = $request->input('money');
         $mobile = $request->input('mobile');
+        $userName = $request->input('userName');
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1)
@@ -413,11 +414,12 @@ class UserPinTuanController extends Controller
                 'order_from' => 'gwk',
                 'order_no' => $order_no,
                 'need_fee' => $money,
-                'profit_ratio' => $profit_ratio,
+                'profit_ratio' => $profit_ratio/100,
                 'profit_price' => $profit_price,
                 'integral' => $money*$integralArr[$profit_ratio],
                 'description' => 'MT',
                 'oid' => $orderId,
+                'remarks' => $userName,
 
             );
             TradeOrder::create($arr);
@@ -430,6 +432,7 @@ class UserPinTuanController extends Controller
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
                 'remark' => '美团',
+                'status' => 2,
             );
             UserShoppingCardDhLog::create($dataLog);
 
@@ -437,86 +440,17 @@ class UserPinTuanController extends Controller
             $user->gather_card = $user->gather_card - $money;
             $user->save();
 
-            //新增充值记录
-            (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
-            //调用话费充值
-//            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
-            //(new MobileRechargeService)->GwkConvertRecharge($order_no);
+            //通过审核添加积分，更新order 表审核状态
+            (new OrderService())->addOrderIntegral($orderId);
 
         } catch (Exception $e) {
             throw $e;
             DB::rollBack();
         }
         DB::commit();
-        return json_encode(['code' => 200, 'msg' => '兑换话费充值成功']);
+        return json_encode(['code' => 200, 'msg' => '兑换美团成功']);
 
     }
-
-    //购物卡兑换话费支付回调
-    public function gwkDhMtHd(Request $request)
-    {
-        $data = $request->all();
-        $MobileRecharge = new OrderMobileRecharge();
-        $ShoppingModel = new UserShoppingCardDhLog();
-        try {
-            if (empty($data)) {
-                throw new Exception('手机充值回调数据为空');
-            }
-            $PayBill = new PayBill();
-            if (!$PayBill->checkSign($data)) {
-                throw new Exception('验签不通过');
-            }
-            //单号充值
-            $rechargeInfo = $MobileRecharge->where('order_no', $data[ 'outer_tid' ])
-                ->first();
-            if (empty($rechargeInfo)) {
-                throw new Exception('未查询到订单数据');
-            }
-            //更新充值记录表数据
-            if (!empty($rechargeInfo)) {
-                $rechargeInfo->status = $data[ 'recharge_state' ];
-                $rechargeInfo->trade_no = $data[ 'tid' ];
-                $rechargeInfo->updated_at = $data[ 'timestamp' ];
-                $rechargeInfo->save();
-            }
-            //更新兑换记录数据
-            $ShoppingInfo = $ShoppingModel->where('order_no', $data[ 'outer_tid' ])
-                ->first();
-            if (empty($ShoppingInfo)) {
-                throw new Exception('未查询到兑换数据');
-            }
-            if (!empty($ShoppingInfo)) {
-                switch ($data[ 'recharge_state' ]) {
-                    case 0:
-                        $status = 3;
-                        break;
-                    case 1:
-                        $status = 2;
-                        break;
-                    case 9:
-                        $status = 3;
-                        break;
-                    default:
-                        $status = 3;
-                        break;
-                }
-                $ShoppingInfo->status = $status;
-                $ShoppingInfo->updated_at = $data[ 'timestamp' ];
-                $ShoppingInfo->save();
-
-                //通过审核添加积分，更新order 表审核状态
-                $oid = Order::where('order_no',$data[ 'outer_tid' ])->value('id');
-                (new OrderService())->addOrderIntegral($oid);
-
-            }
-        } catch (Exception $e) {
-            Log::debug('gwkDhHfHd-Error:'.$e->getMessage(), [json_encode($data)]);
-            throw $e;
-        }
-    }
-
-
-
 
 
 }
