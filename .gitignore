@@ -26,3 +26,4 @@ nginx.htaccess
 .php-cs-fixer.cache
 psalm.xml
 .user.ini
+404.html
