@@ -40,6 +40,17 @@ class Gather extends Model
      */
     public function getGatherList (int $uid)
     {
+        $startTimeRatio = Setting::getSetting('gather_start_time') ?? 10;
+        $endTimeRatio = Setting::getSetting('gather_end_time') ?? 19;
+        $nowTiem = date('Y-m-d H:i:s');
+        $createTime = (date("Y-m-d $startTimeRatio:00:00"));
+        $endTime = (date("Y-m-d $endTimeRatio:00:00"));
+
+        if ($createTime > $nowTiem || $endTime < $nowTiem)
+        {
+            return json_encode(['code' => 10000, 'msg' => '暂未开团，敬请期待！']);
+        }
+
         //设置结束拼团时间戳
         $diffTime = 72 * 3600;
         //拼团总人数

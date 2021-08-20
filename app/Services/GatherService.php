@@ -56,9 +56,6 @@ class GatherService
             (new GatherGoldLogs())->setGatherGold($gid, $uid, $gatherUsersData->id);
             //判断是否开团、开奖
             $this->isMaxGatherUser($gid, $userRatio);
-            //新增用户参团记录、新增来拼金记录、判断是否开团开奖队列
-            //$gatherUser = new AddGatherUsers(['gid' => $gid, 'uid' => $uid]);
-            //$gatherUser->dispatch($gatherUser)->onQueue('addGatherUsers');
         } catch (\Exception $e) {
             throw $e;
         }
