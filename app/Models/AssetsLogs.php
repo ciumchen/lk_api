@@ -55,6 +55,7 @@ class AssetsLogs extends Model
         'ip',
         'user_agent',
         'remark',
+        'order_no',
     ];
     protected $appends = ['updated_date'];
 

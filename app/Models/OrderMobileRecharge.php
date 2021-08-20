@@ -51,17 +51,34 @@ use Illuminate\Database\Eloquent\Model;
 class OrderMobileRecharge extends Model
 {
     use HasFactory;
-    
+
     const CREATE_TYPE_RECHARGE = 1;
-    
+
     const CREATE_TYPE_ZL       = 2;
-    
+
     const CREATE_TYPE_MZL      = 3;
-    
+
     /**
      * @var string 表名
      */
     protected $table = 'order_mobile_recharge';
+
+    protected $fillable = [
+        'order_no',
+        'mobile',
+        'order_id',
+        'created_at',
+        'updated_at',
+        'money',
+        'trade_no',
+        'status',
+        'pay_status',
+        'goods_title',
+        'uid',
+        'create_type',
+        'num',
+        'has_child',
+    ];
     /**
      * @var string[] 类型对应文字
      */
@@ -70,7 +87,7 @@ class OrderMobileRecharge extends Model
         self::CREATE_TYPE_ZL       => '代充',
         self::CREATE_TYPE_MZL      => '批量代充',
     ];
-    
+
     /**
      * Description:
      *
@@ -99,7 +116,7 @@ class OrderMobileRecharge extends Model
         }
         return $this;
     }
-    
+
     /**
      * Description:创建话费订单
      *
@@ -124,7 +141,7 @@ class OrderMobileRecharge extends Model
         }
         return $this;
     }
-    
+
     /**
      * 创建代充订单
      *
@@ -147,7 +164,7 @@ class OrderMobileRecharge extends Model
         }
         return $this;
     }
-    
+
     /**
      * Description:
      *
@@ -172,7 +189,7 @@ class OrderMobileRecharge extends Model
         }
         return $this;
     }
-    
+
     /**
      * Description:关联详情
      *

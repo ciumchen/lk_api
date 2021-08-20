@@ -46,6 +46,12 @@ Route::any("merchantCount", "User\CountUserController@merchantCount");
 Route::any("getUserOrderJl", "User\RecordsOfConsumptionController@getUserOrderJl");
 //获取用户的资产记录
 Route::any("getUserAssets", "User\RecordsOfConsumptionController@getUserAssets");
+
+//获取用户的资产记录--新-2021年8月16日 17:33:01
+Route::any("getUserAssetsNew", "User\RecordsOfConsumptionController@getUserAssetsNew");
+
+
+
 //获取用户的冻结资产记录
 Route::any("getUserFreeze", "User\RecordsOfConsumptionController@getUserFreeze");
 //获取用户分享积分

@@ -409,6 +409,8 @@ class Order extends Model
         'name',
         'order_no',
         'member_gl_oid',
+        'pay_status',
+        'description',
     ];
 
     public function Trade_Order()
@@ -672,6 +674,28 @@ class Order extends Model
     public function hotel()
     {
         return $this->hasOne(OrderHotel::class, 'order_id', 'id');
+    }
+
+
+    /**新增拼团未中奖用户录单
+     * @param array $data
+     * @return mixed
+     * @throws LogicException
+     */
+    public function setGatherOrder (array $data)
+    {
+        return Order::insert($data);
+    }
+
+    /**获取拼团用户录单信息
+     * @param array $data
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getGatherOrder (array $data)
+    {
+        return Order::whereIn('order_no', $data)
+                ->get(['id as oid', 'order_no', 'uid']);
     }
 
     /**

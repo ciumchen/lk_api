@@ -79,7 +79,7 @@ class BusinessService
                     $updateImg = 1;
                     $imgArrData[] = $reossimg;
                     $businessApplyModel->$k = $reossimg;
-                    Log::info("oss图片申请表log---申请表上传:" . $reossimg);
+//                    Log::info("oss图片申请表log---申请表上传:" . $reossimg);
                 }
             }
             $userIdImgData = $userIdImgModel->where('uid',$uid)->first();
@@ -92,7 +92,7 @@ class BusinessService
                     $userIdImgData->$k = $reossimg;
                     $user_updateImg = 1;
                     $imgArrData[] = $reossimg;
-                    Log::info("oss图片身份证表log---身份证表上传:" . $reossimg);
+//                    Log::info("oss图片身份证表log---身份证表上传:" . $reossimg);
                 }
             }
             //修改商家申请表

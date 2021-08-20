@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\OrderCancel::class,
         \App\Console\Commands\Test::class,
         \App\Console\Commands\AddServices::class,
+        \App\Console\Commands\GatherCancel::class,
     ];
 
     /**
@@ -34,6 +35,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:test')->everyMinute();
         //自动添加积分
         $schedule->command('command:addIntegral')->everyMinute();
+
+        //取消72H未开团的拼团
+        $schedule->command('gather:cancel')->everyMinute();
     }
 
     /**
