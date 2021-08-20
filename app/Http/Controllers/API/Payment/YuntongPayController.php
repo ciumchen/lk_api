@@ -25,7 +25,7 @@ class YuntongPayController extends Controller
     /**
      * 创建支付
      *
-     * @param  Request  $request
+     * @param Request $request
      *
      * @return JsonResponse
      * @throws Exception
@@ -44,10 +44,14 @@ class YuntongPayController extends Controller
         //判断支付金额
         if (!in_array($data[ 'money' ], $priceList) && in_array($data[ 'description' ], ['HF', 'ZL'])) {
             throw new LogicException('话费充值金额不在可选值范围内');
-        } elseif (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "MT") {
-            throw new LogicException('美团充值金额不在可选值范围内');
-        } elseif (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "YK") {
-            throw new LogicException('油卡充值金额不在可选值范围内');
+        } else {
+            if (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "MT") {
+                throw new LogicException('美团充值金额不在可选值范围内');
+            } else {
+                if (!in_array($data[ 'money' ], $priceList) && $data[ 'description' ] == "YK") {
+                    throw new LogicException('油卡充值金额不在可选值范围内');
+                }
+            }
         }
         //检查用户当月消费金额
         $sumData = [
@@ -57,8 +61,10 @@ class YuntongPayController extends Controller
         $totalPrice = $tradeOrder->getMonthSum($sumData);
         if ($data[ 'description' ] == 'HF' && $totalPrice >= 500) {
             throw new LogicException('本月话费充值金额已达上限');
-        } elseif ($data[ 'description' ] == 'YK' && $totalPrice >= 2000) {
-            throw new LogicException('本月油卡充值金额已达上限');
+        } else {
+            if ($data[ 'description' ] == 'YK' && $totalPrice >= 2000) {
+                throw new LogicException('本月油卡充值金额已达上限');
+            }
         }
         $orderData = $this->createData($data);
         DB::beginTransaction();
@@ -80,7 +86,7 @@ class YuntongPayController extends Controller
     /**
      * 再次请求支付
      *
-     * @param  Request  $request
+     * @param Request $request
      *
      * @return JsonResponse
      * @throws LogicException
@@ -119,7 +125,7 @@ class YuntongPayController extends Controller
     /**
      * 发起支付请求
      *
-     * @param  array   $data  支付请求数据[
+     * @param array  $data    支付请求数据[
      *                        'goodsTitle'=>'',
      *                        'goodsDesc'=>'',
      *                        'need_fee'=>'',
@@ -129,7 +135,7 @@ class YuntongPayController extends Controller
      *                        'return_url'=>'',
      *                        ]
      *
-     * @param  string  $return_url
+     * @param string $return_url
      *
      * @return JsonResponse
      * @throws \Exception
@@ -137,11 +143,7 @@ class YuntongPayController extends Controller
     public function payRequest($data, $return_url = '')
     {
         if (empty($return_url)) {
-            $return_url = url('/api/yun-notify');
-        }
-        if (strpos($return_url, 'lk.catspawvideo.com') !== false) {
-            //$return_url = env('HTTP_URL') . '/api/yun-notify';
-            $return_url = str_replace('http://', 'https://', $return_url);
+            $return_url = createNotifyUrl('/api/yun-notify');
         }
         $YuntongPay = new YuntongPay();
         try {
@@ -171,7 +173,7 @@ class YuntongPayController extends Controller
     /**
      * 订单 trade_order 表插入数据
      *
-     * @param  array  $data  已经组装好的订单数据
+     * @param array $data 已经组装好的订单数据
      *
      * @return bool
      * @throws Exception
@@ -193,7 +195,7 @@ class YuntongPayController extends Controller
     /**
      * 订单 order 表插入数据
      *
-     * @param  array  $data
+     * @param array $data
      *
      * @return int
      * @throws Exception
@@ -223,7 +225,7 @@ class YuntongPayController extends Controller
      * 组装订单数据
      *
      * @param                   $data
-     * @param  TradeOrder|null  $TradeOrder
+     * @param TradeOrder|null   $TradeOrder
      *
      * @return array
      */
@@ -275,7 +277,7 @@ class YuntongPayController extends Controller
     }
     
     /**
-     * @param  string  $url
+     * @param string $url
      *
      * @return string
      */
@@ -330,7 +332,7 @@ class YuntongPayController extends Controller
      * 获取 trade_order 表 oid 字段
      *
      * @param         $type
-     * @param  array  $data
+     * @param array   $data
      *
      * @return mixed|string
      */
@@ -372,7 +374,7 @@ class YuntongPayController extends Controller
      * 获取 trade_order 表中的 remarks 字段值
      *
      * @param         $type
-     * @param  array  $data
+     * @param array   $data
      *
      * @return string
      */
@@ -391,7 +393,7 @@ class YuntongPayController extends Controller
     /**
      * 获取支付通道标记
      *
-     * @param  string  $type  支付类型
+     * @param string $type 支付类型
      *
      * @return string
      */
@@ -416,7 +418,7 @@ class YuntongPayController extends Controller
     /**
      * 获取比例
      *
-     * @param  string  $type
+     * @param string $type
      *
      * @return int
      */
@@ -441,7 +443,7 @@ class YuntongPayController extends Controller
     
     /**机票支付
      *
-     * @param  Request  $request
+     * @param Request $request
      *
      * @return JsonResponse
      * @throws Exception
@@ -454,8 +456,8 @@ class YuntongPayController extends Controller
     
     /**机票发起支付请求
      *
-     * @param  array   $data
-     * @param  string  $type
+     * @param array  $data
+     * @param string $type
      *
      * @return JsonResponse
      * @throws Exception
@@ -509,7 +511,7 @@ class YuntongPayController extends Controller
     /**
      * 机票再次请求支付
      *
-     * @param  Request  $request
+     * @param Request $request
      *
      * @return JsonResponse
      * @throws LogicException
@@ -567,7 +569,7 @@ class YuntongPayController extends Controller
     /**
      * Description:斑马接口订单支付
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\LogicException
@@ -622,7 +624,7 @@ class YuntongPayController extends Controller
     /**
      * 设置充值金额参数
      *
-     * @param  string  $description
+     * @param string $description
      *
      * @return string
      */
