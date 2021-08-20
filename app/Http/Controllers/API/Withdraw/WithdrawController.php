@@ -22,6 +22,7 @@ class WithdrawController extends Controller
      */
     public function setTuanOrder(Request $request)
     {
+        throw new LogicException('拼团金提现暂时关闭');
         $user = $request->user();
         $money = $request->input('money');
         $v_code = $request->input('v_code');
