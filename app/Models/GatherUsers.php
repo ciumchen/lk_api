@@ -212,12 +212,11 @@ class GatherUsers extends Model
      */
     public function getGatherLottery (int $gid)
     {
-        //获取拼团获奖用户
-        $userLottery = GatherUsers::where(['gid' => $gid, 'type' => 1])->get();
-        $uids = array_column(json_decode($userLottery, 1), 'uid');
-
-        //获取用户信息
-        $userData = Users::whereIn('id', $uids)->get(['id', 'avatar', 'phone'])
+        //获取拼团获奖用户信息
+        $userData = DB::table('gather_users as gu')
+            ->join('users as u', 'gu.uid', 'u.id')
+            ->where(['gu.gid' => $gid, 'gu.type' => 1])
+            ->get(['gu.id as guid', 'u.id', 'u.avatar', 'u.phone'])
             ->each(function ($item) {
                 $item->phone = substr_replace($item->phone, '****', 3, 4);
                 $item->content = '100元来客购物卡';
