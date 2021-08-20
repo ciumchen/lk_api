@@ -51,14 +51,14 @@ class GatherService
             //判断用户当天当场次最多5次，每人每天最多30次
             (new GatherService())->isMaxSum($gid, $uid);
             //新增用户参团记录
-            //$gatherUsersData = (new GatherUsers())->setGatherUsers($gid, $uid);
+            $gatherUsersData = (new GatherUsers())->setGatherUsers($gid, $uid);
             //新增来拼金记录
-            //(new GatherGoldLogs())->setGatherGold($gid, $uid, $gatherUsersData->id);
+            (new GatherGoldLogs())->setGatherGold($gid, $uid, $gatherUsersData->id);
             //判断是否开团、开奖
-            //$this->isMaxGatherUser($gid, $userRatio);
+            $this->isMaxGatherUser($gid, $userRatio);
             //新增用户参团记录、新增来拼金记录、判断是否开团开奖队列
-            $gatherUser = new AddGatherUsers(['gid' => $gid, 'uid' => $uid]);
-            $gatherUser->dispatch($gatherUser)->onQueue('addGatherUsers');
+            //$gatherUser = new AddGatherUsers(['gid' => $gid, 'uid' => $uid]);
+            //$gatherUser->dispatch($gatherUser)->onQueue('addGatherUsers');
         } catch (\Exception $e) {
             throw $e;
         }
