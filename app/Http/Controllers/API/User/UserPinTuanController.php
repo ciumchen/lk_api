@@ -420,6 +420,8 @@ class UserPinTuanController extends Controller
                 'description' => 'MT',
                 'oid' => $orderId,
                 'remarks' => $userName,
+                'created_at' => date("Y-m-d H:i:s",time()),
+                'updated_at' => date("Y-m-d H:i:s",time()),
 
             );
             TradeOrder::create($arr);
