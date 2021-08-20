@@ -40,6 +40,7 @@ class VerifyCode extends Model
     const TYPE_FORGET_PASSWORD = 3;//找回密码
     const TYPE_WITHDRAW_TO_WALLET = 4;//提现到钱包
     const TYPE_UPDATE_USER_PHONE = 5;//修改用户手机号
+    const TYPE_TONGYONG = 100;//通用验证码
     /**
      * The attributes that are mass assignable.
      *
@@ -59,6 +60,7 @@ class VerifyCode extends Model
         self::TYPE_FORGET_PASSWORD => 'forget_password',
         self::TYPE_WITHDRAW_TO_WALLET => 'withdraw_to_wallet',
         self::TYPE_UPDATE_USER_PHONE => 'update_user_phone',
+        self::TYPE_TONGYONG => 'tongyong',
 
     ];
 
@@ -68,6 +70,7 @@ class VerifyCode extends Model
         self::TYPE_FORGET_PASSWORD => '找回密码',
         self::TYPE_WITHDRAW_TO_WALLET => '提现到钱包',
         self::TYPE_UPDATE_USER_PHONE => '修改用户手机号',
+        self::TYPE_TONGYONG => '通用验证码',
 
     ];
 
@@ -77,6 +80,7 @@ class VerifyCode extends Model
         self::TYPE_FORGET_PASSWORD => 'SMS_196170269',
         self::TYPE_WITHDRAW_TO_WALLET => 'SMS_196170273',
         self::TYPE_UPDATE_USER_PHONE => 'SMS_219395043',
+        self::TYPE_TONGYONG => 'SMS_222455404',
     ];
 
     /**

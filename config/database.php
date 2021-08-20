@@ -56,6 +56,7 @@ return [
                 array_filter([
                                  PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
                              ]) : [],
+            'modes' => [],
         ],
         'mysql_mall' => [
             'driver'         => 'mysql',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Test;
 
 
 use App\Http\Controllers\API\Test\OpenClient;
+use App\Services\GatherService;
 use App\Services\OrderService;
 use App\Services\OssService;
 use Illuminate\Http\Request;
@@ -15,11 +16,11 @@ class TestController
     /**
      * 测试启用
      */
-    public function __construct()
+    /*public function __construct()
     {
         die('测试接口');
-    }
-    
+    }*/
+
     //test测试
     public function test(){
 //        $re = DB::select("select * form users");
@@ -72,6 +73,14 @@ class TestController
 
     }
 
-
+    //图片上传oss测试
+    public function gatherTest(Request $request)
+    {
+        //$gid = 16;
+        for ($i = 101; $i <= 201; $i ++)
+        {
+            (new GatherService())->addGatherUser($request->gid, $i);
+        }
+    }
 
 }

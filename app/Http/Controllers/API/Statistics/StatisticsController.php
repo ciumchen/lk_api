@@ -127,9 +127,18 @@ class StatisticsController extends Controller
 //            ->where('updated_at','>',date('Y-m-d',strtotime("-1 day")))->where('updated_at','<',date('Y-m-d',time()))->sum('price');
 
         //今日消费5%-10%-20%的消费金额的统计---新修改2021年8月7日 14:46:45
-        $Data['todayPriceTotal']['rl5'] = DB::table('order')->where('profit_ratio',5)->where('status',2)->where('name','!=','开通会员')->where('created_at','>',date('Y-m-d',time()))->sum('price');
-        $Data['todayPriceTotal']['rl10'] = DB::table('order')->where('profit_ratio',10)->where('status',2)->where('name','!=','开通会员')->where('created_at','>',date('Y-m-d',time()))->sum('price');
-        $Data['todayPriceTotal']['rl20'] = DB::table('order')->where('profit_ratio',20)->where('status',2)->where('name','!=','开通会员')->where('created_at','>',date('Y-m-d',time()))->sum('price');
+        $Data['todayPriceTotal']['rl5'] = DB::table('order')->where('profit_ratio',5)
+            ->where('status',2)->where('name','!=','开通会员')
+            ->where('name','!=','拼团补贴')
+            ->where('created_at','>',date('Y-m-d',time()))->sum('price');
+        $Data['todayPriceTotal']['rl10'] = DB::table('order')->where('profit_ratio',10)
+            ->where('status',2)->where('name','!=','开通会员')
+            ->where('name','!=','拼团补贴')
+            ->where('created_at','>',date('Y-m-d',time()))->sum('price');
+        $Data['todayPriceTotal']['rl20'] = DB::table('order')->where('profit_ratio',20)
+            ->where('status',2)->where('name','!=','开通会员')
+            ->where('name','!=','拼团补贴')
+            ->where('created_at','>',date('Y-m-d',time()))->sum('price');
 
         //昨日消费5%-10%-20%的消费金额的统计
 //        $Data['yesterdayPriceTotal']['rl5'] = DB::table('order')->where('profit_ratio',5)->where('status',2)

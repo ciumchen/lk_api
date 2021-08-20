@@ -89,10 +89,10 @@ class OrderList extends Model
         return (new OrderListService())->result($orderArr, $data);
     }
 
-    //获取order表开团会员订单
+    //获取order表开通会员订单
     public function getOrderKTHY($uid){
         //获取订单列表
-        return DB::table('order')->where('uid',$uid)
+        return DB::table('order')->where(['uid' => $uid, 'name' => '开通会员'])
             ->get(['id', 'order_no', 'uid', 'price', 'name', 'created_at', 'profit_ratio', 'business_uid',
                 'status','member_gl_oid']);
     }
