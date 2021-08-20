@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\LogicException;
 use App\Models\Assets;
 use App\Models\AssetsType;
+use App\Models\GatherGoldLogs;
 use App\Models\User;
 use App\Models\VerifyCode;
 use App\Models\WithdrawCashLog;
@@ -119,7 +120,9 @@ class WithdrawCashService
             $User = User::findOrFail($uid);
         }
         $this->checkInfoIsLegal($uid, $money, $v_code, $User);
-        if ($User->balance_tuan < $money) {
+        //获取用户来拼金扣减总数
+        $minusSum = (new GatherGoldLogs())->minusUserGold($uid);
+        if ($User->balance_tuan - $minusSum < $money) {
             throw new Exception('账户余额不足');
         }
         return true;
