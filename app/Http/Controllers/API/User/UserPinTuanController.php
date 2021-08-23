@@ -190,17 +190,40 @@ class UserPinTuanController extends Controller
 
     }
 
-    //购物卡兑换代充话费
-    public function ShoppingCardDhDchf(Request $request)
+    //购物卡兑换话费直充和代充
+    public function ShoppingCardDhDefault(Request $request)
     {
         $user = $request->user();
 //        $ip = $request->input('ip');
         $money = $request->input('money');
         $mobile = $request->input('mobile');
+        $type = $request->input('type');
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
             throw new LogicException('手机号格式不正确');
+        }
+        switch ($type) {
+            case "HF":
+                $name = '直充';
+                $description = "HF";
+                $title = "话费充值";
+                $telecom = "话费充值";
+                $operate_type = "exchange_hf";
+                $remark = "直充";
+                break;
+            case "ZL":
+                $name = '代充';
+                $description = "ZL";
+                $title = "话费代充";
+                $telecom = "话费代充";
+                $operate_type = "exchange_dc";
+                $remark = "代充";
+                break;
+            default:
+                return response()->json(['code' => 0, 'msg' => '兑换类型错误']);
+                break;
+
         }
 
         //查询用户购物卡余额
@@ -215,9 +238,9 @@ class UserPinTuanController extends Controller
             $date = date("Y-m-d H:i:s", time());
             $profit_price = $money * $profit_ratio / 100;
             $integralArr = array(
-                5=>0.25,
-                10=>0.5,
-                20=>1,
+                5 => 0.25,
+                10 => 0.5,
+                20 => 1,
             );
 
             $arr = array(
@@ -226,14 +249,14 @@ class UserPinTuanController extends Controller
                 'profit_ratio' => $profit_ratio,
                 'price' => $money,
                 'profit_price' => $profit_price,
-                'name' => '代充',
+                'name' => $name,
                 'created_at' => $date,
                 'status' => '1',
                 'state' => '1',
                 'pay_status' => 'succeeded',
                 'remark' => '',
                 'order_no' => $order_no,
-                'description' => 'ZL',
+                'description' => $description,
             );
             $orderData = Order::create($arr);
             $orderId = $orderData->id;
@@ -241,8 +264,8 @@ class UserPinTuanController extends Controller
             //创建TradeOrder表记录
             $arr = array(
                 'user_id' => $user->id,
-                'title' => '代充',
-                'telecom' => '代充',
+                'title' => $title,
+                'telecom' => $telecom,
                 'price' => $money,
                 'num' => 1,
                 'numeric' => $mobile,
@@ -250,10 +273,10 @@ class UserPinTuanController extends Controller
                 'order_from' => 'gwk',
                 'order_no' => $order_no,
                 'need_fee' => $money,
-                'profit_ratio' => $profit_ratio/100,
+                'profit_ratio' => $profit_ratio / 100,
                 'profit_price' => $profit_price,
-                'integral' => $money*$integralArr[$profit_ratio],
-                'description' => 'ZL',
+                'integral' => $money * $integralArr[$profit_ratio],
+                'description' => $description,
                 'oid' => $orderId,
 
             );
@@ -262,11 +285,11 @@ class UserPinTuanController extends Controller
             //生成购物卡兑换订单
             $dataLog = array(
                 'uid' => $user->id,
-                'operate_type' => 'exchange_dc',
+                'operate_type' => $operate_type,
                 'money' => $money,
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
-                'remark' => '代充',
+                'remark' => $remark,
             );
             UserShoppingCardDhLog::create($dataLog);
 
@@ -304,26 +327,26 @@ class UserPinTuanController extends Controller
                 throw new Exception('验签不通过');
             }
             //单号充值
-            $rechargeInfo = $MobileRecharge->where('order_no', $data[ 'outer_tid' ])
+            $rechargeInfo = $MobileRecharge->where('order_no', $data['outer_tid'])
                 ->first();
             if (empty($rechargeInfo)) {
                 throw new Exception('未查询到订单数据');
             }
             //更新充值记录表数据
             if (!empty($rechargeInfo)) {
-                $rechargeInfo->status = $data[ 'recharge_state' ];
-                $rechargeInfo->trade_no = $data[ 'tid' ];
-                $rechargeInfo->updated_at = $data[ 'timestamp' ];
+                $rechargeInfo->status = $data['recharge_state'];
+                $rechargeInfo->trade_no = $data['tid'];
+                $rechargeInfo->updated_at = $data['timestamp'];
                 $rechargeInfo->save();
             }
             //更新兑换记录数据
-            $ShoppingInfo = $ShoppingModel->where('order_no', $data[ 'outer_tid' ])
+            $ShoppingInfo = $ShoppingModel->where('order_no', $data['outer_tid'])
                 ->first();
             if (empty($ShoppingInfo)) {
                 throw new Exception('未查询到兑换数据');
             }
             if (!empty($ShoppingInfo)) {
-                switch ($data[ 'recharge_state' ]) {
+                switch ($data['recharge_state']) {
                     case 0:
                         $status = 3;
                         break;
@@ -338,16 +361,16 @@ class UserPinTuanController extends Controller
                         break;
                 }
                 $ShoppingInfo->status = $status;
-                $ShoppingInfo->updated_at = $data[ 'timestamp' ];
+                $ShoppingInfo->updated_at = $data['timestamp'];
                 $ShoppingInfo->save();
 
                 //通过审核添加积分，更新order 表审核状态
-                $oid = Order::where('order_no',$data[ 'outer_tid' ])->value('id');
+                $oid = Order::where('order_no', $data['outer_tid'])->value('id');
                 (new OrderService())->addOrderIntegral($oid);
 
             }
         } catch (Exception $e) {
-            Log::debug('gwkDhHfHd-Error:'.$e->getMessage(), [json_encode($data)]);
+            Log::debug('gwkDhHfHd-Error:' . $e->getMessage(), [json_encode($data)]);
             throw $e;
         }
     }
@@ -362,8 +385,7 @@ class UserPinTuanController extends Controller
         $userName = $request->input('userName');
 
         $reg = '/^1[3456789]\d{9}$/';
-        if (preg_match($reg, $mobile) < 1)
-        {
+        if (preg_match($reg, $mobile) < 1) {
             throw new LogicException('手机号格式不正确');
         }
 
@@ -379,9 +401,9 @@ class UserPinTuanController extends Controller
             $date = date("Y-m-d H:i:s", time());
             $profit_price = $money * $profit_ratio / 100;
             $integralArr = array(
-                5=>0.25,
-                10=>0.5,
-                20=>1,
+                5 => 0.25,
+                10 => 0.5,
+                20 => 1,
             );
 
             $arr = array(
@@ -414,14 +436,14 @@ class UserPinTuanController extends Controller
                 'order_from' => 'gwk',
                 'order_no' => $order_no,
                 'need_fee' => $money,
-                'profit_ratio' => $profit_ratio/100,
+                'profit_ratio' => $profit_ratio / 100,
                 'profit_price' => $profit_price,
-                'integral' => $money*$integralArr[$profit_ratio],
+                'integral' => $money * $integralArr[$profit_ratio],
                 'description' => 'MT',
                 'oid' => $orderId,
                 'remarks' => $userName,
-                'created_at' => date("Y-m-d H:i:s",time()),
-                'updated_at' => date("Y-m-d H:i:s",time()),
+                'created_at' => date("Y-m-d H:i:s", time()),
+                'updated_at' => date("Y-m-d H:i:s", time()),
 
             );
             TradeOrder::create($arr);

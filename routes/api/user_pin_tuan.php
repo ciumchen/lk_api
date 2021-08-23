@@ -9,8 +9,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //使用70%usdt补贴金充值来拼金
     Route::any('UserUsdtDhLpj', 'User\UserPinTuanController@UserUsdtDhLpj');
 
-    //使用购物卡兑换代充话费
-    Route::any('ShoppingCardDhDchf', 'User\UserPinTuanController@ShoppingCardDhDchf');
+    //使用购物卡兑换话费直充和代充
+    Route::any('ShoppingCardDhDefault', 'User\UserPinTuanController@ShoppingCardDhDefault');
 
     //使用购物卡兑换美团卡
     Route::any('ShoppingCardDhMt', 'User\UserPinTuanController@ShoppingCardDhMt');
@@ -35,6 +35,9 @@ Route::any('getUserDataUsdtYE', 'User\UserPinTuanController@getUserDataUsdtYE');
 
 //查询用户的购物卡余额
 Route::any('getUserShoppingCardMoney', 'User\UserPinTuanDataController@getUserShoppingCardMoney');
+
+//查询购物卡兑换记录
+Route::any('selectGwkDhjl', 'User\UserShoppingCardController@selectGwkDhjl');
 
 
 

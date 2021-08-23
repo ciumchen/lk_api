@@ -28,16 +28,19 @@ use App\Http\Requests\UserPinTuan as ReUserPinTuan;
 
 class UserShoppingCardController extends Controller
 {
-    //查询用户的来拼金
-    public function getUserDataLpj(Request $request)
-    {
+    //查询购物卡兑换记录
+    public function selectGwkDhjl(Request $request){
         $uid = $request->input('uid');
-        $balance_tuan = Users::where('id', $uid)->value('balance_tuan');
-        if ($balance_tuan) {
-            return response()->json(['code' => 1, 'msg' => array('balance_tuan' => $balance_tuan)]);
-        } else {
-            return response()->json(['code' => 0, 'msg' => '用户uid不存在']);
-        }
+        $page = $request->input("page");
+        $data = (new UserShoppingCardDhLog())
+            ->where("uid", $uid)
+            ->orderBy('id', 'desc')
+            ->latest('id')
+            ->forPage($page, 10)
+            ->get();
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+
     }
 
 
