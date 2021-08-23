@@ -27,8 +27,9 @@ class GatherService
     {
         //获取设置拼团总人数
         $userRatio = Setting::getSetting('gather_users_ number') ?? 100;
-        //$userRatio = 10;
+        //$userRatio = 6;
         //获取当前拼团人数
+        $userScaler = (new Gather())->getUsersNum($gid);
         $userSum = (new Gather())->getGatherUserSum($gid);
         //获取用户来拼金总数
         $userGoldSum = (new GatherUsers())->getUserGold($uid);
@@ -36,7 +37,7 @@ class GatherService
         $minusSum = (new GatherGoldLogs())->minusUserGold($uid);
 
         //判断拼团是否达到开团人数
-        if ($userSum >= $userRatio)
+        if ($userScaler >= $userRatio || $userSum >= $userRatio)
         {
             return json_encode(['code' => 10000, 'msg' => '本拼团参团人数已满！']);
         }
@@ -50,6 +51,8 @@ class GatherService
         try {
             //判断用户当天当场次最多5次，每人每天最多30次
             (new GatherService())->isMaxSum($gid, $uid);
+            //更新拼团参与人数
+            (new Gather())->updUsersNum($gid);
             //新增用户参团记录
             $gatherUsersData = (new GatherUsers())->setGatherUsers($gid, $uid);
             //新增来拼金记录
@@ -177,8 +180,9 @@ class GatherService
         $gatherUserData = json_decode($gatherUserList, 1);
 
         //获取中奖用户来拼金账户余额
+        $guidDict = array_column($gatherUserData, 'id');
         $uidDict = array_column($gatherUserData, 'uid');
-        $userGoldData = (new GatherUsers())->getUsersGold($uidDict);
+        $userGoldData = (new GatherUsers())->getUsersGold($guidDict);
 
         //获奖用户新增购物卡
         foreach ($gatherUserData as &$val)

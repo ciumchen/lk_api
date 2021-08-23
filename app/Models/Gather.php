@@ -33,6 +33,26 @@ class Gather extends Model
         return $gather;
     }
 
+    /**更新拼团人数
+     * @param int $gid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function updUsersNum (int $gid)
+    {
+        Gather::where(['id' => $gid])->increment('scaler');
+    }
+
+    /**获取拼团人数
+     * @param int $gid
+     * @return mixed
+     * @throws LogicException
+     */
+    public function getUsersNum (int $gid)
+    {
+        return Gather::where(['id' => $gid])->value('scaler');
+    }
+
     /**获取拼团信息
      * @param int $uid
      * @return mixed

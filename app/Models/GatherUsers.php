@@ -236,13 +236,18 @@ class GatherUsers extends Model
     }
 
     /**获取用户来拼金额度
-     * @param array $uidData
+     * @param array $guidData
      * @return mixed
      * @throws LogicException
      */
-    public function getUsersGold (array $uidData)
+    public function getUsersGold (array $guidData)
     {
-        $userGoldList = Users::whereIn('id', $uidData)->get(['id', 'balance_tuan']);
+        //$userGoldList = Users::whereIn('id', $uidData)->get(['id', 'balance_tuan']);
+        $userGoldList = DB::table('gather_users as gu')
+                        ->join('users as u', 'gu.uid', 'u.id')
+                        ->whereIn('gu.id', $guidData)
+                        ->get(['u.id']);
+
         return json_decode($userGoldList, 1);
     }
 

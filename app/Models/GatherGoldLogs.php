@@ -107,7 +107,7 @@ class GatherGoldLogs extends Model
         foreach ($userData as $val)
         {
             $users = Users::find($val['id']);
-            $users->balance_tuan = $val['balance_tuan'] - $ratio;
+            $users->balance_tuan = $users['balance_tuan'] - $ratio;
             $users->save();
         }
     }
