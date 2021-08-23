@@ -25,6 +25,7 @@ class UserResources extends JsonResource
         //我的消费
         $mySpent = Order::where("status", Order::STATUS_SUCCEED)
                         ->where("uid", $this->id)
+                        ->whereNotIn('description', ['PT'])
                         ->sum("price");
         //iets余额
         $user = User::find($this->id);
