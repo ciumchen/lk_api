@@ -211,6 +211,7 @@ class UserPinTuanController extends Controller
                 $telecom = "话费充值";
                 $operate_type = "exchange_hf";
                 $remark = "直充";
+                $create_type =1;
                 break;
             case "ZL":
                 $name = '代充';
@@ -219,6 +220,7 @@ class UserPinTuanController extends Controller
                 $telecom = "话费代充";
                 $operate_type = "exchange_zl";
                 $remark = "代充";
+                $create_type = 2;
                 break;
             default:
                 return response()->json(['code' => 0, 'msg' => '兑换类型错误']);
@@ -301,7 +303,7 @@ class UserPinTuanController extends Controller
             (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
             //调用话费充值
 //            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
-            (new MobileRechargeService)->GwkConvertRecharge($order_no);
+            (new MobileRechargeService)->GwkConvertRecharge($order_no,$create_type);
 
         } catch (Exception $e) {
             throw $e;

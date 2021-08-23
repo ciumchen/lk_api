@@ -57,7 +57,7 @@ class MobileRechargeService extends BaseService
         DB::commit();
         return Order::find($order_id);
     }
-    
+
     /**
      * @param \App\Models\User $user
      * @param string           $mobile
@@ -93,7 +93,7 @@ class MobileRechargeService extends BaseService
         Db::commit();
         return Order::find($order_id);
     }
-    
+
     /**
      * Description: 创建批量代充订单
      *
@@ -152,7 +152,7 @@ class MobileRechargeService extends BaseService
         DB::commit();
         return $Order;
     }
-    
+
     /**
      * Description:批量代充验证
      *
@@ -185,7 +185,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 话费代充订单数据创建
      *
@@ -215,7 +215,7 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-    
+
     /**
      * trade_order 表代充订单数据创建
      *
@@ -252,7 +252,7 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-    
+
     /**
      * TradeOrder 表数据组装
      *
@@ -291,7 +291,7 @@ class MobileRechargeService extends BaseService
             'order_from'    => '',
         ];
     }
-    
+
     /**
      * Order 表数据组装
      *
@@ -322,7 +322,7 @@ class MobileRechargeService extends BaseService
             'order_no'     => $order_no,
         ];
     }
-    
+
     /**
      * 斑马手机充值检查
      * 订单生成前调用
@@ -349,7 +349,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 回调处理订单状态
      *
@@ -408,7 +408,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**
      * 订单充值
      * 付款成功后调用
@@ -434,7 +434,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * Description:多账号代充
      *
@@ -484,7 +484,7 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     /**
      * 手机充值
      *
@@ -515,7 +515,7 @@ class MobileRechargeService extends BaseService
         }
         return $bill;
     }
-    
+
     /**
      * 生成手机充值订单
      *
@@ -547,7 +547,7 @@ class MobileRechargeService extends BaseService
         }
         return $MobileOrder;
     }
-    
+
     /**
      * 手机充值订单表更新
      *
@@ -577,7 +577,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**
      * Description:
      *
@@ -612,7 +612,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**usdt 兑换生成手机充值订单
      *
      * @param string $order_no 订单号
@@ -642,7 +642,7 @@ class MobileRechargeService extends BaseService
         }
         return $MobileOrder;
     }
-    
+
     /**usdt 兑换订单充值
      * 减usdt 成功后调用
      *
@@ -669,9 +669,9 @@ class MobileRechargeService extends BaseService
         }
         return true;
     }
-    
+
     //购物卡兑换代充
-    public function GwkConvertRecharge($order_no)
+    public function GwkConvertRecharge($order_no,$create_type)
     {
         //Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口22222============");
         $MobileOrder = new OrderMobileRecharge();
@@ -684,13 +684,13 @@ class MobileRechargeService extends BaseService
             /* 调用充值 */
             $bill = $this->bmMobileRecharge($mobileOrderInfo->mobile, $mobileOrderInfo->money, $order_no, $notifyUrl);
             /* 更新订单 */
-            $this->GwkUpdMobileOrder($order_no, $bill);
+            $this->GwkUpdMobileOrder($order_no, $bill,$create_type);
         } catch (Exception $e) {
             throw $e;
         }
         return true;
     }
-    
+
     /**usdt 兑换手机充值订单表更新
      *
      * @param string                               $order_no       订单号
@@ -720,9 +720,9 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     //购物卡兑换代充更新订单数据
-    public function GwkUpdMobileOrder($order_no, $bill, OrderMobileRecharge $MobileRecharge = null)
+    public function GwkUpdMobileOrder($order_no, $bill,$create_type, OrderMobileRecharge $MobileRecharge = null)
     {
         //获取订单数据
         if ($MobileRecharge == null) {
@@ -738,7 +738,7 @@ class MobileRechargeService extends BaseService
             $MobileRecharge->status = $bill[ 'rechargeState' ];
             $MobileRecharge->pay_status = $bill[ 'payState' ];
             $MobileRecharge->goods_title = $bill[ 'itemName' ];
-            $MobileRecharge->create_type = 2;
+            $MobileRecharge->create_type = $create_type;
             $MobileRecharge->save();
             //更新购物卡记录表状态
             $gwkData = UserShoppingCardDhLog::where('order_no', $order_no)->first();
@@ -748,7 +748,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     /**兑换话费回调处理订单状态
      *
      * @param array $data
@@ -810,7 +810,7 @@ class MobileRechargeService extends BaseService
             throw $e;
         }
     }
-    
+
     public function getBatchDetails($order_id, $uid = 0, $field = [])
     {
         try {
