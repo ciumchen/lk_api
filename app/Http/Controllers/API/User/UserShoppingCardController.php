@@ -8,6 +8,7 @@ use App\Libs\Yuntong\YuntongPay;
 use App\Models\Assets;
 use App\Models\AssetsLogs;
 use App\Models\ConvertLogs;
+use App\Models\GatherShoppingCard;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
 use App\Models\Setting;
@@ -32,7 +33,7 @@ class UserShoppingCardController extends Controller
     public function selectGwkDhjl(Request $request){
         $uid = $request->input('uid');
         $page = $request->input("page");
-        $data = (new UserShoppingCardDhLog())
+        $data = (new GatherShoppingCard())
             ->where("uid", $uid)
             ->orderBy('id', 'desc')
             ->latest('id')

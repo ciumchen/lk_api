@@ -8,6 +8,7 @@ use App\Libs\Yuntong\YuntongPay;
 use App\Models\Assets;
 use App\Models\AssetsLogs;
 use App\Models\ConvertLogs;
+use App\Models\GatherShoppingCard;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
 use App\Models\Setting;
@@ -295,8 +296,17 @@ class UserPinTuanController extends Controller
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
                 'remark' => $remark,
+                'created_at' => $date,
+                'updated_at' => $date,
             );
             UserShoppingCardDhLog::create($dataLog);
+
+            //创建gather_shopping_card购物卡金额变动记录
+            $gwkLogModel = new GatherShoppingCard();
+            $gwkLogModel->uid = $user->id;
+            $gwkLogModel->money = $money;
+            $gwkLogModel->type = 2;
+            $gwkLogModel->save();
 
             //扣除用户购物卡余额
             $user->gather_card = $user->gather_card - $money;
@@ -464,6 +474,13 @@ class UserPinTuanController extends Controller
                 'status' => 2,
             );
             UserShoppingCardDhLog::create($dataLog);
+
+            //创建gather_shopping_card购物卡金额变动记录
+            $gwkLogModel = new GatherShoppingCard();
+            $gwkLogModel->uid = $user->id;
+            $gwkLogModel->money = $money;
+            $gwkLogModel->type = 2;
+            $gwkLogModel->save();
 
             //扣除用户购物卡余额
             $user->gather_card = $user->gather_card - $money;
