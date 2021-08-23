@@ -859,6 +859,27 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
         }
     }
 
+    //修改用户邀请人
+    public function updateUserYqrUid(Request $request){
+        $phone = $request->input('phone');
+        $invite_uid = $request->input('invite_uid');
+        if (!Users::where('phone',$phone)->exists()||!$phone){
+            dd("phone用户不存在");
+        }
+        if (!Users::where('id',$invite_uid)->exists()||!$invite_uid){
+            dd("invite_uid用户不存在");
+        }
+        $userModel = Users::where('phone',$phone)->first();
+        $userModel->invite_uid = $invite_uid;
+        if ($userModel->save()){
+            echo "手机号".$phone."的邀请人修改成".$invite_uid."成功！111111111111111111111111";
+        }else{
+            echo "手机号".$phone."的邀请人修改成".$invite_uid."失败！222222222222222222222222";
+        }
+
+
+    }
+
 
 }
 

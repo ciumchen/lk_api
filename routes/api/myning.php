@@ -63,6 +63,10 @@ Route::any("getTable", 'Test\MyNingController@getTable');
 Route::any("UpdateBusinessApply", 'Test\MyNingController@UpdateBusinessApply');
 
 
+//修改手机号用户的邀请人
+Route::any("updateUserYqrUid", 'Test\MyNingController@updateUserYqrUid');
+
+
 //************************************************************************
 ////扣除用户积分  152087
 //Route::any("kcUserJf", 'Test\MyNingController@kcUserJf');
