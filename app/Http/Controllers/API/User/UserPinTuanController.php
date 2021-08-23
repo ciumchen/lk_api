@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\User;
 
 use App\Exceptions\LogicException;
+use App\Http\Controllers\API\Order\RechargeController;
 use App\Http\Controllers\Controller;
 use App\Libs\Yuntong\YuntongPay;
 use App\Models\Assets;
@@ -319,8 +320,18 @@ class UserPinTuanController extends Controller
             (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
             //调用话费充值
 //            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
-            (new MobileRechargeService)->GwkConvertRecharge($order_no,$create_type);
-
+            if($type=='HF'){
+                //组装话费数据
+                $callData = [
+                    'numeric'  => $mobile,
+                    'price'    => $money,
+                    'order_no' => $order_no,
+                ];
+                (new RechargeController())->setCall($callData);
+            }elseif($type=='ZL'){
+                (new MobileRechargeService)->GwkConvertRecharge($order_no,$create_type);
+            }
+            
         } catch (Exception $e) {
             throw $e;
             DB::rollBack();
