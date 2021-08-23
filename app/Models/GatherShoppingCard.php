@@ -19,6 +19,8 @@ class GatherShoppingCard extends Model
         'guid',
         'money',
         'status',
+        'type',
+        'name',
         'created_at',
         'updated_at',
     ];

@@ -15,6 +15,7 @@ class UpdateUserGatherShoppingCardTable extends Migration
     {
         Schema::table('gather_shopping_card', function (Blueprint $table) {
             $table->integer('type')->default(1)->comment('操作类型：1购物卡余额添加，2购物卡余额扣除');
+            $table->string('name')->default('拼团中奖')->comment('操作类型名称');
         });
     }
 
@@ -27,6 +28,7 @@ class UpdateUserGatherShoppingCardTable extends Migration
     {
         Schema::table('gather_shopping_card', function (Blueprint $table) {
             $table->dropColumn('type');
+            $table->dropColumn('name');
         });
     }
 }

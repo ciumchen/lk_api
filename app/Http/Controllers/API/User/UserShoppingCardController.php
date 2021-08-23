@@ -38,7 +38,7 @@ class UserShoppingCardController extends Controller
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, 10)
-            ->get(['id','uid','money','status','type','created_at']);
+            ->get(['id','uid','money','status','type','name','created_at']);
 
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
 

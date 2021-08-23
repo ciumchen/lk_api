@@ -213,6 +213,7 @@ class UserPinTuanController extends Controller
                 $operate_type = "exchange_hf";
                 $remark = "话费";
                 $create_type =1;
+                $typeName = "兑换话费";
                 break;
             case "ZL":
                 $name = '代充';
@@ -222,6 +223,7 @@ class UserPinTuanController extends Controller
                 $operate_type = "exchange_zl";
                 $remark = "代充";
                 $create_type = 2;
+                $typeName = "兑换代充";
                 break;
             default:
                 return response()->json(['code' => 0, 'msg' => '兑换类型错误']);
@@ -306,6 +308,7 @@ class UserPinTuanController extends Controller
             $gwkLogModel->uid = $user->id;
             $gwkLogModel->money = $money;
             $gwkLogModel->type = 2;
+            $gwkLogModel->name = $typeName;
             $gwkLogModel->save();
 
             //扣除用户购物卡余额
@@ -480,6 +483,7 @@ class UserPinTuanController extends Controller
             $gwkLogModel->uid = $user->id;
             $gwkLogModel->money = $money;
             $gwkLogModel->type = 2;
+            $gwkLogModel->name = "兑换美团";
             $gwkLogModel->save();
 
             //扣除用户购物卡余额
