@@ -217,7 +217,7 @@ class UserPinTuanController extends Controller
                 $description = "ZL";
                 $title = "话费代充";
                 $telecom = "话费代充";
-                $operate_type = "exchange_dc";
+                $operate_type = "exchange_zl";
                 $remark = "代充";
                 break;
             default:
