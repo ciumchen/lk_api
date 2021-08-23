@@ -411,6 +411,9 @@ class Order extends Model
         'member_gl_oid',
         'pay_status',
         'description',
+        'created_at',
+        'updated_at',
+
     ];
 
     public function Trade_Order()

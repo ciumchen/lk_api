@@ -205,12 +205,12 @@ class UserPinTuanController extends Controller
         }
         switch ($type) {
             case "HF":
-                $name = '直充';
+                $name = '话费';
                 $description = "HF";
                 $title = "话费充值";
                 $telecom = "话费充值";
                 $operate_type = "exchange_hf";
-                $remark = "直充";
+                $remark = "话费";
                 $create_type =1;
                 break;
             case "ZL":
@@ -253,6 +253,7 @@ class UserPinTuanController extends Controller
                 'profit_price' => $profit_price,
                 'name' => $name,
                 'created_at' => $date,
+                'updated_at' => $date,
                 'status' => '1',
                 'state' => '1',
                 'pay_status' => 'succeeded',
@@ -280,6 +281,8 @@ class UserPinTuanController extends Controller
                 'integral' => $money * $integralArr[$profit_ratio],
                 'description' => $description,
                 'oid' => $orderId,
+                'created_at' => $date,
+                'updated_at' => $date,
 
             );
             TradeOrder::create($arr);
