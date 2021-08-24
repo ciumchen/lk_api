@@ -2,7 +2,6 @@
 
 namespace App\Services\Alipay;
 
-use AlipayAop\AopCertClient;
 use AlipayAop\request\AlipayFundTransUniTransferRequest;
 use AlipayAop\request\AlipaySystemOauthTokenRequest;
 use AlipayAop\request\AlipayTradeQueryRequest;
@@ -14,7 +13,6 @@ use App\Models\UserAlipayAuthLastChange;
 use App\Models\UserAlipayAuthToken;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use function AlibabaCloud\Client\json;
 
 /**
  * Description:支付宝证书模式连接操作类
