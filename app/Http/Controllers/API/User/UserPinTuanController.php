@@ -343,6 +343,9 @@ class UserPinTuanController extends Controller
                 (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
             }elseif ($type == 'LR'){//兑换录单
                 (new OrderService())->completeOrder($order_no);
+                $dhLog = UserShoppingCardDhLog::where('order_no',$order_no)->first();
+                $dhLog->status = 2;
+                $dhLog->save();
             }
 
         } catch (Exception $e) {
