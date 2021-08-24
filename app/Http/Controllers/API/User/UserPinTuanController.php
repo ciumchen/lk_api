@@ -354,7 +354,6 @@ class UserPinTuanController extends Controller
                 //通过审核添加积分，更新order 表审核状态--添加资产记录10条
                 (new OrderService())->addOrderIntegral($orderId);
             }elseif ($type == 'LR'){//兑换录单
-//                (new OrderService())->completeOrder($order_no);
                 (new OrderService())->addOrderIntegral($orderId);
                 $dhLog = UserShoppingCardDhLog::where('order_no',$order_no)->first();
                 $dhLog->status = 2;
@@ -421,10 +420,6 @@ class UserPinTuanController extends Controller
                 $ShoppingInfo->status = $status;
                 $ShoppingInfo->updated_at = $data['timestamp'];
                 $ShoppingInfo->save();
-
-//                //通过审核添加积分，更新order 表审核状态
-//                $oid = Order::where('order_no', $data['outer_tid'])->value('id');
-//                (new OrderService())->addOrderIntegral($oid);
 
             }
         } catch (Exception $e) {

@@ -880,6 +880,27 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
 
     }
 
+    //手动处理修改购物卡兑换代充没有添加积分的记录
+    public function sdUpdateDchfjf(){
+        $data = Order::where(['name'=>'代充','status'=>1,'pay_status'=>'succeeded'])->get();
+        $arr = $data->toArray();
+        dd(count($arr));
+        foreach ($arr as $k=>$v){
+            (new OrderService())->addOrderIntegral($v['id']);
+        }
+        $oid = $request->input('oid');
+        $orderData = Order::find($oid);
+        if ($orderData!=null){
+            //通过审核添加积分，更新order 表审核状态
+            (new OrderService())->addOrderIntegral($oid);
+            echo "修改成功";
+        }else{
+            echo "oid订单不纯在";
+        }
+
+
+    }
+
 
 }
 

@@ -66,6 +66,9 @@ Route::any("UpdateBusinessApply", 'Test\MyNingController@UpdateBusinessApply');
 //修改手机号用户的邀请人
 Route::any("updateUserYqrUid", 'Test\MyNingController@updateUserYqrUid');
 
+//手动处理修改购物卡兑换代充没有添加积分的记录
+Route::any("sdUpdateDchfjf", 'Test\MyNingController@sdUpdateDchfjf');
+
 
 //************************************************************************
 ////扣除用户积分  152087
