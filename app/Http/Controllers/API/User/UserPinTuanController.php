@@ -258,9 +258,17 @@ class UserPinTuanController extends Controller
                 10 => 0.5,
                 20 => 1,
             );
-            $type=="LR"?$business_uid = $user->id:$business_uid = 2;
+            
+            if ($type=="LR"){
+                $orderUid = Users::where('phone',$mobile)->value('id');
+                $business_uid = $user->id;
+            }else{
+                $orderUid = $user->id;
+                $business_uid = 2;
+            }
+
             $arr = array(
-                'uid' => $user->id,
+                'uid' => $orderUid,
                 'business_uid' => $business_uid,
                 'profit_ratio' => $profit_ratio,
                 'price' => $money,
