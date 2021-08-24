@@ -38,4 +38,4 @@ Route::any(
 );
 
 Route::any('gather', 'Test\TestController@gatherTest');
-Route::any('gold', 'Test\TestController@updGold');
+//Route::any('gold', 'Test\TestController@updGold');

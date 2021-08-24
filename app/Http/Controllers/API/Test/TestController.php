@@ -85,7 +85,7 @@ class TestController
     }
 
     //扣除来拼金和购物卡
-    public function updGold()
+    /*public function updGold()
     {
         $ids = [15873,7772,439,18735,2422,2561,2561,11507,18054,9941,1086,20257,602,602,610,2850,10961,18822,280,145,19827,20555,11200,10317,17718,287];
         foreach ($ids as $id)
@@ -102,5 +102,5 @@ class TestController
             $users->gather_card = $users->gather_card - 100;
             $users->save();
         }
-    }
+    }*/
 }
