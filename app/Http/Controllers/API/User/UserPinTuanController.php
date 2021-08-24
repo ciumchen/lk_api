@@ -258,10 +258,10 @@ class UserPinTuanController extends Controller
                 10 => 0.5,
                 20 => 1,
             );
-
+            $type=="LR"?$business_uid = $user->id:$business_uid = 2;
             $arr = array(
                 'uid' => $user->id,
-                'business_uid' => 2,
+                'business_uid' => $business_uid,
                 'profit_ratio' => $profit_ratio,
                 'price' => $money,
                 'profit_price' => $profit_price,
@@ -354,6 +354,9 @@ class UserPinTuanController extends Controller
                 //通过审核添加积分，更新order 表审核状态--添加资产记录10条
                 (new OrderService())->addOrderIntegral($orderId);
             }elseif ($type == 'LR'){//兑换录单
+                if ($user->phone==$mobile){
+                    return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
+                }
                 (new OrderService())->addOrderIntegral($orderId);
                 $dhLog = UserShoppingCardDhLog::where('order_no',$order_no)->first();
                 $dhLog->status = 2;
