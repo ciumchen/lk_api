@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Test;
 
 
 use App\Http\Controllers\API\Test\OpenClient;
+use App\Models\Users;
 use App\Services\GatherService;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -83,4 +84,23 @@ class TestController
         }
     }
 
+    //扣除来拼金和购物卡
+    public function updGold()
+    {
+        $ids = [15873,7772,439,18735,2422,2561,2561,11507,18054,9941,1086,20257,602,602,610,2850,10961,18822,280,145,19827,20555,11200,10317,17718,287];
+        foreach ($ids as $id)
+        {
+            $users = Users::find($id);
+            $users->balance_tuan = $users->balance_tuan - 100;
+            $users->save();
+        }
+
+        $idDict = [56,10295,11339,19708,7772,18822];
+        foreach ($idDict as $val)
+        {
+            $users = Users::find($val);
+            $users->gather_card = $users->gather_card - 100;
+            $users->save();
+        }
+    }
 }
