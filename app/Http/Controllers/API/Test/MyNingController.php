@@ -52,7 +52,7 @@ class MyNingController extends Controller
      */
     public function __construct()
     {
-//        die('测试接口');
+        die('测试接口');
     }
 
     //test测试
@@ -881,22 +881,22 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
     }
 
     //手动处理修改购物卡兑换代充没有添加积分的记录
-    public function sdUpdateDchfjf(){
-        set_time_limit(0);
-        ini_set('max_execution_time', '0');
-        $data = Order::where(['name'=>'代充','status'=>1,'pay_status'=>'succeeded'])->get();
-        $arr = $data->toArray();
-        echo count($arr);
-        if (count($arr)!=0){
-            foreach ($arr as $k=>$v){
-                (new OrderService())->addOrderIntegral($v['id']);
-            }
-        }
-
-        echo "修改成功";
-
-
-    }
+//    public function sdUpdateDchfjf(){
+//        set_time_limit(0);
+//        ini_set('max_execution_time', '0');
+//        $data = Order::where(['name'=>'代充','status'=>1,'pay_status'=>'succeeded'])->get();
+//        $arr = $data->toArray();
+//        echo count($arr);
+//        if (count($arr)!=0){
+//            foreach ($arr as $k=>$v){
+//                (new OrderService())->addOrderIntegral($v['id']);
+//            }
+//        }
+//
+//        echo "修改成功";
+//
+//
+//    }
 
 
 }
