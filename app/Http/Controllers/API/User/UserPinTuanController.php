@@ -503,6 +503,26 @@ class UserPinTuanController extends Controller
             );
             TradeOrder::create($arr);
 
+
+            //创建gather_shopping_card购物卡金额变动记录
+//            $gwkLogModel = new GatherShoppingCard();
+//            $gwkLogModel->uid = $user->id;
+//            $gwkLogModel->money = $money;
+//            $gwkLogModel->type = 2;
+//            $gwkLogModel->name = "兑换美团";
+//            $gwkLogModel->save();
+
+            $mtArr = array(
+                'uid'=>$user->id,
+                'money'=>$money,
+                'type'=>2,
+                'name'=>"兑换美团",
+                'created_at' => $date,
+                'updated_at' => $date,
+            );
+            $gwkLogModel = new GatherShoppingCard();
+            $reGscId = $gwkLogModel->create($mtArr)->id;
+
             //生成购物卡兑换订单
             $dataLog = array(
                 'uid' => $user->id,
@@ -511,18 +531,13 @@ class UserPinTuanController extends Controller
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
                 'remark' => '美团',
+                'gather_shopping_card_id' => $reGscId,
                 'status' => 2,
+                'created_at' => $date,
+                'updated_at' => $date,
             );
             UserShoppingCardDhLog::create($dataLog);
-
-            //创建gather_shopping_card购物卡金额变动记录
-            $gwkLogModel = new GatherShoppingCard();
-            $gwkLogModel->uid = $user->id;
-            $gwkLogModel->money = $money;
-            $gwkLogModel->type = 2;
-            $gwkLogModel->name = "兑换美团";
-            $gwkLogModel->save();
-
+            
             //扣除用户购物卡余额
             $user->gather_card = $user->gather_card - $money;
             $user->save();
