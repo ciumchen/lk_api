@@ -192,7 +192,7 @@ class UserPinTuanController extends Controller
 
     }
 
-    //购物卡兑换话费直充和代充
+    //购物卡兑换-录单、话费直充、和代充
     public function ShoppingCardDhDefault(Request $request)
     {
         $user = $request->user();
@@ -206,6 +206,16 @@ class UserPinTuanController extends Controller
             throw new LogicException('手机号格式不正确');
         }
         switch ($type) {
+            case "LR":
+                $name = '录单';
+                $description = "LR";
+                $title = "订单录入";
+                $telecom = "订单录入";
+                $operate_type = "exchange_lr";
+                $remark = "录单";
+                $create_type = 11;
+                $typeName = "兑换录单";
+                break;
             case "HF":
                 $name = '话费';
                 $description = "HF";
@@ -213,7 +223,7 @@ class UserPinTuanController extends Controller
                 $telecom = "话费充值";
                 $operate_type = "exchange_hf";
                 $remark = "话费";
-                $create_type =1;
+                $create_type = 1;
                 $typeName = "兑换话费";
                 break;
             case "ZL":
@@ -316,20 +326,23 @@ class UserPinTuanController extends Controller
             $user->gather_card = $user->gather_card - $money;
             $user->save();
 
-            //新增充值记录
-            (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
-            //调用话费充值
 //            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
-            if($type=='HF'){
+            if ($type == 'HF') {//兑换直充
                 //组装话费数据
                 $callData = [
-                    'numeric'  => $mobile,
-                    'price'    => $money,
+                    'numeric' => $mobile,
+                    'price' => $money,
                     'order_no' => $order_no,
                 ];
+                //调用话费充值
                 (new RechargeController())->setCall($callData);
-            }elseif($type=='ZL'){
-                (new MobileRechargeService)->GwkConvertRecharge($order_no,$create_type);
+            } elseif ($type == 'ZL') {//兑换代充
+                //新增充值记录
+                (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
+                //购物卡兑换代充
+                (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
+            }elseif ($type == 'LR'){//兑换录单
+                (new OrderService())->completeOrder($order_no);
             }
 
         } catch (Exception $e) {
@@ -337,7 +350,7 @@ class UserPinTuanController extends Controller
             DB::rollBack();
         }
         DB::commit();
-        return json_encode(['code' => 200, 'msg' => '兑换话费充值成功']);
+        return json_encode(['code' => 200, 'msg' => $typeName.'成功']);
 
     }
 
