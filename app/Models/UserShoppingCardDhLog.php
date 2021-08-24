@@ -20,6 +20,7 @@ class UserShoppingCardDhLog extends Model
         'order_no',
         'status',
         'remark',
+        'gather_shopping_card_id',
         'created_at',
         'updated_at'
     ];
