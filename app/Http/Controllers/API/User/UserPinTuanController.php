@@ -258,7 +258,7 @@ class UserPinTuanController extends Controller
                 10 => 0.5,
                 20 => 1,
             );
-            
+
             if ($type=="LR"){
                 $orderUid = Users::where('phone',$mobile)->value('id');
                 $business_uid = $user->id;
@@ -344,7 +344,6 @@ class UserPinTuanController extends Controller
             $user->gather_card = $user->gather_card - $money;
             $user->save();
 
-//            Log::info("============接收购物卡兑换话费回调数据打印==========调用话费充值接口============");
             if ($type == 'HF') {//兑换直充
                 //组装话费数据
                 $callData = [
@@ -359,17 +358,18 @@ class UserPinTuanController extends Controller
                 (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
                 //购物卡兑换代充
                 (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
-                //通过审核添加积分，更新order 表审核状态--添加资产记录10条
-                (new OrderService())->addOrderIntegral($orderId);
+
             }elseif ($type == 'LR'){//兑换录单
                 if ($user->phone==$mobile){
                     return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
                 }
-                (new OrderService())->addOrderIntegral($orderId);
                 $dhLog = UserShoppingCardDhLog::where('order_no',$order_no)->first();
                 $dhLog->status = 2;
                 $dhLog->save();
             }
+
+            //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条
+            (new OrderService())->addOrderIntegral($orderId);
 
         } catch (Exception $e) {
             throw $e;
