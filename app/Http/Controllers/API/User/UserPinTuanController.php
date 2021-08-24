@@ -301,6 +301,23 @@ class UserPinTuanController extends Controller
             );
             TradeOrder::create($arr);
 
+            //创建gather_shopping_card购物卡金额变动记录
+            $cardArr = array(
+                'uid'=>$user->id,
+                'money'=>$money,
+                'type'=>2,
+                'name'=>$typeName,
+                'created_at' => $date,
+                'updated_at' => $date,
+            );
+            $gwkLogModel = new GatherShoppingCard();
+//            $gwkLogModel->uid = $user->id;
+//            $gwkLogModel->money = $money;
+//            $gwkLogModel->type = 2;
+//            $gwkLogModel->name = $typeName;
+//            $reGsc = $gwkLogModel->save();
+            $reGscId = $gwkLogModel->create($cardArr)->id;
+
             //生成购物卡兑换订单
             $dataLog = array(
                 'uid' => $user->id,
@@ -309,18 +326,11 @@ class UserPinTuanController extends Controller
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
                 'remark' => $remark,
+                'gather_shopping_card_id' => $reGscId,
                 'created_at' => $date,
                 'updated_at' => $date,
             );
             UserShoppingCardDhLog::create($dataLog);
-
-            //创建gather_shopping_card购物卡金额变动记录
-            $gwkLogModel = new GatherShoppingCard();
-            $gwkLogModel->uid = $user->id;
-            $gwkLogModel->money = $money;
-            $gwkLogModel->type = 2;
-            $gwkLogModel->name = $typeName;
-            $gwkLogModel->save();
 
             //扣除用户购物卡余额
             $user->gather_card = $user->gather_card - $money;
