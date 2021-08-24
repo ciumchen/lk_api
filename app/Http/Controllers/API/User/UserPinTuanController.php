@@ -351,8 +351,11 @@ class UserPinTuanController extends Controller
                 (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $orderId);
                 //购物卡兑换代充
                 (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
+                //通过审核添加积分，更新order 表审核状态--添加资产记录10条
+                (new OrderService())->addOrderIntegral($orderId);
             }elseif ($type == 'LR'){//兑换录单
-                (new OrderService())->completeOrder($order_no);
+//                (new OrderService())->completeOrder($order_no);
+                (new OrderService())->addOrderIntegral($orderId);
                 $dhLog = UserShoppingCardDhLog::where('order_no',$order_no)->first();
                 $dhLog->status = 2;
                 $dhLog->save();
@@ -419,9 +422,9 @@ class UserPinTuanController extends Controller
                 $ShoppingInfo->updated_at = $data['timestamp'];
                 $ShoppingInfo->save();
 
-                //通过审核添加积分，更新order 表审核状态
-                $oid = Order::where('order_no', $data['outer_tid'])->value('id');
-                (new OrderService())->addOrderIntegral($oid);
+//                //通过审核添加积分，更新order 表审核状态
+//                $oid = Order::where('order_no', $data['outer_tid'])->value('id');
+//                (new OrderService())->addOrderIntegral($oid);
 
             }
         } catch (Exception $e) {
@@ -537,7 +540,7 @@ class UserPinTuanController extends Controller
                 'updated_at' => $date,
             );
             UserShoppingCardDhLog::create($dataLog);
-            
+
             //扣除用户购物卡余额
             $user->gather_card = $user->gather_card - $money;
             $user->save();
