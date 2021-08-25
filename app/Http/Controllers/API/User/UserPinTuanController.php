@@ -343,12 +343,18 @@ class UserPinTuanController extends Controller
             $userInfo->gather_card = $userInfo->gather_card - $money;
             $userInfo->save();
 
-            //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条
-            (new OrderService())->addOrderIntegral($orderId);
+            //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条,录单审核不排队，其他订单审核要排队
+            if($type == 'LR'){//不排队
+                (new OrderService())->MemberUserOrder($orderId,'LR');
+            }else{//排队
+                (new OrderService())->addOrderIntegral($orderId);
+            }
+
             $gwkStatus = 1;
         } catch (Exception $e) {
             $gwkStatus = 2;
             DB::rollBack();
+            return response()->json(['code' => 0, 'msg' => '订单信息错误']);
             return false;
 //            throw $e;
         }
@@ -566,8 +572,10 @@ class UserPinTuanController extends Controller
             (new OrderService())->addOrderIntegral($orderId);
 
         } catch (Exception $e) {
-            throw $e;
             DB::rollBack();
+            throw $e;
+            return response()->json(['code' => 0, 'msg' => '订单信息错误']);
+            return false;
         }
         DB::commit();
         return json_encode(['code' => 200, 'msg' => '兑换美团成功']);
