@@ -50,7 +50,7 @@ class Gather extends Model
      */
     public function getUsersNum (int $gid)
     {
-        return Gather::where(['id' => $gid])->value('scaler');
+        return Gather::where(['id' => $gid])->sharedLock()->value('scaler');
     }
 
     /**获取拼团信息
