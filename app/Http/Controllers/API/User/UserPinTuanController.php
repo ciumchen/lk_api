@@ -304,7 +304,7 @@ class UserPinTuanController extends Controller
                 'price' => $money,
                 'num' => 1,
                 'numeric' => $mobile,
-                'status' => "succeeded",
+                'status' => "await",
                 'order_from' => 'gwk',
                 'order_no' => $order_no,
                 'need_fee' => $money,
@@ -447,6 +447,10 @@ class UserPinTuanController extends Controller
                 $reData = Order::where(['id'=>$oid,'order_no' => $order_no])->first();
                 $reData->pay_status = 'succeeded';
                 $reData->save();
+
+                $reData2 = TradeOrder::where(['oid'=>$oid,'order_no' => $order_no])->first();
+                $reData2->status = 'succeeded';
+                $reData2->save();
 
 
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
