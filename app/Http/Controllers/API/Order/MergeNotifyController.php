@@ -44,7 +44,10 @@ class MergeNotifyController extends Controller
             throw new LogicException('非法操作');
         }
 
+        Log::info("=======打印购物卡兑换--直充话费回调数据==1111111111111111111111===");
         Log::info("=======打印购物卡兑换--直充话费回调数据=====", $data);
+        Log::info("=======打印购物卡兑换--直充话费回调数据=====", request()->all());
+        Log::info("=======打印购物卡兑换--直充话费回调数据==22222222222222222222222===");
 
         if ($status == 1)
         {

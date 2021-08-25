@@ -87,6 +87,7 @@ class TradeOrder extends Model
         'created_at',
         'updated_at',
         'remarks',
+
     ];
 
     /**

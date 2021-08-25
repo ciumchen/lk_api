@@ -313,6 +313,8 @@ class UserPinTuanController extends Controller
                 'integral' => $money * $integralArr[$profit_ratio],
                 'description' => $description,
                 'oid' => $orderId,
+                'pay_time' => $date,
+                'modified_time' => $date,
                 'created_at' => $date,
                 'updated_at' => $date,
 
