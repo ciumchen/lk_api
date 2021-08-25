@@ -31,15 +31,6 @@ class MergeNotifyController extends Controller
             Log::debug("call notify fail:参数为空");
         }
 
-        Log::info("=======打印购物卡兑换--直充话费回调数据==1111111111111111111111===");
-        Log::info("=======打印购物卡兑换--直充话费回调数据=====", $data);
-        Log::info("=======打印购物卡兑换--直充话费回调数据=====", request()->all());
-        Log::info("=======打印购物卡兑换--直充话费回调数据==22222222222222222222222===");
-        Log::debug("=======打印购物卡兑换--直充话费回调数据==3333333333333333333333===");
-        Log::debug("=======打印购物卡兑换--直充话费回调数据=====", $data);
-        Log::debug("=======打印购物卡兑换--直充话费回调数据=====", request()->all());
-        Log::debug("=======打印购物卡兑换--直充话费回调数据==4444444444444444444444===");
-
         //数据组装
         $sporderId = addslashes($data['sporder_id']);
         $orderId = addslashes($data['orderid']);
