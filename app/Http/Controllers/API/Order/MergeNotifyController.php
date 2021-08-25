@@ -44,6 +44,8 @@ class MergeNotifyController extends Controller
             throw new LogicException('非法操作');
         }
 
+        Log::info("=======打印购物卡兑换--直充话费回调数据=====", $data);
+
         if ($status == 1)
         {
             //充值成功插入数据到数据库

@@ -11,7 +11,7 @@ use Log;
 
 class MobileNotifyController extends Controller
 {
-    
+
     //
     public function callback(Request $request)
     {
