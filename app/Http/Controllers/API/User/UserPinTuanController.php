@@ -443,6 +443,12 @@ class UserPinTuanController extends Controller
                     $dhLog->status = 2;
                     $dhLog->save();
                 }
+                //修改状态
+                $reData = Order::where(['id'=>$oid,'order_no' => $order_no])->first();
+                $reData->pay_status = 'succeeded';
+                $reData->save();
+
+
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
             } else {
                 return json_encode(['code' => 0, 'msg' => $typeName . '失败']);
