@@ -319,11 +319,6 @@ class UserPinTuanController extends Controller
                 'updated_at' => $date,
             );
             $gwkLogModel = new GatherShoppingCard();
-//            $gwkLogModel->uid = $user->id;
-//            $gwkLogModel->money = $money;
-//            $gwkLogModel->type = 2;
-//            $gwkLogModel->name = $typeName;
-//            $reGsc = $gwkLogModel->save();
             $reGscId = $gwkLogModel->create($cardArr)->id;
 
             //生成购物卡兑换订单
@@ -341,9 +336,22 @@ class UserPinTuanController extends Controller
             UserShoppingCardDhLog::create($dataLog);
 
             //扣除用户购物卡余额
-            $user->gather_card = $user->gather_card - $money;
-            $user->save();
+            $userInfo = Users::where('id',$user->id)->first();
+            $userInfo->gather_card = $userInfo->gather_card - $money;
+            $userInfo->save();
 
+            //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条
+            (new OrderService())->addOrderIntegral($orderId);
+            $gwkStatus = 1;
+        } catch (Exception $e) {
+            $gwkStatus = 2;
+            DB::rollBack();
+            return false;
+//            throw $e;
+        }
+        DB::commit();
+
+        if ($gwkStatus===1) {
             if ($type == 'HF') {//兑换直充
                 //组装话费数据
                 $callData = [
@@ -359,24 +367,20 @@ class UserPinTuanController extends Controller
                 //购物卡兑换代充
                 (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
 
-            }elseif ($type == 'LR'){//兑换录单
-                if ($user->phone==$mobile){
+            } elseif ($type == 'LR') {//兑换录单
+                if ($user->phone == $mobile) {
                     return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
                 }
-                $dhLog = UserShoppingCardDhLog::where('order_no',$order_no)->first();
+                $dhLog = UserShoppingCardDhLog::where('order_no', $order_no)->first();
                 $dhLog->status = 2;
                 $dhLog->save();
             }
-
-            //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条
-            (new OrderService())->addOrderIntegral($orderId);
-
-        } catch (Exception $e) {
-            throw $e;
-            DB::rollBack();
+            return json_encode(['code' => 200, 'msg' => $typeName.'成功']);
+        }else{
+            return json_encode(['code' => 0, 'msg' => $typeName.'失败']);
         }
-        DB::commit();
-        return json_encode(['code' => 200, 'msg' => $typeName.'成功']);
+
+
 
     }
 
