@@ -58,6 +58,9 @@ class UserPinTuanController extends Controller
     public function UserUsdtDhLpj(ReUserPinTuan $request)
     {
         $user = $request->user();
+        if (!$user->id){
+            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+        }
         $ip = $request->input('ip');
         $money = $request->input('money');
         //查询70%usdt
@@ -65,6 +68,7 @@ class UserPinTuanController extends Controller
         if ($userAssets->amount >= $money) {
             $oldAmount = $userAssets->amount;
             $order_no = createOrderNo();
+            $oldLpj = $user->balance_tuan;//变动前来拼金余额
             DB::beginTransaction();
             try {
                 //扣除70%usdt和添加资产变动记录
@@ -77,10 +81,10 @@ class UserPinTuanController extends Controller
                     'uid' => $user->id,
                     'operate_type' => 'recharge_lpj',
                     'amount' => $money,
-                    'amount_before_change' => $oldAmount,
+                    'amount_before_change' => $oldLpj,
                     'order_no' => $order_no,
                     'ip' => $ip,
-                    'remark' => '兑换来拼金',
+                    'remark' => 'usdt兑换来拼金',
                     'user_agent' => 'recharge_lpj',
                 );
                 AssetsLogs::create($data);
@@ -92,9 +96,9 @@ class UserPinTuanController extends Controller
                     'uid' => $user->id,
                     'operate_type' => 'recharge',
                     'money' => $money,
-                    'money_before_change' => $oldAmount,
+                    'money_before_change' => $oldLpj,
                     'order_no' => $order_no,
-                    'remark' => '兑换来拼金',
+                    'remark' => 'usdt兑换来拼金',
                     'status' => 2,
                 );
                 UserPinTuan::create($data);
@@ -116,6 +120,9 @@ class UserPinTuanController extends Controller
     public function UserBuyLpj(ReUserPinTuan $request)
     {
         $user = $request->user();
+        if (!$user->id){
+            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+        }
         $ip = $request->input('ip');
         $money = $request->input('money');
 

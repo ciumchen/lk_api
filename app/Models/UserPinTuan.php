@@ -18,6 +18,7 @@ class UserPinTuan extends Model
         'money_before_change',
         'order_no',
         'status',
+        'remark',
         'created_at',
         'updated_at',
     ];
