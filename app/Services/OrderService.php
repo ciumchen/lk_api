@@ -45,7 +45,7 @@ class OrderService
 //            if ($order->status != Order::STATUS_DEFAULT) {
 //                return false;
 //            }
-//            $order->status = Order::STATUS_SUCCEED;
+            $order->status = Order::STATUS_SUCCEED;
 //            $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
             //用户应返还几分比例
