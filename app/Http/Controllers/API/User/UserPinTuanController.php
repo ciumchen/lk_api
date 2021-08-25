@@ -196,6 +196,9 @@ class UserPinTuanController extends Controller
     public function ShoppingCardDhDefault(Request $request)
     {
         $user = $request->user();
+        if (!$user->id){
+            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+        }
 //        $ip = $request->input('ip');
         $money = $request->input('money');
         $mobile = $request->input('mobile');
@@ -447,6 +450,9 @@ class UserPinTuanController extends Controller
     public function ShoppingCardDhMt(Request $request)
     {
         $user = $request->user();
+        if (!$user->id){
+            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+        }
 //        $ip = $request->input('ip');
         $money = $request->input('money');
         $mobile = $request->input('mobile');
@@ -552,8 +558,9 @@ class UserPinTuanController extends Controller
             UserShoppingCardDhLog::create($dataLog);
 
             //扣除用户购物卡余额
-            $user->gather_card = $user->gather_card - $money;
-            $user->save();
+            $userInfo = Users::where('id',$user->id)->first();
+            $userInfo->gather_card = $userInfo->gather_card - $money;
+            $userInfo->save();
 
             //通过审核添加积分，更新order 表审核状态
             (new OrderService())->addOrderIntegral($orderId);
