@@ -396,7 +396,7 @@ class UserPinTuanController extends Controller
         }
 
         //查询购物卡兑换订单
-        $orderData = Order::where(['oid' => $oid, 'order_no' => $order_no, 'description' => $type])->first();
+        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no, 'description' => $type,'status'=>1])->first();
         if ($orderData != null) {
             DB::beginTransaction();
             try {
