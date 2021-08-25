@@ -12,6 +12,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //使用购物卡兑换话费直充和代充
     Route::any('ShoppingCardDhDefault', 'User\UserPinTuanController@ShoppingCardDhDefault');
 
+    //购物卡生成订单后调用支付,购物卡兑换话费支付回调
+    Route::any('gwkDhCallback', 'User\UserPinTuanController@gwkDhCallback');
+
     //使用购物卡兑换美团卡
     Route::any('ShoppingCardDhMt', 'User\UserPinTuanController@ShoppingCardDhMt');
 
