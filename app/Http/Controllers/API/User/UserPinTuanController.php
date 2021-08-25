@@ -284,8 +284,8 @@ class UserPinTuanController extends Controller
                 'price' => $money,
                 'profit_price' => $profit_price,
                 'name' => $name,
-                'created_at' => $date,
-                'updated_at' => $date,
+                'created_at' => date("Y-m-d H:i:s", time()),
+                'updated_at' => date("Y-m-d H:i:s", time()),
                 'status' => '1',
                 'state' => '1',
                 'pay_status' => 'succeeded',
@@ -313,10 +313,10 @@ class UserPinTuanController extends Controller
                 'integral' => $money * $integralArr[$profit_ratio],
                 'description' => $description,
                 'oid' => $orderId,
-                'pay_time' => $date,
-                'modified_time' => $date,
-                'created_at' => $date,
-                'updated_at' => $date,
+                'pay_time' => date("Y-m-d H:i:s", time()),
+                'modified_time' => date("Y-m-d H:i:s", time()),
+                'created_at' => date("Y-m-d H:i:s", time()),
+                'updated_at' => date("Y-m-d H:i:s", time()),
 
             );
             TradeOrder::create($arr);
@@ -327,8 +327,8 @@ class UserPinTuanController extends Controller
                 'money'=>$money,
                 'type'=>2,
                 'name'=>$typeName,
-                'created_at' => $date,
-                'updated_at' => $date,
+                'created_at' => date("Y-m-d H:i:s", time()),
+                'updated_at' => date("Y-m-d H:i:s", time()),
             );
             $gwkLogModel = new GatherShoppingCard();
             $reGscId = $gwkLogModel->create($cardArr)->id;
@@ -342,8 +342,8 @@ class UserPinTuanController extends Controller
                 'order_no' => $order_no,
                 'remark' => $remark,
                 'gather_shopping_card_id' => $reGscId,
-                'created_at' => $date,
-                'updated_at' => $date,
+                'created_at' => date("Y-m-d H:i:s", time()),
+                'updated_at' => date("Y-m-d H:i:s", time()),
             );
             UserShoppingCardDhLog::create($dataLog);
 
@@ -502,7 +502,7 @@ class UserPinTuanController extends Controller
                 'price' => $money,
                 'profit_price' => $profit_price,
                 'name' => '美团',
-                'created_at' => $date,
+                'created_at' => date("Y-m-d H:i:s", time()),
                 'status' => '1',
                 'state' => '1',
                 'pay_status' => 'succeeded',
@@ -551,8 +551,8 @@ class UserPinTuanController extends Controller
                 'money'=>$money,
                 'type'=>2,
                 'name'=>"兑换美团",
-                'created_at' => $date,
-                'updated_at' => $date,
+                'created_at' => date("Y-m-d H:i:s", time()),
+                'updated_at' => date("Y-m-d H:i:s", time()),
             );
             $gwkLogModel = new GatherShoppingCard();
             $reGscId = $gwkLogModel->create($mtArr)->id;
@@ -567,8 +567,8 @@ class UserPinTuanController extends Controller
                 'remark' => '美团',
                 'gather_shopping_card_id' => $reGscId,
                 'status' => 2,
-                'created_at' => $date,
-                'updated_at' => $date,
+                'created_at' => date("Y-m-d H:i:s", time()),
+                'updated_at' => date("Y-m-d H:i:s", time()),
             );
             UserShoppingCardDhLog::create($dataLog);
 
