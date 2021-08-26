@@ -18,6 +18,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //使用购物卡兑换美团卡
     Route::any('ShoppingCardDhMt', 'User\UserPinTuanController@ShoppingCardDhMt');
 
+    //生成美团订单后确认兑换,不需要调用支付
+    Route::any('gwkDhCallbackNoZf', 'User\UserPinTuanController@gwkDhCallbackNoZf');
+
 
 });
 

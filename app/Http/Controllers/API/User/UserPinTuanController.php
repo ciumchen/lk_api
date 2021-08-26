@@ -84,7 +84,7 @@ class UserPinTuanController extends Controller
                     'amount_before_change' => $oldLpj,
                     'order_no' => $order_no,
                     'ip' => $ip,
-                    'remark' => 'usdt兑换来拼金',
+                    'remark' => '补贴金兑换来拼金',
                     'user_agent' => 'recharge_lpj',
                 );
                 AssetsLogs::create($data);
@@ -98,7 +98,7 @@ class UserPinTuanController extends Controller
                     'money' => $money,
                     'money_before_change' => $oldLpj,
                     'order_no' => $order_no,
-                    'remark' => 'usdt兑换来拼金',
+                    'remark' => '补贴金兑换来拼金',
                     'status' => 2,
                 );
                 UserPinTuan::create($data);
@@ -341,7 +341,7 @@ class UserPinTuanController extends Controller
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
                 'remark' => $remark,
-                'status' => 3,
+                'status' => 1,
                 'gather_shopping_card_id' => $reGscId,
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
@@ -452,16 +452,22 @@ class UserPinTuanController extends Controller
                 $reData2->status = 'succeeded';
                 $reData2->save();
 
+                $gwkDhLogData = UserShoppingCardDhLog::where('order_no',$order_no)->first();
+                $gwkDhLogData->status = 2;
+                $gwkDhLogData->save();
+
 
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
             } else {
                 return json_encode(['code' => 0, 'msg' => $typeName . '失败']);
             }
+        }else{
+            return json_encode(['code' => 0, 'msg' => $typeName . '订单不存在']);
         }
 
     }
 
-    //购物卡兑换美团
+    //购物卡兑换美团生成订单
     public function ShoppingCardDhMt(Request $request)
     {
         $user = $request->user();
@@ -505,7 +511,7 @@ class UserPinTuanController extends Controller
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'status' => '1',
                 'state' => '1',
-                'pay_status' => 'succeeded',
+                'pay_status' => 'await',
                 'remark' => '',
                 'order_no' => $order_no,
                 'description' => 'MT',
@@ -521,7 +527,7 @@ class UserPinTuanController extends Controller
                 'price' => $money,
                 'num' => 1,
                 'numeric' => $mobile,
-                'status' => "succeeded",
+                'status' => "await",
                 'order_from' => 'gwk',
                 'order_no' => $order_no,
                 'need_fee' => $money,
@@ -531,6 +537,8 @@ class UserPinTuanController extends Controller
                 'description' => 'MT',
                 'oid' => $orderId,
                 'remarks' => $userName,
+                'pay_time' => date("Y-m-d H:i:s", time()),
+                'modified_time' => date("Y-m-d H:i:s", time()),
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
 
@@ -539,13 +547,6 @@ class UserPinTuanController extends Controller
 
 
             //创建gather_shopping_card购物卡金额变动记录
-//            $gwkLogModel = new GatherShoppingCard();
-//            $gwkLogModel->uid = $user->id;
-//            $gwkLogModel->money = $money;
-//            $gwkLogModel->type = 2;
-//            $gwkLogModel->name = "兑换美团";
-//            $gwkLogModel->save();
-
             $mtArr = array(
                 'uid' => $user->id,
                 'money' => $money,
@@ -566,19 +567,11 @@ class UserPinTuanController extends Controller
                 'order_no' => $order_no,
                 'remark' => '美团',
                 'gather_shopping_card_id' => $reGscId,
-                'status' => 2,
+                'status' => 1,
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
             );
             UserShoppingCardDhLog::create($dataLog);
-
-            //扣除用户购物卡余额
-            $userInfo = Users::where('id', $user->id)->first();
-            $userInfo->gather_card = $userInfo->gather_card - $money;
-            $userInfo->save();
-
-            //通过审核添加积分，更新order 表审核状态
-            (new OrderService())->addOrderIntegral($orderId);
 
         } catch (Exception $e) {
             DB::rollBack();
@@ -587,9 +580,62 @@ class UserPinTuanController extends Controller
             return false;
         }
         DB::commit();
-        return json_encode(['code' => 200, 'msg' => '兑换美团成功']);
+
+        return response()->json(['code' => 1, 'data' => array('msg' => "订单创建成功", 'order_no' => $order_no, 'oid' => $orderId)]);
 
     }
+
+    //生成美团订单后确认兑换,不需要调用支付
+    public function gwkDhCallbackNoZf(Request $request){
+        $user = $request->user();
+        if (!$user->id) {
+            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+        }
+//        $ip = $request->input('ip');
+        $order_no = $request->input('order_no');
+        $money = $request->input('money');
+        $mobile = $request->input('mobile');
+//        $type = $request->input('type');
+        $oid = $request->input('oid');
+//查询购物卡兑换订单
+        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no,'status'=>1])->first();
+        if ($orderData != null) {
+            DB::beginTransaction();
+            try {
+                //扣除用户购物卡余额
+                $userInfo = Users::where('id', $user->id)->first();
+                $userInfo->gather_card = $userInfo->gather_card - $money;
+                $userInfo->save();
+
+                //通过审核添加积分，更新order 表审核状态
+                (new OrderService())->addOrderIntegral($oid);
+
+                //修改order表、TradeOrder表、UserShoppingCardDhLog表状态
+                $orderData->pay_status = "succeeded";
+                $orderData->save();
+
+                $traderOrderData = TradeOrder::where(['oid'=>$oid,'order_no'=>$order_no])->first();
+                $traderOrderData->status = 'succeeded';
+                $traderOrderData->save();
+
+                $gwkDhLogData = UserShoppingCardDhLog::where(['status'=>1,'order_no'=>$order_no])->first();
+                $gwkDhLogData->status = 2;
+                $gwkDhLogData->save();
+
+            } catch (Exception $e) {
+                DB::rollBack();
+                return response()->json(['code' => 0, 'msg' => '兑换美团失败']);
+                return false;
+//            throw $e;
+            }
+            DB::commit();
+            return json_encode(['code' => 1, 'msg' => '兑换美团成功']);
+        }else{
+            return json_encode(['code' => 0, 'msg' => '兑换美团失败']);
+        }
+
+    }
+
 
 
 }
