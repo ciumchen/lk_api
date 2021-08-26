@@ -50,7 +50,16 @@ class Gather extends Model
      */
     public function getUsersNum (int $gid)
     {
-        return Gather::where(['id' => $gid])->value('scaler');
+        try {
+            DB::beginTransaction();
+            $scaler = Gather::where(['id' => $gid])->lockForUpdate()->value('scaler');
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return $scaler;
     }
 
     /**获取拼团信息
