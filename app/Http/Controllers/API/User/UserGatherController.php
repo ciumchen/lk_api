@@ -31,7 +31,7 @@ class UserGatherController extends Controller
         return (new CardpayPassword())->addCardPwd($data);
     }
 
-    /**获取购物卡密码
+    /**验证购物卡密码
      * @param Request $request
      * @return mixed
      * @throws

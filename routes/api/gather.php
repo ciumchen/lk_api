@@ -21,7 +21,7 @@ Route::any('setup-cardpwd', 'User\UserGatherController@isSetupPwd');
 //用户设置密码
 Route::any('add-cardpwd', 'User\UserGatherController@addCardPwd');
 //验证用户密码
-Route::any('proving-cardpwd', 'User\UserGatherController@getCardPwd');
+Route::any('proving-cardpwd', 'User\UserGatherController@provingCardPwd');
 //修改用户密码
 Route::any('edit-cardpwd', 'User\UserGatherController@editCardPwd');
 

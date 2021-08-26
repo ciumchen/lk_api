@@ -33,10 +33,10 @@ class CardpayPassword extends Model
         //返回
         if (isset($userCard))
         {
-            return true;
+            return json_encode(['code' => 200, 'mag' => '用户已设置密码', 'res' => 1]);
         } else
         {
-            return false;
+            return json_encode(['code' => 200, 'mag' => '用户未设置密码', 'res' => 0]);
         }
     }
 

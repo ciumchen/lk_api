@@ -31,7 +31,7 @@ class UserGatherService
         }
     }
 
-    /**获取购物卡密码
+    /**验证购物卡密码
      * @param array $data
      * @return mixed
      * @throws
