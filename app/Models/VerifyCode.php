@@ -40,7 +40,8 @@ class VerifyCode extends Model
     const TYPE_FORGET_PASSWORD = 3;//找回密码
     const TYPE_WITHDRAW_TO_WALLET = 4;//提现到钱包
     const TYPE_UPDATE_USER_PHONE = 5;//修改用户手机号
-    const TYPE_GATHER_CARD = 9; //拼团购物卡验证码
+    const TYPE_GATHER_CARD = 9; //拼团设置购物卡验证码
+    const TYPE_GATHER_AGAINCARD = 10; //拼团修改购物卡密码验证码
     const TYPE_TONGYONG = 100;//通用验证码
     /**
      * The attributes that are mass assignable.

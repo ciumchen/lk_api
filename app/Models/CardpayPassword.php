@@ -119,6 +119,25 @@ class CardpayPassword extends Model
         return Users::where(['id' => $uid, 'status' => 1])->first();
     }
 
+    /**获取用户信息
+     * @param string $phone
+     * @param int $type
+     * @return mixed
+     * @throws
+     */
+    public function daySum(string $phone, int $type)
+    {
+        //每天开始时间
+        $stareDate = date('Y-m-d 00:00:00');
+        //每天结束时间
+        $endDate = date('Y-m-d 23:59:59');
+
+        return VerifyCode::where(['phone' => $phone, 'type' => $type])
+            ->where('created_at', '>=', $stareDate)
+            ->where('created_at', '<=', $endDate)
+            ->count();
+    }
+
     /**格式化输出日期
      * Prepare a date for array / JSON serialization.
      * @param  \DateTimeInterface  $date

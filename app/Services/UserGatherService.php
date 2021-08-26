@@ -17,6 +17,7 @@ class UserGatherService
     public function addCardPwd(array $data)
     {
         //校验密码
+        $data['type'] = VerifyCode::TYPE_GATHER_CARD;
         $this->checkPwd($data);
         $data['type'] = 1;
 
@@ -76,6 +77,14 @@ class UserGatherService
         $userInfo = (new CardpayPassword())->userInfo($data['uid']);
         $data['phone'] = $userInfo->phone;
 
+        //验证用户当天修改密码次数
+        $type = VerifyCode::TYPE_GATHER_AGAINCARD;
+        $userSum = (new CardpayPassword())->daySum($data['phone'], $type);
+        if ($userSum >= 1)
+        {
+            return json_encode(['code' => 10000, 'mag' => '每天只能修改一次密码']);
+        }
+
         //校验密码
         $this->checkPwd($data);
 
@@ -102,7 +111,7 @@ class UserGatherService
     public function checkPwd(array $data)
     {
         //判断手机验证码
-        if (!VerifyCode::updateUserPhonCheck($data['phone'], $data['verifyCode'], VerifyCode::TYPE_GATHER_CARD))
+        if (!VerifyCode::updateUserPhonCheck($data['phone'], $data['verifyCode'], $data['type']))
         {
             return json_encode(['code' => 10000, 'mag' => '无效的验证码']);
         }
@@ -113,6 +122,7 @@ class UserGatherService
             return json_encode(['code' => 10000, 'mag' => '两次输入密码不一致']);
         }
 
+        //验证密码长度
         if (strlen($data['password']) != 64)
         {
             return json_encode(['code' => 10000, 'mag' => '密码不合法，请重新输入']);
