@@ -24,4 +24,7 @@ Route::any('add-cardpwd', 'User\UserGatherController@addCardPwd');
 Route::any('proving-cardpwd', 'User\UserGatherController@provingCardPwd');
 //修改用户密码
 Route::any('edit-cardpwd', 'User\UserGatherController@editCardPwd');
+//获取验证码次数
+Route::any('code-sum', 'User\UserGatherController@codeSum');
+
 

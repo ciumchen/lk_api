@@ -54,4 +54,16 @@ class UserGatherController extends Controller
 
         return (new UserGatherService())->editCardPwd($data);
     }
+
+    /**验证码次数判断
+     * @param Request $request
+     * @return mixed
+     * @throws
+     */
+    public function codeSum(Request $request)
+    {
+        $data = $request->all();
+
+        return (new UserGatherService())->codeSum($data);
+    }
 }

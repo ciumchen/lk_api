@@ -66,6 +66,7 @@ class UserGatherService
      */
     public function editCardPwd(array $data)
     {
+        $data['type'] = VerifyCode::TYPE_GATHER_AGAINCARD;
         //获取密码信息
         $userCard = (new CardpayPassword())->cardPwdInfo($data['uid']);
         if (!$userCard)
@@ -76,14 +77,6 @@ class UserGatherService
         //获取用户信息
         $userInfo = (new CardpayPassword())->userInfo($data['uid']);
         $data['phone'] = $userInfo->phone;
-
-        //验证用户当天修改密码次数
-        $type = VerifyCode::TYPE_GATHER_AGAINCARD;
-        $userSum = (new CardpayPassword())->daySum($data['phone'], $type);
-        if ($userSum >= 1)
-        {
-            return json_encode(['code' => 10000, 'mag' => '每天只能修改一次密码']);
-        }
 
         //校验密码
         $this->checkPwd($data);
@@ -127,5 +120,27 @@ class UserGatherService
         {
             return json_encode(['code' => 10000, 'mag' => '密码不合法，请重新输入']);
         }
+    }
+
+    /**校验购物卡密码
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function codeSum(array $data)
+    {
+        $data['type'] = VerifyCode::TYPE_GATHER_AGAINCARD;
+        //获取用户信息
+        $userInfo = (new CardpayPassword())->userInfo($data['uid']);
+        $data['phone'] = $userInfo->phone;
+
+        //验证用户当天修改密码次数
+        $userSum = (new CardpayPassword())->daySum($data['phone'], $data['type']);
+        if ($userSum >= 1)
+        {
+            return json_encode(['code' => 10000, 'mag' => '每天只能修改一次密码']);
+        }
+
+        return $userSum;
     }
 }
