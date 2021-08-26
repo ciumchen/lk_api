@@ -110,7 +110,7 @@ class GatherUsers extends Model
         $stareDate = date('Y-m-d 00:00:00');
         //每天结束时间
         $endDate = date('Y-m-d 23:59:59');
-        return GatherUsers::where(['uid' => $uid])
+        return GatherUsers::where(['uid' => $uid, 'status' => 1])
                 ->where('created_at', '>=', $stareDate)
                 ->where('created_at', '<=', $endDate)
                 ->count();
