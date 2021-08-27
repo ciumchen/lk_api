@@ -213,6 +213,9 @@ class UserPinTuanController extends Controller
         $money = $request->input('money');
         $mobile = $request->input('mobile');
         $type = $request->input('type');
+        if ($money=='' || $mobile=='' || $type==''){
+            return response()->json(['code' => 0, 'msg' => '参数不能为空']);
+        }
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
@@ -488,6 +491,10 @@ class UserPinTuanController extends Controller
         $money = $request->input('money');
         $mobile = $request->input('mobile');
         $userName = $request->input('userName');
+
+        if ($money=='' || $mobile=='' || $userName==''){
+            return response()->json(['code' => 0, 'msg' => '参数不能为空']);
+        }
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
