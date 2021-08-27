@@ -61,6 +61,7 @@ class UsersController extends Controller
             'status'=>1,
             'name'=>'开通会员',
             'order_no'=>$order_no,
+            'description'=>"KTHY",
             );
         $orderData[] = Order::create($data)->toArray();
         //给邀请人录单
@@ -75,6 +76,7 @@ class UsersController extends Controller
             'name'=>'开通会员',
             'member_gl_oid'=>$orderData[0]['id'],
             'order_no'=>$order_no,
+            'description'=>"KTHY",
         );
         $orderData[] = Order::create($data)->toArray();
 
