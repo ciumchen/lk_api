@@ -21,6 +21,13 @@ class UserGatherService
         $this->checkPwd($data);
         $data['type'] = 1;
 
+        //获取密码信息
+        $userCard = (new CardpayPassword())->cardPwdInfo($data['uid']);
+        if ($userCard)
+        {
+            return json_encode(['code' => 10000, 'mag' => '用户密码信息已存在']);
+        }
+
         //新增密码记录
         $userCard = (new CardpayPassword())->setCardPwd($data);
         if ($userCard)
