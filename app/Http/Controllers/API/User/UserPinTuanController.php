@@ -355,6 +355,7 @@ class UserPinTuanController extends Controller
             UserShoppingCardDhLog::create($dataLog);
         } catch (Exception $e) {
             DB::rollBack();
+            Log::debug("===========ShoppingCardDhDefault===购物卡兑换-录单、话费直充、和代充==生成订单异常================",[$e->getMessage()]);
             return response()->json(['code' => 0, 'msg' => '订单信息错误']);
             return false;
 //            throw $e;
@@ -592,9 +593,9 @@ class UserPinTuanController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            throw $e;
+//            throw $e;
+            Log::debug("===========ShoppingCardDhMt===购物卡兑换美团生成订单异常================",[$e->getMessage()]);
             return response()->json(['code' => 0, 'msg' => '订单信息错误']);
-            return false;
         }
         DB::commit();
 
@@ -650,8 +651,8 @@ class UserPinTuanController extends Controller
 
             } catch (Exception $e) {
                 DB::rollBack();
+                Log::debug("===========gwkDhCallbackNoZf===购物卡兑换美团生成--确认兑换异常================",[$e->getMessage()]);
                 return response()->json(['code' => 0, 'msg' => '兑换美团失败']);
-                return false;
 //            throw $e;
             }
             DB::commit();
