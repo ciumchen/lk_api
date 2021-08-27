@@ -118,4 +118,17 @@ class Users extends Model
             $users->save();
         }
     }
+
+    /**更新广告奖励金额
+     * @param int $uid
+     * @param float $award
+     * @return mixed
+     * @throws
+     */
+    public function updAdvertAward (int $uid, float $award)
+    {
+        $userAdvert = Users::find($uid);
+        $userAdvert->advert_award = $userAdvert->advert_award + $award;
+        $userAdvert->save();
+    }
 }
