@@ -66,6 +66,30 @@ class UserGatherService
         }
     }
 
+    public function checkProvingCardPwd(array $data)
+    {
+        //校验密码
+        if (strlen($data['password']) != 64)
+        {
+            return json_encode(['code' => 10000, 'mag' => '密码不合法，请重新输入']);
+        }
+
+        //获取密码信息
+        $userCard = (new CardpayPassword())->cardPwdInfo($data['uid']);
+        if (!$userCard)
+        {
+            return json_encode(['code' => 10000, 'mag' => '用户密码信息不存在']);
+        }
+
+        $cardInfo = (new CardpayPassword())->cardPwdInfo($data['uid']);
+        if ($cardInfo->password != $data['password'])
+        {
+            return json_encode(['code' => 10000, 'mag' => '密码输入不正确，请重新输入']);
+        }else{
+            return 200;
+        }
+    }
+
     /**修改购物卡密码
      * @param array $data
      * @return mixed

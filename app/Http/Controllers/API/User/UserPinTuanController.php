@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\User;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\API\Order\RechargeController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GwkDhDefaultAuthRequest;
+use App\Http\Requests\GwkDhMtAuthRequest;
 use App\Libs\Yuntong\YuntongPay;
 use App\Models\Assets;
 use App\Models\AssetsLogs;
@@ -20,6 +22,7 @@ use App\Models\UserShoppingCardDhLog;
 use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
 use App\Services\OrderTwoService;
+use App\Services\UserGatherService;
 use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
 use Illuminate\Http\Request;
@@ -360,7 +363,7 @@ class UserPinTuanController extends Controller
     }
 
     //购物卡生成订单后调用支付,购物卡兑换话费支付回调
-    public function gwkDhCallback(Request $request)
+    public function gwkDhCallback(GwkDhDefaultAuthRequest $request)
     {
         $user = $request->user();
         if (!$user->id) {
@@ -372,6 +375,13 @@ class UserPinTuanController extends Controller
         $mobile = $request->input('mobile');
         $type = $request->input('type');
         $oid = $request->input('oid');
+
+        $password = $request->input('password');
+        //验证支付密码
+        $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
+        if ($result!=200){
+            return $result;
+        }
 
         switch ($type) {
             case "LR":
@@ -396,7 +406,7 @@ class UserPinTuanController extends Controller
         }
 
         //查询购物卡兑换订单
-        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no, 'description' => $type,'status'=>1])->first();
+        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no, 'description' => $type, 'status' => 1])->first();
         if ($orderData != null) {
             DB::beginTransaction();
             try {
@@ -444,15 +454,15 @@ class UserPinTuanController extends Controller
                     $dhLog->save();
                 }
                 //修改状态
-                $reData = Order::where(['id'=>$oid,'order_no' => $order_no])->first();
+                $reData = Order::where(['id' => $oid, 'order_no' => $order_no])->first();
                 $reData->pay_status = 'succeeded';
                 $reData->save();
 
-                $reData2 = TradeOrder::where(['oid'=>$oid,'order_no' => $order_no])->first();
+                $reData2 = TradeOrder::where(['oid' => $oid, 'order_no' => $order_no])->first();
                 $reData2->status = 'succeeded';
                 $reData2->save();
 
-                $gwkDhLogData = UserShoppingCardDhLog::where('order_no',$order_no)->first();
+                $gwkDhLogData = UserShoppingCardDhLog::where('order_no', $order_no)->first();
                 $gwkDhLogData->status = 2;
                 $gwkDhLogData->save();
 
@@ -461,7 +471,7 @@ class UserPinTuanController extends Controller
             } else {
                 return json_encode(['code' => 0, 'msg' => $typeName . '失败']);
             }
-        }else{
+        } else {
             return json_encode(['code' => 0, 'msg' => $typeName . '订单不存在']);
         }
 
@@ -586,7 +596,8 @@ class UserPinTuanController extends Controller
     }
 
     //生成美团订单后确认兑换,不需要调用支付
-    public function gwkDhCallbackNoZf(Request $request){
+    public function gwkDhCallbackNoZf(GwkDhMtAuthRequest $request)
+    {
         $user = $request->user();
         if (!$user->id) {
             return response()->json(['code' => 0, 'msg' => '用户信息错误']);
@@ -597,8 +608,16 @@ class UserPinTuanController extends Controller
         $mobile = $request->input('mobile');
 //        $type = $request->input('type');
         $oid = $request->input('oid');
-//查询购物卡兑换订单
-        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no,'status'=>1])->first();
+
+        $password = $request->input('password');
+        //验证支付密码
+        $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
+        if ($result!=200){
+            return $result;
+        }
+
+        //查询购物卡兑换订单
+        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no, 'status' => 1])->first();
         if ($orderData != null) {
             DB::beginTransaction();
             try {
@@ -614,11 +633,11 @@ class UserPinTuanController extends Controller
                 $orderData->pay_status = "succeeded";
                 $orderData->save();
 
-                $traderOrderData = TradeOrder::where(['oid'=>$oid,'order_no'=>$order_no])->first();
+                $traderOrderData = TradeOrder::where(['oid' => $oid, 'order_no' => $order_no])->first();
                 $traderOrderData->status = 'succeeded';
                 $traderOrderData->save();
 
-                $gwkDhLogData = UserShoppingCardDhLog::where(['status'=>1,'order_no'=>$order_no])->first();
+                $gwkDhLogData = UserShoppingCardDhLog::where(['status' => 1, 'order_no' => $order_no])->first();
                 $gwkDhLogData->status = 2;
                 $gwkDhLogData->save();
 
@@ -630,12 +649,11 @@ class UserPinTuanController extends Controller
             }
             DB::commit();
             return json_encode(['code' => 1, 'msg' => '兑换美团成功']);
-        }else{
+        } else {
             return json_encode(['code' => 0, 'msg' => '兑换美团失败']);
         }
 
     }
-
 
 
 }
