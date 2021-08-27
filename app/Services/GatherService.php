@@ -48,6 +48,7 @@ class GatherService
             return json_encode(['code' => 10000, 'msg' => '账户来拼金余额已不足，请及时充值！']);
         }
 
+        DB::beginTransaction();
         try {
             //判断用户当天当场次最多5次，每人每天最多30次
             (new GatherService())->isMaxSum($gid, $uid);
@@ -59,7 +60,9 @@ class GatherService
             (new GatherGoldLogs())->setGatherGold($gid, $uid, $gatherUsersData->id);
             //判断是否开团、开奖
             $this->isMaxGatherUser($gid, $userRatio);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             throw $e;
         }
 
@@ -139,6 +142,7 @@ class GatherService
         //获取未获奖的参团用户id
         $diffGuids = array_diff($guidDict, $guids);
 
+        DB::beginTransaction();
         try {
             //获奖操作
             $this->awardUsers($guids);
@@ -158,7 +162,9 @@ class GatherService
 
             //未获奖操作
             $this->noAwardUsers($diffGuids);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             throw $e;
         }
     }
