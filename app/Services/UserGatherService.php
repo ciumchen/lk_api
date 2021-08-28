@@ -113,19 +113,19 @@ class UserGatherService
         //判断手机验证码
         if (!VerifyCode::updateUserPhonCheck($data['phone'], $data['verifyCode'], $data['type']))
         {
-            return json_encode(['code' => 10000, 'mag' => '无效的验证码']);
+            throw new LogicException('无效的验证码');
         }
 
         //判断两次密码是否一致
         if ($data['password'] != $data['confirmPassword'])
         {
-            return json_encode(['code' => 10000, 'mag' => '两次输入密码不一致']);
+            throw new LogicException('两次输入密码不一致');
         }
 
         //验证密码长度
         if (strlen($data['password']) != 64)
         {
-            return json_encode(['code' => 10000, 'mag' => '密码不合法，请重新输入']);
+            throw new LogicException('密码不合法，请重新输入');
         }
     }
 
@@ -145,7 +145,8 @@ class UserGatherService
         $userSum = (new CardpayPassword())->daySum($data['phone'], $data['type']);
         if ($userSum >= 1)
         {
-            return json_encode(['code' => 10000, 'mag' => '每天只能修改一次密码']);
+            throw new LogicException('每天只能修改一次密码');
+            //return json_encode(['code' => 10000, 'mag' => '每天只能修改一次密码']);
         }
 
         return $userSum;
