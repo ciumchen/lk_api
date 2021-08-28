@@ -478,7 +478,6 @@ class UserPinTuanController extends Controller
                 $gwkDhLogData->status = 2;
                 $gwkDhLogData->save();
 
-
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
             } else {
                 return json_encode(['code' => 0, 'msg' => $typeName . '失败']);

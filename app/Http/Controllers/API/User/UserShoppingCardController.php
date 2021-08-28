@@ -33,7 +33,7 @@ class UserShoppingCardController extends Controller
     public function selectGwkDhjl(Request $request){
         $uid = $request->input('uid');
         $page = $request->input("page");
-        $data = (new GatherShoppingCard())
+        $data = (new UserShoppingCardDhLog())
             ->where("uid", $uid)
             ->orderBy('id', 'desc')
             ->latest('id')
