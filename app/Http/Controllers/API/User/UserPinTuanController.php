@@ -21,7 +21,6 @@ use App\Models\Users;
 use App\Models\UserShoppingCardDhLog;
 use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
-use App\Services\OrderTwoService;
 use App\Services\UserGatherService;
 use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
@@ -298,6 +297,7 @@ class UserPinTuanController extends Controller
                 'remark' => '',
                 'order_no' => $order_no,
                 'description' => $description,
+                'payment_method' => 'gwk',
             );
             $orderData = Order::create($arr);
             $orderId = $orderData->id;
