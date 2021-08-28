@@ -216,6 +216,10 @@ class UserPinTuanController extends Controller
             return response()->json(['code' => 0, 'msg' => '参数不能为空']);
         }
 
+        if ($type=='LR'){
+            $profit_ratio = $request->input('profit_ratio');//接收录单的让利比例
+        }
+
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
             throw new LogicException('手机号格式不正确');
@@ -240,6 +244,7 @@ class UserPinTuanController extends Controller
                 $remark = "话费";
                 $create_type = 1;
                 $typeName = "兑换话费";
+                $profit_ratio = Setting::where('key', 'set_business_rebate_scale_hf')->value('value');//话费让利比例
                 break;
             case "ZL":
                 $name = '代充';
@@ -250,6 +255,7 @@ class UserPinTuanController extends Controller
                 $remark = "代充";
                 $create_type = 2;
                 $typeName = "兑换代充";
+                $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
                 break;
             default:
                 return response()->json(['code' => 0, 'msg' => '兑换类型错误']);
@@ -265,7 +271,6 @@ class UserPinTuanController extends Controller
         try {
             //生成order录单
             $order_no = createOrderNo();
-            $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
             $date = date("Y-m-d H:i:s", time());
             $profit_price = $money * $profit_ratio / 100;
             $integralArr = array(
