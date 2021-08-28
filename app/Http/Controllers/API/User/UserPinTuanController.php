@@ -297,6 +297,10 @@ class UserPinTuanController extends Controller
                 $business_uid = 2;
             }
 
+            if (intval($orderUid)<=0){
+                return response()->json(['code' => 0, 'msg' => '用户不存在']);
+            }
+
             $arr = array(
                 'uid' => $orderUid,
                 'business_uid' => $business_uid,
