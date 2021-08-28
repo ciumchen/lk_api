@@ -266,10 +266,7 @@ class UserPinTuanController extends Controller
 
         }
 
-        //查询用户购物卡余额
-        if ($user->gather_card < $money) {
-            return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
-        }
+
         DB::beginTransaction();
         try {
             //生成order录单
@@ -283,9 +280,17 @@ class UserPinTuanController extends Controller
             );
 
             if ($type == "LR") {
+                //查询用户购物卡余额和录单实际让利金额
+                if ($user->gather_card < $profit_price) {
+                    return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                }
                 $orderUid = Users::where('phone', $mobile)->value('id');
                 $business_uid = $user->id;
             } else {
+                //查询用户购物卡余额
+                if ($user->gather_card < $money) {
+                    return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                }
                 $orderUid = $user->id;
                 $business_uid = 2;
             }
