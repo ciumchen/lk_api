@@ -28,7 +28,8 @@ class OrdersResources extends JsonResource
             'name' => $this->name,
             'created_at' => $this->created_at,
             'pay_status' => $this->pay_status,
-            'numeric' => $this->numeric
+            'numeric' => $this->numeric,
+            'payment_method' => $this->payment_method
         ];
     }
 }

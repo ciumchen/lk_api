@@ -93,12 +93,10 @@ class OrderController extends Controller
         $user = $request->user();
         $bOrder = $request->input('bOrder', false);
 
-//        $data = (new Order())
-        $data = DB::table('order')
-            /*->join('trade_order', function($join){
+        $data = (new Order())
+            ->join('trade_order', function($join){
                 $join->on('order.id', 'trade_order.oid');
-            })*/
-                ->join('trade_order', 'id', 'trade_order.oid')
+            })
             ->when(!$bOrder,function($query) use ($user) {
                 return $query->where('uid', $user->id);
             })
