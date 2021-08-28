@@ -63,6 +63,8 @@ class VerifyCode extends Model
         self::TYPE_WITHDRAW_TO_WALLET => 'withdraw_to_wallet',
         self::TYPE_UPDATE_USER_PHONE => 'update_user_phone',
         self::TYPE_TONGYONG => 'tongyong',
+        self::TYPE_GATHER_CARD => 'gather_card',
+        self::TYPE_GATHER_AGAINCARD => 'gather_againcard',
 
     ];
 
