@@ -204,7 +204,7 @@ class UserPinTuanController extends Controller
     //购物卡兑换-录单、话费直充、和代充
     public function ShoppingCardDhDefault(Request $request)
     {
-        Log::debug("=========购物卡兑换接收参数打印=================",$request->all());
+//        Log::debug("=========购物卡兑换接收参数打印=================",$request->all());
 
         $user = $request->user();
         if (!$user->id) {

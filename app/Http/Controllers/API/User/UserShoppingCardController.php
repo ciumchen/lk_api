@@ -30,21 +30,44 @@ use App\Http\Requests\UserPinTuan as ReUserPinTuan;
 class UserShoppingCardController extends Controller
 {
     //查询购物卡兑换记录
-    public function selectGwkDhjl(Request $request){
+    public function selectGwkDhjl2(Request $request){
         $uid = $request->input('uid');
         $page = $request->input("page");
-        $data = (new GatherShoppingCard())
-            ->whith(['gwkDhLog'])
-            ->where(["uid"=>$uid,"gwkDhLog.status"=>2])
+        $data = (new UserShoppingCardDhLog())
+//            ->with(['GatherShoppingCard'=>function($query) use ($uid){
+//                $query->where(["uid"=>$uid]);
+//            }])
+            ->with(['GatherShoppingCard'])
+            ->where('status',2)
+            ->where(["uid"=>$uid])
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, 10)
-            ->get(['id','uid','money','status','type','name','created_at']);
+            ->get();
 
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
 
     }
 
+    //查询购物卡兑换记录
+    public function selectGwkDhjl(Request $request){
+        $uid = $request->input('uid');
+        $page = $request->input("page");
+        $data = (new GatherShoppingCard())
+            ->with(['gwkDhLog'=>function($query) use ($uid){
+                $query->where('status',2);
+            }])
+//            ->with(['gwkDhLog'])
+
+            ->where(["uid"=>$uid])
+            ->orderBy('id', 'desc')
+            ->latest('id')
+            ->forPage($page, 10)
+            ->get();
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+
+    }
 
 
 }

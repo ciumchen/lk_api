@@ -41,7 +41,7 @@ class GatherShoppingCard extends Model
 
     //关联购物卡兑换记录user_shopping_card_dh_log
     public function gwkDhLog(){
-        return $this->belongsTo(UserShoppingCardDhLog::class, 'order_mobile_id', 'id');
+        return $this->hasOne(UserShoppingCardDhLog::class, 'gather_shopping_card_id', 'id');
     }
 
 
