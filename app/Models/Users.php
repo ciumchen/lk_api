@@ -131,4 +131,15 @@ class Users extends Model
         $userAdvert->advert_award = $userAdvert->advert_award + $award;
         $userAdvert->save();
     }
+
+    /**获取用户金额
+     * @param int $uid
+     * @param string $value
+     * @return mixed
+     * @throws
+     */
+    public function getUserValue (int $uid, string $value)
+    {
+        return Users::where(['id' => $uid])->value($value);
+    }
 }

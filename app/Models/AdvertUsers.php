@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Exceptions\LogicException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Users;
 
 class AdvertUsers extends Model
 {
@@ -43,6 +44,16 @@ class AdvertUsers extends Model
     public function getUserAdvert (array $where)
     {
         return AdvertUsers::where($where)->first();
+    }
+
+    /**获取用户广告信息
+     * @param int $uid
+     * @return mixed
+     * @throws
+     */
+    public function getUserAward (int $uid)
+    {
+        return (new Users())->getUserValue($uid, 'advert_award');
     }
 
     /**格式化输出日期

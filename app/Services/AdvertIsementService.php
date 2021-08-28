@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Exceptions\LogicException;
+use App\Models\AdvertTrade;
 use App\Models\AdvertUsers;
-use App\Models\GatherTrade;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Users;
@@ -23,7 +23,7 @@ class AdvertIsementService
         //验证签名
         $param = $data['award'] . $data['packagename'] . $data['type'] . $data['uid'] . $data['unique_id'];
         $checkSign = strtolower(md5($param . md5(self::CHANNEL_ID)));
-//        dd($checkSign);
+        //dd($checkSign);
 
         //判断签名是否一致
         if ($checkSign != $data['sign'])
@@ -54,5 +54,70 @@ class AdvertIsementService
         DB::commit();
 
         return json_encode(['status' => 1, 'msg' => '发放广告奖励成功！']);
+    }
+
+    /**新增用户广告兑换记录
+     * @param int $uid
+     * @return mixed
+     * @throws
+     */
+    public function addTakeAward (int $uid)
+    {
+        $date = date('Y-m-d H:i:s');
+        $profitRatio = 20;
+        $name = '广告补贴';
+        $orderNo = createOrderNo();
+        //获取用户当前广告奖励金额
+        $userAward = (new Users())->getUserValue($uid, 'advert_award');
+        if ($userAward < 20)
+        {
+            return json_encode(['code' => 10000, 'msg' => '额度不足，无法兑换！']);
+        }
+
+        //组装order 表数据
+        $orderData = [
+            'uid'          => $uid,
+            'business_uid' => 2,
+            'profit_ratio' => $profitRatio,
+            'price'        => $userAward,
+            'profit_price' => $userAward * $profitRatio / 100,
+            'status'       => 1,
+            'name'         => $name,
+            'pay_status'   => 'await',
+            'order_no'     => $orderNo,
+            'description'  => 'GLR',
+        ];
+
+        //组装advert_trade 表数据
+        $advertTrade = [
+            'uid'          => $uid,
+            'business_uid' => 2,
+            'profit_ratio' => $profitRatio,
+            'price'        => $userAward,
+            'profit_price' => $userAward * $profitRatio / 100,
+            'order_no'     => $orderNo,
+            'status'       => 1,
+            'created_at'   => $date,
+            'updated_at'   => $date
+        ];
+
+        DB::beginTransaction();
+        try {
+            //更新用户广告奖励金额
+            (new Users())->updAdvertAward($uid, -$userAward);
+            //生成广告用户录单订单记录
+            $orderInfo = (new Order())->addOrder($orderData);
+            //生成广告用户录单记录
+            $advertTrade['oid'] = $orderInfo->id;
+            (new AdvertTrade())->setAdvertTrade($advertTrade);
+            //增加录单积分
+            (new GatherOrderService())->completeOrderGatger($orderInfo->id, $uid, 'GLR', $orderNo);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        DB::commit();
+
+        return json_encode(['code' => 200, 'msg' => '兑换成功！']);
     }
 }

@@ -3,3 +3,7 @@
 
 //获取广告收入
 Route::any('add-income', 'Advert\AdvertIsementController@addUsereIncome');
+//获取用户广告奖励
+Route::any('user-award', 'Advert\AdvertIsementController@getUsereAdvert');
+//用户兑换广告奖励
+Route::any('take-award', 'Advert\AdvertIsementController@addTakeAward');

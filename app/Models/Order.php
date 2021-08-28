@@ -701,6 +701,31 @@ class Order extends Model
                 ->get(['id as oid', 'order_no', 'uid']);
     }
 
+    /**新增订单
+     * @param array $data
+     * @return $this
+     * @throws \Exception
+     */
+    public function addOrder(array $data)
+    {
+        try {
+            $this->uid = $data['uid'];
+            $this->business_uid = $data['business_uid'];
+            $this->profit_ratio = $data['profit_ratio'];
+            $this->price = $data['price'];
+            $this->profit_price = $data['profit_price'];
+            $this->status = $data['status'];
+            $this->name = $data['name'];
+            $this->pay_status = $data['pay_status'];
+            $this->order_no = $data['order_no'];
+            $this->description = $data['description'];
+            $this->save();
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $this;
+    }
+
     /**
      * Description: 格式化时间字段
      *
