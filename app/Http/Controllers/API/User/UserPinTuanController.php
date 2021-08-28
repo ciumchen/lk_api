@@ -433,7 +433,7 @@ class UserPinTuanController extends Controller
                 } else {//排队
                     //扣除用户购物卡余额
                     $userInfo = Users::where('id', $user->id)->first();
-                    $userInfo->gather_card = $userInfo->gather_card - $money;
+                    $userInfo->gather_card = $userInfo->gather_card - $orderData->price;//购物卡减去消费金额
                     $userInfo->save();
                     //审核订单添加积分
                     (new OrderService())->addOrderIntegral($oid);
