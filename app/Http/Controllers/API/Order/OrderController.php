@@ -93,7 +93,8 @@ class OrderController extends Controller
         $user = $request->user();
         $bOrder = $request->input('bOrder', false);
 
-        $data = (new Order())
+//        $data = (new Order())
+        $data = DB::table('order')
             ->join('trade_order', function($join){
                 $join->on('order.id', 'trade_order.oid');
             })

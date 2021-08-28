@@ -14,7 +14,7 @@ class UpdateOrderZffsTable extends Migration
     public function up()
     {
         Schema::table('order',function (Blueprint $table){
-            $table->string('payment_method', 20)->default('')->comment('支付方式：购物卡：gwk,支付宝：alipay,微信：wx');
+            $table->string('payment_method', 20)->nullable()->default(null)->comment('支付方式：购物卡：gwk,支付宝：alipay,微信：wx');
         });
     }
 
