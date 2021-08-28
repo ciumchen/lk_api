@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\User;
 use App\Exceptions\LogicException;
 use App\Http\Controllers\API\Order\RechargeController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GwkDhDefaultAuthRequest;
+use App\Http\Requests\GwkDhMtAuthRequest;
 use App\Libs\Yuntong\YuntongPay;
 use App\Models\Assets;
 use App\Models\AssetsLogs;
@@ -19,7 +21,7 @@ use App\Models\Users;
 use App\Models\UserShoppingCardDhLog;
 use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
-use App\Services\OrderTwoService;
+use App\Services\UserGatherService;
 use Bmapi\Api\MobileRecharge\PayBill;
 use Exception;
 use Illuminate\Http\Request;
@@ -84,7 +86,7 @@ class UserPinTuanController extends Controller
                     'amount_before_change' => $oldLpj,
                     'order_no' => $order_no,
                     'ip' => $ip,
-                    'remark' => 'usdt兑换来拼金',
+                    'remark' => '补贴金兑换来拼金',
                     'user_agent' => 'recharge_lpj',
                 );
                 AssetsLogs::create($data);
@@ -98,7 +100,7 @@ class UserPinTuanController extends Controller
                     'money' => $money,
                     'money_before_change' => $oldLpj,
                     'order_no' => $order_no,
-                    'remark' => 'usdt兑换来拼金',
+                    'remark' => '补贴金兑换来拼金',
                     'status' => 2,
                 );
                 UserPinTuan::create($data);
@@ -202,6 +204,8 @@ class UserPinTuanController extends Controller
     //购物卡兑换-录单、话费直充、和代充
     public function ShoppingCardDhDefault(Request $request)
     {
+//        Log::debug("=========购物卡兑换接收参数打印=================",$request->all());
+
         $user = $request->user();
         if (!$user->id) {
             return response()->json(['code' => 0, 'msg' => '用户信息错误']);
@@ -210,6 +214,16 @@ class UserPinTuanController extends Controller
         $money = $request->input('money');
         $mobile = $request->input('mobile');
         $type = $request->input('type');
+        if ($money=='' || $mobile=='' || $type==''){
+            return response()->json(['code' => 0, 'msg' => '参数不能为空']);
+        }
+
+        if ($type=='LR'){
+            $profit_ratio = $request->input('profit_ratio');//接收录单的让利比例
+            if (in_array($profit_ratio,array(5,10,20)) == false){
+                return response()->json(['code' => 0, 'msg' => '让利比例不合法']);
+            }
+        }
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
@@ -235,6 +249,7 @@ class UserPinTuanController extends Controller
                 $remark = "话费";
                 $create_type = 1;
                 $typeName = "兑换话费";
+                $profit_ratio = Setting::where('key', 'set_business_rebate_scale_hf')->value('value');//话费让利比例
                 break;
             case "ZL":
                 $name = '代充';
@@ -245,6 +260,7 @@ class UserPinTuanController extends Controller
                 $remark = "代充";
                 $create_type = 2;
                 $typeName = "兑换代充";
+                $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
                 break;
             default:
                 return response()->json(['code' => 0, 'msg' => '兑换类型错误']);
@@ -252,15 +268,11 @@ class UserPinTuanController extends Controller
 
         }
 
-        //查询用户购物卡余额
-        if ($user->gather_card < $money) {
-            return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
-        }
+
         DB::beginTransaction();
         try {
             //生成order录单
             $order_no = createOrderNo();
-            $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
             $date = date("Y-m-d H:i:s", time());
             $profit_price = $money * $profit_ratio / 100;
             $integralArr = array(
@@ -270,11 +282,23 @@ class UserPinTuanController extends Controller
             );
 
             if ($type == "LR") {
+                //查询用户购物卡余额和录单实际让利金额
+                if ($user->gather_card < $profit_price) {
+                    return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                }
                 $orderUid = Users::where('phone', $mobile)->value('id');
                 $business_uid = $user->id;
             } else {
+                //查询用户购物卡余额
+                if ($user->gather_card < $money) {
+                    return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                }
                 $orderUid = $user->id;
                 $business_uid = 2;
+            }
+
+            if (intval($orderUid)<=0){
+                return response()->json(['code' => 0, 'msg' => '用户不存在']);
             }
 
             $arr = array(
@@ -292,6 +316,7 @@ class UserPinTuanController extends Controller
                 'remark' => '',
                 'order_no' => $order_no,
                 'description' => $description,
+                'payment_method' => 'gwk',
             );
             $orderData = Order::create($arr);
             $orderId = $orderData->id;
@@ -321,6 +346,11 @@ class UserPinTuanController extends Controller
             );
             TradeOrder::create($arr);
 
+            //生成购物卡兑换订单
+            if ($type=="LR"){
+                //购物卡兑换金额为录单的实际让利金额
+                $money = $profit_price;
+            }
             //创建gather_shopping_card购物卡金额变动记录
             $cardArr = array(
                 'uid' => $user->id,
@@ -333,7 +363,6 @@ class UserPinTuanController extends Controller
             $gwkLogModel = new GatherShoppingCard();
             $reGscId = $gwkLogModel->create($cardArr)->id;
 
-            //生成购物卡兑换订单
             $dataLog = array(
                 'uid' => $user->id,
                 'operate_type' => $operate_type,
@@ -341,7 +370,7 @@ class UserPinTuanController extends Controller
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
                 'remark' => $remark,
-                'status' => 3,
+                'status' => 1,
                 'gather_shopping_card_id' => $reGscId,
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
@@ -349,6 +378,7 @@ class UserPinTuanController extends Controller
             UserShoppingCardDhLog::create($dataLog);
         } catch (Exception $e) {
             DB::rollBack();
+            Log::debug("===========ShoppingCardDhDefault===购物卡兑换-录单、话费直充、和代充==生成订单异常================",[$e->getMessage()]);
             return response()->json(['code' => 0, 'msg' => '订单信息错误']);
             return false;
 //            throw $e;
@@ -360,7 +390,7 @@ class UserPinTuanController extends Controller
     }
 
     //购物卡生成订单后调用支付,购物卡兑换话费支付回调
-    public function gwkDhCallback(Request $request)
+    public function gwkDhCallback(GwkDhDefaultAuthRequest $request)
     {
         $user = $request->user();
         if (!$user->id) {
@@ -372,6 +402,13 @@ class UserPinTuanController extends Controller
         $mobile = $request->input('mobile');
         $type = $request->input('type');
         $oid = $request->input('oid');
+
+        $password = $request->input('password');
+        //验证支付密码
+        $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
+        if ($result!=200){
+            return $result;
+        }
 
         switch ($type) {
             case "LR":
@@ -396,19 +433,27 @@ class UserPinTuanController extends Controller
         }
 
         //查询购物卡兑换订单
-        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no, 'description' => $type,'status'=>1])->first();
+        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no, 'description' => $type, 'status' => 1])->first();
         if ($orderData != null) {
             DB::beginTransaction();
             try {
-                //扣除用户购物卡余额
-                $userInfo = Users::where('id', $user->id)->first();
-                $userInfo->gather_card = $userInfo->gather_card - $money;
-                $userInfo->save();
-
+                if ($orderData->price!=$money){
+                    return response()->json(['code' => 0, 'msg' => '参数异常']);exit;
+                }
                 //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条,录单审核不排队，其他订单审核要排队
                 if ($type == 'LR') {//不排队
+                    //扣除用户购物卡余额
+                    $userInfo = Users::where('id', $user->id)->first();
+                    $userInfo->gather_card = $userInfo->gather_card - $orderData->profit_price;//购物卡金额减去录单的实际让利金额
+                    $userInfo->save();
+                    //审核订单添加积分，积分不排队
                     (new OrderService())->MemberUserOrder($oid, 'LR');
                 } else {//排队
+                    //扣除用户购物卡余额
+                    $userInfo = Users::where('id', $user->id)->first();
+                    $userInfo->gather_card = $userInfo->gather_card - $orderData->price;//购物卡减去消费金额
+                    $userInfo->save();
+                    //审核订单添加积分，积分要排队
                     (new OrderService())->addOrderIntegral($oid);
                 }
                 $gwkStatus = 1;
@@ -444,24 +489,29 @@ class UserPinTuanController extends Controller
                     $dhLog->save();
                 }
                 //修改状态
-                $reData = Order::where(['id'=>$oid,'order_no' => $order_no])->first();
+                $reData = Order::where(['id' => $oid, 'order_no' => $order_no])->first();
                 $reData->pay_status = 'succeeded';
                 $reData->save();
 
-                $reData2 = TradeOrder::where(['oid'=>$oid,'order_no' => $order_no])->first();
+                $reData2 = TradeOrder::where(['oid' => $oid, 'order_no' => $order_no])->first();
                 $reData2->status = 'succeeded';
                 $reData2->save();
 
+                $gwkDhLogData = UserShoppingCardDhLog::where('order_no', $order_no)->first();
+                $gwkDhLogData->status = 2;
+                $gwkDhLogData->save();
 
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
             } else {
                 return json_encode(['code' => 0, 'msg' => $typeName . '失败']);
             }
+        } else {
+            return json_encode(['code' => 0, 'msg' => $typeName . '订单不存在']);
         }
 
     }
 
-    //购物卡兑换美团
+    //购物卡兑换美团生成订单
     public function ShoppingCardDhMt(Request $request)
     {
         $user = $request->user();
@@ -472,6 +522,10 @@ class UserPinTuanController extends Controller
         $money = $request->input('money');
         $mobile = $request->input('mobile');
         $userName = $request->input('userName');
+
+        if ($money=='' || $mobile=='' || $userName==''){
+            return response()->json(['code' => 0, 'msg' => '参数不能为空']);
+        }
 
         $reg = '/^1[3456789]\d{9}$/';
         if (preg_match($reg, $mobile) < 1) {
@@ -505,7 +559,7 @@ class UserPinTuanController extends Controller
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'status' => '1',
                 'state' => '1',
-                'pay_status' => 'succeeded',
+                'pay_status' => 'await',
                 'remark' => '',
                 'order_no' => $order_no,
                 'description' => 'MT',
@@ -521,7 +575,7 @@ class UserPinTuanController extends Controller
                 'price' => $money,
                 'num' => 1,
                 'numeric' => $mobile,
-                'status' => "succeeded",
+                'status' => "await",
                 'order_from' => 'gwk',
                 'order_no' => $order_no,
                 'need_fee' => $money,
@@ -531,6 +585,8 @@ class UserPinTuanController extends Controller
                 'description' => 'MT',
                 'oid' => $orderId,
                 'remarks' => $userName,
+                'pay_time' => date("Y-m-d H:i:s", time()),
+                'modified_time' => date("Y-m-d H:i:s", time()),
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
 
@@ -539,13 +595,6 @@ class UserPinTuanController extends Controller
 
 
             //创建gather_shopping_card购物卡金额变动记录
-//            $gwkLogModel = new GatherShoppingCard();
-//            $gwkLogModel->uid = $user->id;
-//            $gwkLogModel->money = $money;
-//            $gwkLogModel->type = 2;
-//            $gwkLogModel->name = "兑换美团";
-//            $gwkLogModel->save();
-
             $mtArr = array(
                 'uid' => $user->id,
                 'money' => $money,
@@ -566,28 +615,81 @@ class UserPinTuanController extends Controller
                 'order_no' => $order_no,
                 'remark' => '美团',
                 'gather_shopping_card_id' => $reGscId,
-                'status' => 2,
+                'status' => 1,
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
             );
             UserShoppingCardDhLog::create($dataLog);
 
-            //扣除用户购物卡余额
-            $userInfo = Users::where('id', $user->id)->first();
-            $userInfo->gather_card = $userInfo->gather_card - $money;
-            $userInfo->save();
-
-            //通过审核添加积分，更新order 表审核状态
-            (new OrderService())->addOrderIntegral($orderId);
-
         } catch (Exception $e) {
             DB::rollBack();
-            throw $e;
+//            throw $e;
+            Log::debug("===========ShoppingCardDhMt===购物卡兑换美团生成订单异常================",[$e->getMessage()]);
             return response()->json(['code' => 0, 'msg' => '订单信息错误']);
-            return false;
         }
         DB::commit();
-        return json_encode(['code' => 200, 'msg' => '兑换美团成功']);
+
+        return response()->json(['code' => 1, 'data' => array('msg' => "订单创建成功", 'order_no' => $order_no, 'oid' => $orderId)]);
+
+    }
+
+    //生成美团订单后确认兑换,不需要调用支付
+    public function gwkDhCallbackNoZf(GwkDhMtAuthRequest $request)
+    {
+        $user = $request->user();
+        if (!$user->id) {
+            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+        }
+//        $ip = $request->input('ip');
+        $order_no = $request->input('order_no');
+        $money = $request->input('money');
+        $mobile = $request->input('mobile');
+//        $type = $request->input('type');
+        $oid = $request->input('oid');
+
+        $password = $request->input('password');
+        //验证支付密码
+        $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
+        if ($result!=200){
+            return $result;
+        }
+
+        //查询购物卡兑换订单
+        $orderData = Order::where(['id' => $oid, 'order_no' => $order_no, 'status' => 1])->first();
+        if ($orderData != null) {
+            DB::beginTransaction();
+            try {
+                //扣除用户购物卡余额
+                $userInfo = Users::where('id', $user->id)->first();
+                $userInfo->gather_card = $userInfo->gather_card - $money;
+                $userInfo->save();
+
+                //通过审核添加积分，更新order 表审核状态
+                (new OrderService())->addOrderIntegral($oid);
+
+                //修改order表、TradeOrder表、UserShoppingCardDhLog表状态
+                $orderData->pay_status = "succeeded";
+                $orderData->save();
+
+                $traderOrderData = TradeOrder::where(['oid' => $oid, 'order_no' => $order_no])->first();
+                $traderOrderData->status = 'succeeded';
+                $traderOrderData->save();
+
+                $gwkDhLogData = UserShoppingCardDhLog::where(['status' => 1, 'order_no' => $order_no])->first();
+                $gwkDhLogData->status = 2;
+                $gwkDhLogData->save();
+
+            } catch (Exception $e) {
+                DB::rollBack();
+                Log::debug("===========gwkDhCallbackNoZf===购物卡兑换美团生成--确认兑换异常================",[$e->getMessage()]);
+                return response()->json(['code' => 0, 'msg' => '兑换美团失败']);
+//            throw $e;
+            }
+            DB::commit();
+            return json_encode(['code' => 1, 'msg' => '兑换美团成功']);
+        } else {
+            return json_encode(['code' => 0, 'msg' => '兑换美团失败']);
+        }
 
     }
 

@@ -40,6 +40,8 @@ class VerifyCode extends Model
     const TYPE_FORGET_PASSWORD = 3;//找回密码
     const TYPE_WITHDRAW_TO_WALLET = 4;//提现到钱包
     const TYPE_UPDATE_USER_PHONE = 5;//修改用户手机号
+    const TYPE_GATHER_CARD = 9; //拼团设置购物卡验证码
+    const TYPE_GATHER_AGAINCARD = 10; //拼团修改购物卡密码验证码
     const TYPE_TONGYONG = 100;//通用验证码
     /**
      * The attributes that are mass assignable.
@@ -61,6 +63,8 @@ class VerifyCode extends Model
         self::TYPE_WITHDRAW_TO_WALLET => 'withdraw_to_wallet',
         self::TYPE_UPDATE_USER_PHONE => 'update_user_phone',
         self::TYPE_TONGYONG => 'tongyong',
+        self::TYPE_GATHER_CARD => 'gather_card',
+        self::TYPE_GATHER_AGAINCARD => 'gather_againcard',
 
     ];
 
@@ -71,6 +75,8 @@ class VerifyCode extends Model
         self::TYPE_WITHDRAW_TO_WALLET => '提现到钱包',
         self::TYPE_UPDATE_USER_PHONE => '修改用户手机号',
         self::TYPE_TONGYONG => '通用验证码',
+        self::TYPE_GATHER_CARD => '拼团设置购物卡验证码',
+        self::TYPE_GATHER_AGAINCARD => '拼团修改购物卡密码验证码',
 
     ];
 
@@ -81,6 +87,8 @@ class VerifyCode extends Model
         self::TYPE_WITHDRAW_TO_WALLET => 'SMS_196170273',
         self::TYPE_UPDATE_USER_PHONE => 'SMS_219395043',
         self::TYPE_TONGYONG => 'SMS_222455404',
+        self::TYPE_GATHER_CARD => 'SMS_222455404',
+        self::TYPE_GATHER_AGAINCARD => 'SMS_222455404',
     ];
 
     /**

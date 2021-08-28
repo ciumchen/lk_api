@@ -29,4 +29,8 @@ class UserShoppingCardDhLog extends Model
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
     }
 
+    //关联购物卡兑换记录user_shopping_card_dh_log
+    public function GatherShoppingCard(){
+        return $this->belongsTo(GatherShoppingCard::class, 'gather_shopping_card_id', 'id');
+    }
 }

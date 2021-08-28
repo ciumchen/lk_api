@@ -39,5 +39,10 @@ class GatherShoppingCard extends Model
         return GatherShoppingCard::insert($data);
     }
 
+    //关联购物卡兑换记录user_shopping_card_dh_log
+    public function gwkDhLog(){
+        return $this->hasOne(UserShoppingCardDhLog::class, 'gather_shopping_card_id', 'id');
+    }
+
 
 }
