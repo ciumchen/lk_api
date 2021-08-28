@@ -34,7 +34,8 @@ class UserShoppingCardController extends Controller
         $uid = $request->input('uid');
         $page = $request->input("page");
         $data = (new GatherShoppingCard())
-            ->where("uid", $uid)
+            ->whith(['gwkDhLog'])
+            ->where(["uid"=>$uid,"gwkDhLog.status"=>2])
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, 10)
