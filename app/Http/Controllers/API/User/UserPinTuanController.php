@@ -218,7 +218,7 @@ class UserPinTuanController extends Controller
 
         if ($type=='LR'){
             $profit_ratio = $request->input('profit_ratio');//接收录单的让利比例
-            if (in_array($profit_ratio,array(5,10,20) == false)){
+            if (in_array($profit_ratio,array(5,10,20)) == false){
                 return response()->json(['code' => 0, 'msg' => '让利比例不合法']);
             }
         }
