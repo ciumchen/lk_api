@@ -346,6 +346,11 @@ class UserPinTuanController extends Controller
             );
             TradeOrder::create($arr);
 
+            //生成购物卡兑换订单
+            if ($type=="LR"){
+                //购物卡兑换金额为录单的实际让利金额
+                $money = $profit_price;
+            }
             //创建gather_shopping_card购物卡金额变动记录
             $cardArr = array(
                 'uid' => $user->id,
@@ -358,11 +363,6 @@ class UserPinTuanController extends Controller
             $gwkLogModel = new GatherShoppingCard();
             $reGscId = $gwkLogModel->create($cardArr)->id;
 
-            //生成购物卡兑换订单
-            if ($type=="LR"){
-                //购物卡兑换金额为录单的实际让利金额
-                $money = $profit_price;
-            }
             $dataLog = array(
                 'uid' => $user->id,
                 'operate_type' => $operate_type,

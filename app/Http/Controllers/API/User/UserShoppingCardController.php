@@ -50,6 +50,26 @@ class UserShoppingCardController extends Controller
     }
 
     //查询购物卡兑换记录
+    public function selectGwkDhjl_bak(Request $request){
+        $uid = $request->input('uid');
+        $page = $request->input("page");
+        $data = (new GatherShoppingCard())
+            ->with(['gwkDhLog'=>function($query) use ($uid){
+                $query->where('status',2);
+            }])
+//            ->with(['gwkDhLog'])
+
+            ->where(["uid"=>$uid])
+            ->orderBy('id', 'desc')
+            ->latest('id')
+            ->forPage($page, 10)
+            ->get();
+
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
+
+    }
+
+    //查询购物卡兑换记录
     public function selectGwkDhjl(Request $request){
         $uid = $request->input('uid');
         $page = $request->input("page");
