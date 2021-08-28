@@ -422,15 +422,20 @@ class UserPinTuanController extends Controller
         if ($orderData != null) {
             DB::beginTransaction();
             try {
-                //扣除用户购物卡余额
-                $userInfo = Users::where('id', $user->id)->first();
-                $userInfo->gather_card = $userInfo->gather_card - $money;
-                $userInfo->save();
-
                 //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条,录单审核不排队，其他订单审核要排队
                 if ($type == 'LR') {//不排队
+                    //扣除用户购物卡余额
+                    $userInfo = Users::where('id', $user->id)->first();
+                    $userInfo->gather_card = $userInfo->gather_card - $orderData->profit_price;//购物卡金额减去录单的实际让利金额
+                    $userInfo->save();
+                    //审核订单添加积分
                     (new OrderService())->MemberUserOrder($oid, 'LR');
                 } else {//排队
+                    //扣除用户购物卡余额
+                    $userInfo = Users::where('id', $user->id)->first();
+                    $userInfo->gather_card = $userInfo->gather_card - $money;
+                    $userInfo->save();
+                    //审核订单添加积分
                     (new OrderService())->addOrderIntegral($oid);
                 }
                 $gwkStatus = 1;
