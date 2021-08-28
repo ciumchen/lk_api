@@ -75,6 +75,8 @@ class VerifyCode extends Model
         self::TYPE_WITHDRAW_TO_WALLET => '提现到钱包',
         self::TYPE_UPDATE_USER_PHONE => '修改用户手机号',
         self::TYPE_TONGYONG => '通用验证码',
+        self::TYPE_GATHER_CARD => '拼团设置购物卡验证码',
+        self::TYPE_GATHER_AGAINCARD => '拼团修改购物卡密码验证码',
 
     ];
 
@@ -85,6 +87,8 @@ class VerifyCode extends Model
         self::TYPE_WITHDRAW_TO_WALLET => 'SMS_196170273',
         self::TYPE_UPDATE_USER_PHONE => 'SMS_219395043',
         self::TYPE_TONGYONG => 'SMS_222455404',
+        self::TYPE_GATHER_CARD => 'SMS_222455404',
+        self::TYPE_GATHER_AGAINCARD => 'SMS_222455404',
     ];
 
     /**
