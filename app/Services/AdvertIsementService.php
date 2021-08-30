@@ -20,7 +20,7 @@ class AdvertIsementService
      */
     public function addUsereIncome (array $data)
     {
-        //验证签名
+        //签名
         $param = $data['award'] . $data['packagename'] . $data['type'] . $data['uid'] . $data['unique_id'];
         $checkSign = strtolower(md5($param . md5(self::CHANNEL_ID)));
         //dd($checkSign);

@@ -31,8 +31,6 @@ class AdvertRequest extends FormRequest
             'unique_id'   => ['bail', 'required'],
             'award'       => ['bail', 'required'],
             'sign'        => ['bail', 'required'],
-            'deviceInfo'  => ['bail', 'required'],
-            'description' => ['bail', 'required'],
         ];
     }
     /**
