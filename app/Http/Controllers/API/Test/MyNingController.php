@@ -361,6 +361,43 @@ class MyNingController extends Controller
 
     }
 
+  //扣除用户encourage资产
+    public function kcUserEncourage(Request $request)
+    {
+        $userId = $request->input('uid');//用户uid
+        $num = $request->input('num');
+
+//        dd($userId,$num);
+        if ($userId &&$num) {
+            $userInfo = Users::where('id', $userId)->first();
+            if ($userInfo != '') {
+                $userAssets = Assets::where('uid',$userId)->first();
+                if ($userAssets!=''){
+                    $userAssets->amount = $userAssets->amount-$num;
+                    if ($userAssets->save()) {
+                        $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户encourage资产，" . $num . "<br/>";
+                    }else{
+                        $data[] = '扣除失败<br/>';
+                    }
+                }
+                }else {
+                $data[] = '该uid用户不存在<br/>';
+            }
+        } else {
+            $data[] = "参数错误<br/>";
+        }
+
+        $this->returnView($data, 'kczcView');
+
+
+    }
+
+
+
+
+
+
+
     //清空商城卡单处理
     public function setShopKdOrderId(Request $request)
     {
@@ -502,6 +539,13 @@ class MyNingController extends Controller
     public function myningtest()
     {
         return view('test', ['title' => '测试模板']);
+
+    }
+
+    //扣除用户资产模板
+    public function kczcView()
+    {
+        return view('kczcView', ['title' => '扣除用户资产']);
 
     }
 

@@ -55,6 +55,12 @@ Route::any("insertUserBuinssData", 'Test\MyNingController@insertUserBuinssData')
 
 //手动扣除用户积分
 Route::any("myning-test", 'Test\MyNingController@myningtest');
+
+//手动扣除用户资产
+Route::any("kczcView", 'Test\MyNingController@kczcView');
+Route::any("kcUserEncourage", 'Test\MyNingController@kcUserEncourage');
+
+
 //test模板测试
 Route::any("getTable", 'Test\MyNingController@getTable');
 

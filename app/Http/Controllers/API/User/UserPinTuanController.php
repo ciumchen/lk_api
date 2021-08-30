@@ -240,7 +240,7 @@ class UserPinTuanController extends Controller
                 return response()->json(['code' => 0, 'msg' => '录单手机号用户不存在']);
             }
         }
-        
+
         switch ($type) {
             case "LR":
                 $name = '录单';
