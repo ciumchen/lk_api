@@ -105,6 +105,9 @@ Route::any("setUserInfoMemberStatus", 'Test\MyNingController@setUserInfoMemberSt
 //测试昨日分红记录查询
 Route::any("getYesterdayRecharge", 'Test\MyNingController@getYesterdayRecharge');
 
+//测试昨日分红记录查询
+Route::any("getYesterdayRecharge", 'Test\MyNingModifyController@setSdkcUserJf');
+
 
 
 

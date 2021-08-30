@@ -17,6 +17,7 @@ use App\Models\Order;
 use App\Models\OrderMobileRecharge;
 use App\Models\Setting;
 use App\Models\TradeOrder;
+use App\Models\User;
 use App\Models\UserPinTuan;
 use App\Models\Users;
 use App\Models\UserShoppingCardDhLog;
@@ -230,6 +231,14 @@ class UserPinTuanController extends Controller
         if (preg_match($reg, $mobile) < 1) {
             throw new LogicException('手机号格式不正确');
         }
+        if ($mobile==$user->phone){
+            return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
+        }
+        $mobileUserData = User::where('phone',$mobile)->first();
+        if ($mobileUserData==null){
+            return response()->json(['code' => 0, 'msg' => '录单手机号用户不存在']);
+        }
+
         switch ($type) {
             case "LR":
                 $name = '录单';
@@ -501,22 +510,22 @@ class UserPinTuanController extends Controller
 
             //调用支付接口
             if ($gwkStatus === 1) {
-//                if ($type == 'HF') {//兑换直充
-//                    //组装话费数据
-//                    $callData = [
-//                        'numeric' => $mobile,
-//                        'price' => $money,
-//                        'order_no' => $order_no,
-//                    ];
-//                    //调用话费充值
-//                    (new RechargeController())->setCall($callData);
-//                } elseif ($type == 'ZL') {//兑换代充
-//                    //新增充值记录
-//                    (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $oid);
-//                    //购物卡兑换代充
-//                    (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
-//
-//                }
+                if ($type == 'HF') {//兑换直充
+                    //组装话费数据
+                    $callData = [
+                        'numeric' => $mobile,
+                        'price' => $money,
+                        'order_no' => $order_no,
+                    ];
+                    //调用话费充值
+                    (new RechargeController())->setCall($callData);
+                } elseif ($type == 'ZL') {//兑换代充
+                    //新增充值记录
+                    (new MobileRechargeService)->addMobileOrder($order_no, $user->id, $mobile, $money, $oid);
+                    //购物卡兑换代充
+                    (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
+
+                }
 
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
             } else {
