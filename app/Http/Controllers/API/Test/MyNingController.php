@@ -371,7 +371,7 @@ class MyNingController extends Controller
         if ($userId &&$num) {
             $userInfo = Users::where('id', $userId)->first();
             if ($userInfo != '') {
-                $userAssets = Assets::where(['uid'=>$userId,'assets_type_id'=>2,'assets_name'=>'encourage'])->first();
+                $userAssets = Assets::where(['uid'=>$userId,'assets_type_id'=>1,'assets_name'=>'encourage'])->first();
                 if ($userAssets!=''){
                     $userAssets->amount = $userAssets->amount-$num;
                     if ($userAssets->save()) {
