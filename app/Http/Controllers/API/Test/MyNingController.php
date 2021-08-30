@@ -314,7 +314,7 @@ class MyNingController extends Controller
         dd($re1);
     }
 
-//扣除用户商城积分
+//扣除用户来客积分
     public function kcUserShopJf(Request $request)
     {
         $userId = $request->input('uid');//用户uid
@@ -329,13 +329,20 @@ class MyNingController extends Controller
             if ($userInfo != '') {
 //            echo "当前用户的消费积分：" . $userInfo->integral . "<br/>";
 //            echo "当前用户的商家积分：" . $userInfo->business_integral . "<br/>";
-                if ($role == 1) {
+                if ($role == 1) {//扣除消费者积分
                     $userInfo->integral = $userInfo->integral - $num;
+                    //更新消费者lk
+                    $userInfo->lk = floor($userInfo->integral/300);
+
                     if ($userInfo->save()) {
                         $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户消费者积分，" . $num . "积分<br/>";
                     }
-                } elseif ($role == 2) {
+                } elseif ($role == 2) {//扣除商家积分
                     $userInfo->business_integral = $userInfo->business_integral - $num;
+
+                    //更新商家lk
+                    $userInfo->business_lk = floor($userInfo->business_integral/60);
+
                     if ($userInfo->save()) {
                         $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户商家积分，" . $num . "积分<br/>";
                     }

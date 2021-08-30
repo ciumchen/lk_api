@@ -231,14 +231,16 @@ class UserPinTuanController extends Controller
         if (preg_match($reg, $mobile) < 1) {
             throw new LogicException('手机号格式不正确');
         }
-        if ($mobile==$user->phone){
-            return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
+        if ($type=="LR"){
+            if ($mobile==$user->phone){
+                return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
+            }
+            $mobileUserData = User::where('phone',$mobile)->first();
+            if ($mobileUserData==null){
+                return response()->json(['code' => 0, 'msg' => '录单手机号用户不存在']);
+            }
         }
-        $mobileUserData = User::where('phone',$mobile)->first();
-        if ($mobileUserData==null){
-            return response()->json(['code' => 0, 'msg' => '录单手机号用户不存在']);
-        }
-
+        
         switch ($type) {
             case "LR":
                 $name = '录单';
