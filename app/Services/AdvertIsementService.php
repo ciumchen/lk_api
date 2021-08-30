@@ -63,7 +63,6 @@ class AdvertIsementService
      */
     public function addTakeAward (int $uid)
     {
-        $date = date('Y-m-d H:i:s');
         $profitRatio = 20;
         $name = '广告补贴';
         $orderNo = createOrderNo();
@@ -97,8 +96,6 @@ class AdvertIsementService
             'profit_price' => $userAward * $profitRatio / 100,
             'order_no'     => $orderNo,
             'status'       => 1,
-            'created_at'   => $date,
-            'updated_at'   => $date
         ];
 
         DB::beginTransaction();
