@@ -61,6 +61,10 @@ Route::any("kczcView", 'Test\MyNingController@kczcView');
 Route::any("kcUserEncourage", 'Test\MyNingController@kcUserEncourage');
 
 
+//手动扣除用户资产添加待口资产
+Route::any("addUserNotDeductedAssets", 'Test\MyNingModifyController@addUserNotDeductedAssets');
+
+
 //test模板测试
 Route::any("getTable", 'Test\MyNingController@getTable');
 
