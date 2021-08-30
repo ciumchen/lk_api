@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use App\Exceptions\LogicException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class UserShoppingCardDhLog extends Model
+class UserPinTuanData extends Model
 {
     use HasFactory;
 
@@ -20,24 +19,16 @@ class UserShoppingCardDhLog extends Model
         'order_no',
         'status',
         'remark',
-        'gather_shopping_card_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
     }
 
-    //关联购物卡兑换记录user_shopping_card_dh_log
-    public function GatherShoppingCard(){
-        return $this->belongsTo(GatherShoppingCard::class, 'gather_shopping_card_id', 'id');
-    }
 
-    //新增记录
-    public function setUserShoppingCardDhLog (array $data)
-    {
-        return GatherShoppingCard::insert($data);
-    }
+
+
 
 }

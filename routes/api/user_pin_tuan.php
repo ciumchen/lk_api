@@ -22,6 +22,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::any('gwkDhCallbackNoZf', 'User\UserPinTuanController@gwkDhCallbackNoZf');
 
 
+    //购物卡赠送接口
+    Route::any('UserGiftShoppingCard', 'User\UserPinTuanDataController@UserGiftShoppingCard');
+
 });
 
 //支付回调 getLkMemberPayHd
@@ -44,6 +47,7 @@ Route::any('getUserShoppingCardMoney', 'User\UserPinTuanDataController@getUserSh
 
 //查询购物卡兑换记录
 Route::any('selectGwkDhjl', 'User\UserShoppingCardController@selectGwkDhjl');
+
 
 
 

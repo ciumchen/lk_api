@@ -85,7 +85,7 @@ class UserPinTuanController extends Controller
                     'uid' => $user->id,
                     'operate_type' => 'recharge_lpj',
                     'amount' => $money,
-                    'amount_before_change' => $oldLpj,
+                    'amount_before_change' => $oldAmount,
                     'order_no' => $order_no,
                     'ip' => $ip,
                     'remark' => '补贴金兑换来拼金',
