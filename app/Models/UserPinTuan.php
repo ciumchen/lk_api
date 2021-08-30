@@ -26,4 +26,8 @@ class UserPinTuan extends Model
     {
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
     }
+
+
+
+
 }

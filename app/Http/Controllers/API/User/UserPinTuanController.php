@@ -12,6 +12,7 @@ use App\Models\Assets;
 use App\Models\AssetsLogs;
 use App\Models\ConvertLogs;
 use App\Models\GatherShoppingCard;
+use App\Models\GwkZfOperationLog;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
 use App\Models\Setting;
@@ -321,6 +322,9 @@ class UserPinTuanController extends Controller
             $orderData = Order::create($arr);
             $orderId = $orderData->id;
 
+            //创建购物卡处理记录
+            (new GwkZfOperationLog())->CreateGwkClLog($orderId,$order_no);
+
             //创建TradeOrder表记录
             $arr = array(
                 'user_id' => $user->id,
@@ -437,25 +441,54 @@ class UserPinTuanController extends Controller
         if ($orderData != null) {
             DB::beginTransaction();
             try {
+                $logData = GwkZfOperationLog::lockForUpdate()->where(['oid'=>$oid,'order_no' => $order_no,'status'=>1])->first();
+                if ($logData==null){
+                    return response()->json(['code' => 0, 'msg' => '订单非法处理']);
+                }else{
+                    $logData->status = 2;
+                    $logData->save();
+                }
+
                 if ($orderData->price!=$money){
-                    return response()->json(['code' => 0, 'msg' => '参数异常']);exit;
+                    return response()->json(['code' => 0, 'msg' => '参数异常']);
                 }
                 //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条,录单审核不排队，其他订单审核要排队
+                $userInfo = Users::where('id', $user->id)->first();
                 if ($type == 'LR') {//不排队
                     //扣除用户购物卡余额
-                    $userInfo = Users::where('id', $user->id)->first();
+                    if ($userInfo->gather_card < $orderData->profit_price){
+                        return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                    }
                     $userInfo->gather_card = $userInfo->gather_card - $orderData->profit_price;//购物卡金额减去录单的实际让利金额
                     $userInfo->save();
                     //审核订单添加积分，积分不排队
                     (new OrderService())->MemberUserOrder($oid, 'LR');
                 } else {//排队
                     //扣除用户购物卡余额
-                    $userInfo = Users::where('id', $user->id)->first();
+                    if ($userInfo->gather_card < $orderData->price){
+                        return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                    }
                     $userInfo->gather_card = $userInfo->gather_card - $orderData->price;//购物卡减去消费金额
                     $userInfo->save();
                     //审核订单添加积分，积分要排队
                     (new OrderService())->addOrderIntegral($oid);
                 }
+                //修改状态
+                $reData = Order::where(['id' => $oid, 'order_no' => $order_no])->first();
+                $reData->pay_status = 'succeeded';
+                $reData->save();
+
+                $reData2 = TradeOrder::where(['oid' => $oid, 'order_no' => $order_no])->first();
+                $reData2->status = 'succeeded';
+                $reData2->save();
+
+                $gwkDhLogData = UserShoppingCardDhLog::where('order_no', $order_no)->first();
+                $gwkDhLogData->status = 2;
+                $gwkDhLogData->save();
+
+                $logData->status = 3;
+                $logData->save();
+
                 $gwkStatus = 1;
             } catch (Exception $e) {
                 DB::rollBack();
@@ -483,23 +516,7 @@ class UserPinTuanController extends Controller
                     //购物卡兑换代充
                     (new MobileRechargeService)->GwkConvertRecharge($order_no, $create_type);
 
-                } elseif ($type == 'LR') {//兑换录单
-                    $dhLog = UserShoppingCardDhLog::where('order_no', $order_no)->first();
-                    $dhLog->status = 2;
-                    $dhLog->save();
                 }
-                //修改状态
-                $reData = Order::where(['id' => $oid, 'order_no' => $order_no])->first();
-                $reData->pay_status = 'succeeded';
-                $reData->save();
-
-                $reData2 = TradeOrder::where(['oid' => $oid, 'order_no' => $order_no])->first();
-                $reData2->status = 'succeeded';
-                $reData2->save();
-
-                $gwkDhLogData = UserShoppingCardDhLog::where('order_no', $order_no)->first();
-                $gwkDhLogData->status = 2;
-                $gwkDhLogData->save();
 
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
             } else {
@@ -566,6 +583,9 @@ class UserPinTuanController extends Controller
             );
             $orderData = Order::create($arr);
             $orderId = $orderData->id;
+
+            //创建购物卡处理记录
+            (new GwkZfOperationLog())->CreateGwkClLog($orderId,$order_no);
 
             //创建TradeOrder表记录
             $arr = array(
@@ -659,6 +679,13 @@ class UserPinTuanController extends Controller
         if ($orderData != null) {
             DB::beginTransaction();
             try {
+                $logData = GwkZfOperationLog::lockForUpdate()->where(['oid'=>$oid,'order_no' => $order_no,'status'=>1])->first();
+                if ($logData==null){
+                    return response()->json(['code' => 0, 'msg' => '订单非法处理']);
+                }else{
+                    $logData->status = 2;
+                    $logData->save();
+                }
                 //扣除用户购物卡余额
                 $userInfo = Users::where('id', $user->id)->first();
                 $userInfo->gather_card = $userInfo->gather_card - $money;
@@ -678,6 +705,9 @@ class UserPinTuanController extends Controller
                 $gwkDhLogData = UserShoppingCardDhLog::where(['status' => 1, 'order_no' => $order_no])->first();
                 $gwkDhLogData->status = 2;
                 $gwkDhLogData->save();
+
+                $logData->status = 3;
+                $logData->save();
 
             } catch (Exception $e) {
                 DB::rollBack();

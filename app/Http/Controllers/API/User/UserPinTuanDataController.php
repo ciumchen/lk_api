@@ -12,6 +12,7 @@ use App\Models\UserPinTuan;
 use App\Models\Users;
 use App\Services\OrderService;
 use App\Services\OrderTwoService;
+use App\Services\UserGatherService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,4 +44,34 @@ class UserPinTuanDataController extends Controller
     }
 
 
+    //购物卡赠送给用户
+    public function UserGiftShoppingCard(Request $request){
+        $user = $request->user();
+        if (!$user->id) {
+            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+        }
+        $money = $request->input('money');
+        $mobile = $request->input('mobile');
+        $password = $request->input('password');
+        //验证支付密码
+        $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
+        if ($result!=200){
+            return $result;
+        }
+        //查询用户的购物卡余额进行对比
+        if ($user->gather_card<$money){
+            return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+        }
+        //验证赠送的手机号是否是来客用户
+        $GiveUserData = Users::where('phone',$mobile)->first();
+        if ($GiveUserData==null){
+            return response()->json(['code' => 0, 'msg' => '赠送的用户不是来客的用户']);
+        }
+
+        //扣除赠送用户购物卡，增加被赠送用户购物卡
+
+        //添加两个用户购物卡变动记录
+
+
+    }
 }
