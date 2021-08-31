@@ -113,7 +113,7 @@ class UserPinTuanController extends Controller
             DB::commit();
         }catch(Exception $e){
             DB::rollBack();
-            Log::debug($e->getMassage(),[json_encode($e)]);
+            Log::debug($e->getMessage(),[json_encode($e)]);
             throw new LogicException('补贴金兑换失败');
         }
         return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
