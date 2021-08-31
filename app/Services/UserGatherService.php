@@ -166,7 +166,7 @@ class UserGatherService
         $userCard = (new CardpayPassword())->cardPwdInfo($data['uid']);
         if (!$userCard)
         {
-            return json_encode(['code' => 0, 'msg' => '用户密码信息不存在']);
+            return json_encode(['code' => 0, 'msg' => '请设置购物卡支付密码']);
         }
 
         $cardInfo = (new CardpayPassword())->cardPwdInfo($data['uid']);
