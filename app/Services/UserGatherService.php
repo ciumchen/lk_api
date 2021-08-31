@@ -185,6 +185,9 @@ class UserGatherService
         }else{
             if ((time()-$checkInfo->time)<15){
                 return json_encode(['code' => 10000, 'mag' => '系统繁忙请稍后再试']);
+            }else{
+                $checkInfo->time = time();
+                $checkInfo->save();
             }
         }
         return 200;
