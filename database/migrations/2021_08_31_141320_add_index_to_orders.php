@@ -16,6 +16,7 @@ class AddIndexToOrders extends Migration
         Schema::table('order', function (Blueprint $table) {
             $table->index('status');
             $table->index('line_up');
+            $table->index('name');
             $table->index('profit_ratio');
             $table->index('pay_status');
             $table->index('created_at');
@@ -37,6 +38,7 @@ class AddIndexToOrders extends Migration
         Schema::table('order', function (Blueprint $table) {
             $table->dropIndex('status');
             $table->dropIndex('line_up');
+            $table->dropIndex('name');
             $table->dropIndex('profit_ratio');
             $table->dropIndex('pay_status');
             $table->dropIndex('created_at');

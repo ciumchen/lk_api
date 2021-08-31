@@ -16,7 +16,6 @@ class AddIndexToTradeOrder extends Migration
         Schema::table('trade_order', function (Blueprint $table) {
             //
             $table->index('numeric');
-            $table->index('name');
             $table->index('status');
             $table->index('order_from');
             $table->index('order_no');
@@ -35,7 +34,6 @@ class AddIndexToTradeOrder extends Migration
         Schema::table('trade_order', function (Blueprint $table) {
             //
             $table->dropIndex('numeric');
-            $table->dropIndex('name');
             $table->dropIndex('status');
             $table->dropIndex('order_from');
             $table->dropIndex('order_no');
