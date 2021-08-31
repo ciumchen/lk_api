@@ -28,6 +28,7 @@ class AdvertUsers extends Model
         $advertUsers->package_name = $data['packagename'];
         $advertUsers->type = $data['type'];
         $advertUsers->status = 1;
+        $advertUsers->brand = $data['brand'];
         $advertUsers->unique_id = $data['unique_id'];
         $advertUsers->created_at = $date;
         $advertUsers->updated_at = $date;
@@ -54,6 +55,17 @@ class AdvertUsers extends Model
     public function getUserAward (int $uid)
     {
         return (new Users())->getUserValue($uid, 'advert_award');
+    }
+
+    /**获取用户观看拼团广告次数
+     * @param int $uid
+     * @return mixed
+     * @throws
+     */
+    public function getGatherAdvert (int $uid)
+    {
+        return AdvertUsers::where(['uid' => $uid, 'brand' => 2])
+                ->count();
     }
 
     /**格式化输出日期

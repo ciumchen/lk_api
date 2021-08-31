@@ -117,4 +117,45 @@ class AdvertIsementService
 
         return json_encode(['code' => 200, 'msg' => '兑换成功！']);
     }
+
+    /**新增用户拼团广告记录
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
+    public function addGatherAdvert (array $data)
+    {
+        //签名
+        $param = $data['award'] . $data['packagename'] . $data['type'] . $data['uid'] . $data['unique_id'];
+        $checkSign = strtolower(md5($param . md5(self::CHANNEL_ID)));
+        //dd($checkSign);
+
+        //判断签名是否一致
+        if ($checkSign != $data['sign'])
+        {
+            return json_encode(['status' => 10000, 'msg' => '签名不合法，非法操作！']);
+        }
+
+        //数据是否已存在
+        $where = [
+            'unique_id' => $data['unique_id'],
+        ];
+        $userAdvertInfo = (new AdvertUsers())->getUserAdvert($where);
+        if ($userAdvertInfo)
+        {
+            return json_encode(['status' => 10000, 'msg' => '数据已经存在！']);
+        }
+
+        DB::beginTransaction();
+        try {
+            //新增用户广告记录
+            (new AdvertUsers())->setUserAdvert($data);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new LogicException('观看广告失败！');
+        }
+        DB::commit();
+
+        return json_encode(['status' => 1, 'msg' => '观看广告成功！']);
+    }
 }

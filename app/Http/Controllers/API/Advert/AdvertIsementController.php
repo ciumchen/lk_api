@@ -41,4 +41,16 @@ class AdvertIsementController extends Controller
     {
         return (new AdvertIsementService())->addTakeAward($request->uid);
     }
+
+    /**新增拼团广告记录
+     * @param Request $request
+     * @return mixed
+     * @throws
+     */
+    public function addGatherAdvert(Request $request)
+    {
+        $data = $request->all();
+
+        return (new AdvertIsementService())->addGatherAdvert($data);
+    }
 }

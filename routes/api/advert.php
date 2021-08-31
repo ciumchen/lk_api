@@ -7,3 +7,5 @@ Route::any('add-income', 'Advert\AdvertIsementController@addUsereIncome');
 Route::any('user-award', 'Advert\AdvertIsementController@getUsereAdvert');
 //用户兑换广告奖励
 Route::any('take-award', 'Advert\AdvertIsementController@addTakeAward');
+//拼团广告记录
+Route::any('gather-advert', 'Advert\AdvertIsementController@addGatherAdvert');
