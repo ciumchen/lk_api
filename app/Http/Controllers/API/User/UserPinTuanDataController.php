@@ -138,8 +138,8 @@ class UserPinTuanDataController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::debug("===========UserGiftShoppingCard===赠送购物卡失败--异常================",[$e->getMessage()]);
-            throw new LogicException('赠送购物卡失败');
+            Log::debug("===========UserGiftShoppingCard===赠送购物卡失败--异常================".$e->getMessage(),[json_encode($e)]);
+            throw new LogicException($e->getMessage());
 //            throw $e;
         }
         DB::commit();
