@@ -119,7 +119,7 @@ class UserPinTuanDataController extends Controller
             $arr3 = array(
                 'uid'=>$GiveUserData->id,
                 'money'=>$giveMoney,
-                'type'=>2,
+                'type'=>1,
                 'name'=>"接收赠送购物卡",
 
             );
