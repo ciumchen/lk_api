@@ -209,7 +209,7 @@ class UserPinTuanController extends Controller
 
         $user = $request->user();
         if (!$user->id) {
-            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+            throw new LogicException('用户信息错误');
         }
 //        $ip = $request->input('ip');
         $money = $request->input('money');
@@ -279,7 +279,6 @@ class UserPinTuanController extends Controller
 
         }
 
-
         DB::beginTransaction();
         try {
             //生成order录单
@@ -298,21 +297,21 @@ class UserPinTuanController extends Controller
             if ($type == "LR") {
                 //查询用户购物卡余额和录单实际让利金额
                 if ($userInfoData->gather_card < $profit_price) {
-                    throw new LogicException('购物卡余额不足');
+                    throw new Exception('购物卡余额不足');
                 }
                 $orderUid = Users::where('phone', $mobile)->value('id');
                 $business_uid = $user->id;
             } else {
                 //查询用户购物卡余额
                 if ($userInfoData->gather_card < $money) {
-                    throw new LogicException('购物卡余额不足');
+                    throw new Exception('购物卡余额不足');
                 }
                 $orderUid = $user->id;
                 $business_uid = 2;
             }
 
             if (intval($orderUid)<=0){
-                throw new LogicException('用户不存在');
+                throw new Exception('用户不存在');
             }
 
             $arr = array(
@@ -456,21 +455,21 @@ class UserPinTuanController extends Controller
             try {
                 $logData = GwkZfOperationLog::lockForUpdate()->where(['oid'=>$oid,'order_no' => $order_no,'status'=>1])->first();
                 if ($logData==null){
-                    throw new LogicException('订单非法处理');
+                    throw new Exception('订单非法处理');
                 }else{
                     $logData->status = 2;
                     $logData->save();
                 }
 
                 if ($orderData->price!=$money){
-                    throw new LogicException('参数异常');
+                    throw new Exception('参数异常');
                 }
                 //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条,录单审核不排队，其他订单审核要排队
                 $userInfo = Users::lockForUpdate()->find($user->id);
                 if ($type == 'LR') {//不排队
                     //扣除用户购物卡余额
                     if ($userInfo->gather_card < $orderData->profit_price){
-                        throw new LogicException('购物卡余额不足');
+                        throw new Exception('购物卡余额不足');
                     }
                     $userInfo->gather_card = $userInfo->gather_card - $orderData->profit_price;//购物卡金额减去录单的实际让利金额
                     $userInfo->save();
@@ -479,7 +478,7 @@ class UserPinTuanController extends Controller
                 } else {//排队
                     //扣除用户购物卡余额
                     if ($userInfo->gather_card < $orderData->price){
-                        throw new LogicException('购物卡余额不足');
+                        throw new Exception('购物卡余额不足');
                     }
                     $userInfo->gather_card = $userInfo->gather_card - $orderData->price;//购物卡减去消费金额
                     $userInfo->save();
@@ -567,7 +566,7 @@ class UserPinTuanController extends Controller
             //查询用户购物卡余额
             $userInfoData = Users::lockForUpdate()->find($user->id);
             if ($userInfoData->gather_card < $money) {
-                throw new LogicException('购物卡余额不足');
+                throw new Exception('购物卡余额不足');
             }
 
             //生成order录单
@@ -704,7 +703,7 @@ class UserPinTuanController extends Controller
                 //扣除用户购物卡余额
                 $userInfo = Users::lockForUpdate()->find($user->id);
                 if ($userInfo->gather_card < $money) {
-                    throw new LogicException('购物卡余额不足');
+                    throw new Exception('购物卡余额不足');
                 }
                 $userInfo->gather_card = $userInfo->gather_card - $money;
                 $userInfo->save();

@@ -159,20 +159,20 @@ class UserGatherService
         //校验密码
         if (strlen($data['password']) != 64)
         {
-            return json_encode(['code' => 10000, 'mag' => '密码不合法，请重新输入']);
+            return json_encode(['code' => 10000, 'msg' => '密码不合法，请重新输入']);
         }
 
         //获取密码信息
         $userCard = (new CardpayPassword())->cardPwdInfo($data['uid']);
         if (!$userCard)
         {
-            return json_encode(['code' => 10000, 'mag' => '用户密码信息不存在']);
+            return json_encode(['code' => 10000, 'msg' => '用户密码信息不存在']);
         }
 
         $cardInfo = (new CardpayPassword())->cardPwdInfo($data['uid']);
         if ($cardInfo->password != $data['password'])
         {
-            return json_encode(['code' => 10000, 'mag' => '密码输入不正确，请重新输入']);
+            return json_encode(['code' => 10000, 'msg' => '密码输入不正确，请重新输入']);
         }
 
         $checkInfo = CheckPaymentPasswordLog::where('uid',$data['uid'])->first();
@@ -184,7 +184,7 @@ class UserGatherService
             $checkData->save();
         }else{
             if ((time()-$checkInfo->time)<15){
-                return json_encode(['code' => 10000, 'mag' => '系统繁忙请稍后再试']);
+                return json_encode(['code' => 10000, 'msg' => '系统繁忙请稍后再试']);
             }else{
                 $checkInfo->time = time();
                 $checkInfo->save();
