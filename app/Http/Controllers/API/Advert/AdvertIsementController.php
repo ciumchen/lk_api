@@ -51,6 +51,6 @@ class AdvertIsementController extends Controller
     {
         $data = $request->all();
 
-        return (new AdvertIsementService())->addOtherAdvert($data);
+        return (new AdvertIsementService())->addGatherAdvert($data);
     }
 }

@@ -123,6 +123,25 @@ class AdvertIsementService
      * @return mixed
      * @throws
      */
+    public function addGatherAdvert (array $data)
+    {
+        //判断每天拼团广告次数
+        $advertRatio = 30;
+        $advertSum = (new AdvertUsers())->getGatherAdvertSum($data['uid']);
+        if ($advertSum >= $advertRatio)
+        {
+            return json_encode(['status' => 10000, 'msg' => '已超过每天额外获取拼团次数最大值！']);
+        }
+
+        //返回
+        return $this->addOtherAdvert($data);
+    }
+
+    /**新增用户广告记录
+     * @param array $data
+     * @return mixed
+     * @throws
+     */
     public function addOtherAdvert (array $data)
     {
         //签名
@@ -134,14 +153,6 @@ class AdvertIsementService
         if ($checkSign != $data['sign'])
         {
             return json_encode(['status' => 10000, 'msg' => '签名不合法，非法操作！']);
-        }
-
-        //判断每天拼团广告次数
-        $advertRatio = 30;
-        $advertSum = (new AdvertUsers())->getGatherAdvertSum($data['uid']);
-        if ($advertSum >= $advertRatio)
-        {
-            return json_encode(['status' => 10000, 'msg' => '已超过每天额外获取拼团次数最大值！']);
         }
 
         //数据是否已存在
