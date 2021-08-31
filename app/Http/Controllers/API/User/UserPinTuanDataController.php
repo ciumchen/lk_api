@@ -57,10 +57,10 @@ class UserPinTuanDataController extends Controller
         $mobile = $request->input('mobile');
         $password = $request->input('password');
         //验证支付密码
-//        $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
-//        if ($result!=200){
-//            return $result;
-//        }
+        $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
+        if ($result!=200){
+            return $result;
+        }
         //查询用户的购物卡余额进行对比
         if ($user->gather_card<$money){
             return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);

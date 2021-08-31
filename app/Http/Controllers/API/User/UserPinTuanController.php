@@ -63,62 +63,123 @@ class UserPinTuanController extends Controller
     {
         $user = $request->user();
         if (!$user->id) {
-            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+            throw new LogicException('用户信息错误');
         }
         $ip = $request->input('ip');
         $money = $request->input('money');
         //查询70%usdt
-        $userAssets = Assets::where('uid', $user->id)->where('assets_type_id', 3)->first();
-        if ($userAssets->amount >= $money) {
+        DB::beginTransaction();
+        try{
+            $userAssets = Assets::where('uid', $user->id)->where('assets_type_id', 3)->first()->lockForUpdate();
+            if ($userAssets->amount < $money) {
+                throw new Exception("补贴金余额不足");
+            }
+            $user = Users::lockForUpdate()->find($user->id);//用户信息加锁
             $oldAmount = $userAssets->amount;
             $order_no = createOrderNo();
             $oldLpj = $user->balance_tuan;//变动前来拼金余额
-            DB::beginTransaction();
-            try {
-                //扣除70%usdt和添加资产变动记录
-                $userAssets->amount = $oldAmount - $money;
-                $userAssets->save();
+//扣除70%usdt和添加资产变动记录
+            $userAssets->amount = $oldAmount - $money;
+            $userAssets->save();
 
-                $data = array(
-                    'assets_type_id' => 3,
-                    'assets_name' => 'usdt',
-                    'uid' => $user->id,
-                    'operate_type' => 'recharge_lpj',
-                    'amount' => $money,
-                    'amount_before_change' => $oldAmount,
-                    'order_no' => $order_no,
-                    'ip' => $ip,
-                    'remark' => '补贴金兑换来拼金',
-                    'user_agent' => 'recharge_lpj',
-                );
-                AssetsLogs::create($data);
-                //更新用户来拼金额度和来拼金记录
-                $user->balance_tuan = $user->balance_tuan + $money;
-                $user->save();
+            $data = array(
+                'assets_type_id' => 3,
+                'assets_name' => 'usdt',
+                'uid' => $user->id,
+                'operate_type' => 'recharge_lpj',
+                'amount' => $money,
+                'amount_before_change' => $oldAmount,
+                'order_no' => $order_no,
+                'ip' => $ip,
+                'remark' => '补贴金兑换来拼金',
+                'user_agent' => 'recharge_lpj',
+            );
+            AssetsLogs::create($data);
+            //更新用户来拼金额度和来拼金记录
+            $user->balance_tuan = $user->balance_tuan + $money;
+            $user->save();
 
-                $data = array(
-                    'uid' => $user->id,
-                    'operate_type' => 'recharge',
-                    'money' => $money,
-                    'money_before_change' => $oldLpj,
-                    'order_no' => $order_no,
-                    'remark' => '补贴金兑换来拼金',
-                    'status' => 2,
-                );
-                UserPinTuan::create($data);
+            $data = array(
+                'uid' => $user->id,
+                'operate_type' => 'recharge',
+                'money' => $money,
+                'money_before_change' => $oldLpj,
+                'order_no' => $order_no,
+                'remark' => '补贴金兑换来拼金',
+                'status' => 2,
+            );
+            UserPinTuan::create($data);
 
-                DB::commit();
-                return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
-            } catch (Exception $e) {
-                DB::rollBack();
-                return response()->json(['code' => 0, 'msg' => '补贴金兑换失败']);
-            }
-        } else {
-            return response()->json(['code' => 0, 'msg' => '补贴金余额不足']);
+            DB::commit();
+        }catch(Exception $e){
+            DB::rollBack();
+            Log::debug($e->getMassage(),[json_encode($e)]);
+            throw new LogicException('补贴金兑换失败');
         }
-
-
+        return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
     }
+
+    //使用70%usdt补贴金充值来拼金
+//    public function UserUsdtDhLpj_1(ReUserPinTuan $request)
+//    {
+//        $user = $request->user();
+//        if (!$user->id) {
+//            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+//        }
+//        $ip = $request->input('ip');
+//        $money = $request->input('money');
+//        //查询70%usdt
+//        $userAssets = Assets::where('uid', $user->id)->where('assets_type_id', 3)->first();
+//        if ($userAssets->amount >= $money) {
+//            $oldAmount = $userAssets->amount;
+//            $order_no = createOrderNo();
+//            $oldLpj = $user->balance_tuan;//变动前来拼金余额
+//            DB::beginTransaction();
+//            try {
+//                //扣除70%usdt和添加资产变动记录
+//                $userAssets->amount = $oldAmount - $money;
+//                $userAssets->save();
+//
+//                $data = array(
+//                    'assets_type_id' => 3,
+//                    'assets_name' => 'usdt',
+//                    'uid' => $user->id,
+//                    'operate_type' => 'recharge_lpj',
+//                    'amount' => $money,
+//                    'amount_before_change' => $oldAmount,
+//                    'order_no' => $order_no,
+//                    'ip' => $ip,
+//                    'remark' => '补贴金兑换来拼金',
+//                    'user_agent' => 'recharge_lpj',
+//                );
+//                AssetsLogs::create($data);
+//                //更新用户来拼金额度和来拼金记录
+//                $user->balance_tuan = $user->balance_tuan + $money;
+//                $user->save();
+//
+//                $data = array(
+//                    'uid' => $user->id,
+//                    'operate_type' => 'recharge',
+//                    'money' => $money,
+//                    'money_before_change' => $oldLpj,
+//                    'order_no' => $order_no,
+//                    'remark' => '补贴金兑换来拼金',
+//                    'status' => 2,
+//                );
+//                UserPinTuan::create($data);
+//
+//                DB::commit();
+//                return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
+//            } catch (Exception $e) {
+//                DB::rollBack();
+//                return response()->json(['code' => 0, 'msg' => '补贴金兑换失败']);
+//            }
+//        } else {
+//            return response()->json(['code' => 0, 'msg' => '补贴金余额不足']);
+//        }
+//
+//
+//    }
 
     //购买来拼金
     public function UserBuyLpj(ReUserPinTuan $request)
@@ -217,13 +278,13 @@ class UserPinTuanController extends Controller
         $mobile = $request->input('mobile');
         $type = $request->input('type');
         if ($money=='' || $mobile=='' || $type==''){
-            return response()->json(['code' => 0, 'msg' => '参数不能为空']);
+            throw new LogicException('参数不能为空');
         }
 
         if ($type=='LR'){
             $profit_ratio = $request->input('profit_ratio');//接收录单的让利比例
             if (in_array($profit_ratio,array(5,10,20)) == false){
-                return response()->json(['code' => 0, 'msg' => '让利比例不合法']);
+                throw new LogicException('让利比例不合法');
             }
         }
 
@@ -233,11 +294,11 @@ class UserPinTuanController extends Controller
         }
         if ($type=="LR"){
             if ($mobile==$user->phone){
-                return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
+                throw new LogicException('自己不能给自己录单');
             }
             $mobileUserData = User::where('phone',$mobile)->first();
             if ($mobileUserData==null){
-                return response()->json(['code' => 0, 'msg' => '录单手机号用户不存在']);
+                throw new LogicException('录单手机号用户不存在');
             }
         }
 
@@ -275,7 +336,7 @@ class UserPinTuanController extends Controller
                 $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
                 break;
             default:
-                return response()->json(['code' => 0, 'msg' => '兑换类型错误']);
+                throw new LogicException('兑换类型错误');
                 break;
 
         }
@@ -293,24 +354,27 @@ class UserPinTuanController extends Controller
                 20 => 1,
             );
 
+            //查询用户购物卡余额
+            $userInfoData = Users::lockForUpdate()->find($user->id);
+
             if ($type == "LR") {
                 //查询用户购物卡余额和录单实际让利金额
-                if ($user->gather_card < $profit_price) {
-                    return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                if ($userInfoData->gather_card < $profit_price) {
+                    throw new LogicException('购物卡余额不足');
                 }
                 $orderUid = Users::where('phone', $mobile)->value('id');
                 $business_uid = $user->id;
             } else {
                 //查询用户购物卡余额
-                if ($user->gather_card < $money) {
-                    return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                if ($userInfoData->gather_card < $money) {
+                    throw new LogicException('购物卡余额不足');
                 }
                 $orderUid = $user->id;
                 $business_uid = 2;
             }
 
             if (intval($orderUid)<=0){
-                return response()->json(['code' => 0, 'msg' => '用户不存在']);
+                throw new LogicException('用户不存在');
             }
 
             $arr = array(
@@ -394,7 +458,7 @@ class UserPinTuanController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             Log::debug("===========ShoppingCardDhDefault===购物卡兑换-录单、话费直充、和代充==生成订单异常================",[$e->getMessage()]);
-            return response()->json(['code' => 0, 'msg' => '订单信息错误']);
+            throw new LogicException('订单信息错误');
             return false;
 //            throw $e;
         }
@@ -409,7 +473,7 @@ class UserPinTuanController extends Controller
     {
         $user = $request->user();
         if (!$user->id) {
-            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+            throw new LogicException('用户信息错误');
         }
 //        $ip = $request->input('ip');
         $order_no = $request->input('order_no');
@@ -430,7 +494,7 @@ class UserPinTuanController extends Controller
                 $create_type = 11;
                 $typeName = "兑换录单";
                 if ($user->phone == $mobile) {
-                    return response()->json(['code' => 0, 'msg' => '自己不能给自己录单']);
+                    throw new LogicException('自己不能给自己录单');
                 }
                 break;
             case "HF":
@@ -442,7 +506,7 @@ class UserPinTuanController extends Controller
                 $typeName = "兑换代充";
                 break;
             default:
-                return response()->json(['code' => 0, 'msg' => '兑换类型错误']);
+                throw new LogicException('兑换类型错误');
                 break;
 
         }
@@ -454,21 +518,21 @@ class UserPinTuanController extends Controller
             try {
                 $logData = GwkZfOperationLog::lockForUpdate()->where(['oid'=>$oid,'order_no' => $order_no,'status'=>1])->first();
                 if ($logData==null){
-                    return response()->json(['code' => 0, 'msg' => '订单非法处理']);
+                    throw new LogicException('订单非法处理');
                 }else{
                     $logData->status = 2;
                     $logData->save();
                 }
 
                 if ($orderData->price!=$money){
-                    return response()->json(['code' => 0, 'msg' => '参数异常']);
+                    throw new LogicException('参数异常');
                 }
                 //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条,录单审核不排队，其他订单审核要排队
-                $userInfo = Users::where('id', $user->id)->first();
+                $userInfo = Users::lockForUpdate()->find($user->id);
                 if ($type == 'LR') {//不排队
                     //扣除用户购物卡余额
                     if ($userInfo->gather_card < $orderData->profit_price){
-                        return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                        throw new LogicException('购物卡余额不足');
                     }
                     $userInfo->gather_card = $userInfo->gather_card - $orderData->profit_price;//购物卡金额减去录单的实际让利金额
                     $userInfo->save();
@@ -477,7 +541,7 @@ class UserPinTuanController extends Controller
                 } else {//排队
                     //扣除用户购物卡余额
                     if ($userInfo->gather_card < $orderData->price){
-                        return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
+                        throw new LogicException('购物卡余额不足');
                     }
                     $userInfo->gather_card = $userInfo->gather_card - $orderData->price;//购物卡减去消费金额
                     $userInfo->save();
@@ -504,7 +568,7 @@ class UserPinTuanController extends Controller
             } catch (Exception $e) {
                 DB::rollBack();
                 $gwkStatus = 2;
-                return response()->json(['code' => 0, 'msg' => '订单信息错误']);
+                throw new LogicException('订单信息错误');
                 return false;
 //            throw $e;
             }
@@ -531,10 +595,10 @@ class UserPinTuanController extends Controller
 
                 return json_encode(['code' => 200, 'msg' => $typeName . '成功']);
             } else {
-                return json_encode(['code' => 0, 'msg' => $typeName . '失败']);
+                throw new LogicException($typeName . '失败');
             }
         } else {
-            return json_encode(['code' => 0, 'msg' => $typeName . '订单不存在']);
+            throw new LogicException($typeName . '订单不存在');
         }
 
     }
@@ -544,7 +608,7 @@ class UserPinTuanController extends Controller
     {
         $user = $request->user();
         if (!$user->id) {
-            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+            throw new LogicException('用户信息错误');
         }
 //        $ip = $request->input('ip');
         $money = $request->input('money');
@@ -552,7 +616,7 @@ class UserPinTuanController extends Controller
         $userName = $request->input('userName');
 
         if ($money=='' || $mobile=='' || $userName==''){
-            return response()->json(['code' => 0, 'msg' => '参数不能为空']);
+            throw new LogicException('参数不能为空');
         }
 
         $reg = '/^1[3456789]\d{9}$/';
@@ -560,12 +624,14 @@ class UserPinTuanController extends Controller
             throw new LogicException('手机号格式不正确');
         }
 
-        //查询用户购物卡余额
-        if ($user->gather_card < $money) {
-            return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
-        }
         DB::beginTransaction();
         try {
+            //查询用户购物卡余额
+            $userInfoData = Users::lockForUpdate()->find($user->id);
+            if ($userInfoData->gather_card < $money) {
+                throw new LogicException('购物卡余额不足');
+            }
+
             //生成order录单
             $order_no = createOrderNo();
             $profit_ratio = Setting::where('key', 'set_business_rebate_scale_mt')->value('value');//美团让利比例
@@ -656,7 +722,7 @@ class UserPinTuanController extends Controller
             DB::rollBack();
 //            throw $e;
             Log::debug("===========ShoppingCardDhMt===购物卡兑换美团生成订单异常================",[$e->getMessage()]);
-            return response()->json(['code' => 0, 'msg' => '订单信息错误']);
+            throw new LogicException('订单信息错误');
         }
         DB::commit();
 
@@ -698,7 +764,10 @@ class UserPinTuanController extends Controller
                     $logData->save();
                 }
                 //扣除用户购物卡余额
-                $userInfo = Users::where('id', $user->id)->first();
+                $userInfo = Users::lockForUpdate()->find($user->id);
+                if ($userInfo->gather_card < $money) {
+                    throw new LogicException('购物卡余额不足');
+                }
                 $userInfo->gather_card = $userInfo->gather_card - $money;
                 $userInfo->save();
 
@@ -723,13 +792,13 @@ class UserPinTuanController extends Controller
             } catch (Exception $e) {
                 DB::rollBack();
                 Log::debug("===========gwkDhCallbackNoZf===购物卡兑换美团生成--确认兑换异常================",[$e->getMessage()]);
-                return response()->json(['code' => 0, 'msg' => '兑换美团失败']);
+                throw new LogicException('兑换美团失败');
 //            throw $e;
             }
             DB::commit();
             return json_encode(['code' => 1, 'msg' => '兑换美团成功']);
         } else {
-            return json_encode(['code' => 0, 'msg' => '兑换美团失败']);
+            throw new LogicException('兑换美团失败');
         }
 
     }
