@@ -184,7 +184,7 @@ class UserGatherService
             $checkData->save();
         }else{
             if ((time()-$checkInfo->time)<30){
-                return json_encode(['code' => 0, 'msg' => '系统繁忙请稍后再试']);
+                return json_encode(['code' => 0, 'msg' => '购物卡30秒内只能支付1次']);
             }else{
                 $checkInfo->time = time();
                 $checkInfo->save();
