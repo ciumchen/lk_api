@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\Payment\YuntongPayController;
 use App\Http\Requests\UserPinTuan as ReUserPinTuan;
 
-class UserShoppingCardController extends Controller
+class UserGwkData extends Controller
 {
     //查询购物卡兑换记录
     public function selectGwkDhjl2(Request $request){
@@ -69,22 +69,29 @@ class UserShoppingCardController extends Controller
 
     }
 
-    //查询购物卡兑换记录
-    public function selectGwkDhjl(Request $request){
+    //查询购物卡拼团中奖记录
+    public function selectGwkPingtuanLog(Request $request){
         $uid = $request->input('uid');
         $page = $request->input("page");
-        $data = (new GatherShoppingCard())
-            ->with(['gwkDhLog'=>function($query) use ($uid){
-                $query->where('status',2);
-            }])
-//            ->with(['gwkDhLog'])
-
-            ->where(["uid"=>$uid])
+        $data = (new GatherShoppingCard())->where(["uid"=>$uid,'gid'=>0,'guid'=>0])
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, 10)
             ->get();
+        return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
 
+    }
+
+    //查询购物卡记录
+    public function selectGwkXfLog(Request $request){
+        $uid = $request->input('uid');
+        $page = $request->input("page");
+        $data = (new UserShoppingCardDhLog())->where(["uid"=>$uid,'status'=>2])
+            ->wh
+            ->orderBy('id', 'desc')
+            ->latest('id')
+            ->forPage($page, 10)
+            ->get();
         return response()->json(['code'=>1, 'msg'=>'获取成功', 'data' => $data]);
 
     }

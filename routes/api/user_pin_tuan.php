@@ -45,8 +45,10 @@ Route::any('getUserDataUsdtYE', 'User\UserPinTuanController@getUserDataUsdtYE');
 //查询用户的购物卡余额
 Route::any('getUserShoppingCardMoney', 'User\UserPinTuanDataController@getUserShoppingCardMoney');
 
-//查询购物卡兑换记录
-Route::any('selectGwkDhjl', 'User\UserShoppingCardController@selectGwkDhjl');
+//查询购物卡拼团中奖记录
+Route::any('selectGwkPingtuanLog', 'User\UserGwkData@selectGwkPingtuanLog');
+//查询购物卡记录
+Route::any('selectGwkXfLog', 'User\UserGwkData@selectGwkXfLog');
 
 
 

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API\Test;
 
 
 use App\Http\Controllers\API\Test\OpenClient;
+use App\Models\Order;
 use App\Models\Users;
+use App\Services\GatherOrderService;
 use App\Services\GatherService;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -101,6 +103,21 @@ class TestController
             $users = Users::find($val);
             $users->gather_card = $users->gather_card - 100;
             $users->save();
+        }
+    }*/
+
+    //更新拼团订单状态
+    /*public function updOrderStatus(Request $request)
+    {
+        $orderList = Order::where(['description' => 'PT', 'status' => 1])
+            ->where('created_at', '>=', $request->strat)
+            ->where('created_at', '<=', $request->endat)
+            ->get(['id', 'uid', 'order_no']);
+
+        $orderArr = json_decode($orderList, 1);
+        foreach ($orderArr as $list)
+        {
+            (new GatherOrderService())->completeOrderGatger($list['id'], $list['uid'], 'PT', $list['order_no']);
         }
     }*/
 }
