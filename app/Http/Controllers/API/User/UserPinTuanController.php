@@ -70,7 +70,7 @@ class UserPinTuanController extends Controller
         //查询70%usdt
         DB::beginTransaction();
         try{
-            $userAssets = Assets::where('uid', $user->id)->where('assets_type_id', 3)->first()->lockForUpdate();
+            $userAssets = Assets::lockForUpdate()->where('uid', $user->id)->where('assets_type_id', 3)->first();
             if ($userAssets->amount < $money) {
                 throw new Exception("补贴金余额不足");
             }
