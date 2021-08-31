@@ -249,7 +249,7 @@ class UserPinTuanController extends Controller
                 $operate_type = "exchange_lr";
                 $remark = "录单";
                 $create_type = 11;
-                $typeName = "兑换录单";
+                $typeName = "录单";
                 break;
             case "HF":
                 $name = '话费';
@@ -259,7 +259,7 @@ class UserPinTuanController extends Controller
                 $operate_type = "exchange_hf";
                 $remark = "话费";
                 $create_type = 1;
-                $typeName = "兑换话费";
+                $typeName = "话费直充";
                 $profit_ratio = Setting::where('key', 'set_business_rebate_scale_hf')->value('value');//话费让利比例
                 break;
             case "ZL":
@@ -270,7 +270,7 @@ class UserPinTuanController extends Controller
                 $operate_type = "exchange_zl";
                 $remark = "代充";
                 $create_type = 2;
-                $typeName = "兑换代充";
+                $typeName = "话费代充";
                 $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
                 break;
             default:
@@ -429,18 +429,18 @@ class UserPinTuanController extends Controller
         switch ($type) {
             case "LR":
                 $create_type = 11;
-                $typeName = "兑换录单";
+                $typeName = "录单";
                 if ($user->phone == $mobile) {
                     throw new LogicException('自己不能给自己录单');
                 }
                 break;
             case "HF":
                 $create_type = 1;
-                $typeName = "兑换话费";
+                $typeName = "话费直充";
                 break;
             case "ZL":
                 $create_type = 2;
-                $typeName = "兑换代充";
+                $typeName = "话费代充";
                 break;
             default:
                 throw new LogicException('兑换类型错误');
@@ -633,7 +633,7 @@ class UserPinTuanController extends Controller
                 'uid' => $user->id,
                 'money' => $money,
                 'type' => 2,
-                'name' => "兑换美团",
+                'name' => "美团额度",
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
             );
