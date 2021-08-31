@@ -162,10 +162,10 @@ if (!function_exists('apiSuccess')) {
      *
      * @return string
      */
-    function apiSuccess($data = [], $msg = 'success')
+    function apiSuccess($data = [], $msg = 'success',$code=0)
     {
         $return_array = [
-            'code' => 0,
+            'code' => $code,
             'data' => $data,
             'msg'  => $msg,
         ];

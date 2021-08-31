@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\Payment\YuntongPayController;
 use App\Http\Requests\UserPinTuan as ReUserPinTuan;
-
+use App\Exceptions\LogicException;
 class UserPinTuanDataController extends Controller
 {
     //查询用户的来拼金充值记录
@@ -64,7 +64,7 @@ class UserPinTuanDataController extends Controller
 
         //增送金额必须是10的整数倍
         if ($money%10 != 0){
-            return response()->json(['code' => 0, 'msg' => '赠送金额必须是10的整数倍']);
+            throw new LogicException('赠送金额必须是10的整数倍');
         }
 
         DB::beginTransaction();
@@ -72,14 +72,17 @@ class UserPinTuanDataController extends Controller
             //查询用户的购物卡余额进行对比
             $userInfo = Users::lockForUpdate()->find($user->id);
             if ($userInfo->gather_card < $money) {
-                throw new LogicException('购物卡余额不足');
+                throw new Exception('购物卡余额不足');
             }
 
             //验证赠送的手机号是否是来客用户
             $GiveUserData = Users::lockForUpdate()->where('phone',$mobile)->first();
+            if (empty($GiveUserData)){
+                throw new Exception('被赠送用户不存在');
+            }
             $giveGatherCard = $GiveUserData->gather_card;//赠送前购物卡旧余额
             if ($GiveUserData==null){
-                return response()->json(['code' => 0, 'msg' => '赠送的用户不是来客的用户']);
+                throw new Exception('赠送的用户不是来客的用户');
             }
 
             //扣除赠送用户购物卡，增加被赠送用户购物卡,扣除5%
@@ -141,7 +144,7 @@ class UserPinTuanDataController extends Controller
         }
         DB::commit();
 
-        return response()->json(['code' => 1, 'msg' => '赠送购物卡成功']);
+        return apiSuccess('','赠送购物卡成功',1);
     }
 
     //添加购物卡兑换记录和购物卡拼团记录
