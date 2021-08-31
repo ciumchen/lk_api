@@ -734,7 +734,7 @@ class UserPinTuanController extends Controller
 //            throw $e;
             }
             DB::commit();
-            return json_encode(['code' => 1, 'msg' => '兑换美团成功']);
+            return json_encode(['code' => 200, 'msg' => '兑换美团成功']);
         } else {
             throw new LogicException('兑换美团失败');
         }
