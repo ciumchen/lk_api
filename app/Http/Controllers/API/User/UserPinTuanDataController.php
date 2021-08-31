@@ -80,10 +80,11 @@ class UserPinTuanDataController extends Controller
             if (empty($GiveUserData)){
                 throw new Exception('被赠送用户不存在');
             }
-            $giveGatherCard = $GiveUserData->gather_card;//赠送前购物卡旧余额
-            if ($GiveUserData==null){
-                throw new Exception('赠送的用户不是来客的用户');
+            if ($userInfo->id==$GiveUserData->id){
+                throw new Exception('不能赠送给自己');
             }
+            $giveGatherCard = $GiveUserData->gather_card;//赠送前购物卡旧余额
+
 
             //扣除赠送用户购物卡，增加被赠送用户购物卡,扣除5%
             $oldUserMoney = $userInfo->gather_card;
