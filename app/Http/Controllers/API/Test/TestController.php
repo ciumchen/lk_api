@@ -106,8 +106,8 @@ class TestController
         }
     }*/
 
-    //扣除来拼金和购物卡
-    public function updOrderStatus(Request $request)
+    //更新拼团订单状态
+    /*public function updOrderStatus(Request $request)
     {
         $orderList = Order::where(['description' => 'PT', 'status' => 1])
             ->where('created_at', '>=', $request->strat)
@@ -119,5 +119,5 @@ class TestController
         {
             (new GatherOrderService())->completeOrderGatger($list['id'], $list['uid'], 'PT', $list['order_no']);
         }
-    }
+    }*/
 }
