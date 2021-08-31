@@ -633,7 +633,7 @@ class UserPinTuanController extends Controller
                 'uid' => $user->id,
                 'money' => $money,
                 'type' => 2,
-                'name' => "美团额度",
+                'name' => "兑换额度(美团)",
                 'created_at' => date("Y-m-d H:i:s", time()),
                 'updated_at' => date("Y-m-d H:i:s", time()),
             );
