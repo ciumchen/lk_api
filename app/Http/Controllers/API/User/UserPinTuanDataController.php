@@ -56,6 +56,10 @@ class UserPinTuanDataController extends Controller
         $money = $request->input('money');
         $mobile = $request->input('mobile');
         $password = $request->input('password');
+
+        if ($money<=0 || $money!=intval($money)){
+            throw new LogicException('金额不合法');
+        }
         //验证支付密码
         $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
         if ($result!=200){
