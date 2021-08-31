@@ -453,8 +453,9 @@ class UserPinTuanController extends Controller
         if ($orderData != null) {
             DB::beginTransaction();
             try {
+                $userInfo = Users::lockForUpdate()->find($user->id);
                 $logData = GwkZfOperationLog::lockForUpdate()->where(['oid'=>$oid,'order_no' => $order_no,'status'=>1])->first();
-                if ($logData==null){
+                if (empty($logData) || empty($userInfo)){
                     throw new Exception('订单非法处理');
                 }else{
                     $logData->status = 2;
@@ -465,7 +466,7 @@ class UserPinTuanController extends Controller
                     throw new Exception('参数异常');
                 }
                 //订单通过审核添加积分，更新order 表审核状态--添加资产记录10条,录单审核不排队，其他订单审核要排队
-                $userInfo = Users::lockForUpdate()->find($user->id);
+
                 if ($type == 'LR') {//不排队
                     //扣除用户购物卡余额
                     if ($userInfo->gather_card < $orderData->profit_price){
