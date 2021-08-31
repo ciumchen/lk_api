@@ -59,126 +59,64 @@ class UserPinTuanController extends Controller
     }
 
     //使用70%usdt补贴金充值来拼金
-    public function UserUsdtDhLpj(ReUserPinTuan $request)
-    {
-        $user = $request->user();
-        if (!$user->id) {
-            throw new LogicException('用户信息错误');
-        }
-        $ip = $request->input('ip');
-        $money = $request->input('money');
-        //查询70%usdt
-        DB::beginTransaction();
-        try{
-            $userAssets = Assets::lockForUpdate()->where('uid', $user->id)->where('assets_type_id', 3)->first();
-            if ($userAssets->amount < $money) {
-                throw new Exception("补贴金余额不足");
-            }
-            $user = Users::lockForUpdate()->find($user->id);//用户信息加锁
-            $oldAmount = $userAssets->amount;
-            $order_no = createOrderNo();
-            $oldLpj = $user->balance_tuan;//变动前来拼金余额
-//扣除70%usdt和添加资产变动记录
-            $userAssets->amount = $oldAmount - $money;
-            $userAssets->save();
-
-            $data = array(
-                'assets_type_id' => 3,
-                'assets_name' => 'usdt',
-                'uid' => $user->id,
-                'operate_type' => 'recharge_lpj',
-                'amount' => $money,
-                'amount_before_change' => $oldAmount,
-                'order_no' => $order_no,
-                'ip' => $ip,
-                'remark' => '补贴金兑换来拼金',
-                'user_agent' => 'recharge_lpj',
-            );
-            AssetsLogs::create($data);
-            //更新用户来拼金额度和来拼金记录
-            $user->balance_tuan = $user->balance_tuan + $money;
-            $user->save();
-
-            $data = array(
-                'uid' => $user->id,
-                'operate_type' => 'recharge',
-                'money' => $money,
-                'money_before_change' => $oldLpj,
-                'order_no' => $order_no,
-                'remark' => '补贴金兑换来拼金',
-                'status' => 2,
-            );
-            UserPinTuan::create($data);
-
-            DB::commit();
-        }catch(Exception $e){
-            DB::rollBack();
-            Log::debug($e->getMessage(),[json_encode($e)]);
-            throw new LogicException('补贴金兑换失败');
-        }
-        return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
-    }
-
-    //使用70%usdt补贴金充值来拼金
-//    public function UserUsdtDhLpj_1(ReUserPinTuan $request)
+//    public function UserUsdtDhLpj(ReUserPinTuan $request)
 //    {
 //        $user = $request->user();
 //        if (!$user->id) {
-//            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+//            throw new LogicException('用户信息错误');
 //        }
 //        $ip = $request->input('ip');
 //        $money = $request->input('money');
 //        //查询70%usdt
-//        $userAssets = Assets::where('uid', $user->id)->where('assets_type_id', 3)->first();
-//        if ($userAssets->amount >= $money) {
+//        DB::beginTransaction();
+//        try{
+//            $userAssets = Assets::lockForUpdate()->where('uid', $user->id)->where('assets_type_id', 3)->first();
+//            if ($userAssets->amount < $money) {
+//                throw new Exception("补贴金余额不足");
+//            }
+//            $user = Users::lockForUpdate()->find($user->id);//用户信息加锁
 //            $oldAmount = $userAssets->amount;
 //            $order_no = createOrderNo();
 //            $oldLpj = $user->balance_tuan;//变动前来拼金余额
-//            DB::beginTransaction();
-//            try {
-//                //扣除70%usdt和添加资产变动记录
-//                $userAssets->amount = $oldAmount - $money;
-//                $userAssets->save();
+////扣除70%usdt和添加资产变动记录
+//            $userAssets->amount = $oldAmount - $money;
+//            $userAssets->save();
 //
-//                $data = array(
-//                    'assets_type_id' => 3,
-//                    'assets_name' => 'usdt',
-//                    'uid' => $user->id,
-//                    'operate_type' => 'recharge_lpj',
-//                    'amount' => $money,
-//                    'amount_before_change' => $oldAmount,
-//                    'order_no' => $order_no,
-//                    'ip' => $ip,
-//                    'remark' => '补贴金兑换来拼金',
-//                    'user_agent' => 'recharge_lpj',
-//                );
-//                AssetsLogs::create($data);
-//                //更新用户来拼金额度和来拼金记录
-//                $user->balance_tuan = $user->balance_tuan + $money;
-//                $user->save();
+//            $data = array(
+//                'assets_type_id' => 3,
+//                'assets_name' => 'usdt',
+//                'uid' => $user->id,
+//                'operate_type' => 'recharge_lpj',
+//                'amount' => $money,
+//                'amount_before_change' => $oldAmount,
+//                'order_no' => $order_no,
+//                'ip' => $ip,
+//                'remark' => '补贴金兑换来拼金',
+//                'user_agent' => 'recharge_lpj',
+//            );
+//            AssetsLogs::create($data);
+//            //更新用户来拼金额度和来拼金记录
+//            $user->balance_tuan = $user->balance_tuan + $money;
+//            $user->save();
 //
-//                $data = array(
-//                    'uid' => $user->id,
-//                    'operate_type' => 'recharge',
-//                    'money' => $money,
-//                    'money_before_change' => $oldLpj,
-//                    'order_no' => $order_no,
-//                    'remark' => '补贴金兑换来拼金',
-//                    'status' => 2,
-//                );
-//                UserPinTuan::create($data);
+//            $data = array(
+//                'uid' => $user->id,
+//                'operate_type' => 'recharge',
+//                'money' => $money,
+//                'money_before_change' => $oldLpj,
+//                'order_no' => $order_no,
+//                'remark' => '补贴金兑换来拼金',
+//                'status' => 2,
+//            );
+//            UserPinTuan::create($data);
 //
-//                DB::commit();
-//                return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
-//            } catch (Exception $e) {
-//                DB::rollBack();
-//                return response()->json(['code' => 0, 'msg' => '补贴金兑换失败']);
-//            }
-//        } else {
-//            return response()->json(['code' => 0, 'msg' => '补贴金余额不足']);
+//            DB::commit();
+//        }catch(Exception $e){
+//            DB::rollBack();
+//            Log::debug($e->getMessage(),[json_encode($e)]);
+//            throw new LogicException('补贴金兑换失败');
 //        }
-//
-//
+//        return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
 //    }
 
     //购买来拼金
