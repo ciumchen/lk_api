@@ -136,6 +136,14 @@ class AdvertIsementService
             return json_encode(['status' => 10000, 'msg' => '签名不合法，非法操作！']);
         }
 
+        //判断每天拼团广告次数
+        $advertRatio = 30;
+        $advertSum = (new AdvertUsers())->getGatherAdvertSum($data['uid']);
+        if ($advertSum >= $advertRatio)
+        {
+            return json_encode(['status' => 10000, 'msg' => '已超过每天额外获取拼团次数最大值！']);
+        }
+
         //数据是否已存在
         $where = [
             'unique_id' => $data['unique_id'],

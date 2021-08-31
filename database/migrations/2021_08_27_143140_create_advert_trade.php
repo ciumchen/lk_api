@@ -27,7 +27,9 @@ class CreateAdvertTrade extends Migration
             $table->timestamp('created_at')->nullable()->comment('创建时间');
             $table->timestamp('updated_at')->nullable()->comment('更新时间');
 
-            $table->index(['uid', 'oid', 'order_no']);
+            $table->index(['uid']);
+            $table->index(['oid']);
+            $table->index(['order_no']);
         });
     }
 

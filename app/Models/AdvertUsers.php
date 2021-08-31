@@ -57,14 +57,20 @@ class AdvertUsers extends Model
         return (new Users())->getUserValue($uid, 'advert_award');
     }
 
-    /**获取用户观看拼团广告次数
+    /**获取用户每天观看拼团广告次数
      * @param int $uid
      * @return mixed
      * @throws
      */
-    public function getGatherAdvert (int $uid)
+    public function getGatherAdvertSum (int $uid)
     {
+        //每天开始时间
+        $stareDate = date('Y-m-d 00:00:00');
+        //每天结束时间
+        $endDate = date('Y-m-d 23:59:59');
         return AdvertUsers::where(['uid' => $uid, 'brand' => 2])
+                ->where('created_at', '>=', $stareDate)
+                ->where('created_at', '<=', $endDate)
                 ->count();
     }
 
