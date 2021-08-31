@@ -123,7 +123,7 @@ class AdvertIsementService
      * @return mixed
      * @throws
      */
-    public function addGatherAdvert (array $data)
+    public function addOtherAdvert (array $data)
     {
         //签名
         $param = $data['award'] . $data['packagename'] . $data['type'] . $data['uid'] . $data['unique_id'];
