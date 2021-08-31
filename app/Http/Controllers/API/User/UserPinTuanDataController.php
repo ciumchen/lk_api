@@ -108,7 +108,7 @@ class UserPinTuanDataController extends Controller
             );
             $arr2 = array(
                 'uid' => $user->id,
-                'operate_type' => "exchange_give",//赠送类型
+                'operate_type' => "exchange_give_dc",//赠送扣除类型
                 'money' => $money,
                 'money_before_change' => $oldUserMoney,
                 'order_no' => $order_no,
@@ -125,7 +125,7 @@ class UserPinTuanDataController extends Controller
             );
             $arr4 = array(
                 'uid' =>$GiveUserData->id,
-                'operate_type' => "exchange_give",//赠送类型
+                'operate_type' => "exchange_give_add",//赠送类型
                 'money' => $giveMoney,
                 'money_before_change' => $giveGatherCard,
                 'order_no' => $order_no,

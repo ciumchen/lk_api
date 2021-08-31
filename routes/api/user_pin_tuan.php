@@ -46,7 +46,7 @@ Route::any('getUserDataUsdtYE', 'User\UserPinTuanController@getUserDataUsdtYE');
 Route::any('getUserShoppingCardMoney', 'User\UserPinTuanDataController@getUserShoppingCardMoney');
 
 //查询购物卡拼团中奖记录
-Route::any('selectGwkPingtuanLog', 'User\UserGwkData@selectGwkPingtuanLog');
+Route::any('selectGwkPintuanLog', 'User\UserGwkData@selectGwkPintuanLog');
 //查询购物卡记录
 Route::any('selectGwkXfLog', 'User\UserGwkData@selectGwkXfLog');
 
