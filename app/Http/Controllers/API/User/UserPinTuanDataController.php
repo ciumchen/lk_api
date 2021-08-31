@@ -51,7 +51,7 @@ class UserPinTuanDataController extends Controller
     public function UserGiftShoppingCard(Request $request){
         $user = $request->user();
         if (!$user->id) {
-            return response()->json(['code' => 0, 'msg' => '用户信息错误']);
+            throw new LogicException('用户信息错误');
         }
         $money = $request->input('money');
         $mobile = $request->input('mobile');
@@ -61,16 +61,7 @@ class UserPinTuanDataController extends Controller
         if ($result!=200){
             return $result;
         }
-        //查询用户的购物卡余额进行对比
-        if ($user->gather_card<$money){
-            return response()->json(['code' => 0, 'msg' => '购物卡余额不足']);
-        }
-        //验证赠送的手机号是否是来客用户
-        $GiveUserData = Users::where('phone',$mobile)->first();
-        $giveGatherCard = $GiveUserData->gather_card;//赠送前购物卡旧余额
-        if ($GiveUserData==null){
-            return response()->json(['code' => 0, 'msg' => '赠送的用户不是来客的用户']);
-        }
+
         //增送金额必须是10的整数倍
         if ($money%10 != 0){
             return response()->json(['code' => 0, 'msg' => '赠送金额必须是10的整数倍']);
@@ -78,8 +69,20 @@ class UserPinTuanDataController extends Controller
 
         DB::beginTransaction();
         try {
+            //查询用户的购物卡余额进行对比
+            $userInfo = Users::lockForUpdate()->find($user->id);
+            if ($userInfo->gather_card < $money) {
+                throw new LogicException('购物卡余额不足');
+            }
+
+            //验证赠送的手机号是否是来客用户
+            $GiveUserData = Users::lockForUpdate()->where('phone',$mobile)->first();
+            $giveGatherCard = $GiveUserData->gather_card;//赠送前购物卡旧余额
+            if ($GiveUserData==null){
+                return response()->json(['code' => 0, 'msg' => '赠送的用户不是来客的用户']);
+            }
+
             //扣除赠送用户购物卡，增加被赠送用户购物卡,扣除5%
-            $userInfo = Users::where('id', $user->id)->first();
             $oldUserMoney = $userInfo->gather_card;
             $userInfo->gather_card = $userInfo->gather_card - $money;
             $userInfo->save();
@@ -133,7 +136,7 @@ class UserPinTuanDataController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             Log::debug("===========UserGiftShoppingCard===赠送购物卡失败--异常================",[$e->getMessage()]);
-            return response()->json(['code' => 0, 'msg' => '赠送购物卡失败']);
+            throw new LogicException('赠送购物卡失败');
 //            throw $e;
         }
         DB::commit();
