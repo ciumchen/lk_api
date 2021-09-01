@@ -40,11 +40,11 @@ class AdvertIsementService
         {
             return json_encode(['status' => 10000, 'msg' => '已发放广告奖励！']);
         }
+        $data['brand'] = 1;
 
         DB::beginTransaction();
         try {
             //新增用户广告记录
-            $data['brand'] = 1;
             (new AdvertUsers())->setUserAdvert($data);
             //更新用户广告奖励
             (new Users())->updAdvertAward($data['uid'], $data['award']);
