@@ -679,7 +679,7 @@ class MobileRechargeService extends BaseService
         $mobileOrderInfo = $MobileOrder->where('order_no', $order_no)
                                        ->first();
         //回调地址
-        $notifyUrl = url('/api/gwkDhHfHd');
+        $notifyUrl = createNotifyUrl('/api/gwkDhHfHd');
         try {
             /* 调用充值 */
             $bill = $this->bmMobileRecharge($mobileOrderInfo->mobile, $mobileOrderInfo->money, $order_no, $notifyUrl);
