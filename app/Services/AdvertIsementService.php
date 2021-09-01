@@ -44,6 +44,7 @@ class AdvertIsementService
         DB::beginTransaction();
         try {
             //新增用户广告记录
+            $data['brand'] = 1;
             (new AdvertUsers())->setUserAdvert($data);
             //更新用户广告奖励
             (new Users())->updAdvertAward($data['uid'], $data['award']);
@@ -125,8 +126,9 @@ class AdvertIsementService
      */
     public function addGatherAdvert (array $data)
     {
-        //判断每天拼团广告次数
+        //每天拼团广告最多次数
         $advertRatio = 30;
+        //获取每天拼团广告次数
         $advertSum = (new AdvertUsers())->getGatherAdvertSum($data['uid']);
         if ($advertSum >= $advertRatio)
         {
