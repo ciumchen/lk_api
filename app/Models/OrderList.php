@@ -111,7 +111,7 @@ class OrderList extends Model
                 ->where($where)
                 ->whereIn('o.name', ['美团', '话费', '油卡', '录单'])
                 ->get(['o.id', 'o.uid', 'o.price', 'o.name', 'o.created_at', 'o.profit_ratio', 'o.status as ostatus',
-                    'o.business_uid', 't.numeric', 't.order_no', 'r.status'])
+                    'o.business_uid', 'o.pay_status', 't.numeric', 't.order_no', 'r.status'])
                 ->each(function ($item) {
                     $item->profit_ratio = (int)$item->profit_ratio;
                     switch ($item->name)
