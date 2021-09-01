@@ -26,21 +26,21 @@ use App\Models\LkshopOrder;
 
 class OrderService
 {
+
     /**购买会员完成订单
-     *
      * @param string $orderNo
-     *
      * @return mixed
      */
-    public function MemberUserOrder($oid, $description = 'KTHY')
+    public function MemberUserOrder($oid,$description = 'KTHY')
     {
 //        $OrderInfo = Order::where('id', $oid)->first();
 //        $consumer_uid = $OrderInfo->uid;
+
 //        $description = 'KTHY';
         DB::beginTransaction();
         try {
             $order = Order::lockForUpdate()
-                          ->find($oid);
+                ->find($oid);
             //购买会员的订单已经审核通过无需再判断
 //            if ($order->status != Order::STATUS_DEFAULT) {
 //                return false;
@@ -52,9 +52,11 @@ class OrderService
             $userRebateScale = Setting::getManySetting('user_rebate_scale');
             $businessRebateScale = Setting::getManySetting('business_rebate_scale');
             $rebateScale = array_combine($businessRebateScale, $userRebateScale);
+
+
             //直接给用户添加积分，不排队，通过，给用户加积分、更新LK
             $customer = User::lockForUpdate()
-                            ->find($order->uid);
+                ->find($order->uid);
             //按比例计算实际获得积分
             $profit_ratio_offset = ($order->profit_ratio < 1) ? $order->profit_ratio * 100 : $order->profit_ratio;
             $profit_ratio = bcdiv($rebateScale[ intval($profit_ratio_offset) ], 100, 4);
@@ -85,6 +87,7 @@ class OrderService
                 $order->uid,
                 $order->order_no
             );
+
             $business = User::find($order->business_uid);
             //返佣
             $this->encourage($order, $customer, $business, $order->order_no);
@@ -95,7 +98,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-    
+
     /**完成订单
      *
      * @param string $orderNo
@@ -181,7 +184,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-    
+
     //直接传oid完成订单积分添加
     public function addOrderIntegral($oid)
     {
@@ -192,9 +195,11 @@ class OrderService
             if ($order->status != Order::STATUS_DEFAULT) {
                 return false;
             }
+
             $consumer_uid = $order->uid;
             $description = $order->description;
             $orderNo = $order->order_no;
+
             $order->status = Order::STATUS_SUCCEED;
             $order->pay_status = 'succeeded';//测试自动审核不要改支付状态
             $order->updated_at = date("Y-m-d H:i:s");
@@ -257,7 +262,7 @@ class OrderService
             var_dump($exception->getMessage());
         }
     }
-    
+
     /**完成订单
      *
      * @param string $orderNo
@@ -348,7 +353,7 @@ class OrderService
             DB::rollBack();
         }
     }
-    
+
     /**返佣
      *
      * @param $order
@@ -486,10 +491,6 @@ class OrderService
                 $remark
             );
         }
-        /*** 新会员制度 ***/
-        /*** 新会员制度 ***/
-        /*** 新会员制度 ***/
-        /**********************************************************************************/
         //同级返佣
         $sameLeader = Setting::getSetting('same_leader') ?? 0;
         $sameAmount = 0;
@@ -613,7 +614,7 @@ class OrderService
             );
         $this->updateRebateData($welfareAmount, $shareAmount, $market, $platformAmount, $order->price, $user);
     }
-    
+
     /**找盟主
      *
      * @param       $invite_uid
@@ -639,16 +640,14 @@ class OrderService
                 AssetsService::BalancesChange($orderNo, $user->id, $assets, $assets->assets_name, $amount, $type, $msg);
             }
             return $user;
+        } elseif ($user) {
+            $level--;
+            return $this->leaderRebate($orderNo, $user->invite_uid, $amount, $assets, $msg, $type, $level);
         } else {
-            if ($user) {
-                $level--;
-                return $this->leaderRebate($orderNo, $user->invite_uid, $amount, $assets, $msg, $type, $level);
-            } else {
-                return false;
-            }
+            return false;
         }
     }
-    
+
     /**更新返佣统计
      *
      * @param $welfare
@@ -672,7 +671,7 @@ class OrderService
         $rebateData->total_consumption = bcadd($price, $rebateData->total_consumption, 8);
         $rebateData->save();
     }
-    
+
     //邀请补贴和邀请人积分添加
     //商户uid,实际让利比例，订单分类 HF YK MT,消费者uid
     public function addInvitePoints($order_business_uid, $order_profit_price, $description, $uid, $orderNo)
@@ -734,7 +733,7 @@ class OrderService
             $description
         );
     }
-    
+
     /**
      * Description:
      *
@@ -818,7 +817,7 @@ class OrderService
             DB::rollBack();
         }
     }
-    
+
     /**
      * Description:判断订单类型
      *
@@ -837,7 +836,7 @@ class OrderService
             $Order = Order::find($order_id);
         }
         try {
-            if (!empty($Order->description)) {
+            if (!empty($Order->description)){
                 $description = $Order->description;
             }
             if (empty($Order)) {
@@ -891,7 +890,7 @@ class OrderService
         }
         return $description;
     }
-    
+
     /**
      * Description:更新对应子订单
      *
@@ -948,7 +947,7 @@ class OrderService
             throw $e;
         }
     }
-    
+
     /**
      * Description:支付前更新子订单
      *
@@ -995,7 +994,7 @@ class OrderService
             throw $e;
         }
     }
-    
+
     /**
      * Description:完成订单后的后续操作[充值等]
      *
@@ -1021,15 +1020,13 @@ class OrderService
                     if ($Order->video->channel == 'bm') {
                         $VideoService = new VideoCardService();
                         $VideoService->recharge($order_id, $Order);
-                    } else {
-                        if ($Order->video->channel == 'ww') {
-                            /* 获取卡密 */
-                            $WanWeiVideoService = new VideoOrderService();
-                            $WanWeiVideoService->recharge($order_id, $Order);
-                            /* 发送消息 */
-                            $UserMsgService = new UserMsgService();
-                            $UserMsgService->sendWanWeiVideoMsg($order_id, $data, $Order);
-                        }
+                    } elseif ($Order->video->channel == 'ww') {
+                        /* 获取卡密 */
+                        $WanWeiVideoService = new VideoOrderService();
+                        $WanWeiVideoService->recharge($order_id, $Order);
+                        /* 发送消息 */
+                        $UserMsgService = new UserMsgService();
+                        $UserMsgService->sendWanWeiVideoMsg($order_id, $data, $Order);
                     }
                     break;
                 case 'UB': /* 生活缴费 */
