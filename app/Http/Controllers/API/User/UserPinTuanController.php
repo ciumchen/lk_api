@@ -582,7 +582,7 @@ class UserPinTuanController extends Controller
             }
             (new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
         } catch (\Exception $e) {
-            Log::debug('gwkDhHfHd', [json_encode($data)]);
+            Log::debug('gwkDhHfHd_error_log', [json_encode($data)]);
             die('failed');
         }
         die('success');
