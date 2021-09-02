@@ -257,7 +257,7 @@ class UserPinTuanController extends Controller
                 $title = "话费充值";
                 $telecom = "话费充值";
                 $operate_type = "exchange_hf";
-                $remark = "话费";
+                $remark = "话费直充";
                 $create_type = 1;
                 $typeName = "话费直充";
                 $profit_ratio = Setting::where('key', 'set_business_rebate_scale_hf')->value('value');//话费让利比例
@@ -268,7 +268,7 @@ class UserPinTuanController extends Controller
                 $title = "话费代充";
                 $telecom = "话费代充";
                 $operate_type = "exchange_zl";
-                $remark = "代充";
+                $remark = "话费代充";
                 $create_type = 2;
                 $typeName = "话费代充";
                 $profit_ratio = Setting::where('key', 'set_business_rebate_scale_zl')->value('value');//代充让利比例
@@ -648,7 +648,7 @@ class UserPinTuanController extends Controller
                 'money' => $money,
                 'money_before_change' => $user->gather_card,
                 'order_no' => $order_no,
-                'remark' => '美团',
+                'remark' => '兑换额度(美团)',
                 'gather_shopping_card_id' => $reGscId,
                 'status' => 1,
                 'created_at' => date("Y-m-d H:i:s", time()),
@@ -734,7 +734,7 @@ class UserPinTuanController extends Controller
 //            throw $e;
             }
             DB::commit();
-            return json_encode(['code' => 1, 'msg' => '兑换美团成功']);
+            return json_encode(['code' => 200, 'msg' => '兑换美团成功']);
         } else {
             throw new LogicException('兑换美团失败');
         }

@@ -70,10 +70,13 @@ class UserGwkData extends Controller
     }
 
     //查询购物卡拼团中奖记录
-    public function selectGwkPingtuanLog(Request $request){
+    public function selectGwkPintuanLog(Request $request){
         $uid = $request->input('uid');
         $page = $request->input("page");
-        $data = (new GatherShoppingCard())->where(["uid"=>$uid,'gid'=>0,'guid'=>0])
+        $data = (new GatherShoppingCard())
+            ->where("uid",$uid)
+            ->where("gid",'!=',0)
+            ->where("guid",'!=',0)
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, 10)
@@ -87,7 +90,7 @@ class UserGwkData extends Controller
         $uid = $request->input('uid');
         $page = $request->input("page");
         $data = (new UserShoppingCardDhLog())->where(["uid"=>$uid,'status'=>2])
-            ->wh
+//            ->with(['GatherShoppingCard'])
             ->orderBy('id', 'desc')
             ->latest('id')
             ->forPage($page, 10)

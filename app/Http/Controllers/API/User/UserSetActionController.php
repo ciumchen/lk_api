@@ -38,20 +38,27 @@ class UserSetActionController extends Controller
 {
 
     //手动清空用户lk--html页面
-    public function qkSetUserLkAction(Request $request){
+//    public function qkSetUserLkAction(Request $request){
+//        $data['lkdj'] = Setting::where('key','lk_unit_price')->value('value');
+//        $userData = Users::find([2,6,15873])->toArray();
+////        dd($userData);
+//        foreach ($userData as $k=>$v){
+//            $userinfo[$k]['用户uid'] = $v['id'];
+//            $userinfo[$k]['消费者积分'] = $v['integral'];
+//            $userinfo[$k]['商家积分'] = $v['business_integral'];
+//            $userinfo[$k]['消费者lk'] = $v['lk'];
+//            $userinfo[$k]['商家lk'] = $v['business_lk'];
+//        }
+//        $data['userInfo'] = $userinfo;
+////        dd($data);
+//        return view('qkUserLk')->with('data',$data);
+//    }
+//
+
+    public function qkSetOneUserLkAction(Request $request){
         $data['lkdj'] = Setting::where('key','lk_unit_price')->value('value');
-        $userData = Users::find([2,6,15873])->toArray();
-//        dd($userData);
-        foreach ($userData as $k=>$v){
-            $userinfo[$k]['用户uid'] = $v['id'];
-            $userinfo[$k]['消费者积分'] = $v['integral'];
-            $userinfo[$k]['商家积分'] = $v['business_integral'];
-            $userinfo[$k]['消费者lk'] = $v['lk'];
-            $userinfo[$k]['商家lk'] = $v['business_lk'];
-        }
-        $data['userInfo'] = $userinfo;
-//        dd($data);
-        return view('qkUserLk')->with('data',$data);
+
+        return view('qkOneUserLk')->with('data',$data);
     }
 
     //设置lk单价为0
@@ -59,35 +66,59 @@ class UserSetActionController extends Controller
         $lkdj = Setting::where('key','lk_unit_price')->first();
         $lkdj->value = 0;
         $lkdj->save();
-        $this->returnView(array("设置lk单价为0，操作成功！"),'qkSetUserLkAction');
+//        $this->returnView(array("设置lk单价为0，操作成功！"),'qkSetUserLkAction');
+        $this->returnView(array("设置lk单价为0，操作成功！"),'qkSetOneUserLkAction');
     }
 
     //接收清空uid
-    public function jsQkSetUserLk(){
+//    public function jsQkSetUserLk(){
+//
+//        //uid2和6消费者积分、商家积分、消费者lk、商家lk
+//        DB::beginTransaction();
+//        try {
+//            $userData2 = Users::find(2);
+//            $userData2->integral = 0;
+//            $userData2->business_integral = 0;
+//            $userData2->lk = 0;
+//            $userData2->business_lk = 0;
+//            $userData2->save();
+//
+//            $userData6 = Users::find(6);
+//            $userData6->integral = 0;
+//            $userData6->business_integral = 0;
+//            $userData6->lk = 0;
+//            $userData6->business_lk = 0;
+//            $userData6->save();
+//
+//            $userData15873 = Users::find(15873);
+//            $userData15873->integral = 0;
+//            $userData15873->business_integral = 0;
+//            $userData15873->lk = 0;
+//            $userData15873->business_lk = 0;
+//            $userData15873->save();
+//            DB::commit();
+//        } catch (Exception $exception) {
+//            DB::rollBack();
+////                throw $exception;
+//            return response()->json(['code' => 0, 'msg' => '修改失败']);
+//        }
+//
+//        $this->returnView(array("清空用户积分和lk，操作成功！"),'qkSetUserLkAction');
+//
+//    }
 
-        //uid2和6消费者积分、商家积分、消费者lk、商家lk
+    //清空单个用户的积分和lk
+    public function jsQkSetOneUserLk(Request $request){
+        $uid = $request->input('uid');
+
         DB::beginTransaction();
         try {
-            $userData2 = Users::find(2);
-            $userData2->integral = 0;
-            $userData2->business_integral = 0;
-            $userData2->lk = 0;
-            $userData2->business_lk = 0;
-            $userData2->save();
-
-            $userData6 = Users::find(6);
-            $userData6->integral = 0;
-            $userData6->business_integral = 0;
-            $userData6->lk = 0;
-            $userData6->business_lk = 0;
-            $userData6->save();
-
-            $userData15873 = Users::find(15873);
-            $userData15873->integral = 0;
-            $userData15873->business_integral = 0;
-            $userData15873->lk = 0;
-            $userData15873->business_lk = 0;
-            $userData15873->save();
+            $userData = Users::find($uid);
+            $userData->integral = 0;
+            $userData->business_integral = 0;
+            $userData->lk = 0;
+            $userData->business_lk = 0;
+            $userData->save();
             DB::commit();
         } catch (Exception $exception) {
             DB::rollBack();
@@ -95,7 +126,7 @@ class UserSetActionController extends Controller
             return response()->json(['code' => 0, 'msg' => '修改失败']);
         }
 
-        $this->returnView(array("清空用户积分和lk，操作成功！"),'qkSetUserLkAction');
+        $this->returnView(array("清空用户".$uid."积分和lk，操作成功！"),'qkSetOneUserLkAction');
 
     }
 

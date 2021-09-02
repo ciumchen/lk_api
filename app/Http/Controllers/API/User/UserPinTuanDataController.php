@@ -56,6 +56,10 @@ class UserPinTuanDataController extends Controller
         $money = $request->input('money');
         $mobile = $request->input('mobile');
         $password = $request->input('password');
+
+        if ($money<=0 || $money!=intval($money)){
+            throw new LogicException('金额不合法');
+        }
         //验证支付密码
         $result = (new UserGatherService())->checkProvingCardPwd(array("uid"=>$user->id,"password"=>$password));
         if ($result!=200){
@@ -80,10 +84,11 @@ class UserPinTuanDataController extends Controller
             if (empty($GiveUserData)){
                 throw new Exception('被赠送用户不存在');
             }
-            $giveGatherCard = $GiveUserData->gather_card;//赠送前购物卡旧余额
-            if ($GiveUserData==null){
-                throw new Exception('赠送的用户不是来客的用户');
+            if ($userInfo->id==$GiveUserData->id){
+                throw new Exception('不能赠送给自己');
             }
+            $giveGatherCard = $GiveUserData->gather_card;//赠送前购物卡旧余额
+
 
             //扣除赠送用户购物卡，增加被赠送用户购物卡,扣除5%
             $oldUserMoney = $userInfo->gather_card;
@@ -108,7 +113,7 @@ class UserPinTuanDataController extends Controller
             );
             $arr2 = array(
                 'uid' => $user->id,
-                'operate_type' => "exchange_give",//赠送类型
+                'operate_type' => "exchange_give_dc",//赠送扣除类型
                 'money' => $money,
                 'money_before_change' => $oldUserMoney,
                 'order_no' => $order_no,
@@ -125,7 +130,7 @@ class UserPinTuanDataController extends Controller
             );
             $arr4 = array(
                 'uid' =>$GiveUserData->id,
-                'operate_type' => "exchange_give",//赠送类型
+                'operate_type' => "exchange_give_add",//赠送类型
                 'money' => $giveMoney,
                 'money_before_change' => $giveGatherCard,
                 'order_no' => $order_no,
@@ -138,8 +143,8 @@ class UserPinTuanDataController extends Controller
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::debug("===========UserGiftShoppingCard===赠送购物卡失败--异常================",[$e->getMessage()]);
-            throw new LogicException('赠送购物卡失败');
+            Log::debug("===========UserGiftShoppingCard===赠送购物卡失败--异常================".$e->getMessage(),[json_encode($e)]);
+            throw new LogicException($e->getMessage());
 //            throw $e;
         }
         DB::commit();
