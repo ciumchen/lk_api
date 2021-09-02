@@ -2,37 +2,8 @@
 
 namespace App\Http\Controllers\API\Map;
 
-use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ApplyBusinessRequest;
-use App\Http\Requests\NewApplyBusinessRequest;
-use App\Http\Requests\RealNameRequest;
-use App\Http\Resources\IntegralLogsResources;
-use App\Http\Resources\UserResources;
-use App\Libs\Yuntong\YuntongPay;
-use App\Models\AuthLog;
-use App\Models\BusinessApply;
-use App\Models\IntegralLogs;
-use App\Models\Order;
-use App\Models\Setting;
-use App\Models\User;
-use App\Models\Users;
-use App\Models\UserUpdatePhoneLog;
-use App\Models\VerifyCode;
-use App\Services\BusinessService;
-use App\Services\OrderService;
-use App\Services\OrderTwoService;
-use App\Services\OssService;
-use Illuminate\Database\Eloquent\Model;
-
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Pagination\Paginator;
-use PDOException;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\API\Payment\YuntongPayController;
 class BaiduMapApiController extends Controller
 {
 
