@@ -9,10 +9,10 @@ use App\Exceptions\LogicException;
 /**
  * App\Models\Setting
  *
- * @property int $id
- * @property string $key
- * @property string $value
- * @property string $msg 参数说明
+ * @property int                             $id
+ * @property string                          $key
+ * @property string                          $value
+ * @property string                          $msg 参数说明
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|Setting newModelQuery()
@@ -30,53 +30,62 @@ class Setting extends Model
 {
     /**
      * @param $key
+     *
      * @return mixed
      */
-    public static function getSetting($key){
-
-        return Setting::where('key', $key)->value('value');
+    public static function getSetting($key)
+    {
+        if (!Cache::get($key)) {
+            $value = Setting::where('key', $key)->value('value');
+            Cache::add($key, $value, 60 * 5);
+        } else {
+            $value = Cache::get($key);
+        }
+        return $value;
     }
-
+    
     /**获取
+     *
      * @param $key
+     *
      * @return false|string[]
      */
-    public static function getManySetting($key){
+    public static function getManySetting($key)
+    {
         $data = self::getSetting($key);
-
         $data = explode('|', $data);
-
         return $data;
     }
-
+    
     /**判断参数是否存在
+     *
      * @param $key
+     *
      * @return mixed
      * @throws
      */
     public function isSettings($key)
     {
         $res = Setting::where('key', $key)->exists();
-        if (!$res)
-        {
+        if (!$res) {
             throw new LogicException('该配置参数信息不存在');
         }
     }
-
+    
     /**获取充值金额
+     *
      * @param string $type
+     *
      * @return mixed
      * @throws
      */
     public function getSysPrice($type)
     {
         //组装key
-        $key = 'sys_price_' . $type;
+        $key = 'sys_price_'.$type;
         $this->isSettings($key);
-
         //获取数据
         $priceArr = self::getManySetting($key);
-
         //升序排序返回
         sort($priceArr);
         return $priceArr;

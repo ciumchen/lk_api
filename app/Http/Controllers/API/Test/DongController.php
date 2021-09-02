@@ -11,6 +11,7 @@ use App\Services\Alipay\AlipayService;
 use App\Services\bmapi\MobileRechargeService;
 use App\Services\OrderService;
 use App\Services\SignInService;
+use App\Services\UserRebateService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -25,13 +26,23 @@ class DongController extends Controller
      */
     public function __construct()
     {
-//        echo phpinfo();
-//        dd(self::getIsIconvEnabled());
-//        dump(iconv('UTF-8', 'GBK', '这特么是什么GBK'));
-////        dump(iconv('UTF8', 'GBK//IGNORE', '这特么是什么GBK'));
-//        dump(iconv('UTF-8', 'GBK//IGNORE', '这特么是什么GBK'));
-//        dump(iconv('UTF-8', 'UTF-8//IGNORE', '这特么是什么UTF-8'));
-        die('测试接口');
+//        die('测试接口');
+    }
+    
+    public function getLevelList()
+    {
+        $res = UserRebateService::getLevelCache();
+        dd($res);
+    }
+    
+    public function iconvTest()
+    {
+        //        echo phpinfo();
+        dump(iconv('UTF-8', 'GBK', '这特么是什么GBK'));
+//        dump(iconv('UTF8', 'GBK//IGNORE', '这特么是什么GBK'));
+        dump(iconv('UTF-8', 'GBK//IGNORE', '这特么是什么GBK'));
+        dump(iconv('UTF-8', 'UTF-8//IGNORE', '这特么是什么UTF-8'));
+        dd(self::getIsIconvEnabled());
     }
     
     public static function getIsIconvEnabled()

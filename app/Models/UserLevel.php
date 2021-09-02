@@ -2,31 +2,30 @@
 
 namespace App\Models;
 
-use Dcat\Admin\Traits\HasDateTimeFormatter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\UserLevel
  *
- * @property int $id
- * @property string $title                          等级头衔
- * @property int $level                          会员等级
- * @property int $sort                           排序
- * @property string $promotion_rewards_ratio        直推奖励比例
- * @property string $same_level_rewards_ratio       平级奖励比例
- * @property string $weighted_equally_rewards_ratio 加权平分奖励比例
- * @property string $self_integral                  自身积分数量
- * @property int $direct_num                     直推数量
- * @property int $direct_type                    直推类型
- * @property int $direct_activity                直推活跃度
- * @property string $direct_integral                直接下级累计积分
- * @property int $team_num                       团队数量
- * @property int $team_type                      团队类型
- * @property int $team_activity                  团队活跃度
- * @property string $team_integral                  团队累计积分
- * @property int $is_auto_update                 是否自动升级
- * @property int $is_verified                    是否实名认证
+ * @property int                             $id
+ * @property string                          $title                          等级头衔
+ * @property int                             $level                          会员等级
+ * @property int                             $sort                           排序
+ * @property string                          $promotion_rewards_ratio        直推奖励比例
+ * @property string                          $same_level_rewards_ratio       平级奖励比例
+ * @property string                          $weighted_equally_rewards_ratio 加权平分奖励比例
+ * @property string                          $self_integral                  自身积分数量
+ * @property int                             $direct_num                     直推数量
+ * @property int                             $direct_type                    直推类型
+ * @property int                             $direct_activity                直推活跃度
+ * @property string                          $direct_integral                直接下级累计积分
+ * @property int                             $team_num                       团队数量
+ * @property int                             $team_type                      团队类型
+ * @property int                             $team_activity                  团队活跃度
+ * @property string                          $team_integral                  团队累计积分
+ * @property int                             $is_auto_update                 是否自动升级
+ * @property int                             $is_verified                    是否实名认证
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static Builder|UserLevel newModelQuery()
@@ -56,8 +55,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserLevel extends Model
 {
-    use HasDateTimeFormatter;
-    
     protected $table = 'user_level';
     
     /**
@@ -81,8 +78,7 @@ class UserLevel extends Model
     public static function getTypesArray()
     {
         $types_arr = [];
-        UserLevel::all()->each(function (&$item) use (&$types_arr)
-        {
+        UserLevel::all()->each(function (&$item) use (&$types_arr) {
             $types_arr[ $item->id ] = $item->title;
         });
         return $types_arr;
