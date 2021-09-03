@@ -368,18 +368,7 @@ class UserRebateService
                  - $LevelCache[ $low_level_id ][ 'promotion_rewards_ratio' ];
         return $scale;
     }
-
-//    /* 无上级调用平台返利计算 */
-//    public function platformHigherScale(
-//        Order $order,
-//        User $user,
-//        AssetsType $assetsType,
-//        $platformUid = 0,
-//        $userLevelInfo = null,
-//        $parent = [],
-//        $allParent = []
-//    ) {
-//    }
+    
     /**
      * Description:同级奖励
      *
@@ -458,7 +447,7 @@ class UserRebateService
             $WeightRewards->increment('silver_money', $silverShareAmount);
             $WeightRewards->increment('gold_money', $goldShareAmount);
             $WeightRewards->increment('diamond_money', $diamondShareAmount);
-//        累加记录
+            /* 累加记录 */
             $this->weightRewardsCountLog($order, $silverShareAmount, $goldShareAmount, $diamondShareAmount,
                                          $silverShareScale, $goldShareScale, $diamondShareScale);
         } catch (Exception $e) {
@@ -467,6 +456,21 @@ class UserRebateService
         }
     }
     
+    /**
+     * Description:加权奖励累加记录
+     *
+     * @param \App\Models\Order $order
+     * @param                   $silverShareAmount
+     * @param                   $goldShareAmount
+     * @param                   $diamondShareAmount
+     * @param int               $silverShareScale
+     * @param int               $goldShareScale
+     * @param int               $diamondShareScale
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/9/3 0003
+     */
     public function weightRewardsCountLog(
         Order $order,
         $silverShareAmount,
@@ -490,6 +494,19 @@ class UserRebateService
             Log::debug('weightRewardsCountLog'.$e->getMessage(), [json_encode($e)]);
             throw $e;
         }
+    }
+    
+    /* TODO:每天加权分奖励 */
+    public function weightRewardsScale()
+    {
+        /* 统计当天银卡数量并获取ID */
+        /* 统计当天金卡数量并获取ID */
+        /* 统计当天钻石卡数量并获取ID */
+        /* 统计被禁银卡数量并获取ID */
+        /* 统计被禁金卡数量并获取ID */
+        /* 统计被禁钻石卡数量并获取ID */
+        /* 分别计算可平分金额 */
+        /* 循环用户并更新资产 */
     }
     
     
