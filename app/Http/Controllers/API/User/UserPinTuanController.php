@@ -160,7 +160,7 @@ class UserPinTuanController extends Controller
             'goodsDesc' => '充值来拼金',//商品描述
             'need_fee' => $money,//消费金额
             'order_no' => $order_no,//订单号
-            'order_from' => 'alipay',//支付渠道 固定值：alipay|wx|unionpay
+            'order_from' => $order_from,//支付渠道 固定值：alipay|wx|unionpay
             'ip' => $ip,//ip
 //            'return_url' => "http://ning.catspawvideo.com/api/getLkMemberPayHd",
             'return_url' => "",
