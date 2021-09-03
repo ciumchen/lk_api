@@ -44,8 +44,8 @@ class UserMapDataController extends Controller
                     'city_id' => $sqArr[1],
                     'district_id' => $cityDataInfo->id,
                     'address' => $userCity['address'],
-                    'lng' => $lng,
-                    'lat' => $lat,
+                    'lng' => $userCity['lng'],
+                    'lat' => $userCity['lat'],
                 ];
                 (new UserCityData())->addUserCityData($data);
 
