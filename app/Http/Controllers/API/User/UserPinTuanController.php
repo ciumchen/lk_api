@@ -128,6 +128,8 @@ class UserPinTuanController extends Controller
         }
         $ip = $request->input('ip');
         $money = $request->input('money');
+        $order_from = $request->input('order_from');
+        !empty($order_from)?:"alipay";
 
         $order_no = createOrderNo();
         //创建充值记录
