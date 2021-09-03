@@ -30,18 +30,17 @@ class BaiduMapApiController extends Controller
             'ak'=>self::$AK,
             'output'=>'json',
 //            'coordtype'=>'bd09ll',
-            'location'=>"{$lat},{$lng}",
+            'location'=>"{$lng},{$lat}",
         ];
         $params = http_build_query($param);
         $mapData =  json_decode(self::postRequest(self::$ApiUrl.$params),1);
-        dd($mapData);
         if ($mapData['status'] != 0){
             return $mapData['status'];//失败
         }else{
             return array(
                 'status'=>$mapData['status'],
-                'lng'=>$mapData['result']['location']['lng'],
-                'lat'=>$mapData['result']['location']['lat'],
+                'lng'=>$mapData['result']['location']['lat'],
+                'lat'=>$mapData['result']['location']['lng'],
                 'address'=>$mapData['result']['formatted_address'],
                 'country'=>$mapData['result']['addressComponent']['country'],
                 'province'=>$mapData['result']['addressComponent']['province'],
