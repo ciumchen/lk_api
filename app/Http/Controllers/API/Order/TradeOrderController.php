@@ -61,12 +61,6 @@ class TradeOrderController extends Controller
             'modified_time' => date("Y-m-d H:i:s")
         ];
 
-        //油卡需要多传两个参数
-        if (in_array($data['description'], ['YK']))
-        {
-            $orderData['idcard'] = $data['idcard'];
-            $orderData['user_name'] = $data['userName'];
-        }
         $tradeOrder = new TradeOrder();
         $res = $tradeOrder->setOrder($orderData);
         if ($res)
