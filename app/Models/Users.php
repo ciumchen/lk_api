@@ -83,6 +83,8 @@ use Carbon\Carbon;
  * @property string $balance_consume 再消费额度
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereBalanceAllowance($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Users whereBalanceConsume($value)
+ * @property string $gather_card 拼团购物卡金额
+ * @method static \Illuminate\Database\Eloquent\Builder|Users whereGatherCard($value)
  */
 class Users extends Model
 {

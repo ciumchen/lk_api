@@ -5,10 +5,11 @@ namespace App\Services;
 use App\Models\AssetsLogs;
 use App\Models\AssetsType;
 use App\Models\Order;
-use App\Models\Setting;
 use App\Models\User;
 use App\Models\UserLevel;
 use App\Models\UserLevelRelation;
+use App\Models\WeightRewards;
+use App\Models\WeightRewardsLog;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -75,6 +76,8 @@ class UserRebateService
                 /* 平级奖分佣 */
                 $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent);
             }
+            /* 加权平分 */
+            $this->weightRewardsCount($order);
         } catch (Exception $e) {
             Log::debug('shareScale:Error:'.$e->getMessage(), [json_encode($e)]);
             throw $e;
@@ -429,12 +432,66 @@ class UserRebateService
         }
     }
     
-    /* 每日加权平分奖累加 */
-    public function weightRewards()
+    /**
+     * Description:每日加权平分奖累加
+     *
+     * @param \App\Models\Order $order
+     *
+     * @throws \Exception
+     * @author lidong<947714443@qq.com>
+     * @date   2021/9/3 0003
+     */
+    public function weightRewardsCount(Order $order)
     {
-//        每日累加
+        try {
+            $LevelCache = self::getLevelCache();
+            /* 获取 金银钻 三个等级的加权评分奖比例 */
+            $silverShareScale = $LevelCache[ SystemService::$silverLevelId ];
+            $goldShareScale = $LevelCache[ SystemService::$goldLevelId ];
+            $diamondShareScale = $LevelCache[ SystemService::$diamondLevelId ];
+            /* 计算三种等级可分润的金额 */
+            $silverShareAmount = bcmul($order->profit_price, bcdiv($silverShareScale, 100, 6), 3);
+            $goldShareAmount = bcmul($order->profit_price, bcdiv($goldShareScale, 100, 6), 3);
+            $diamondShareAmount = bcmul($order->profit_price, bcdiv($diamondShareScale, 100, 6), 3);
+            /* 奖金放入当日累计金额 */
+            $WeightRewards = WeightRewards::whereCountDate(date('Ymd'))->firstOrNew();
+            $WeightRewards->increment('silver_money', $silverShareAmount);
+            $WeightRewards->increment('gold_money', $goldShareAmount);
+            $WeightRewards->increment('diamond_money', $diamondShareAmount);
 //        累加记录
+            $this->weightRewardsCountLog($order, $silverShareAmount, $goldShareAmount, $diamondShareAmount,
+                                         $silverShareScale, $goldShareScale, $diamondShareScale);
+        } catch (Exception $e) {
+            Log::debug('weightRewardsCount'.$e->getMessage(), [json_encode($e)]);
+            throw $e;
+        }
     }
+    
+    public function weightRewardsCountLog(
+        Order $order,
+        $silverShareAmount,
+        $goldShareAmount,
+        $diamondShareAmount,
+        $silverShareScale = 0,
+        $goldShareScale = 0,
+        $diamondShareScale = 0
+    ) {
+        try {
+            $weightRewardsLog = new WeightRewardsLog();
+            $weightRewardsLog->silver_money = $silverShareAmount;
+            $weightRewardsLog->gold_money = $goldShareAmount;
+            $weightRewardsLog->diamond_money = $diamondShareAmount;
+            $weightRewardsLog->silver_ratio = $silverShareScale;
+            $weightRewardsLog->gold_ratio = $goldShareScale;
+            $weightRewardsLog->diamond_ratio = $diamondShareScale;
+            $weightRewardsLog->money = $order->profit_price;
+            $weightRewardsLog->save();
+        } catch (Exception $e) {
+            Log::debug('weightRewardsCountLog'.$e->getMessage(), [json_encode($e)]);
+            throw $e;
+        }
+    }
+    
     
     /*************************************************************************************/
     /**

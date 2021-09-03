@@ -6,6 +6,7 @@ use App\Exceptions\LogicException;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderMobileRechargeDetails;
+use App\Models\WeightRewards;
 use App\Services\Alipay\AlipayCertService;
 use App\Services\Alipay\AlipayService;
 use App\Services\bmapi\MobileRechargeService;
@@ -32,6 +33,19 @@ class DongController extends Controller
     public function getLevelList()
     {
         $res = UserRebateService::getLevelCache();
+        dd($res);
+    }
+    
+    public function findOrNewTest()
+    {
+        $WeightRewards = new WeightRewards();
+        $res = $WeightRewards::whereCountDate(date('Ymd'))->firstOrNew();
+        dump($res);
+        $res->increment('silver_money', 2);
+        $res->increment('gold_money', 6);
+        $res->increment('diamond_money', 9);
+        dump($res);
+//        $res->save();
         dd($res);
     }
     

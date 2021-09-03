@@ -32,6 +32,8 @@ use App\Services\ConvertService;
  * @mixin \Eloquent
  * @property int $change_times 资产变更次数
  * @method static \Illuminate\Database\Eloquent\Builder|Assets whereChangeTimes($value)
+ * @property string $not_deducted_assets 未扣除的资产
+ * @method static \Illuminate\Database\Eloquent\Builder|Assets whereNotDeductedAssets($value)
  */
 class Assets extends Model
 {

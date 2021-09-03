@@ -51,6 +51,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Shop whereImportDay($value)
  * @property int|null $member_gl_oid 购买来客会员邀请人订单关联用户订单oid
  * @method static \Illuminate\Database\Eloquent\Builder|Shop whereMemberGlOid($value)
+ * @property string $description 订单类型
+ * @property string|null $payment_method 支付方式：购物卡：gwk,支付宝：alipay,微信：wx
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shop wherePaymentMethod($value)
  */
 class Shop extends Model
 {

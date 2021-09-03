@@ -11,30 +11,35 @@ use Illuminate\Support\Carbon;
 /**
  * App\Models\WithdrawCashLog
  *
- * @property int         $id
- * @property string      $balance_type      本平台内提现账户类型:来拼金或可提现余额
- * @property string      $channel           提现渠道:支付宝或微信
- * @property string      $money             提现金额
- * @property int         $user_id           用户ID
- * @property string      $alipay_user_id    提现支付宝UID
- * @property string      $alipay_account    用户支付宝账户
- * @property string      $order_no          提现订单号
- * @property string      $alipay_nickname   用户支付宝昵称
- * @property string      $alipay_avatar     用户支付宝头像
- * @property string      $real_name         用户真实姓名
- * @property string      $out_trade_no      转账单号[支付宝返回]
- * @property string      $pay_fund_order_id 支付资金流水号[支付宝返回]
- * @property string|null $trans_date        订单支付时间[支付宝返回]
- * @property string      $alipay_status     状态[支付宝返回]
- * @property string      $handling_ratio    手续费比例
- * @property string      $handling_price    手续费
- * @property string      $actual_amount     实际到账金额
- * @property string      $balance_fee       提现后账户余额
- * @property int         $status            交易状态:1处理中,2成功,3失败
- * @property string|null $remark            业务备注
- * @property string|null $failed_reason     提现失败原因
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property int               $id
+ * @property string            $balance_type      本平台内提现账户类型:来拼金或可提现余额
+ * @property string            $channel           提现渠道:支付宝或微信
+ * @property string            $money             提现金额
+ * @property int               $user_id           用户ID
+ * @property string            $alipay_user_id    提现支付宝UID
+ * @property string            $alipay_account    用户支付宝账户
+ * @property string            $order_no          提现订单号
+ * @property string            $alipay_nickname   用户支付宝昵称
+ * @property string            $alipay_avatar     用户支付宝头像
+ * @property string            $real_name         用户真实姓名
+ * @property string            $out_trade_no      转账单号[支付宝返回]
+ * @property string            $pay_fund_order_id 支付资金流水号[支付宝返回]
+ * @property string|null       $trans_date        订单支付时间[支付宝返回]
+ * @property string            $alipay_status     状态[支付宝返回]
+ * @property string            $handling_ratio    手续费比例
+ * @property string            $handling_price    手续费
+ * @property string            $actual_amount     实际到账金额
+ * @property string            $balance_fee       提现后账户余额
+ * @property int               $status            交易状态:1处理中,2成功,3失败
+ * @property string|null       $remark            业务备注
+ * @property string|null       $failed_reason     提现失败原因
+ * @property Carbon|null       $created_at
+ * @property Carbon|null       $updated_at
+ * @property-read string       $balance_type_text
+ * @property-read string       $channel_text
+ * @property-read mixed|string $create_time
+ * @property-read string       $status_text
+ * @property-read mixed|string $update_time
  * @method static Builder|WithdrawCashLog newModelQuery()
  * @method static Builder|WithdrawCashLog newQuery()
  * @method static Builder|WithdrawCashLog query()
@@ -63,14 +68,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|WithdrawCashLog whereUpdatedAt($value)
  * @method static Builder|WithdrawCashLog whereUserId($value)
  * @mixin \Eloquent
- * @property-read string $balance_type_text
- * @property-read string $channel_text
- * @property-read mixed|string $create_time
- * @property-read string $status_text
- * @property-read mixed|string $update_time
  */
 class WithdrawCashLog extends BaseModel
 {
+    
     use HasFactory;
     
     protected $table = 'withdraw_cash_logs';
@@ -154,9 +155,9 @@ class WithdrawCashLog extends BaseModel
     /**
      * Description:生成提现订单
      *
-     * @param \App\Models\User $user
-     * @param                  $money
-     * @param                  $order_no
+     * @param  \App\Models\User  $user
+     * @param                    $money
+     * @param                    $order_no
      *
      * @return $this
      * @throws \Exception
@@ -190,9 +191,9 @@ class WithdrawCashLog extends BaseModel
     /**
      * Description:可提现余额
      *
-     * @param \App\Models\User $user
-     * @param                  $money
-     * @param                  $order_no
+     * @param  \App\Models\User  $user
+     * @param                    $money
+     * @param                    $order_no
      *
      * @author lidong<947714443@qq.com>
      * @date   2021/8/10 0010
@@ -212,9 +213,9 @@ class WithdrawCashLog extends BaseModel
     /**
      * Description:拼团金提现订单生成
      *
-     * @param \App\Models\User $user
-     * @param                  $money
-     * @param                  $order_no
+     * @param  \App\Models\User  $user
+     * @param                    $money
+     * @param                    $order_no
      *
      * @return $this
      * @throws \Exception

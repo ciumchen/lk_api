@@ -7,6 +7,28 @@ use App\Services\UserGatherService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\CardpayPassword
+ *
+ * @property int $id
+ * @property int $uid 用户id
+ * @property string $phone 用户手机号
+ * @property string $password 密码
+ * @property int $type 类型：1 购物卡
+ * @property \Illuminate\Support\Carbon|null $created_at 创建时间
+ * @property \Illuminate\Support\Carbon|null $updated_at 更新时间
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword query()
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword whereUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CardpayPassword whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class CardpayPassword extends Model
 {
     use HasFactory;

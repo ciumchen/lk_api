@@ -103,6 +103,8 @@ use Illuminate\Support\Facades\Log;
  * @property string $balance_consume 再消费额度
  * @method static Builder|User whereBalanceAllowance($value)
  * @method static Builder|User whereBalanceConsume($value)
+ * @property string $gather_card 拼团购物卡金额
+ * @method static Builder|User whereGatherCard($value)
  */
 class User extends Authenticatable
 {

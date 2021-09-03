@@ -20,6 +20,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|CityData whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CityData wherePCode($value)
  * @mixin \Eloquent
+ * @property int $pid
+ * @property int $level
+ * @property string $pid_route
+ * @method static \Illuminate\Database\Eloquent\Builder|CityData whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CityData wherePid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CityData wherePidRoute($value)
  */
 class CityData extends Model
 {

@@ -16,11 +16,15 @@ class CreateWeightRewardsLogTable extends Migration
     {
         Schema::create('weight_rewards_log', function (Blueprint $table) {
             $table->id();
-            $table->string('order_no')->default('')->comment('订单号');
-            $table->char('count_date', 8)->default('')->comment('统计日期YYYmmdd');
-            $table->decimal('silver_money', 20, 4)->default(0.0000)->comment('银卡已累计金额');
-            $table->decimal('gold_money', 20, 4)->default(0.0000)->comment('金卡已累计金额');
-            $table->decimal('diamond_money', 20, 4)->default(0.0000)->comment('钻石卡已累计金额');
+            $table->string('order_no')->default('')->comment('订单号')->index();
+            $table->char('count_date', 8)->default('')->comment('统计日期YYYmmdd')->index();
+            $table->decimal('silver_money', 20, 4)->default(0.0000)->comment('银卡金额');
+            $table->decimal('gold_money', 20, 4)->default(0.0000)->comment('金卡金额');
+            $table->decimal('diamond_money', 20, 4)->default(0.0000)->comment('钻石计金额');
+            $table->decimal('silver_ratio', 20, 4)->default(0.0000)->comment('银卡比例');
+            $table->decimal('gold_ratio', 20, 4)->default(0.0000)->comment('金卡比例');
+            $table->decimal('diamond_ratio', 20, 4)->default(0.0000)->comment('钻石卡比例');
+            $table->decimal('money', 20, 4)->default(0.0000)->comment('订单金额');
             $table->timestamps();
         });
     }
