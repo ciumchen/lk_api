@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class getAppInfoController extends Controller
 {
+    
     /**
      * Description:APP引导页
      *
@@ -45,5 +46,23 @@ class getAppInfoController extends Controller
             throw new LogicException($e->getMessage());
         }
         return apiSuccess($msg);
+    }
+    
+    /**
+     * Description:每日分配价格显示
+     *
+     * @return string
+     * @throws \App\Exceptions\LogicException
+     * @author lidong<947714443@qq.com>
+     * @date   2021/9/3 0003
+     */
+    public function getShowLkUnitPrice()
+    {
+        try {
+            $show_lk_unit_price = Setting::getSetting('show_lk_unit_price');
+        } catch (\Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+        return apiSuccess($show_lk_unit_price);
     }
 }

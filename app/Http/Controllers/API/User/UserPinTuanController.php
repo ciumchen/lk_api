@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\User;
 
 use App\Exceptions\LogicException;
+use App\Http\Controllers\API\Message\UserMsgController;
 use App\Http\Controllers\API\Order\RechargeController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GwkDhDefaultAuthRequest;
@@ -15,6 +16,7 @@ use App\Models\GatherShoppingCard;
 use App\Models\GwkZfOperationLog;
 use App\Models\Order;
 use App\Models\OrderMobileRecharge;
+use App\Models\RechargeLogs;
 use App\Models\Setting;
 use App\Models\TradeOrder;
 use App\Models\User;
@@ -59,65 +61,65 @@ class UserPinTuanController extends Controller
     }
 
     //使用70%usdt补贴金充值来拼金
-//    public function UserUsdtDhLpj(ReUserPinTuan $request)
-//    {
-//        $user = $request->user();
-//        if (!$user->id) {
-//            throw new LogicException('用户信息错误');
-//        }
-//        $ip = $request->input('ip');
-//        $money = $request->input('money');
-//        //查询70%usdt
-//        DB::beginTransaction();
-//        try{
-//            $userAssets = Assets::lockForUpdate()->where('uid', $user->id)->where('assets_type_id', 3)->first();
-//            if ($userAssets->amount < $money) {
-//                throw new Exception("补贴金余额不足");
-//            }
-//            $user = Users::lockForUpdate()->find($user->id);//用户信息加锁
-//            $oldAmount = $userAssets->amount;
-//            $order_no = createOrderNo();
-//            $oldLpj = $user->balance_tuan;//变动前来拼金余额
-////扣除70%usdt和添加资产变动记录
-//            $userAssets->amount = $oldAmount - $money;
-//            $userAssets->save();
-//
-//            $data = array(
-//                'assets_type_id' => 3,
-//                'assets_name' => 'usdt',
-//                'uid' => $user->id,
-//                'operate_type' => 'recharge_lpj',
-//                'amount' => $money,
-//                'amount_before_change' => $oldAmount,
-//                'order_no' => $order_no,
-//                'ip' => $ip,
-//                'remark' => '补贴金兑换来拼金',
-//                'user_agent' => 'recharge_lpj',
-//            );
-//            AssetsLogs::create($data);
-//            //更新用户来拼金额度和来拼金记录
-//            $user->balance_tuan = $user->balance_tuan + $money;
-//            $user->save();
-//
-//            $data = array(
-//                'uid' => $user->id,
-//                'operate_type' => 'recharge',
-//                'money' => $money,
-//                'money_before_change' => $oldLpj,
-//                'order_no' => $order_no,
-//                'remark' => '补贴金兑换来拼金',
-//                'status' => 2,
-//            );
-//            UserPinTuan::create($data);
-//
-//            DB::commit();
-//        }catch(Exception $e){
-//            DB::rollBack();
-//            Log::debug($e->getMessage(),[json_encode($e)]);
-//            throw new LogicException('补贴金兑换失败');
-//        }
-//        return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
-//    }
+    public function UserUsdtDhLpj(ReUserPinTuan $request)
+    {
+        $user = $request->user();
+        if (!$user->id) {
+            throw new LogicException('用户信息错误');
+        }
+        $ip = $request->input('ip');
+        $money = $request->input('money');
+        //查询70%usdt
+        DB::beginTransaction();
+        try{
+            $userAssets = Assets::lockForUpdate()->where('uid', $user->id)->where('assets_type_id', 3)->first();
+            if ($userAssets->amount < $money) {
+                throw new Exception("补贴金余额不足");
+            }
+            $user = Users::lockForUpdate()->find($user->id);//用户信息加锁
+            $oldAmount = $userAssets->amount;
+            $order_no = createOrderNo();
+            $oldLpj = $user->balance_tuan;//变动前来拼金余额
+//扣除70%usdt和添加资产变动记录
+            $userAssets->amount = $oldAmount - $money;
+            $userAssets->save();
+
+            $data = array(
+                'assets_type_id' => 3,
+                'assets_name' => 'usdt',
+                'uid' => $user->id,
+                'operate_type' => 'recharge_lpj',
+                'amount' => $money,
+                'amount_before_change' => $oldAmount,
+                'order_no' => $order_no,
+                'ip' => $ip,
+                'remark' => '补贴金兑换来拼金',
+                'user_agent' => 'recharge_lpj',
+            );
+            AssetsLogs::create($data);
+            //更新用户来拼金额度和来拼金记录
+            $user->balance_tuan = $user->balance_tuan + $money;
+            $user->save();
+
+            $data = array(
+                'uid' => $user->id,
+                'operate_type' => 'recharge',
+                'money' => $money,
+                'money_before_change' => $oldLpj,
+                'order_no' => $order_no,
+                'remark' => '补贴金兑换来拼金',
+                'status' => 2,
+            );
+            UserPinTuan::create($data);
+
+            DB::commit();
+        }catch(Exception $e){
+            DB::rollBack();
+            Log::debug($e->getMessage(),[json_encode($e)]);
+            throw new LogicException('补贴金兑换失败');
+        }
+        return response()->json(['code' => 1, 'msg' => '补贴金兑换成功']);
+    }
 
     //购买来拼金
     public function UserBuyLpj(ReUserPinTuan $request)
@@ -541,6 +543,50 @@ class UserPinTuanController extends Controller
 
     }
 
+
+    //购物卡兑换代充支付回调
+    public function gwkDhHfHd(Request $request){
+        $data = $request->all();
+//        Log::debug('MobileNotify', [json_encode($data)]);
+        /*
+        {
+        "user_id": "A5626842",
+        "sign": "C0F9E3501C0DB8EBA781993D8268B073FBF9EE79",
+        "recharge_state": "1",
+        "outer_tid": "PY_20210605210408281427",
+        "tid": "S2106052397812",
+        "timestamp": "2021-06-05 21:05:12"
+        }
+        */
+        try {
+            $MobileRechargeService = new MobileRechargeService();
+            $MobileRechargeService->notify($data);
+            if ($data[ 'recharge_state' ] == 1) {
+                $recharge = new RechargeLogs();
+                $recharge = $recharge->where('reorder_id', '=', $data[ 'tid' ])
+                    ->first();
+                if (!empty($recharge)) {
+                    $recharge->created_at = date("Y-m-d H:i:s");
+                    $recharge->updated_at = date("Y-m-d H:i:s");
+                    $recharge->save();
+                } else {
+                    $recharge = new RechargeLogs();
+                    $recharge->reorder_id = $data[ 'tid' ];
+                    $recharge->order_no = $data[ 'outer_tid' ];
+                    $recharge->type = 'ZL';
+                    $recharge->status = 1;
+                    $recharge->created_at = date("Y-m-d H:i:s");
+                    $recharge->updated_at = date("Y-m-d H:i:s");
+                    $recharge->save();
+                }
+            }
+            (new UserMsgController())->setMsg($data[ 'outer_tid' ], 1);
+        } catch (\Exception $e) {
+            Log::debug('gwkDhHfHd_error_log', [json_encode($data)]);
+            die('failed');
+        }
+        die('success');
+    }
     //购物卡兑换美团生成订单
     public function ShoppingCardDhMt(Request $request)
     {
