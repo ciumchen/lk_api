@@ -11,17 +11,6 @@ class BaiduMapApiController extends Controller
     public static $AK = "8WXl6Re0R5SFj6cardI0S5joQIblYZ4o";
     public static $ApiUrl = "https://api.map.baidu.com/reverse_geocoding/v3/?";
 
-    public function mapTest()
-    {
-        $lng= "31.225696563611";
-        $lat= "121.49884033194";
-        $lng= "22.549063";//113.038451,22.512328
-        $lat= "113.942404";
-        $data = self::getBaiduMapInfo($lng,$lat);//"latitude":22.549063,"longitude":113.942404,//前端
-        print_r($data);
-
-    }
-
     /*get请求百度地图，通过经纬度获取地址信息
      * $lng:经度,$lat:纬度
      */
