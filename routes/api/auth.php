@@ -14,6 +14,7 @@ Route::post('register', 'Auth\RegisterController');
 Route::post('reset-password', 'Auth\ResetPasswordController');
 Route::get('app-start', 'Auth\getAppInfoController@startPages');
 Route::get('coming-soon', 'Auth\getAppInfoController@comingSoonTips');
+Route::get('lk-unit-price', 'Auth\getAppInfoController@getShowLkUnitPrice');
 //
 ///*
 // * GET /v1/geetest 极验证初始化响应参数
