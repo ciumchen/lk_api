@@ -36,13 +36,12 @@ class UserCityData extends Model
             $userCityData = new UserCityData();
         }
         $userCityData->uid = $data['uid'];
-        $userCityData->province = $data['province'];
-        $userCityData->city = $data['city'];
-        $userCityData->district = $data['district'];
+        $userCityData->province_id = $data['province_id'];
+        $userCityData->city_id = $data['city_id'];
+        $userCityData->district_id = $data['district_id'];
         $userCityData->address = $data['address'];
         $userCityData->lng = $data['lng'];
         $userCityData->lat = $data['lat'];
-        $userCityData->city_data_id = $data['city_data_id'];
         return $userCityData->save();
 
     }

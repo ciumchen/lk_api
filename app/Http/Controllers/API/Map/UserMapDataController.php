@@ -32,20 +32,20 @@ class UserMapDataController extends Controller
         } else {
             DB::beginTransaction();
             try {
-                $cityDataId = CityData::where('code', $userCity['adcode'])->value('id');
-                if (empty($cityDataId)) {
+                $cityDataInfo = CityData::where('code', $userCity['adcode'])->first();
+                if (empty($cityDataInfo)) {
                     return false;
                 }
+                $sqArr = explode(',',$cityDataInfo->pid_route);
                 //保存用户经纬度信息
                 $data = [
                     'uid' => $uid,
-                    'province' => $userCity['province'],
-                    'city' => $userCity['city'],
-                    'district' => $userCity['district'],
+                    'province_id' => $sqArr[0],
+                    'city_id' => $sqArr[1],
+                    'district_id' => $cityDataInfo->id,
                     'address' => $userCity['address'],
                     'lng' => $lng,
                     'lat' => $lat,
-                    'city_data_id' => $cityDataId,
                 ];
                 (new UserCityData())->addUserCityData($data);
 
