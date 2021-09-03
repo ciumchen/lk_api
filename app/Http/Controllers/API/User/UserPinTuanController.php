@@ -129,7 +129,16 @@ class UserPinTuanController extends Controller
         $ip = $request->input('ip');
         $money = $request->input('money');
         $order_from = $request->input('order_from');
-        YuntongPayController::getPayChannel($order_from);
+
+        try {
+            $orderFrom = (new YuntongPayController())->getPayChannel($order_from);
+            if (empty($orderFrom)){
+                return false;
+            }
+        } catch (Exception $e) {
+            throw new LogicException($e->getMessage());
+        }
+
         $order_no = createOrderNo();
         //创建充值记录
         $data = array(
