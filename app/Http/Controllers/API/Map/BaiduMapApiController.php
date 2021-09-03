@@ -8,7 +8,7 @@ class BaiduMapApiController extends Controller
 {
 
     //url和key
-    public static $AK = "1K1108yRsPPSegzDcxKB2wnt28SN9aKX";
+    public static $AK = "8WXl6Re0R5SFj6cardI0S5joQIblYZ4o";
     public static $ApiUrl = "https://api.map.baidu.com/reverse_geocoding/v3/?";
 
     public function mapTest()
@@ -30,10 +30,11 @@ class BaiduMapApiController extends Controller
             'ak'=>self::$AK,
             'output'=>'json',
 //            'coordtype'=>'bd09ll',
-            'location'=>"{$lng},{$lat}",
+            'location'=>"{$lat},{$lng}",
         ];
         $params = http_build_query($param);
         $mapData =  json_decode(self::postRequest(self::$ApiUrl.$params),1);
+        dd($mapData);
         if ($mapData['status'] != 0){
             return $mapData['status'];//失败
         }else{

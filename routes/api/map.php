@@ -10,7 +10,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::post('mapTest', 'Map\BaiduMapApiController@mapTest');
 
 //通过经纬度获取用户的省市区地址
-Route::any('getUserCityAddr', 'Map\UserMapDataController@getUserCityAddr');
+Route::any('addUserCityAddr', 'Map\UserMapDataController@addUserCityAddr');
 
 
 
