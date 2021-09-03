@@ -39,8 +39,8 @@ class BaiduMapApiController extends Controller
         }else{
             return array(
                 'status'=>$mapData['status'],
-                'lng'=>$mapData['result']['location']['lat'],
-                'lat'=>$mapData['result']['location']['lng'],
+                'lng'=>$mapData['result']['location']['lng'],
+                'lat'=>$mapData['result']['location']['lat'],
                 'address'=>$mapData['result']['formatted_address'],
                 'country'=>$mapData['result']['addressComponent']['country'],
                 'province'=>$mapData['result']['addressComponent']['province'],
