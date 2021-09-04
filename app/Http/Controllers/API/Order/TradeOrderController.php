@@ -60,6 +60,7 @@ class TradeOrderController extends Controller
             'created_at' => date("Y-m-d H:i:s"),
             'modified_time' => date("Y-m-d H:i:s")
         ];
+
         $tradeOrder = new TradeOrder();
         $res = $tradeOrder->setOrder($orderData);
         if ($res)

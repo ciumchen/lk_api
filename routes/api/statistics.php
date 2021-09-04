@@ -15,3 +15,9 @@ Route::any('getGiveOderPrice', 'Statistics\StatisticsController@getGiveOderPrice
 
 //获取各种类型订单让利比例的统计（5%-10%-20%）
 Route::any('getOrderRlbl', 'Statistics\StatisticsController@getOrderRlbl');
+
+//查询是否开始美团活动
+Route::any('getMeiTuanHdProfitRatio', 'Statistics\StatisticsController@getMeiTuanHdProfitRatio');
+
+
+
