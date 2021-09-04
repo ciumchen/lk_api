@@ -112,11 +112,11 @@ class YuntongPayController extends Controller
             throw new LogicException('订单不属于未支付或支付失败状态');
         }
         //油卡需要多传两个参数
-        if (in_array($data['description'], ['YK']))
-        {
-            $orderData['idcard'] = $data['idcard'];
-            $orderData['user_name'] = $data['userName'];
-        }
+//        if (in_array($data['description'], ['YK']))
+//        {
+//            $orderData['idcard'] = $data['idcard'];
+//            $orderData['user_name'] = $data['userName'];
+//        }
 
         try {
             if (empty($order_data->end_time)) {
