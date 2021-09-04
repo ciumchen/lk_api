@@ -220,7 +220,7 @@ class StatisticsController extends Controller
 
     //查询是否开始美团活动
     public function getMeiTuanHdProfitRatio(){
-        $set_mt_activity = Setting::where('set_mt_activity')->value('value');
+        $set_mt_activity = Setting::where('key','set_mt_activity')->value('value');
         return response()->json(['code'=>0, 'msg'=>'获取成功', 'set_mt_activity' => $set_mt_activity]);
     }
 
