@@ -19,7 +19,7 @@ class IntegralLogsResources extends JsonResource
 
         return [
             'id' => $this->id,
-            'operate_type' => IntegralLogs::$typeLabel[$this->operate_type],
+            'operate_type' => $this->description == 'GLR' ? '广告补贴' : IntegralLogs::$typeLabel[$this->operate_type],
             'amount' => rtrim_zero($this->amount),
             'role' => IntegralLogs::$rolLabel[$this->role],
             'remark' => $this->remark,
