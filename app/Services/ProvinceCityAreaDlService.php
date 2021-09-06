@@ -16,30 +16,8 @@ use App\Models\UserCityData;
  */
 class ProvinceCityAreaDlService
 {
-    //分享佣金
-    public function inviteEncourage(Order $order, User $user, AssetsType $assets, $orderNo, $platformUid = 0)
-    {
-        if (intval($platformUid) == 0) {
-            $platformUid = Setting::getSetting('platform_uid');
-        }
-        try {
-            // 直属上级
-            $invite_first = $this->inviteEncourageFirst($order, $user, $assets, $orderNo, $platformUid);
-            $invite_second = $this->inviteEncourageSecond($order, $invite_first, $assets, $orderNo, $platformUid);
-            $this->inviteEncourageThird($order, $invite_second, $assets, $orderNo, $platformUid);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        return true;
-    }
-
     /*
      * 省市区代理返佣
-     * $order 订单记录对象
-     * $user 消费者user表记录对象
-     * $assets 获取资产类型记录对象
-     * $orderNo 订单号
-     * $platformUid 	来客平台账户UID=2
      */
     public function inviteProvinceCityAreaD(Order $order, User $user, AssetsType $assets, $orderNo, $platformUid = 0)
     {
