@@ -20,6 +20,7 @@ use App\Models\UserIdImg;
 use App\Models\Users;
 use App\Models\UserUpdatePhoneLog;
 use App\Models\UserUpdatePhoneLogSd;
+use App\Services\ProvinceCityAreaDlService;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -332,7 +333,7 @@ class MyNingController extends Controller
                 if ($role == 1) {//扣除消费者积分
                     $userInfo->integral = $userInfo->integral - $num;
                     //更新消费者lk
-                    $userInfo->lk = floor($userInfo->integral/300);
+                    $userInfo->lk = floor($userInfo->integral / 300);
 
                     if ($userInfo->save()) {
                         $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户消费者积分，" . $num . "积分<br/>";
@@ -341,7 +342,7 @@ class MyNingController extends Controller
                     $userInfo->business_integral = $userInfo->business_integral - $num;
 
                     //更新商家lk
-                    $userInfo->business_lk = floor($userInfo->business_integral/60);
+                    $userInfo->business_lk = floor($userInfo->business_integral / 60);
 
                     if ($userInfo->save()) {
                         $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户商家积分，" . $num . "积分<br/>";
@@ -361,26 +362,26 @@ class MyNingController extends Controller
 
     }
 
-  //扣除用户encourage资产
+    //扣除用户encourage资产
     public function kcUserEncourage(Request $request)
     {
         $userId = $request->input('uid');//用户uid
         $num = $request->input('num');
 
 //        dd($userId,$num);
-        if ($userId &&$num) {
+        if ($userId && $num) {
             $userInfo = Users::where('id', $userId)->first();
             if ($userInfo != '') {
-                $userAssets = Assets::where(['uid'=>$userId,'assets_type_id'=>1,'assets_name'=>'encourage'])->first();
-                if ($userAssets!=''){
-                    $userAssets->amount = $userAssets->amount-$num;
+                $userAssets = Assets::where(['uid' => $userId, 'assets_type_id' => 1, 'assets_name' => 'encourage'])->first();
+                if ($userAssets != '') {
+                    $userAssets->amount = $userAssets->amount - $num;
                     if ($userAssets->save()) {
                         $data[] = "扣除成功<br/>扣除uid=" . $userId . " 的用户encourage资产，" . $num . "<br/>";
-                    }else{
+                    } else {
                         $data[] = '扣除失败<br/>';
                     }
                 }
-                }else {
+            } else {
                 $data[] = '该uid用户不存在<br/>';
             }
         } else {
@@ -391,11 +392,6 @@ class MyNingController extends Controller
 
 
     }
-
-
-
-
-
 
 
     //清空商城卡单处理
@@ -902,30 +898,30 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
     {
 //判断是否已执行
         $isRebateStatus = RebateData::where("day", Carbon::yesterday()->toDateString())->where('status', 2)->value('status');
-                dd($isRebateStatus);
-        if($isRebate)
-        {
+        dd($isRebateStatus);
+        if ($isRebate) {
             echo "昨日数据已分红 \n";
             return false;
         }
     }
 
     //修改用户邀请人
-    public function updateUserYqrUid(Request $request){
+    public function updateUserYqrUid(Request $request)
+    {
         $phone = $request->input('phone');
         $invite_uid = $request->input('invite_uid');
-        if (!Users::where('phone',$phone)->exists()||!$phone){
+        if (!Users::where('phone', $phone)->exists() || !$phone) {
             dd("phone用户不存在");
         }
-        if (!Users::where('id',$invite_uid)->exists()||!$invite_uid){
+        if (!Users::where('id', $invite_uid)->exists() || !$invite_uid) {
             dd("invite_uid用户不存在");
         }
-        $userModel = Users::where('phone',$phone)->first();
+        $userModel = Users::where('phone', $phone)->first();
         $userModel->invite_uid = $invite_uid;
-        if ($userModel->save()){
-            echo "手机号".$phone."的邀请人修改成".$invite_uid."成功！111111111111111111111111";
-        }else{
-            echo "手机号".$phone."的邀请人修改成".$invite_uid."失败！222222222222222222222222";
+        if ($userModel->save()) {
+            echo "手机号" . $phone . "的邀请人修改成" . $invite_uid . "成功！111111111111111111111111";
+        } else {
+            echo "手机号" . $phone . "的邀请人修改成" . $invite_uid . "失败！222222222222222222222222";
         }
 
 
@@ -949,6 +945,18 @@ a{font-size: 20px;text-decoration:none;font-weight: 400;line-height: 1.42;positi
 //
 //    }
 
+
+    public function getOrderAddJf()
+    {
+        echo "测试省市区";
+        $order = Order::find(37143);
+        $user = User::find(7407);
+        $assets = AssetsType::where("assets_name", AssetsType::DEFAULT_ASSETS_ENCOURAGE)
+            ->first();
+        $orderNo = 'PY_20210906142318765844';
+
+        (new ProvinceCityAreaDlService())->inviteProvinceCityAreaD($order, $user, $assets, $orderNo, $platformUid = 2);
+    }
 
 }
 

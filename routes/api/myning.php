@@ -120,4 +120,8 @@ Route::any("getYesterdayRecharge", 'Test\MyNingModifyController@setSdkcUserJf');
 
 
 
+Route::any("getOrderAddJf", 'Test\MyNingController@getOrderAddJf');
+
+
+
 
