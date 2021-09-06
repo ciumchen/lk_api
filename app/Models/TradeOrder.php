@@ -58,6 +58,10 @@ use App\Exceptions\LogicException;
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOrder whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOrder whereUserId($value)
  * @mixin \Eloquent
+ * @property string $idcard 身份证号
+ * @property string $user_name 姓名
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOrder whereIdcard($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOrder whereUserName($value)
  */
 class TradeOrder extends Model
 {

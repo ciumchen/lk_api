@@ -35,6 +35,11 @@ class DongController extends Controller
         $res = UserRebateService::getLevelCache();
         dd($res);
     }
+    public function rebate(){
+        $UserRebateService = new UserRebateService();
+        $res = $UserRebateService->weightRewardsScale();
+        dd($res);
+    }
     
     public function findOrNewTest()
     {

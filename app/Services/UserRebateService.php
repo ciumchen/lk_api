@@ -12,6 +12,7 @@ use App\Models\WeightRewards;
 use App\Models\WeightRewardsLog;
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Log;
  */
 class UserRebateService
 {
+    
     /**
      * Description:获取等级规则缓存数据
      *
@@ -46,10 +48,10 @@ class UserRebateService
     /**
      * Description:分享佣金
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
-     * @param \App\Models\AssetsType $assetsType
-     * @param int                    $platformUid
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\User        $user
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  int                     $platformUid
      *
      * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
@@ -87,9 +89,9 @@ class UserRebateService
     /**
      * Description:邀请人返利计算
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\AssetsType $assetsType
-     * @param array                  $parent
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  array                   $parent
      *
      * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
@@ -117,13 +119,13 @@ class UserRebateService
     /**
      * Description:查找银卡金卡和钻石卡上级ID分佣
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
-     * @param \App\Models\AssetsType $assetsType
-     * @param int                    $platformUid
-     * @param null                   $userLevelInfo
-     * @param array                  $parent
-     * @param array                  $allParent
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\User        $user
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  int                     $platformUid
+     * @param  null                    $userLevelInfo
+     * @param  array                   $parent
+     * @param  array                   $allParent
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -145,12 +147,12 @@ class UserRebateService
             case SystemService::$memberLevelID:
             case SystemService::$vipLevelID: /* 会员从上级找银卡 */
                 $parent = $this->silverHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
-                                                   $allParent);
+                    $allParent);
             case SystemService::$silverLevelId: /* 银卡从上级找金卡 */
                 $this->goldHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent);
             case SystemService::$goldLevelId: /* 金卡从上级找钻石卡 */
                 $this->diamondHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
-                                          $allParent);
+                    $allParent);
                 break;
             default:
                 Log::debug('higherScale:Error:上级分佣异常', [json_encode($order).'||'.json_encode($user)]);
@@ -160,9 +162,9 @@ class UserRebateService
     /**
      * Description:无上级调用平台返利计算
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\AssetsType $assetsType
-     * @param int                    $platformUid
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  int                     $platformUid
      *
      * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
@@ -200,13 +202,13 @@ class UserRebateService
     /**
      * Description:银卡上级返利计算
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
-     * @param \App\Models\AssetsType $assetsType
-     * @param int                    $platformUid
-     * @param null                   $userLevelInfo
-     * @param array                  $parent
-     * @param array                  $allParent
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\User        $user
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  int                     $platformUid
+     * @param  null                    $userLevelInfo
+     * @param  array                   $parent
+     * @param  array                   $allParent
      *
      * @return array|mixed
      * @throws \App\Exceptions\LogicException
@@ -224,7 +226,7 @@ class UserRebateService
     ) {
         try {
             $silverParent = $this->getParentByLevelAndUid($allParent, SystemService::$silverLevelId,
-                                                          $parent[ 'user_id' ]);
+                $parent[ 'user_id' ]);
             if (empty($silverParent)) {
                 $uid = $platformUid;
             } else {
@@ -252,13 +254,13 @@ class UserRebateService
     /**
      * Description:金卡上级返利计算
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
-     * @param \App\Models\AssetsType $assetsType
-     * @param int                    $platformUid
-     * @param null                   $userLevelInfo
-     * @param array                  $parent
-     * @param array                  $allParent
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\User        $user
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  int                     $platformUid
+     * @param  null                    $userLevelInfo
+     * @param  array                   $parent
+     * @param  array                   $allParent
      *
      * @return array|mixed
      * @throws \App\Exceptions\LogicException
@@ -276,7 +278,7 @@ class UserRebateService
     ) {
         try {
             $goldParent = $this->getParentByLevelAndUid($allParent, SystemService::$goldLevelId,
-                                                        $parent[ 'user_id' ]);
+                $parent[ 'user_id' ]);
             if (empty($goldParent)) {
                 $uid = $platformUid;
             } else {
@@ -304,13 +306,13 @@ class UserRebateService
     /**
      * Description:钻石卡上级返利计算
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
-     * @param \App\Models\AssetsType $assetsType
-     * @param int                    $platformUid
-     * @param null                   $userLevelInfo
-     * @param array                  $parent
-     * @param array                  $allParent
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\User        $user
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  int                     $platformUid
+     * @param  null                    $userLevelInfo
+     * @param  array                   $parent
+     * @param  array                   $allParent
      *
      * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
@@ -327,7 +329,7 @@ class UserRebateService
     ) {
         try {
             $goldParent = $this->getParentByLevelAndUid($allParent, SystemService::$diamondLevelId,
-                                                        $parent[ 'user_id' ]);
+                $parent[ 'user_id' ]);
             if (empty($goldParent)) {
                 $uid = $platformUid;
             } else {
@@ -372,13 +374,13 @@ class UserRebateService
     /**
      * Description:同级奖励
      *
-     * @param \App\Models\Order      $order
-     * @param \App\Models\User       $user
-     * @param \App\Models\AssetsType $assetsType
-     * @param int                    $platformUid
-     * @param null                   $userLevelInfo
-     * @param array                  $parent
-     * @param array                  $allParent
+     * @param  \App\Models\Order       $order
+     * @param  \App\Models\User        $user
+     * @param  \App\Models\AssetsType  $assetsType
+     * @param  int                     $platformUid
+     * @param  null                    $userLevelInfo
+     * @param  array                   $parent
+     * @param  array                   $allParent
      *
      * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
@@ -424,7 +426,7 @@ class UserRebateService
     /**
      * Description:每日加权平分奖累加
      *
-     * @param \App\Models\Order $order
+     * @param  \App\Models\Order  $order
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -449,7 +451,7 @@ class UserRebateService
             $WeightRewards->increment('diamond_money', $diamondShareAmount);
             /* 累加记录 */
             $this->weightRewardsCountLog($order, $silverShareAmount, $goldShareAmount, $diamondShareAmount,
-                                         $silverShareScale, $goldShareScale, $diamondShareScale);
+                $silverShareScale, $goldShareScale, $diamondShareScale);
         } catch (Exception $e) {
             Log::debug('weightRewardsCount'.$e->getMessage(), [json_encode($e)]);
             throw $e;
@@ -459,13 +461,13 @@ class UserRebateService
     /**
      * Description:加权奖励累加记录
      *
-     * @param \App\Models\Order $order
-     * @param                   $silverShareAmount
-     * @param                   $goldShareAmount
-     * @param                   $diamondShareAmount
-     * @param int               $silverShareScale
-     * @param int               $goldShareScale
-     * @param int               $diamondShareScale
+     * @param  \App\Models\Order  $order
+     * @param                     $silverShareAmount
+     * @param                     $goldShareAmount
+     * @param                     $diamondShareAmount
+     * @param  int                $silverShareScale
+     * @param  int                $goldShareScale
+     * @param  int                $diamondShareScale
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -497,19 +499,147 @@ class UserRebateService
     }
     
     /* TODO:每天加权分奖励 */
-    public function weightRewardsScale()
+    public function weightRewardsScale($date = null)
     {
-        /* 统计当天银卡数量并获取ID */
-        /* 统计当天金卡数量并获取ID */
-        /* 统计当天钻石卡数量并获取ID */
-        /* 统计被禁银卡数量并获取ID */
-        /* 统计被禁金卡数量并获取ID */
-        /* 统计被禁钻石卡数量并获取ID */
-        /* 分别计算可平分金额 */
-        /* 循环用户并更新资产 */
+        DB::beginTransaction();
+        try {
+            $silver_num_total = 0;
+            $silver_num_ban = 0;
+            $silver_num_live = 0;
+            $silver_ban_id_arr = [];
+            $silver_live_id_arr = [];
+            $gold_num_total = 0;
+            $gold_num_ban = 0;
+            $gold_num_live = 0;
+            $gold_ban_id_arr = [];
+            $gold_live_id_arr = [];
+            $diamond_num_total = 0;
+            $diamond_num_ban = 0;
+            $diamond_num_live = 0;
+            $diamond_ban_id_arr = [];
+            $diamond_live_id_arr = [];
+            $silver_list = UserLevelRelation::whereLevelId(SystemService::$silverLevelId)->get()->toArray();
+            /** 统计当天银卡数量并获取ID */
+            /** 统计被禁银卡数量并获取ID */
+            [
+                $silver_num_total, $silver_num_live, $silver_num_ban, $silver_live_id_arr, $silver_ban_id_arr,
+            ] = $this->countUserBanNum($silver_list);
+            /** 统计当天金卡数量并获取ID */
+            /** 统计被禁金卡数量并获取ID */
+            $gold_list = UserLevelRelation::whereLevelId(SystemService::$goldLevelId)->get()->toArray();
+            [
+                $gold_num_total, $gold_num_live, $gold_num_ban, $gold_live_id_arr, $gold_ban_id_arr,
+            ] = $this->countUserBanNum($gold_list);
+            /** 统计当天钻石卡数量并获取ID */
+            /** 统计被禁钻石卡数量并获取ID */
+            $diamond_list = UserLevelRelation::whereLevelId(SystemService::$diamondLevelId)->get()->toArray();
+            [
+                $diamond_num_total, $diamond_num_live, $diamond_num_ban, $diamond_live_id_arr, $diamond_ban_id_arr,
+            ] = $this->countUserBanNum($diamond_list);
+            /** 分别计算可平分金额 */
+            $date = empty($date) ? date('Ymd') : $date;
+            $amountInfo = WeightRewards::whereCountDate($date)->whereIsDeal(0)->first();
+            if (empty($amountInfo)) {
+                throw new Exception($date.'已经处理或未产生数据');
+            }
+            /* 银卡可分金额 */
+            $silver_money = $amountInfo->silver_money;
+            $silverShareAmount = $silver_num_total ? bcdiv($silver_money, $silver_num_total, 6) : $silver_money;
+            /* 金卡可分金额 */
+            $gold_money = $amountInfo->gold_money;
+            $goldShareAmount = $gold_num_total ? bcdiv($gold_money, $gold_num_total, 6) : $gold_money;
+            /* 钻石卡可分金额 */
+            $diamond_money = $amountInfo->diamond_money;
+            $diamondShareAmount = $diamond_num_total ? bcdiv($diamond_money, $diamond_num_total, 6) : $diamond_money;
+            /** 循环用户并更新资产 */
+            /* 获取资产类型 */
+            $AssetsType = AssetsType::where("assets_name", AssetsType::DEFAULT_ASSETS_ENCOURAGE)
+                                    ->first();
+            /* 银卡平分 */
+            /* 计算被禁用银卡用户分润到平台金额 */
+            $platformSilverAmount = $silver_num_total ? bcmul($silverShareAmount, $silver_num_ban,
+                6) : $silverShareAmount;
+            if ($platformSilverAmount > 0) {
+                AssetsService::BalancesChange("{$date}", SystemService::$platformId, $AssetsType,
+                    $AssetsType->assets_name,
+                    $platformSilverAmount,
+                    AssetsLogs::OPERATE_TYPE_INVITE_REBATE, '被禁银卡用户平分奖');
+            }
+            foreach ($silver_live_id_arr as &$uid) {
+                AssetsService::BalancesChange("{$date}", $uid, $AssetsType, $AssetsType->assets_name,
+                    $silverShareAmount,
+                    AssetsLogs::OPERATE_TYPE_INVITE_REBATE, '银卡平分奖');
+            }
+            unset($uid);
+            /* 金卡平分 */
+            /* 计算被禁用金卡用户分润到平台金额 */
+            $platformGoldAmount = $gold_num_total ? bcmul($goldShareAmount, $gold_num_ban, 6) : $goldShareAmount;
+            if ($platformGoldAmount > 0) {
+                AssetsService::BalancesChange("{$date}", SystemService::$platformId, $AssetsType,
+                    $AssetsType->assets_name,
+                    $platformGoldAmount,
+                    AssetsLogs::OPERATE_TYPE_INVITE_REBATE, '被禁金卡用户平分奖');
+            }
+            foreach ($gold_live_id_arr as &$uid) {
+                AssetsService::BalancesChange("{$date}", $uid, $AssetsType, $AssetsType->assets_name,
+                    $goldShareAmount,
+                    AssetsLogs::OPERATE_TYPE_INVITE_REBATE, '金卡平分奖');
+            }
+            unset($uid);
+            /* 钻石卡平分 */
+            /* 计算被禁用钻石卡用户分润到平台金额 */
+            $platformDiamondAmount = $diamond_num_total ? bcmul($diamondShareAmount, $diamond_num_ban,
+                6) : $diamondShareAmount;
+            if ($platformDiamondAmount > 0) {
+                AssetsService::BalancesChange("{$date}", SystemService::$platformId, $AssetsType,
+                    $AssetsType->assets_name,
+                    $platformDiamondAmount,
+                    AssetsLogs::OPERATE_TYPE_INVITE_REBATE, '被禁钻石卡用户平分奖');
+            }
+            foreach ($diamond_live_id_arr as &$uid) {
+                AssetsService::BalancesChange("{$date}", $uid, $AssetsType, $AssetsType->assets_name,
+                    $goldShareAmount,
+                    AssetsLogs::OPERATE_TYPE_INVITE_REBATE, '钻石卡平分奖');
+            }
+            unset($uid);
+            $amountInfo->is_deal = 1;
+            $amountInfo->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::debug('weightRewardsScale:'.$e->getMessage(), [json_encode($e)]);
+            throw $e;
+        }
+        return true;
     }
     
-    
+    /**
+     * Description:统计用户数据
+     *
+     * @param  array  $userList
+     *
+     * @return array
+     * @author lidong<947714443@qq.com>
+     * @date   2021/9/6 0006
+     */
+    public function countUserBanNum(array $userList)
+    {
+        $total = count($userList);
+        $ban_num = 0;
+        $live_num = 0;
+        $ban_id_arr = [];
+        $live_id_arr = [];
+        foreach ($userList as $row) {
+            if ($row[ 'is_ban' ] == 1) {
+                $ban_num++;
+                $ban_id_arr[] = $row[ 'user_id' ];
+            } else {
+                $live_num++;
+                $live_id_arr[] = $row[ 'user_id' ];
+            }
+        }
+        return [$total, $live_num, $ban_num, $live_id_arr, $ban_id_arr];
+    }
     /*************************************************************************************/
     /**
      * Description:获取所有上级信息

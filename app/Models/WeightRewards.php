@@ -15,9 +15,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property string                          $gold_money    金卡金额
  * @property string                          $diamond_money 钻石计金额
  * @property string                          $money         订单金额
- * @property int                             $is_del        是否已处理[分红]
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @property int                             $is_deal       是否已处理[分红]
+ * @method static Builder|WeightRewards whereIsDeal($value)
  * @method static Builder|WeightRewards newModelQuery()
  * @method static Builder|WeightRewards newQuery()
  * @method static Builder|WeightRewards query()
@@ -26,7 +28,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WeightRewards whereDiamondMoney($value)
  * @method static Builder|WeightRewards whereGoldMoney($value)
  * @method static Builder|WeightRewards whereId($value)
- * @method static Builder|WeightRewards whereIsDel($value)
  * @method static Builder|WeightRewards whereMoney($value)
  * @method static Builder|WeightRewards whereSilverMoney($value)
  * @method static Builder|WeightRewards whereUpdatedAt($value)

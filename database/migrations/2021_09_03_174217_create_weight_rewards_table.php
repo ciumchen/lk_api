@@ -20,7 +20,7 @@ class CreateWeightRewardsTable extends Migration
             $table->decimal('silver_money', 20, 4)->default(0.0000)->comment('银卡已累计金额');
             $table->decimal('gold_money', 20, 4)->default(0.0000)->comment('金卡已累计金额');
             $table->decimal('diamond_money', 20, 4)->default(0.0000)->comment('钻石卡已累计金额');
-            $table->tinyInteger('is_del')->default(0)->comment('是否已处理[分红]')->index();
+            $table->tinyInteger('is_deal')->default(0)->comment('是否已处理[分红]')->index();
             $table->timestamps();
         });
     }
