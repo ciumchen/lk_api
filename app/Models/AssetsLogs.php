@@ -79,6 +79,7 @@ class AssetsLogs extends Model
     const OPERATE_TYPE_INVITE_REBATE = 'invite_rebate';//邀请分红
     const OPERATE_TYPE_DISTRICT_REBATE = 'district_rebate';//区站长分红
     const OPERATE_TYPE_CITY_REBATE = 'city_rebate';//市站长分红
+    const OPERATE_TYPE_PROVINCE_REBATE = 'province_rebate';//省站长分红
     const OPERATE_TYPE_SHARE_B_REBATE = 'share_b_rebate';//邀请商家
     const OPERATE_TYPE_EXCHANGE_IETS = 'exchagne_iets';//兑换iets
     const OPERATE_TYPE_EXCHANGE_IETS_SUB_ENCOURATGE = 'exchagne_iets_sub';//兑换扣除
@@ -101,6 +102,7 @@ class AssetsLogs extends Model
         self::OPERATE_TYPE_INVITE_REBATE => '邀请分红',
         self::OPERATE_TYPE_DISTRICT_REBATE => '区站长分红',
         self::OPERATE_TYPE_CITY_REBATE => '市站长分红',
+        self::OPERATE_TYPE_PROVINCE_REBATE => '省站长分红',
         self::OPERATE_TYPE_SHARE_B_REBATE => '邀请商家分红',
         self::OPERATE_TYPE_EXCHANGE_IETS => '兑换IETS',
         self::OPERATE_TYPE_EXCHANGE_IETS_SUB_ENCOURATGE => '兑换扣除',
