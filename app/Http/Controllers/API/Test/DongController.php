@@ -27,7 +27,7 @@ class DongController extends Controller
      */
     public function __construct()
     {
-//        die('测试接口');
+        die('测试接口');
     }
     
     public function getLevelList()

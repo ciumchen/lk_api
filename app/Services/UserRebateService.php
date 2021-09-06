@@ -608,7 +608,7 @@ class UserRebateService
         } catch (Exception $e) {
             DB::rollBack();
             Log::debug('weightRewardsScale:'.$e->getMessage(), [json_encode($e)]);
-            throw $e;
+            dump('weightRewardsScale：加权分红执行报错：'.$e->getMessage());
         }
         return true;
     }
