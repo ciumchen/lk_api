@@ -7,7 +7,9 @@ namespace App\Http\Controllers\API\Test;
 use App\Http\Controllers\API\Test\OpenClient;
 use App\Models\Order;
 use App\Models\Users;
+
 use App\Services\GatherOrderService;
+use App\Services\AdvertIsementService;
 use App\Services\GatherService;
 use App\Services\OrderService;
 use App\Services\OssService;
@@ -120,4 +122,14 @@ class TestController
             (new GatherOrderService())->completeOrderGatger($list['id'], $list['uid'], 'PT', $list['order_no']);
         }
     }*/
+
+    //生成广告签名
+    public function getSign(Request $request)
+    {
+        $data = $request->all();
+        //签名
+        $param = $data['award'] . $data['packagename'] . $data['type'] . $data['uid'] . $data['unique_id'];
+        return strtolower(md5($param . md5(AdvertIsementService::CHANNEL_ID)));
+    }
+
 }

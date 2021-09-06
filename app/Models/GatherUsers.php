@@ -220,10 +220,13 @@ class GatherUsers extends Model
         $gatherArr = json_decode($gatherList, 1);
         //用户当天参团次数
         $userGatherSum = $this->getUserAllSum($data['uid']);
+        //获取用户当天拼团广告次数
+        $userAdvertSum = (new AdvertUsers())->getGatherAdvertSum($data['uid']);
         //返回
         return [
             'gatherArr'     => $gatherArr,
             'userGatherDay' => $userGatherSum,
+            'userAdvertDay' => $userAdvertSum,
         ];
     }
 

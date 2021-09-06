@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\LogicException;
 use App\Jobs\AddGatherUsers;
 use App\Jobs\SendGatherLottery;
+use App\Models\AdvertUsers;
 use App\Models\Gather;
 use App\Models\GatherGoldLogs;
 use App\Models\GatherShoppingCard;
@@ -78,6 +79,7 @@ class GatherService
     public function isMaxSum (int $gid, int $uid)
     {
         $gatherRatio = 5;
+        //每天拼团最多次数
         $gatherAllRatio = 30;
         $gatherSum = (new GatherUsers())->getGatherUserSum($gid, $uid);
         $userCount = (new GatherUsers())->getUserOneSum($gid, $uid);
@@ -86,10 +88,13 @@ class GatherService
             throw new LogicException('本场次拼团活动已超过最大可参与次数5次!');
         }
 
+        //获取每天拼团广告次数
+        $advertSum = (new AdvertUsers())->getGatherAdvertSum($uid);
+        //获取每天拼团次数
         $gatherAllSum = (new GatherUsers())->getUserAllSum($uid);
-        if ($gatherAllSum >= $gatherAllRatio)
+        if ($gatherAllSum + $advertSum >= $gatherAllRatio + $advertSum)
         {
-            throw new LogicException('已超过每天最大可参与次数30次！');
+            throw new LogicException('已超过每天最大可参与次数！');
         }
     }
 

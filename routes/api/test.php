@@ -41,3 +41,4 @@ Route::any('gather', 'Test\TestController@gatherTest');
 //Route::any('gold', 'Test\TestController@updGold');
 
 //Route::any('order-status', 'Test\TestController@updOrderStatus');
+Route::any('sign', 'Test\TestController@getSign');
