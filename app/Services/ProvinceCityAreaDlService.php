@@ -116,6 +116,11 @@ class ProvinceCityAreaDlService
                 $remark
             );
         }
+
+        return array(
+            'provinceAmount'=>$provinceAmount,
+            'cityAmount'=>$cityAmount,
+            'districtAmount'=>$districtAmount);
     }
 
 }

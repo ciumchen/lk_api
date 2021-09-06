@@ -432,7 +432,7 @@ class OrderService
 
         //*****************************************************************
         //省市区代理返佣
-        (new ProvinceCityAreaDlService())->inviteProvinceCityAreaD($order, $user, $assets, $orderNo, $platformUid);
+        $ssqAmount = (new ProvinceCityAreaDlService())->inviteProvinceCityAreaD($order, $user, $assets, $orderNo, $platformUid);
 
         //*****************************************************************
 
@@ -615,12 +615,15 @@ class OrderService
                 $remark
             );
         }
-        $market =
-            bcadd(
-                $districtAmount,
-                bcadd($cityAmount, bcadd(bcadd($sameAmount, $headAmount, 8), $ordinaryAmount, 8), 8),
-                8
-            );
+//        $market =
+//            bcadd(
+//                $districtAmount,
+//                bcadd($cityAmount, bcadd(bcadd($sameAmount, $headAmount, 8), $ordinaryAmount, 8), 8),
+//                8
+//            );
+
+        $market = bcadd($ssqAmount['provinceAmount'],bcadd($ssqAmount['districtAmount'],
+            bcadd($ssqAmount['cityAmount'], bcadd(bcadd($sameAmount, $headAmount, 8), $ordinaryAmount, 8), 8), 8),8);
         $this->updateRebateData($welfareAmount, $shareAmount, $market, $platformAmount, $order->price, $user);
     }
 
