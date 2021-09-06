@@ -26,9 +26,10 @@ use App\Models\LkshopOrder;
 
 class OrderService
 {
+    
     /**购买会员完成订单
      *
-     * @param string $orderNo
+     * @param  string  $orderNo
      *
      * @return mixed
      */
@@ -98,7 +99,7 @@ class OrderService
     
     /**完成订单
      *
-     * @param string $orderNo
+     * @param  string  $orderNo
      *
      * @return mixed
      */
@@ -260,7 +261,7 @@ class OrderService
     
     /**完成订单
      *
-     * @param string $orderNo
+     * @param  string  $orderNo
      *
      * @return mixed
      * @throws
@@ -397,12 +398,13 @@ class OrderService
             );
         }
         //分享佣金
-        /* 计算总佣金 */
-        $shareScale = Setting::getSetting('share_scale');
-        $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
-        // 分享佣金分成三级给予
-        $EncourageService = new EncourageService();
-        $EncourageService->inviteEncourage($order, $user, $assets, $orderNo, $platformUid);
+        (new UserRebateService())->shareScale($order, $user, $assets, $platformUid);
+//        /* 计算总佣金 */
+//        $shareScale = Setting::getSetting('share_scale');
+//        $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
+//        // 分享佣金分成三级给予
+//        $EncourageService = new EncourageService();
+//        $EncourageService->inviteEncourage($order, $user, $assets, $orderNo, $platformUid);
 //        $invite = User::where('status', User::STATUS_NORMAL)
 //                      ->whereId($user->invite_uid)
 //                      ->first();
@@ -621,7 +623,7 @@ class OrderService
      * @param       $assets
      * @param       $msg
      * @param       $type
-     * @param int   $level
+     * @param  int  $level
      *
      * @return false
      * @throws \App\Exceptions\LogicException
@@ -738,10 +740,10 @@ class OrderService
     /**
      * Description:
      *
-     * @param int    $id           order表ID
-     * @param int    $consumer_uid 用户ID
-     * @param string $description  订单类型
-     * @param string $orderNo      订单号
+     * @param  int     $id            order表ID
+     * @param  int     $consumer_uid  用户ID
+     * @param  string  $description   订单类型
+     * @param  string  $orderNo       订单号
      *
      * @return bool
      * @throws \Throwable
@@ -824,7 +826,7 @@ class OrderService
      *
      * @param                          $order_id
      *
-     * @param \App\Models\Order|null   $Order
+     * @param  \App\Models\Order|null  $Order
      *
      * @return mixed|string
      * @throws \Exception
@@ -896,10 +898,10 @@ class OrderService
      * Description:更新对应子订单
      *
      *
-     * @param int    $order_id
-     * @param array  $data
+     * @param  int     $order_id
+     * @param  array   $data
      *
-     * @param string $description
+     * @param  string  $description
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -952,11 +954,11 @@ class OrderService
     /**
      * Description:支付前更新子订单
      *
-     * @param int                    $order_id
-     * @param string                 $order_no
+     * @param  int                     $order_id
+     * @param  string                  $order_no
      *
-     * @param string                 $description
-     * @param \App\Models\Order|null $Order
+     * @param  string                  $description
+     * @param  \App\Models\Order|null  $Order
      *
      * @throws \Exception
      * @author lidong<947714443@qq.com>
@@ -999,10 +1001,10 @@ class OrderService
     /**
      * Description:完成订单后的后续操作[充值等]
      *
-     * @param int                    $order_id    订单ID
-     * @param array                  $data        云通支付信息
-     * @param string                 $description 类型
-     * @param \App\Models\Order|null $Order       需要操作的数据
+     * @param  int                     $order_id     订单ID
+     * @param  array                   $data         云通支付信息
+     * @param  string                  $description  类型
+     * @param  \App\Models\Order|null  $Order        需要操作的数据
      *
      * @author lidong<947714443@qq.com>
      * @date   2021/6/15 0015
