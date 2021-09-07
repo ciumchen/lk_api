@@ -86,7 +86,8 @@ Route::any("getUserShIntegralbfb", "User\getUserInfoController@getUserShIntegral
 //获取用户资产
 Route::any("getUserAssetInfo", "User\getUserInfoController@getUserAssetInfo");
 
-
+//获取用户省市区信息
+Route::any("getUserCityInfo", "User\getUserInfoController@getUserCityInfo");
 
 
 

@@ -140,6 +140,13 @@ class UserPinTuanController extends Controller
         } catch (Exception $e) {
             throw new LogicException($e->getMessage());
         }
+        if($order_from=='alipay'){
+            $remark = '支付宝充值';
+        }elseif ($order_from=='wx'){
+            $remark = '微信充值';
+        }else{
+            $remark = '其他充值';
+        }
 
         $order_no = createOrderNo();
         //创建充值记录
@@ -149,7 +156,7 @@ class UserPinTuanController extends Controller
             'money' => $money,
             'money_before_change' => $user->balance_tuan,
             'order_no' => $order_no,
-            'remark' => '支付宝充值',
+            'remark' => $remark,
         );
         $lpjLog = UserPinTuan::create($data);
 
