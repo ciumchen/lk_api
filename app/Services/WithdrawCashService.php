@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class WithdrawCashService
 {
+    
     /**
      * Description:生成拼团金提现订单
      *
@@ -54,10 +55,10 @@ class WithdrawCashService
     /**
      * Description:检查提现信息合法性
      *
-     * @param                       $uid
-     * @param                       $money
-     * @param                       $v_code
-     * @param \App\Models\User|null $User
+     * @param                         $uid
+     * @param                         $money
+     * @param                         $v_code
+     * @param  \App\Models\User|null  $User
      *
      * @throws \App\Exceptions\LogicException
      * @throws \Exception
@@ -81,15 +82,9 @@ class WithdrawCashService
         if (empty($User->alipay_user_id)) {
             throw new Exception('请先绑定支付宝');
         }
-        if ($money < 100) {
-            throw new Exception('提现金额不能小于100');
-        }
 //        if ($money > 500 && !in_array($uid, [8, 9596])) {
         if ($money > 500) {
             throw new Exception('单笔提现最高500');
-        }
-        if ($money % 10) {
-            throw new Exception('提现金额只能是10的倍数');
         }
         if ((WithdrawCashLog::getTodayMoneyCount($uid) + $money) > 2000) {
             throw new Exception('今日提现已达上限');
@@ -104,10 +99,10 @@ class WithdrawCashService
     /**
      * Description:提现数据验证
      *
-     * @param                       $uid
-     * @param                       $money
-     * @param                       $v_code
-     * @param \App\Models\User|null $User
+     * @param                         $uid
+     * @param                         $money
+     * @param                         $v_code
+     * @param  \App\Models\User|null  $User
      *
      * @return bool
      * @throws \App\Exceptions\LogicException
@@ -118,6 +113,12 @@ class WithdrawCashService
     {
         if (empty($User)) {
             $User = User::findOrFail($uid);
+        }
+        if ($money < 100) {
+            throw new Exception('提现金额不能小于100');
+        }
+        if ($money % 10) {
+            throw new Exception('提现金额只能是10的倍数');
         }
         $this->checkInfoIsLegal($uid, $money, $v_code, $User);
         //获取用户来拼金扣减总数
@@ -167,11 +168,11 @@ class WithdrawCashService
     /**
      * Description:验证可提现账户
      *
-     * @param                         $uid
-     * @param                         $money
-     * @param                         $v_code
-     * @param \App\Models\User|null   $User
-     * @param \App\Models\Assets|null $Assets
+     * @param                           $uid
+     * @param                           $money
+     * @param                           $v_code
+     * @param  \App\Models\User|null    $User
+     * @param  \App\Models\Assets|null  $Assets
      *
      * @throws \App\Exceptions\LogicException
      * @author lidong<947714443@qq.com>
@@ -181,6 +182,15 @@ class WithdrawCashService
     {
         if (empty($Assets)) {
             throw new Exception('账户信息错误');
+        }
+        if ($money < 5) {
+            throw new Exception('提现金额不能小于5');
+        }
+        if ($money > 10 && $money < 100) {
+            throw new Exception('提现金额大于10，100起提');
+        }
+        if ($money >= 100 && $money % 10) {
+            throw new Exception('提现金额只能是10的倍数');
         }
         if (empty($User)) {
             $User = User::findOrFail($uid);
@@ -194,8 +204,8 @@ class WithdrawCashService
     /**
      * Description:
      *
-     * @param                                  $withdraw_id
-     * @param \App\Models\WithdrawCashLog|null $Withdraw
+     * @param                                    $withdraw_id
+     * @param  \App\Models\WithdrawCashLog|null  $Withdraw
      *
      * @return bool
      * @throws \Exception
@@ -268,9 +278,9 @@ class WithdrawCashService
     /**
      * Description:
      *
-     * @param int      $uid
-     * @param int|null $page
-     * @param int|null $limit
+     * @param  int       $uid
+     * @param  int|null  $page
+     * @param  int|null  $limit
      *
      * @return WithdrawCashLog[]|Builder[]|Collection
      * @author lidong<947714443@qq.com>

@@ -92,7 +92,7 @@ class GatherService
         $advertSum = (new AdvertUsers())->getGatherAdvertSum($uid);
         //获取每天拼团次数
         $gatherAllSum = (new GatherUsers())->getUserAllSum($uid);
-        if ($gatherAllSum + $advertSum >= $gatherAllRatio + $advertSum)
+        if ($gatherAllSum >= $gatherAllRatio + $advertSum)
         {
             throw new LogicException('已超过每天最大可参与次数！');
         }
