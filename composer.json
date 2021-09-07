@@ -12,8 +12,10 @@
     "ext-bcmath": "*",
     "ext-curl": "*",
     "ext-json": "*",
+    "ext-libxml": "*",
     "ext-openssl": "*",
     "ext-pdo": "*",
+    "ext-simplexml": "*",
     "alibabacloud/client": "^1.5",
     "chenjia404/qk-php-sdk": "dev-master",
     "fideloper/proxy": "^4.4",
@@ -25,9 +27,7 @@
     "laravel/tinker": "^2.5",
     "overtrue/easy-sms": "^1.3",
     "predis/predis": "^1.1",
-    "simplesoftwareio/simple-qrcode": "^4.2",
-    "ext-libxml": "*",
-    "ext-simplexml": "*"
+    "simplesoftwareio/simple-qrcode": "^4.2"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.10",
