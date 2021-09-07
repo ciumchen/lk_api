@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Assets;
+use App\Models\CityData;
 use App\Models\Order;
+use App\Models\UserCityData;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +68,25 @@ class getUserInfoController extends Controller
             return response()->json(['code' => 0, 'msg' => $userAsset->toArray()]);
         }else{
             return response()->json(['code' => 0, 'msg' => '该用户没有该类型资产']);
+        }
+
+    }
+
+    //获取用户省市区信息
+    public function getUserCityInfo(Request $request){
+        $uid = $request->input('uid');
+        $userCity = UserCityData::where('uid',$uid)->first();
+        if (empty($userCity)){
+            return response()->json(['code' => 0, 'msg' => '该用户省市区信息不存在']);
+        }else{
+            $province = CityData::find($userCity->province_id);
+            $city = CityData::find($userCity->city_id);
+            $district = CityData::find($userCity->district_id);
+            $data['uid'] = $uid;
+            $data['province'] = $province->name;
+            $data['city'] = $city->name;
+            $data['district'] = $district->name;
+            return response()->json(['code' => 1, 'msg' => $data]);
         }
 
     }
