@@ -101,7 +101,7 @@ class getUserInfoController extends Controller
             return response()->json(['code' => 0, 'msg' => '该用户不存在']);
         }else{
             $UserSData = UserLevelRelation::where('invite_id',$uid)
-                ->with(['user:id,phone','userleve:id,title'])
+                ->with(['user:id,phone,avatar','userleve:id,title'])
                 ->orderBy('created_at','desc')
                 ->latest('id')
                 ->forPage($page, 10)
