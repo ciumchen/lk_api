@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\SystemService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,6 +56,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserLevel extends Model
 {
+    
     protected $table = 'user_level';
     
     /**
@@ -82,5 +84,34 @@ class UserLevel extends Model
             $types_arr[ $item->id ] = $item->title;
         });
         return $types_arr;
+    }
+    
+    /**
+     * Description:获取用户等级头衔
+     *
+     * @param  int  $level_id
+     *
+     * @return mixed
+     * @author lidong<947714443@qq.com>
+     * @date   2021/9/8 0008
+     */
+    public static function getLevelText($level_id = 0)
+    {
+        $levelType = self::getTypesArray();
+        switch ($level_id) {
+            case SystemService::$diamondLevelId:
+            case SystemService::$goldLevelId:
+                $level_name = $levelType[ SystemService::$goldLevelId ];
+                break;
+            case SystemService::$silverLevelId:
+                $level_name = $levelType[ SystemService::$silverLevelId ];
+                break;
+            case SystemService::$vipLevelID:
+                $level_name = $levelType[ SystemService::$vipLevelID ];
+                break;
+            default:
+                $level_name = $levelType[ SystemService::$memberLevelID ];
+        }
+        return $level_name;
     }
 }
