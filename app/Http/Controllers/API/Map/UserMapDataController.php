@@ -38,6 +38,8 @@ class UserMapDataController extends Controller
                 }
                 $sqArr = explode(',',$cityDataInfo->pid_route);
                 //保存用户经纬度信息
+                isset($sqArr[0])?:$sqArr[0]=0;
+                isset($sqArr[1])?:$sqArr[1]=0;
                 $data = [
                     'uid' => $uid,
                     'province_id' => $sqArr[0],
