@@ -7,6 +7,7 @@ use App\Models\Assets;
 use App\Models\CityData;
 use App\Models\Order;
 use App\Models\UserCityData;
+use App\Models\UserLevelRelation;
 use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -88,6 +89,32 @@ class getUserInfoController extends Controller
             $data['district'] = $district->name;
             return response()->json(['code' => 1, 'msg' => $data]);
         }
+
+    }
+
+    //获取用户的直推下级
+    public function getUserInviteUserData(Request $request){
+        $uid = $request->input('uid');
+        $page = $request->input("page");
+        $uidData = Users::find($uid);
+        if (empty($uidData)){
+            return response()->json(['code' => 0, 'msg' => '该用户不存在']);
+        }else{
+            $UserSData = UserLevelRelation::where('invite_id',$uid)
+                ->with(['user:id,phone','userleve:id,title'])
+                ->orderBy('created_at','desc')
+                ->latest('id')
+                ->forPage($page, 10)
+                ->get(['user_id','level_id'])->toArray();
+            if (count($UserSData)==0){
+                return response()->json(['code' => 0, 'msg' => '该用户没有直推下级']);
+            }else{
+
+                return response()->json(['code' => 1, 'msg' => $UserSData]);
+            }
+
+        }
+
 
     }
 

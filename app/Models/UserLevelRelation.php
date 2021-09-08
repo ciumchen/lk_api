@@ -73,19 +73,19 @@ use Illuminate\Database\Eloquent\Model;
 class UserLevelRelation extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'user_level_relation';
-    
+
     // 实名认证
     const IS_VERIFIED_NO  = 0;
-    
+
     const IS_VERIFIED_YES = 1;
-    
+
     // 购买会员
     const IS_VIP_NO  = 0;
-    
+
     const IS_VIP_YES = 1;
-    
+
     /**
      * @var string[] 实名认证状态文字
      */
@@ -93,7 +93,7 @@ class UserLevelRelation extends Model
         self::IS_VERIFIED_NO  => '否',
         self::IS_VERIFIED_YES => '是',
     ];
-    
+
     /**
      * @var string[] 是否为会员标识
      */
@@ -101,7 +101,7 @@ class UserLevelRelation extends Model
         self::IS_VIP_NO  => '否',
         self::IS_VIP_YES => '是',
     ];
-    
+
     /**
      * @var string[]实名认证状态样式
      */
@@ -109,7 +109,7 @@ class UserLevelRelation extends Model
         self::IS_VERIFIED_NO  => 'dark',
         self::IS_VERIFIED_YES => 'success',
     ];
-    
+
     /**
      * @var string[] 购买会员状态标识
      */
@@ -117,7 +117,7 @@ class UserLevelRelation extends Model
         self::IS_VIP_NO  => 'dark',
         self::IS_VIP_YES => 'success',
     ];
-    
+
     /**
      * Description:获取所有已有关系的用户ID
      *
@@ -130,7 +130,7 @@ class UserLevelRelation extends Model
     {
         return UserLevelRelation::all()->pluck('user_id')->toArray();
     }
-    
+
     /**
      * Description:
      *
@@ -142,4 +142,16 @@ class UserLevelRelation extends Model
     {
         return UserLevelRelation::whereIsVerified(0)->get();
     }
+
+    public function user()
+    {
+        return $this->belongsTo(Users::class, 'user_id', 'id');
+    }
+
+    public function userleve()
+    {
+        return $this->belongsTo(UserLevel::class, 'level_id', 'id');
+    }
+
+
 }
