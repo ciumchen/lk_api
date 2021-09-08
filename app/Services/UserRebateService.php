@@ -89,7 +89,7 @@ class UserRebateService
         try {
             $userLevelInfo = UserLevelRelation::whereUserId($user->id)->first();
             /* 获取所有上级 */
-            $allParent = $this->getAllParentsLevel($userLevelInfo->pid_route);
+            $allParent = (array) $this->getAllParentsLevel($userLevelInfo->pid_route);
             /* 获取直接上级 */
             $parent = $this->getParentByInviteId($allParent, $userLevelInfo->invite_id);
             /* 上级分佣 */
@@ -126,7 +126,7 @@ class UserRebateService
     ) {
         $LevelCache = self::getLevelCache();
         $shareScale = $LevelCache[ $parent[ 'level_id' ] ][ 'promotion_rewards_ratio' ];
-        $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
+        $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
         AssetsService::BalancesChange(
             $order->order_no,
             $parent[ 'user_id' ],
@@ -165,20 +165,22 @@ class UserRebateService
         if (empty($userLevelInfo)) {
             $userLevelInfo = UserLevelRelation::whereUserId($user->id)->first();
         }
-        switch ($parent[ 'level_id' ]) {
+         switch ($parent[ 'level_id' ]) {
             case SystemService::$memberLevelID:
             case SystemService::$vipLevelID: /* 会员从上级找银卡 */
                 $parent = $this->silverHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
                     $allParent);
-                /* 平级奖分佣 */
-                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent);
             case SystemService::$silverLevelId: /* 银卡从上级找金卡 */
-                $this->goldHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent);
                 /* 平级奖分佣 */
                 $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent);
-            case SystemService::$goldLevelId: /* 金卡从上级找钻石卡 */
-                $this->diamondHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
+                $parent = $this->goldHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
                     $allParent);
+            case SystemService::$goldLevelId: /* 金卡从上级找钻石卡 */
+                /* 平级奖分佣 */
+                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent);
+                $parent = $this->diamondHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
+                    $allParent);
+            case SystemService::$diamondLevelId:
                 /* 平级奖分佣 */
                 $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent);
                 break;
@@ -211,7 +213,7 @@ class UserRebateService
             /* 上级是平台，平台直接分佣钻石卡额度以及平级奖额度 */
             $shareScale = $LevelCache[ SystemService::$diamondLevelId ][ 'promotion_rewards_ratio' ]
                           + $LevelCache[ SystemService::$diamondLevelId ][ 'same_level_rewards_ratio' ];
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
                 $platformUid,
@@ -262,7 +264,7 @@ class UserRebateService
             }
             /* 计算极差奖比例 */
             $shareScale = $this->LevelRangeScale(SystemService::$vipLevelID, SystemService::$silverLevelId);
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
                 $uid,
@@ -314,7 +316,7 @@ class UserRebateService
             }
             /* 计算极差奖比例 */
             $shareScale = $this->LevelRangeScale(SystemService::$silverLevelId, SystemService::$goldLevelId);
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
                 $uid,
@@ -356,16 +358,16 @@ class UserRebateService
         $allParent = []
     ) {
         try {
-            $goldParent = $this->getParentByLevelAndUid($allParent, SystemService::$diamondLevelId,
+            $diamondParent = $this->getParentByLevelAndUid($allParent, SystemService::$diamondLevelId,
                 $parent[ 'user_id' ]);
-            if (empty($goldParent)) {
+            if (empty($diamondParent)) {
                 $uid = $platformUid;
             } else {
-                $uid = $goldParent[ 'user_id' ];
+                $uid = $diamondParent[ 'user_id' ];
             }
             /* 计算极差奖比例 */
             $shareScale = $this->LevelRangeScale(SystemService::$goldLevelId, SystemService::$diamondLevelId);
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
                 $uid,
@@ -379,6 +381,7 @@ class UserRebateService
             Log::debug('diamondHigherScale:Error:'.$e->getMessage(), [json_encode($e)]);
             throw $e;
         }
+	return $diamondParent;
     }
     
     /**
@@ -434,8 +437,8 @@ class UserRebateService
                 $uid = $sameLevelParent[ 'user_id' ];
             }
             $LevelCache = self::getLevelCache();
-            $shareScale = $LevelCache[ $parent[ 'level_id' ] ][ 'promotion_rewards_ratio' ];
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 3);
+            $shareScale = $LevelCache[ $parent[ 'level_id' ] ][ 'same_level_rewards_ratio' ];
+            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
                 $uid,
@@ -469,11 +472,12 @@ class UserRebateService
             $goldShareScale = $LevelCache[ SystemService::$goldLevelId ][ 'weighted_equally_rewards_ratio' ];
             $diamondShareScale = $LevelCache[ SystemService::$diamondLevelId ][ 'weighted_equally_rewards_ratio' ];
             /* 计算三种等级可分润的金额 */
-            $silverShareAmount = bcmul($order->profit_price, bcdiv($silverShareScale, 100, 6), 3);
-            $goldShareAmount = bcmul($order->profit_price, bcdiv($goldShareScale, 100, 6), 3);
-            $diamondShareAmount = bcmul($order->profit_price, bcdiv($diamondShareScale, 100, 6), 3);
+            $silverShareAmount = bcmul($order->profit_price, bcdiv($silverShareScale, 100, 6), 6);
+            $goldShareAmount = bcmul($order->profit_price, bcdiv($goldShareScale, 100, 6), 6);
+            $diamondShareAmount = bcmul($order->profit_price, bcdiv($diamondShareScale, 100, 6), 6);
             /* 奖金放入当日累计金额 */
             $WeightRewards = WeightRewards::whereCountDate(date('Ymd'))->firstOrNew();
+            $WeightRewards->save();
             $WeightRewards->increment('silver_money', $silverShareAmount);
             $WeightRewards->increment('gold_money', $goldShareAmount);
             $WeightRewards->increment('diamond_money', $diamondShareAmount);
@@ -713,7 +717,7 @@ class UserRebateService
         foreach ($parents as $row) {
             if ($row[ 'level_id' ] == $level) {
                 $target_parent = $row;
-//                break;
+                break;
             }
         }
         return $target_parent;
@@ -736,7 +740,7 @@ class UserRebateService
         foreach ($parents as $row) {
             if ($row[ 'level_id' ] == $level && $row[ 'user_id' ] < $uid) {
                 $target_parent = $row;
-//                break;
+                break;
             }
         }
         return $target_parent;
@@ -760,6 +764,7 @@ class UserRebateService
         foreach ($parents as $row) {
             if ($row[ 'user_id' ] == $invite_id) {
                 $target_parent = $row;
+		break;
             }
         }
         return $target_parent;
