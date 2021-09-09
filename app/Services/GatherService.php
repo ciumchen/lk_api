@@ -15,7 +15,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Users;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class GatherService
 {
     /**参加拼团
