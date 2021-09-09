@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\LkshopOrder;
 use \App\Services\UserRebateService;
 use \App\Services\ProvinceCityAreaDlService;
+use Illuminate\Support\Facades\Log;
+
 class GatherOrderService
 {
     /**返佣
@@ -68,11 +70,12 @@ class GatherOrderService
         }
         //分享佣金
         /* 计算总佣金 */ /* 计算总佣金 */
+        Log::debug("=======分享佣金=============UserRebateService==========开始============");
         $shareScale = UserRebateService::getShareRatio();
         $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 2);
         /* 邀请分红+同级分佣 */
         (new UserRebateService())->shareScale($order, $user, $assets, $platformUid);
-
+        Log::debug("=======分享佣金=============UserRebateService==========结束============");
         //*****************************************************************
         //省市区代理返佣
         $ssqAmount = (new ProvinceCityAreaDlService())->inviteProvinceCityAreaD($order, $user, $assets, $orderNo,
