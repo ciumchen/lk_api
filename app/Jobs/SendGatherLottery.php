@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
+
 class SendGatherLottery implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -37,14 +37,11 @@ class SendGatherLottery implements ShouldQueue
     {
         if (!empty($this->orderData))
         {
-            Log::debug("===============测试============拼团录单=======handle=====1111111111111=================");
             sleep(2);
             //更新未中奖用户录单数据
             $gatherService->updGatherTrade($this->orderData->orderData);
-            Log::debug("===============测试============拼团录单=======handle=====aaaaaaaaaaaaaaaaaaaaa=================");
             //自动审核未中奖用户录单、加积分
             $gatherService->completeOrderGather($this->orderData->orderData);
-            Log::debug("===============测试============拼团录单=======handle=====bbbbbbbbbbbbbbbbbb=================");
         } else
         {
             throw new LogicException('本拼团已完成开奖！');
