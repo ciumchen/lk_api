@@ -16,7 +16,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\LkshopOrder;
-
+use App\Services\OrderService;
 class GatherOrderService
 {
     /**返佣
@@ -325,7 +325,8 @@ class GatherOrderService
             );
             $business = User::find($order->business_uid);
             //返佣
-            $this->encourage($order, $customer, $business, $orderNo);
+            //$this->encourage($order, $customer, $business, $orderNo);
+            (new OrderService())->encourage($order, $customer, $business, $orderNo);
             $order->save();
             DB::commit();
         } catch (Exception $exception) {
