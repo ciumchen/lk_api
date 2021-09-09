@@ -37,6 +37,7 @@ class SendGatherLottery implements ShouldQueue
     {
         if (!empty($this->orderData))
         {
+            Log::debug("===============测试============拼团录单=======handle=====1111111111111=================");
             sleep(2);
             //更新未中奖用户录单数据
             $gatherService->updGatherTrade($this->orderData->orderData);

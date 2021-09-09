@@ -339,6 +339,7 @@ class GatherService
     }*/
     public function completeOrderGather (array $orderData)
     {
+        Log::debug("===============测试============拼团录单=======completeOrderGather=====2222222222=================");
         (new GatherOrderService())->completeOrderGatger($orderData['oid'], $orderData['uid'], 'PT', $orderData['order_no']);
     }
 }

@@ -279,7 +279,7 @@ class GatherOrderService
      */
     public function completeOrderGatger(int $id, int $consumer_uid, string $description, string $orderNo)
     {
-        Log::debug("===============测试============拼团录单=======completeOrderGatger======================");
+        Log::debug("===============测试============拼团录单=======completeOrderGatger======33333333333================");
         DB::beginTransaction();
         try {
             $order = Order::find($id);
