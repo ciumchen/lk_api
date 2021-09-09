@@ -165,6 +165,7 @@ class UserRebateService
         if (empty($userLevelInfo)) {
             $userLevelInfo = UserLevelRelation::whereUserId($user->id)->first();
         }
+	$origin_parent = $parent;
          switch (intval($parent[ 'level_id' ])) {
             case SystemService::$memberLevelID:
             case SystemService::$vipLevelID: /* 会员从上级找银卡 */
@@ -172,19 +173,28 @@ class UserRebateService
                     $allParent);
             case SystemService::$silverLevelId: /* 银卡从上级找金卡 */
                 /* 平级奖分佣 */
-                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent,
+		 $origin_parent = empty($origin_parent) ? [] : $this->getParentByLevelAndUid($allParent,
+		                    SystemService::$silverLevelId,
+		                    $origin_parent[ 'user_id' ]);
+                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $origin_parent, $allParent,
                     SystemService::$silverLevelId);
                 $parent = $this->goldHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
                     $allParent);
             case SystemService::$goldLevelId: /* 金卡从上级找钻石卡 */
                 /* 平级奖分佣 */
-                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent,
+		$origin_parent = empty($origin_parent) ? [] : $this->getParentByLevelAndUid($allParent,
+		                    SystemService::$goldLevelId,
+		                    $origin_parent[ 'user_id' ]);
+                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $origin_parent, $allParent,
                     SystemService::$goldLevelId);
                 $parent = $this->diamondHigherScale($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent,
                     $allParent);
             case SystemService::$diamondLevelId:
                 /* 平级奖分佣 */
-                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $parent, $allParent,
+		$origin_parent = empty($origin_parent) ? [] : $this->getParentByLevelAndUid($allParent,
+		                    SystemService::$diamondLevelId,
+		                    $origin_parent[ 'user_id' ]);
+                $this->sameLevel($order, $user, $assetsType, $platformUid, $userLevelInfo, $origin_parent, $allParent,
                     SystemService::$diamondLevelId);
                 break;
             default:
@@ -263,11 +273,14 @@ class UserRebateService
                 $parent[ 'user_id' ]);
             if (empty($silverParent)) {
                 $uid = $platformUid;
+		$level_id = $parent[ 'level_id' ];
+                return $parent;
             } else {
                 $uid = $silverParent[ 'user_id' ];
+		$level_id = $parent[ 'level_id' ] ?? SystemService::$vipLevelID;
             }
             /* 计算极差奖比例 */
-            $shareScale = $this->LevelRangeScale(SystemService::$vipLevelID, SystemService::$silverLevelId);
+            $shareScale = $this->LevelRangeScale($level_id, SystemService::$silverLevelId);
             $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
@@ -315,12 +328,16 @@ class UserRebateService
                 $parent[ 'user_id' ]);
             if (empty($goldParent)) {
                 $uid = $platformUid;
+                $level_id = $parent[ 'level_id' ] ?? SystemService::$vipLevelID;
+                return $parent;
             } else {
                 $uid = $goldParent[ 'user_id' ];
+                $level_id = $parent[ 'level_id' ] ?? SystemService::$vipLevelID;
             }
             /* 计算极差奖比例 */
-            $shareScale = $this->LevelRangeScale(SystemService::$silverLevelId, SystemService::$goldLevelId);
-            $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
+//            $shareScale = $this->LevelRangeScale(SystemService::$silverLevelId, SystemService::$goldLevelId);
+            $shareScale = $this->LevelRangeScale($level_id, SystemService::$goldLevelId);
+	    $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
                 $uid,
@@ -365,13 +382,15 @@ class UserRebateService
             $diamondParent = empty($parent) ? [] : $this->getParentByLevelAndUid($allParent,
                 SystemService::$diamondLevelId,
                 $parent[ 'user_id' ]);
-            if (empty($diamondParent)) {
+             if (empty($diamondParent)) {
                 $uid = $platformUid;
+                $level_id = $parent[ 'level_id' ] ?? SystemService::$vipLevelID;
             } else {
                 $uid = $diamondParent[ 'user_id' ];
+                $level_id = $parent[ 'level_id' ] ?? SystemService::$vipLevelID;
             }
             /* 计算极差奖比例 */
-            $shareScale = $this->LevelRangeScale(SystemService::$goldLevelId, SystemService::$diamondLevelId);
+            $shareScale = $this->LevelRangeScale($level_id, SystemService::$diamondLevelId);
             $shareAmount = bcmul($order->profit_price, bcdiv($shareScale, 100, 6), 6);
             AssetsService::BalancesChange(
                 $order->order_no,
@@ -436,8 +455,15 @@ class UserRebateService
             if (intval($platformUid) == 0) {
                 $platformUid = SystemService::$platformId;
             }
-            $sameLevelParent = empty($parent) ? [] : $this->getParentByLevelAndUid($allParent, $parent[ 'level_id' ],
-                $parent[ 'user_id' ]);
+	    if (isset($parent[ 'level_id' ])&&$parent[ 'level_id' ] == SystemService::$silverLevelId) {
+                $sameLevelParent = empty($parent) ? [] : $this->getParentByLevelAndUidEgt($allParent,
+                    $parent[ 'level_id' ],
+                    $parent[ 'user_id' ]);
+            } else {
+                $sameLevelParent = empty($parent) ? [] : $this->getParentByLevelAndUid($allParent,
+                    $parent[ 'level_id' ],
+                    $parent[ 'user_id' ]);
+            }
             if (empty($sameLevelParent)) {
                 $uid = $platformUid;
             } else {
@@ -753,6 +779,17 @@ class UserRebateService
         return $target_parent;
     }
     
+    public function getParentByLevelAndUidEgt($parents, $level, $uid)
+    {
+        $target_parent = [];
+        foreach ($parents as $row) {
+            if ($row[ 'level_id' ] == $level && $row[ 'user_id' ] <= $uid) {
+                $target_parent = $row;
+                break;
+            }
+        }
+        return $target_parent;
+    }
     /**
      * Description:根据ID获取上级
      *
