@@ -22,8 +22,10 @@ Route::any('qkSetOneUserLkAction', 'User\UserSetActionController@qkSetOneUserLkA
 Route::any('jsQkSetOneUserLk', 'User\UserSetActionController@jsQkSetOneUserLk');
 Route::any('qkSetOneUserLkAction', 'User\UserSetActionController@qkSetOneUserLkAction');
 
-
-
+//添加排队积分
+Route::any('addPdUserjf', 'User\UserSetActionController@addPdUserjf');
+Route::any('setPdUserOrderNo', 'User\UserSetActionController@setPdUserOrderNo');
+Route::any('qkSetOneUserLkAction', 'User\UserSetActionController@qkSetOneUserLkAction');
 
 
 

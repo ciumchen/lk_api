@@ -22,7 +22,6 @@ use App\Models\UserUpdatePhoneLogSd;
 use App\Models\VerifyCode;
 use App\Services\BusinessService;
 use App\Services\OrderService;
-use App\Services\OrderTwoService;
 use App\Services\OssService;
 use Illuminate\Database\Eloquent\Model;
 
@@ -70,6 +69,38 @@ class UserSetActionController extends Controller
         $this->returnView(array("设置lk单价为0，操作成功！"),'qkSetOneUserLkAction');
     }
 
+    //////////////////////////////////////////////////
+    public function addPdUserjf(){
+        return view('addPdUserjf');
+    }
+
+    public function setPdUserOrderNo(Request $request){
+        $oid = $request->input('oid');
+        $description = "LR";
+
+        $orderData = Order::where(['id'=>$oid,'line_up'=>1])->first();
+//        dd($orderData);
+        if (empty($orderData)){
+            $str = "操作失败，排队订单不存在";
+        }else{
+            DB::beginTransaction();
+            try {
+                (new OrderService())->MemberUserOrder($oid,$description);
+                $orderData->status = 2;
+                $orderData->line_up = 0;
+                $orderData->save();
+                DB::commit();
+                $str = "操作成功";
+            } catch (Exception $e) {
+                DB::rollBack();
+                $str = "操作失败";
+            }
+        }
+        $this->returnView(array($str),'addPdUserjf');
+    }
+
+
+//////////////////////////////////////////////////
     //接收清空uid
 //    public function jsQkSetUserLk(){
 //
