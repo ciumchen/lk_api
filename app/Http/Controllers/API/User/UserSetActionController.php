@@ -76,13 +76,16 @@ class UserSetActionController extends Controller
 
     public function setPdUserOrderNo(Request $request){
         $oid = $request->input('oid');
-        $description = "LR";
-
         $orderData = Order::where(['id'=>$oid,'line_up'=>1])->first();
 //        dd($orderData);
         if (empty($orderData)){
             $str = "操作失败，排队订单不存在";
         }else{
+            if ($orderData->description==''){
+                $description = "LR";
+            }else{
+                $description = $orderData->description;
+            }
             DB::beginTransaction();
             try {
                 (new OrderService())->MemberUserOrder($oid,$description);
